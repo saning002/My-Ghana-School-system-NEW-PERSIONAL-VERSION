@@ -30,6 +30,7 @@ class AuditLog extends Model
 
     /**
      * Log an action easily from anywhere.
+     * Wrapped in try/catch so a logging failure never breaks the main action.
      */
     public static function record(
         string $action,
@@ -38,14 +39,19 @@ class AuditLog extends Model
         array $oldValues = [],
         array $newValues = []
     ): void {
-        static::create([
-            'owner_user_id' => auth('owner')->id(),
-            'tenant_id'     => $tenantId,
-            'action'        => $action,
-            'description'   => $description,
-            'old_values'    => $oldValues ?: null,
-            'new_values'    => $newValues ?: null,
-            'ip_address'    => request()->ip(),
-        ]);
+        try {
+            static::create([
+                'owner_user_id' => auth('owner')->id(),
+                'tenant_id'     => $tenantId,
+                'action'        => $action,
+                'description'   => $description,
+                'old_values'    => $oldValues ?: null,
+                'new_values'    => $newValues ?: null,
+                'ip_address'    => request()->ip(),
+            ]);
+        } catch (\Throwable $e) {
+            // Never let audit logging crash the main request
+            \Log::warning('AuditLog::record failed: ' . $e->getMessage());
+        }
     }
 }

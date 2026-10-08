@@ -74,9 +74,7 @@ class TenantController extends Controller
         AuditLog::record(
             'tenant.created',
             "School '{$tenant->name}' created with subdomain '{$tenant->subdomain}'",
-            $tenant->id,
-            [],
-            $tenant->toArray()
+            $tenant->id
         );
 
         return redirect()->route('owner.schools.show', $tenant)
