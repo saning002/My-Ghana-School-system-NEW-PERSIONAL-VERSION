@@ -733,6 +733,47 @@ Route::get('/headteacher-portal/login', fn() => redirect()->route('staff-portal.
 Route::get('/secretary-portal/login',   fn() => redirect()->route('staff-portal.login.role', 'secretary'))->name('secretary-portal.login');
 
 // ═══════════════════════════════════════════════════════════════════════════
+// ONE-TIME OWNER ACCOUNT CREATION — visit URL then remove from code
+// ═══════════════════════════════════════════════════════════════════════════
+Route::get('/create-owner/{secret}', function(string $secret) {
+    $validSecret = env('ADMIN_SETUP_SECRET', 'setup-admin-2026');
+
+    if ($secret !== $validSecret) {
+        abort(403, 'Invalid secret.');
+    }
+
+    $name     = env('OWNER_NAME', '');
+    $email    = env('OWNER_EMAIL', '');
+    $password = env('OWNER_PASSWORD', '');
+
+    if (empty($name) || empty($email) || empty($password)) {
+        return response()->json([
+            'status'  => 'error',
+            'message' => 'OWNER_NAME, OWNER_EMAIL and OWNER_PASSWORD env vars must be set on Render.',
+        ], 400);
+    }
+
+    if (\App\Models\OwnerUser::where('email', $email)->exists()) {
+        return response()->json([
+            'status'  => 'already_exists',
+            'message' => "Owner with email '{$email}' already exists. Login at /owner/login.",
+        ]);
+    }
+
+    $owner = \App\Models\OwnerUser::create([
+        'name'     => $name,
+        'email'    => $email,
+        'password' => \Illuminate\Support\Facades\Hash::make($password),
+    ]);
+
+    return response()->json([
+        'status'  => 'success',
+        'message' => "Owner account '{$email}' created. Go to /owner/login and sign in. REMOVE this route after use.",
+        'id'      => $owner->id,
+    ]);
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
 // ONE-TIME ADMIN CREATION — visit URL then remove from code
 // ═══════════════════════════════════════════════════════════════════════════
 Route::get('/create-admin/{secret}', function(string $secret) {
