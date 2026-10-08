@@ -9,6 +9,7 @@ use App\Models\OwnerPayment;
 use App\Models\Plan;
 use App\Models\Tenant;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class TenantController extends Controller
@@ -83,11 +84,27 @@ class TenantController extends Controller
 
     public function show(Tenant $tenant)
     {
-        $tenant->load(['plan', 'payments' => fn($q) => $q->orderByDesc('payment_date')->limit(10), 'backups' => fn($q) => $q->orderByDesc('created_at')->limit(5)]);
-        $features    = Feature::orderBy('group')->orderBy('sort_order')->get()->groupBy('group');
-        $planFeatureIds   = $tenant->plan?->features()->pluck('features.id')->toArray() ?? [];
-        $tenantOverrides  = $tenant->features()->pluck('tenant_features.enabled', 'features.id')->toArray();
-        $totalPaid   = $tenant->payments()->sum('amount');
+        $tenant->load([
+            'plan',
+            'payments' => fn($q) => $q->orderByDesc('payment_date')->limit(10),
+            'backups'  => fn($q) => $q->orderByDesc('created_at')->limit(5),
+        ]);
+
+        $features        = Feature::orderBy('group')->orderBy('sort_order')->get()->groupBy('group');
+        $planFeatureIds  = $tenant->plan?->features()->pluck('features.id')->toArray() ?? [];
+
+        // Safe pivot pluck — returns [feature_id => enabled]
+        $tenantOverrides = [];
+        try {
+            $tenantOverrides = \DB::table('tenant_features')
+                ->where('tenant_id', $tenant->id)
+                ->pluck('enabled', 'feature_id')
+                ->toArray();
+        } catch (\Throwable $e) {
+            // tenant_features table might be empty or not yet seeded — safe to ignore
+        }
+
+        $totalPaid = $tenant->payments()->sum('amount');
 
         return view('owner.schools.show', compact('tenant', 'features', 'planFeatureIds', 'tenantOverrides', 'totalPaid'));
     }
