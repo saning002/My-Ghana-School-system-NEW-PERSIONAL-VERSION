@@ -733,6 +733,50 @@ Route::get('/headteacher-portal/login', fn() => redirect()->route('staff-portal.
 Route::get('/secretary-portal/login',   fn() => redirect()->route('staff-portal.login.role', 'secretary'))->name('secretary-portal.login');
 
 // ═══════════════════════════════════════════════════════════════════════════
+// OWNER PANEL DEBUG — shows real error on school show/edit
+// ═══════════════════════════════════════════════════════════════════════════
+Route::get('/owner-debug/school/{id}', function(int $id) {
+    try {
+        $tenant = \App\Models\Tenant::findOrFail($id);
+        $out = ['tenant' => $tenant->only(['id','name','slug','status','plan_id'])];
+
+        try {
+            $out['plan'] = $tenant->plan?->name ?? 'no plan';
+        } catch (\Throwable $e) { $out['plan_error'] = $e->getMessage(); }
+
+        try {
+            $out['features_count'] = \App\Models\Feature::count();
+        } catch (\Throwable $e) { $out['features_error'] = $e->getMessage(); }
+
+        try {
+            $out['tenant_features'] = \Illuminate\Support\Facades\DB::table('tenant_features')
+                ->where('tenant_id', $id)->count();
+        } catch (\Throwable $e) { $out['tenant_features_error'] = $e->getMessage(); }
+
+        try {
+            $out['payments_count'] = $tenant->payments()->count();
+        } catch (\Throwable $e) { $out['payments_error'] = $e->getMessage(); }
+
+        try {
+            $out['backups_count'] = $tenant->backups()->count();
+        } catch (\Throwable $e) { $out['backups_error'] = $e->getMessage(); }
+
+        try {
+            $features = \App\Models\Feature::orderBy('group')->orderBy('sort_order')->get()->groupBy('group');
+            $out['feature_groups'] = $features->keys()->toArray();
+        } catch (\Throwable $e) { $out['feature_groups_error'] = $e->getMessage(); }
+
+        return response()->json($out, 200, [], JSON_PRETTY_PRINT);
+    } catch (\Throwable $e) {
+        return response()->json([
+            'error' => $e->getMessage(),
+            'file'  => $e->getFile() . ':' . $e->getLine(),
+            'trace' => array_slice(explode("\n", $e->getTraceAsString()), 0, 10),
+        ], 500);
+    }
+})->middleware('owner.auth');
+
+// ═══════════════════════════════════════════════════════════════════════════
 // TENANT DB SETUP — run migrations + create admin for a specific school
 // Visit: /setup-tenant/{slug}/{secret}
 // ═══════════════════════════════════════════════════════════════════════════

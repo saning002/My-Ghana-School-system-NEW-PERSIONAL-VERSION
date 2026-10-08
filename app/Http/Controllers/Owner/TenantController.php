@@ -84,27 +84,32 @@ class TenantController extends Controller
 
     public function show(Tenant $tenant)
     {
-        $tenant->load([
-            'plan',
-            'payments' => fn($q) => $q->orderByDesc('payment_date')->limit(10),
-            'backups'  => fn($q) => $q->orderByDesc('created_at')->limit(5),
-        ]);
+        // Load relationships safely — each in its own try/catch
+        try { $tenant->load('plan'); } catch (\Throwable $e) {}
+        try { $tenant->load(['payments' => fn($q) => $q->orderByDesc('payment_date')->limit(10)]); } catch (\Throwable $e) {}
+        try { $tenant->load(['backups'  => fn($q) => $q->orderByDesc('created_at')->limit(5)]); } catch (\Throwable $e) {}
 
-        $features        = Feature::orderBy('group')->orderBy('sort_order')->get()->groupBy('group');
-        $planFeatureIds  = $tenant->plan?->features()->pluck('features.id')->toArray() ?? [];
+        $features = collect();
+        try {
+            $features = Feature::orderBy('group')->orderBy('sort_order')->get()->groupBy('group');
+        } catch (\Throwable $e) {}
 
-        // Safe pivot pluck — returns [feature_id => enabled]
+        $planFeatureIds = [];
+        try {
+            $planFeatureIds = $tenant->plan?->features()->pluck('features.id')->toArray() ?? [];
+        } catch (\Throwable $e) {}
+
         $tenantOverrides = [];
         try {
-            $tenantOverrides = \DB::table('tenant_features')
+            $tenantOverrides = DB::table('tenant_features')
                 ->where('tenant_id', $tenant->id)
                 ->pluck('enabled', 'feature_id')
+                ->map(fn($v) => (bool) $v)
                 ->toArray();
-        } catch (\Throwable $e) {
-            // tenant_features table might be empty or not yet seeded — safe to ignore
-        }
+        } catch (\Throwable $e) {}
 
-        $totalPaid = $tenant->payments()->sum('amount');
+        $totalPaid = 0;
+        try { $totalPaid = $tenant->payments()->sum('amount'); } catch (\Throwable $e) {}
 
         return view('owner.schools.show', compact('tenant', 'features', 'planFeatureIds', 'tenantOverrides', 'totalPaid'));
     }
