@@ -922,6 +922,16 @@ Route::name('website.')->group(function () {
 });
 
 // ═══════════════════════════════════════════════════════════════════════════
+// SCHOOL SLUG-BASED LOGIN (Option A — single Render URL, multiple schools)
+// Each school accesses: /school/{slug}/login
+// ═══════════════════════════════════════════════════════════════════════════
+Route::prefix('school')->name('school.')->group(function () {
+    Route::get('/{slug}/login',  [\App\Http\Controllers\Owner\SchoolAccessController::class, 'showLogin'])->name('login');
+    Route::post('/{slug}/login', [\App\Http\Controllers\Owner\SchoolAccessController::class, 'login'])->name('login.submit');
+    Route::post('/logout',       [\App\Http\Controllers\Owner\SchoolAccessController::class, 'logout'])->name('logout');
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
 // OWNER PANEL
 // ═══════════════════════════════════════════════════════════════════════════
 Route::prefix('owner')->name('owner.')->group(function () {

@@ -49,11 +49,17 @@ class TenantMiddleware
     }
 
     /**
-     * Resolve tenant from subdomain or X-Tenant-Slug header (for API/testing).
+     * Resolve tenant from subdomain, session (Option A), header, or query param.
      */
     private function resolveTenant(Request $request): ?Tenant
     {
-        // 1. Try subdomain — e.g. "accra-academy" from "accra-academy.yourdomain.com"
+        // 1. Session-based (Option A — slug login at /school/{slug}/login)
+        $sessionSlug = session('tenant_slug');
+        if ($sessionSlug) {
+            return Tenant::where('slug', $sessionSlug)->first();
+        }
+
+        // 2. Try subdomain — e.g. "accra-academy" from "accra-academy.yourdomain.com"
         $host      = $request->getHost();
         $appDomain = config('app.domain', parse_url(config('app.url'), PHP_URL_HOST));
 
@@ -64,13 +70,13 @@ class TenantMiddleware
             }
         }
 
-        // 2. Try X-Tenant-Slug header (useful for local dev / Postman testing)
+        // 3. Try X-Tenant-Slug header (useful for local dev / Postman testing)
         $slug = $request->header('X-Tenant-Slug');
         if ($slug) {
             return Tenant::where('slug', $slug)->first();
         }
 
-        // 3. Try ?tenant= query param (last resort for local dev)
+        // 4. Try ?tenant= query param (last resort for local dev)
         $tenantParam = $request->query('tenant');
         if ($tenantParam) {
             return Tenant::where('slug', $tenantParam)->orWhere('subdomain', $tenantParam)->first();

@@ -13,6 +13,19 @@
 
 @section('content')
 
+{{-- School Access URL --}}
+<div class="owner-card mb-4" style="border-left: 4px solid #3b82f6;">
+    <div class="card-body py-3">
+        <div style="font-size:0.75rem;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.4rem;">
+            <i class="fas fa-link me-1"></i> School Login URL — send this to the school
+        </div>
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            <code id="schoolUrl" style="background:#f1f5f9;padding:0.4rem 0.75rem;border-radius:8px;font-size:0.875rem;flex:1;word-break:break-all;">{{ url('/school/' . $tenant->slug . '/login') }}</code>
+            <button onclick="navigator.clipboard.writeText(document.getElementById('schoolUrl').innerText).then(()=>alert('Copied!'))" class="btn btn-sm btn-outline-primary"><i class="fas fa-copy"></i> Copy</button>
+        </div>
+    </div>
+</div>
+
 {{-- Header info --}}
 <div class="owner-card mb-4">
     <div class="card-body">
