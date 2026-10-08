@@ -15,6 +15,10 @@ return [
             'driver' => 'session',
             'provider' => 'staff_portal_users',
         ],
+        'owner' => [
+            'driver' => 'session',
+            'provider' => 'owner_users',
+        ],
     ],
 
     'providers' => [
@@ -25,6 +29,10 @@ return [
         'staff_portal_users' => [
             'driver' => 'eloquent',
             'model' => App\Models\StaffPortalUser::class,
+        ],
+        'owner_users' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\OwnerUser::class,
         ],
     ],
 

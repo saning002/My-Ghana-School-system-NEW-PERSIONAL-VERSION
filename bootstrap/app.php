@@ -21,6 +21,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'role'         => \App\Http\Middleware\EnsureUserHasRole::class,
             'portal.auth'  => \App\Http\Middleware\EnsurePortalAuth::class,
             'staff.auth'   => \App\Http\Middleware\EnsureStaffPortalAuth::class,
+            'owner.auth'   => \App\Http\Middleware\EnsureOwnerAuth::class,
+            'tenant'       => \App\Http\Middleware\TenantMiddleware::class,
+            'feature'      => \App\Http\Middleware\FeatureMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

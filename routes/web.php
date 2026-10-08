@@ -835,3 +835,57 @@ Route::name('website.')->group(function () {
     Route::post('/website/contact',    [WebsiteController::class, 'contactSubmit'])->name('contact.submit');
     Route::get('/website/portal',      [WebsiteController::class, 'portal'])->name('portal');
 });
+
+// ═══════════════════════════════════════════════════════════════════════════
+// OWNER PANEL
+// ═══════════════════════════════════════════════════════════════════════════
+Route::prefix('owner')->name('owner.')->group(function () {
+
+    // Public — auth pages (no middleware)
+    Route::get('/login',  [\App\Http\Controllers\Owner\AuthController::class, 'showLogin'])->name('login');
+    Route::post('/login', [\App\Http\Controllers\Owner\AuthController::class, 'login'])->name('login.submit');
+
+    // Protected — all owner dashboard routes
+    Route::middleware('owner.auth')->group(function () {
+        Route::post('/logout', [\App\Http\Controllers\Owner\AuthController::class, 'logout'])->name('logout');
+
+        // Dashboard
+        Route::get('/dashboard', [\App\Http\Controllers\Owner\DashboardController::class, 'index'])->name('dashboard');
+
+        // Schools (Tenants)
+        Route::resource('schools', \App\Http\Controllers\Owner\TenantController::class);
+        Route::post('/schools/{tenant}/status',   [\App\Http\Controllers\Owner\TenantController::class, 'updateStatus'])->name('schools.status');
+        Route::post('/schools/{tenant}/features', [\App\Http\Controllers\Owner\TenantController::class, 'updateFeatures'])->name('schools.features');
+
+        // Plans
+        Route::resource('plans', \App\Http\Controllers\Owner\PlanController::class);
+
+        // Features
+        Route::resource('features', \App\Http\Controllers\Owner\FeatureController::class)->only(['index', 'store', 'update', 'destroy']);
+
+        // Payments
+        Route::get('/payments',                         [\App\Http\Controllers\Owner\PaymentController::class, 'index'])->name('payments.index');
+        Route::get('/payments/create',                  [\App\Http\Controllers\Owner\PaymentController::class, 'create'])->name('payments.create');
+        Route::post('/payments',                        [\App\Http\Controllers\Owner\PaymentController::class, 'store'])->name('payments.store');
+        Route::get('/payments/{payment}',               [\App\Http\Controllers\Owner\PaymentController::class, 'show'])->name('payments.show');
+        Route::get('/payments/{payment}/receipt',       [\App\Http\Controllers\Owner\PaymentController::class, 'receipt'])->name('payments.receipt');
+        Route::post('/payments/{payment}/email-receipt',[\App\Http\Controllers\Owner\PaymentController::class, 'emailReceipt'])->name('payments.email-receipt');
+        Route::delete('/payments/{payment}',            [\App\Http\Controllers\Owner\PaymentController::class, 'destroy'])->name('payments.destroy');
+
+        // Backups
+        Route::get('/backups',                          [\App\Http\Controllers\Owner\BackupController::class, 'index'])->name('backups.index');
+        Route::post('/backups/{tenant}',                [\App\Http\Controllers\Owner\BackupController::class, 'create'])->name('backups.create');
+        Route::get('/backups/{backup}/download',        [\App\Http\Controllers\Owner\BackupController::class, 'download'])->name('backups.download');
+        Route::post('/backups/{backup}/cloud-push',     [\App\Http\Controllers\Owner\BackupController::class, 'cloudPush'])->name('backups.cloud-push');
+        Route::post('/backups/{backup}/email',          [\App\Http\Controllers\Owner\BackupController::class, 'email'])->name('backups.email');
+        Route::post('/backups/{backup}/restore',        [\App\Http\Controllers\Owner\BackupController::class, 'restore'])->name('backups.restore');
+        Route::delete('/backups/{backup}',              [\App\Http\Controllers\Owner\BackupController::class, 'destroy'])->name('backups.destroy');
+
+        // Audit Logs
+        Route::get('/audit-logs', [\App\Http\Controllers\Owner\AuditLogController::class, 'index'])->name('audit-logs.index');
+
+        // Owner Profile
+        Route::get('/profile',  [\App\Http\Controllers\Owner\ProfileController::class, 'edit'])->name('profile.edit');
+        Route::post('/profile', [\App\Http\Controllers\Owner\ProfileController::class, 'update'])->name('profile.update');
+    });
+});
