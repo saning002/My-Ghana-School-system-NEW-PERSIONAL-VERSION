@@ -1,0 +1,1056 @@
+{
+    "courses": [
+        {
+            "code": "TWGC2DB",
+            "title": "The Word General Course Project",
+            "credit": 3,
+            "semester": "First Semester Program",
+            "program": "First Semester Program",
+            "raw": {
+                "line": "1. The Word General Course Project"
+            }
+        },
+        {
+            "code": "TGCPB16",
+            "title": "The Gospel Course Project",
+            "credit": 3,
+            "semester": "First Semester Program",
+            "program": "First Semester Program",
+            "raw": {
+                "line": "2. The Gospel Course Project"
+            }
+        },
+        {
+            "code": "TMCP802",
+            "title": "The MG2 Course Project",
+            "credit": 3,
+            "semester": "First Semester Program",
+            "program": "First Semester Program",
+            "raw": {
+                "line": "3. ⁠The MG2 Course Project"
+            }
+        },
+        {
+            "code": "TKCPDD1",
+            "title": "The Kingdom College Phase I",
+            "credit": 3,
+            "semester": "First Semester Program",
+            "program": "First Semester Program",
+            "raw": {
+                "line": "4. The Kingdom College Phase I"
+            }
+        },
+        {
+            "code": "TKE114",
+            "title": "The Kingdom Education",
+            "credit": 3,
+            "semester": "First Semester Program",
+            "program": "First Semester Program",
+            "raw": {
+                "line": "5. The Kingdom Education"
+            }
+        },
+        {
+            "code": "TWIAFD6",
+            "title": "The Word In A Man",
+            "credit": 3,
+            "semester": "Second Semester Program",
+            "program": "Second Semester Program",
+            "raw": {
+                "line": "1. The Word In A Man"
+            }
+        },
+        {
+            "code": "TGIC73E",
+            "title": "The Gospel Interpretation Course",
+            "credit": 3,
+            "semester": "Second Semester Program",
+            "program": "Second Semester Program",
+            "raw": {
+                "line": "2. ⁠The Gospel Interpretation Course"
+            }
+        },
+        {
+            "code": "TMFCB74",
+            "title": "The MG2 Further Classification",
+            "credit": 3,
+            "semester": "Second Semester Program",
+            "program": "Second Semester Program",
+            "raw": {
+                "line": "3. ⁠The MG2 Further Classification"
+            }
+        },
+        {
+            "code": "TGOT41F",
+            "title": "The Gospel of Truth",
+            "credit": 3,
+            "semester": "Second Semester Program",
+            "program": "Second Semester Program",
+            "raw": {
+                "line": "4. ⁠The Gospel of Truth"
+            }
+        },
+        {
+            "code": "TKCB40",
+            "title": "The Kingdom Course",
+            "credit": 3,
+            "semester": "Second Semester Program",
+            "program": "Second Semester Program",
+            "raw": {
+                "line": "5. ⁠The Kingdom Course"
+            }
+        },
+        {
+            "code": "TKCP172",
+            "title": "The Kingdom College Phase II",
+            "credit": 3,
+            "semester": "Second Semester Program",
+            "program": "Second Semester Program",
+            "raw": {
+                "line": "6. ⁠The Kingdom College Phase II"
+            }
+        },
+        {
+            "code": "TKEP074",
+            "title": "The Kingdom Education Phase II",
+            "credit": 3,
+            "semester": "Second Semester Program",
+            "program": "Second Semester Program",
+            "raw": {
+                "line": "7. ⁠The Kingdom Education Phase II"
+            }
+        },
+        {
+            "code": "TWGCD6E",
+            "title": "The Word Gospel Course Project",
+            "credit": 3,
+            "semester": "Third Semester Program",
+            "program": "Third Semester Program",
+            "raw": {
+                "line": "1. The Word Gospel Course Project"
+            }
+        },
+        {
+            "code": "TGM68E",
+            "title": "The Gospel Manifestation",
+            "credit": 3,
+            "semester": "Third Semester Program",
+            "program": "Third Semester Program",
+            "raw": {
+                "line": "2. ⁠The Gospel Manifestation"
+            }
+        },
+        {
+            "code": "TMFAAEA",
+            "title": "The MG2 Functional Arms",
+            "credit": 3,
+            "semester": "Third Semester Program",
+            "program": "Third Semester Program",
+            "raw": {
+                "line": "3. ⁠The MG2 Functional Arms"
+            }
+        },
+        {
+            "code": "TKPA35",
+            "title": "The Kingdom Program",
+            "credit": 3,
+            "semester": "Third Semester Program",
+            "program": "Third Semester Program",
+            "raw": {
+                "line": "4. ⁠The Kingdom Program"
+            }
+        },
+        {
+            "code": "TKGPDA3",
+            "title": "The Kingdom Gospel Phase I",
+            "credit": 3,
+            "semester": "Third Semester Program",
+            "program": "Third Semester Program",
+            "raw": {
+                "line": "5. ⁠The Kingdom Gospel Phase I"
+            }
+        },
+        {
+            "code": "TKLPFF9",
+            "title": "the Kingdom Life Phase I",
+            "credit": 3,
+            "semester": "Third Semester Program",
+            "program": "Third Semester Program",
+            "raw": {
+                "line": "6. ⁠the Kingdom Life Phase I"
+            }
+        },
+        {
+            "code": "TWPC1A",
+            "title": "The Word Program",
+            "credit": 3,
+            "semester": "Third Semester Practical Program",
+            "program": "Third Semester Practical Program",
+            "raw": {
+                "line": "1. The Word Program"
+            }
+        },
+        {
+            "code": "TGPO580",
+            "title": "The Gospel Program of the Kingdom",
+            "credit": 3,
+            "semester": "Third Semester Practical Program",
+            "program": "Third Semester Practical Program",
+            "raw": {
+                "line": "2. ⁠The Gospel Program of the Kingdom"
+            }
+        },
+        {
+            "code": "TTWOD16",
+            "title": "The Times & Works of MG2 Course",
+            "credit": 3,
+            "semester": "Third Semester Practical Program",
+            "program": "Third Semester Practical Program",
+            "raw": {
+                "line": "3. ⁠The Times & Works of MG2 Course"
+            }
+        },
+        {
+            "code": "TKGP5E8",
+            "title": "The Kingdom Gospel Phase II",
+            "credit": 3,
+            "semester": "Third Semester Practical Program",
+            "program": "Third Semester Practical Program",
+            "raw": {
+                "line": "4. ⁠The Kingdom Gospel Phase II"
+            }
+        },
+        {
+            "code": "TKLP777",
+            "title": "The Kingdom Life Phase II",
+            "credit": 3,
+            "semester": "Third Semester Practical Program",
+            "program": "Third Semester Practical Program",
+            "raw": {
+                "line": "5. ⁠The Kingdom Life Phase II"
+            }
+        },
+        {
+            "code": "TKM22D",
+            "title": "The Kingdom Ministry",
+            "credit": 3,
+            "semester": "Third Semester Practical Program",
+            "program": "Third Semester Practical Program",
+            "raw": {
+                "line": "6. ⁠The Kingdom Ministry"
+            }
+        },
+        {
+            "code": "TKMW097",
+            "title": "The Kingdom Ministerial Work Program",
+            "credit": 3,
+            "semester": "Third Semester Practical Program",
+            "program": "Third Semester Practical Program",
+            "raw": {
+                "line": "7. ⁠The Kingdom Ministerial Work Program"
+            }
+        },
+        {
+            "code": "TMC5CE",
+            "title": "The Ministership Course",
+            "credit": 3,
+            "semester": "Third Semester Practical Program",
+            "program": "Third Semester Practical Program",
+            "raw": {
+                "line": "8. ⁠The Ministership Course"
+            }
+        },
+        {
+            "code": "TCCADB",
+            "title": "The Cosmotology Course",
+            "credit": 3,
+            "semester": "Third Semester Practical Program",
+            "program": "Third Semester Practical Program",
+            "raw": {
+                "line": "9. ⁠The Cosmotology Course"
+            }
+        },
+        {
+            "code": "TDC695",
+            "title": "The Demonology Course",
+            "credit": 3,
+            "semester": "Third Semester Practical Program",
+            "program": "Third Semester Practical Program",
+            "raw": {
+                "line": "10. ⁠The Demonology Course"
+            }
+        }
+    ],
+    "results": [
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Kristoli Francis Edem",
+            "course_code": "",
+            "course_title": "Gospel Course",
+            "quiz_score": null,
+            "exam_score": 73,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Kristoli Francis Edem",
+            "course_code": "",
+            "course_title": "Kingdom College",
+            "quiz_score": null,
+            "exam_score": 70,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Ayah Victoria Liliordiney",
+            "course_code": "",
+            "course_title": "Gospel Course",
+            "quiz_score": null,
+            "exam_score": 47,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Ayah Victoria Liliordiney",
+            "course_code": "",
+            "course_title": "Kingdom College",
+            "quiz_score": null,
+            "exam_score": 68,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Glover Ethel",
+            "course_code": "",
+            "course_title": "Gospel Course",
+            "quiz_score": null,
+            "exam_score": 46,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Glover Ethel",
+            "course_code": "",
+            "course_title": "Kingdom College",
+            "quiz_score": null,
+            "exam_score": 50,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "of",
+            "course_code": "",
+            "course_title": "Word Course",
+            "quiz_score": null,
+            "exam_score": 1,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "of",
+            "course_code": "",
+            "course_title": "Gospel Course",
+            "quiz_score": null,
+            "exam_score": 1,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "of",
+            "course_code": "",
+            "course_title": "Kingdom Program",
+            "quiz_score": null,
+            "exam_score": 2,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "of",
+            "course_code": "",
+            "course_title": "Kingdom College",
+            "quiz_score": null,
+            "exam_score": 2,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Sokatsi Doreen",
+            "course_code": "",
+            "course_title": "Word General Course Project",
+            "quiz_score": null,
+            "exam_score": 45,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Sokatsi Doreen",
+            "course_code": "",
+            "course_title": "Gospel Course Project",
+            "quiz_score": null,
+            "exam_score": 70,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Sokatsi Doreen",
+            "course_code": "",
+            "course_title": "MG2 Course Project",
+            "quiz_score": null,
+            "exam_score": 80,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Sokatsi Doreen",
+            "course_code": "",
+            "course_title": "Kingdom Education",
+            "quiz_score": null,
+            "exam_score": 78,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Sokatsi Doreen",
+            "course_code": "",
+            "course_title": "Kingdom College",
+            "quiz_score": null,
+            "exam_score": 47,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Agbo Esther",
+            "course_code": "",
+            "course_title": "Word General Course Project",
+            "quiz_score": null,
+            "exam_score": 50,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Agbo Esther",
+            "course_code": "",
+            "course_title": "Gospel Course Project",
+            "quiz_score": null,
+            "exam_score": 51,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Agbo Esther",
+            "course_code": "",
+            "course_title": "MG2 Course Project",
+            "quiz_score": null,
+            "exam_score": 95,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Agbo Esther",
+            "course_code": "",
+            "course_title": "Kingdom Education",
+            "quiz_score": null,
+            "exam_score": 79,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Agbo Esther",
+            "course_code": "",
+            "course_title": "Kingdom College",
+            "quiz_score": null,
+            "exam_score": 60,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Atinyo Noah",
+            "course_code": "",
+            "course_title": "Word General Course Project",
+            "quiz_score": null,
+            "exam_score": 45,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Atinyo Noah",
+            "course_code": "",
+            "course_title": "Gospel Course Project",
+            "quiz_score": null,
+            "exam_score": 75,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Atinyo Noah",
+            "course_code": "",
+            "course_title": "MG2 Course Project",
+            "quiz_score": null,
+            "exam_score": 68,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Atinyo Noah",
+            "course_code": "",
+            "course_title": "Kingdom Education",
+            "quiz_score": null,
+            "exam_score": 73,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Atinyo Noah",
+            "course_code": "",
+            "course_title": "Kingdom College",
+            "quiz_score": null,
+            "exam_score": 54,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Ahiagbegah Rose",
+            "course_code": "",
+            "course_title": "Word General Course Project",
+            "quiz_score": null,
+            "exam_score": 46,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Ahiagbegah Rose",
+            "course_code": "",
+            "course_title": "Gospel Course Project",
+            "quiz_score": null,
+            "exam_score": 51,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Ahiagbegah Rose",
+            "course_code": "",
+            "course_title": "MG2 Course Project",
+            "quiz_score": null,
+            "exam_score": 67,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Ahiagbegah Rose",
+            "course_code": "",
+            "course_title": "Kingdom Education",
+            "quiz_score": null,
+            "exam_score": 70,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Gapotor Alfred",
+            "course_code": "",
+            "course_title": "Word General Course Project",
+            "quiz_score": null,
+            "exam_score": 46,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Gapotor Alfred",
+            "course_code": "",
+            "course_title": "Gospel Course Project",
+            "quiz_score": null,
+            "exam_score": 73,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Gapotor Alfred",
+            "course_code": "",
+            "course_title": "MG2 Course Project",
+            "quiz_score": null,
+            "exam_score": 71,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Gapotor Alfred",
+            "course_code": "",
+            "course_title": "Kingdom Education",
+            "quiz_score": null,
+            "exam_score": 83,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Gapotor Alfred",
+            "course_code": "",
+            "course_title": "Kingdom College",
+            "quiz_score": null,
+            "exam_score": 56,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Appiah Joseph",
+            "course_code": "",
+            "course_title": "Word General Course Project",
+            "quiz_score": null,
+            "exam_score": 44,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Appiah Joseph",
+            "course_code": "",
+            "course_title": "Gospel Course Project",
+            "quiz_score": null,
+            "exam_score": 75,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Appiah Joseph",
+            "course_code": "",
+            "course_title": "MG2 Course Project",
+            "quiz_score": null,
+            "exam_score": 61,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Appiah Joseph",
+            "course_code": "",
+            "course_title": "Kingdom Education",
+            "quiz_score": null,
+            "exam_score": 78,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Appiah Joseph",
+            "course_code": "",
+            "course_title": "Kingdom College",
+            "quiz_score": null,
+            "exam_score": 58,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Ahiakpa Emmanuel",
+            "course_code": "",
+            "course_title": "Word General Course Project",
+            "quiz_score": null,
+            "exam_score": 51,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Ahiakpa Emmanuel",
+            "course_code": "",
+            "course_title": "Gospel Course Project",
+            "quiz_score": null,
+            "exam_score": 70,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Ahiakpa Emmanuel",
+            "course_code": "",
+            "course_title": "MG2 Course Project",
+            "quiz_score": null,
+            "exam_score": 74,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Ahiakpa Emmanuel",
+            "course_code": "",
+            "course_title": "Kingdom Education",
+            "quiz_score": null,
+            "exam_score": 60,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Ahiakpa Emmanuel",
+            "course_code": "",
+            "course_title": "Kingdom College",
+            "quiz_score": null,
+            "exam_score": 68,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Ackumey Amen",
+            "course_code": "",
+            "course_title": "Word General Course Project",
+            "quiz_score": null,
+            "exam_score": 42,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Ackumey Amen",
+            "course_code": "",
+            "course_title": "Gospel Course Project",
+            "quiz_score": null,
+            "exam_score": 22,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Ackumey Amen",
+            "course_code": "",
+            "course_title": "MG2 Course Project",
+            "quiz_score": null,
+            "exam_score": 40,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Ackumey Amen",
+            "course_code": "",
+            "course_title": "Kingdom Education",
+            "quiz_score": null,
+            "exam_score": 53,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Ackumey Amen",
+            "course_code": "",
+            "course_title": "Kingdom College",
+            "quiz_score": null,
+            "exam_score": 31,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Amuzu Gideon",
+            "course_code": "",
+            "course_title": "The Word In A Man",
+            "quiz_score": null,
+            "exam_score": 93,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Amuzu Gideon",
+            "course_code": "",
+            "course_title": "Gospel Interpretation Course",
+            "quiz_score": null,
+            "exam_score": 83,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Amuzu Gideon",
+            "course_code": "",
+            "course_title": "MG2 Course Further Classification",
+            "quiz_score": null,
+            "exam_score": 75,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Amuzu Gideon",
+            "course_code": "",
+            "course_title": "The Gospel of Truth",
+            "quiz_score": null,
+            "exam_score": 51,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Amuzu Gideon",
+            "course_code": "",
+            "course_title": "Kingdom Course",
+            "quiz_score": null,
+            "exam_score": 65,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Amuzu Gideon",
+            "course_code": "",
+            "course_title": "Kingdom Education",
+            "quiz_score": null,
+            "exam_score": 85,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Amuzu Gideon",
+            "course_code": "",
+            "course_title": "Kingdom College",
+            "quiz_score": null,
+            "exam_score": 72,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Dzaba Enoch",
+            "course_code": "",
+            "course_title": "The Word In A Man",
+            "quiz_score": null,
+            "exam_score": 71,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Dzaba Enoch",
+            "course_code": "",
+            "course_title": "Gospel Interpretation Course",
+            "quiz_score": null,
+            "exam_score": 52,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Dzaba Enoch",
+            "course_code": "",
+            "course_title": "MG2 Course Further Classification",
+            "quiz_score": null,
+            "exam_score": 45,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Dzaba Enoch",
+            "course_code": "",
+            "course_title": "The Gospel of Truth",
+            "quiz_score": null,
+            "exam_score": 50,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Dzaba Enoch",
+            "course_code": "",
+            "course_title": "Kingdom Course",
+            "quiz_score": null,
+            "exam_score": 50,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Dzaba Enoch",
+            "course_code": "",
+            "course_title": "Kingdom Education",
+            "quiz_score": null,
+            "exam_score": 65,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Dzaba Enoch",
+            "course_code": "",
+            "course_title": "Kingdom College",
+            "quiz_score": null,
+            "exam_score": 50,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Ablormeti Cecilia",
+            "course_code": "",
+            "course_title": "The Word In A Man",
+            "quiz_score": null,
+            "exam_score": 97,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Ablormeti Cecilia",
+            "course_code": "",
+            "course_title": "Gospel Interpretation Course",
+            "quiz_score": null,
+            "exam_score": 86,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Ablormeti Cecilia",
+            "course_code": "",
+            "course_title": "MG2 Course Further Classification",
+            "quiz_score": null,
+            "exam_score": 65,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Ablormeti Cecilia",
+            "course_code": "",
+            "course_title": "The Gospel of Truth",
+            "quiz_score": null,
+            "exam_score": 61,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Ablormeti Cecilia",
+            "course_code": "",
+            "course_title": "Kingdom Course",
+            "quiz_score": null,
+            "exam_score": 54,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Ablormeti Cecilia",
+            "course_code": "",
+            "course_title": "Kingdom Education",
+            "quiz_score": null,
+            "exam_score": 78,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Ablormeti Cecilia",
+            "course_code": "",
+            "course_title": "Kingdom College",
+            "quiz_score": null,
+            "exam_score": 51,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Abgo Eric Mark",
+            "course_code": "",
+            "course_title": "The Word In A Man",
+            "quiz_score": null,
+            "exam_score": 93,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Abgo Eric Mark",
+            "course_code": "",
+            "course_title": "Gospel Interpretation Course",
+            "quiz_score": null,
+            "exam_score": 60,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Abgo Eric Mark",
+            "course_code": "",
+            "course_title": "MG2 Course Further Classification",
+            "quiz_score": null,
+            "exam_score": 75,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Abgo Eric Mark",
+            "course_code": "",
+            "course_title": "The Gospel of Truth",
+            "quiz_score": null,
+            "exam_score": 55,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Abgo Eric Mark",
+            "course_code": "",
+            "course_title": "Kingdom Course",
+            "quiz_score": null,
+            "exam_score": 49,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Abgo Eric Mark",
+            "course_code": "",
+            "course_title": "Kingdom Education",
+            "quiz_score": null,
+            "exam_score": 76,
+            "raw_row": []
+        },
+        {
+            "source_pdf": "HO_BRANCH_RESULTS.pdf",
+            "student_identifier": "",
+            "student_name": "Abgo Eric Mark",
+            "course_code": "",
+            "course_title": "Kingdom College",
+            "quiz_score": null,
+            "exam_score": 72,
+            "raw_row": []
+        }
+    ]
+}

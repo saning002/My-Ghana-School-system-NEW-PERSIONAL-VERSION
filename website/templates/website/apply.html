@@ -1,0 +1,212 @@
+{% extends 'website/base.html' %}
+{% block page_title %}Apply Online{% endblock %}
+{% block meta_description %}Submit your online admission application for NSMS Little Stars. Quick, easy, and secure.{% endblock %}
+
+{% block extra_css %}
+.apply-section { padding: 96px 0; background: var(--cream); }
+.apply-layout { display: grid; grid-template-columns: 1fr 2fr; gap: 48px; align-items: start; }
+.apply-sidebar { position: sticky; top: 100px; }
+.sidebar-card { background: var(--navy); border-radius: 20px; padding: 36px 28px; color: rgba(255,255,255,.8); }
+.sidebar-card h3 { font-size: 1.2rem; font-weight: 800; color: var(--white); margin-bottom: 24px; display:flex;align-items:center;gap:10px; }
+.sidebar-card h3 i { color: var(--gold); }
+.sidebar-item { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 18px; }
+.sidebar-item i { color: var(--gold); width: 18px; margin-top: 3px; flex-shrink: 0; }
+.sidebar-item span { font-size: .9rem; line-height: 1.6; }
+.sidebar-divider { border: none; border-top: 1px solid rgba(255,255,255,.1); margin: 24px 0; }
+.contact-quick a { color: var(--gold); font-weight: 600; }
+
+.apply-form-card { background: var(--white); border-radius: 24px; box-shadow: var(--shadow-xl); overflow: hidden; }
+.form-section-header {
+  padding: 28px 36px; background: linear-gradient(90deg, var(--navy), var(--navy-mid));
+  display: flex; align-items: center; gap: 14px;
+}
+.form-section-header i { color: var(--gold); font-size: 1.2rem; }
+.form-section-header h3 { color: var(--white); font-size: 1.05rem; font-weight: 700; }
+.form-section-header span { color: rgba(255,255,255,.5); font-size: .82rem; }
+.form-body { padding: 36px; }
+
+.form-fieldset { margin-bottom: 36px; }
+.fieldset-title {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 1rem; font-weight: 700; color: var(--navy);
+  margin-bottom: 24px; padding-bottom: 12px;
+  border-bottom: 2px solid var(--gray-100);
+}
+.fieldset-title i { color: var(--gold); }
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+.form-group { margin-bottom: 20px; }
+.form-group label {
+  display: block; font-size: .85rem; font-weight: 600;
+  color: var(--gray-700); margin-bottom: 8px;
+}
+.form-group label .required { color: var(--red); margin-left: 2px; }
+.form-control {
+  width: 100%; padding: 12px 16px; border-radius: 10px;
+  border: 2px solid var(--gray-200); font-size: .92rem;
+  color: var(--gray-900); background: var(--white);
+  transition: var(--transition); outline: none;
+}
+.form-control:focus { border-color: var(--navy-light); box-shadow: 0 0 0 4px rgba(37,84,160,.1); }
+.form-control::placeholder { color: var(--gray-400); }
+.form-control.is-invalid { border-color: var(--red); }
+.invalid-feedback { color: var(--red); font-size: .8rem; margin-top: 5px; }
+textarea.form-control { resize: vertical; min-height: 100px; }
+
+.form-actions {
+  padding: 28px 36px; background: var(--gray-50);
+  border-top: 1px solid var(--gray-100);
+  display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;
+}
+.form-note { font-size: .83rem; color: var(--gray-400); display: flex; align-items: center; gap: 6px; }
+.form-note i { color: var(--green); }
+.submit-btn { padding: 16px 48px !important; font-size: 1.02rem !important; }
+
+@media(max-width:1024px){ .apply-layout{grid-template-columns:1fr;} .apply-sidebar{position:static;} }
+@media(max-width:600px)  { .form-row{grid-template-columns:1fr;} .form-body{padding:24px 20px;} .form-actions{flex-direction:column;align-items:stretch;} }
+{% endblock %}
+
+{% block content %}
+
+<div class="page-hero">
+  <h1>Online <span>Application</span></h1>
+  <div class="breadcrumb">
+    <a href="{% url 'home' %}">Home</a>
+    <i class="fas fa-chevron-right"></i>
+    <a href="{% url 'admissions' %}">Admissions</a>
+    <i class="fas fa-chevron-right"></i>
+    <span>Apply</span>
+  </div>
+</div>
+
+<section class="apply-section">
+  <div class="container">
+    <div class="apply-layout">
+
+      <!-- Sidebar -->
+      <div class="apply-sidebar fade-up">
+        <div class="sidebar-card">
+          <h3><i class="fas fa-info-circle"></i> Before You Apply</h3>
+          <div class="sidebar-item"><i class="fas fa-check-circle"></i><span>Complete all required fields marked with a red asterisk (*).</span></div>
+          <div class="sidebar-item"><i class="fas fa-check-circle"></i><span>Have your child's PSA birth certificate on hand.</span></div>
+          <div class="sidebar-item"><i class="fas fa-check-circle"></i><span>Provide accurate parent/guardian contact details.</span></div>
+          <div class="sidebar-item"><i class="fas fa-check-circle"></i><span>Applications are reviewed within 3–5 business days.</span></div>
+          <div class="sidebar-item"><i class="fas fa-check-circle"></i><span>You will receive an email confirmation after submission.</span></div>
+          <hr class="sidebar-divider" />
+          <div class="contact-quick">
+            <p style="font-size:.88rem;margin-bottom:12px;"><strong style="color:var(--white);">Need Help?</strong></p>
+            <div class="sidebar-item"><i class="fas fa-phone"></i><span>{% if site and site.contact_phone %}{{ site.contact_phone }}{% else %}+63 912 345 6789{% endif %}</span></div>
+            <div class="sidebar-item"><i class="fas fa-envelope"></i><span>{% if site and site.contact_email %}{{ site.contact_email }}{% else %}admissions@nsms.school{% endif %}</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form -->
+      <div class="apply-form-card fade-up" style="transition-delay:.15s">
+        <div class="form-section-header">
+          <i class="fas fa-file-signature"></i>
+          <div>
+            <h3>Admission Application Form</h3>
+            <span>School Year {{ request.GET.sy|default:"2025–2026" }}</span>
+          </div>
+        </div>
+
+        <div class="form-body">
+          <form method="post" novalidate>
+            {% csrf_token %}
+
+            <!-- Child Information -->
+            <div class="form-fieldset">
+              <div class="fieldset-title"><i class="fas fa-child"></i> Child's Information</div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="{{ form.child_first_name.id_for_label }}">First Name <span class="required">*</span></label>
+                  {{ form.child_first_name }}
+                  {% if form.child_first_name.errors %}<div class="invalid-feedback">{{ form.child_first_name.errors|join:", " }}</div>{% endif %}
+                </div>
+                <div class="form-group">
+                  <label for="{{ form.child_last_name.id_for_label }}">Last Name <span class="required">*</span></label>
+                  {{ form.child_last_name }}
+                  {% if form.child_last_name.errors %}<div class="invalid-feedback">{{ form.child_last_name.errors|join:", " }}</div>{% endif %}
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="{{ form.child_dob.id_for_label }}">Date of Birth <span class="required">*</span></label>
+                  {{ form.child_dob }}
+                  {% if form.child_dob.errors %}<div class="invalid-feedback">{{ form.child_dob.errors|join:", " }}</div>{% endif %}
+                </div>
+                <div class="form-group">
+                  <label for="{{ form.child_gender.id_for_label }}">Gender <span class="required">*</span></label>
+                  {{ form.child_gender }}
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="{{ form.program_applying.id_for_label }}">Program Applying For <span class="required">*</span></label>
+                {{ form.program_applying }}
+              </div>
+              <div class="form-group">
+                <label for="{{ form.previous_school.id_for_label }}">Previous School <small style="color:var(--gray-400)">(if any)</small></label>
+                {{ form.previous_school }}
+              </div>
+            </div>
+
+            <!-- Parent Information -->
+            <div class="form-fieldset">
+              <div class="fieldset-title"><i class="fas fa-user-tie"></i> Parent / Guardian Information</div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="{{ form.parent_name.id_for_label }}">Full Name <span class="required">*</span></label>
+                  {{ form.parent_name }}
+                </div>
+                <div class="form-group">
+                  <label for="{{ form.relationship.id_for_label }}">Relationship to Child <span class="required">*</span></label>
+                  {{ form.relationship }}
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="{{ form.parent_email.id_for_label }}">Email Address <span class="required">*</span></label>
+                  {{ form.parent_email }}
+                </div>
+                <div class="form-group">
+                  <label for="{{ form.parent_phone.id_for_label }}">Phone Number <span class="required">*</span></label>
+                  {{ form.parent_phone }}
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="{{ form.address.id_for_label }}">Home Address <span class="required">*</span></label>
+                {{ form.address }}
+              </div>
+            </div>
+
+            <!-- Additional Information -->
+            <div class="form-fieldset">
+              <div class="fieldset-title"><i class="fas fa-clipboard-list"></i> Additional Information</div>
+              <div class="form-group">
+                <label for="{{ form.special_needs.id_for_label }}">Special Needs / Medical Conditions <small style="color:var(--gray-400)">(optional)</small></label>
+                {{ form.special_needs }}
+              </div>
+              <div class="form-group">
+                <label for="{{ form.how_did_you_hear.id_for_label }}">How did you hear about us?</label>
+                {{ form.how_did_you_hear }}
+              </div>
+            </div>
+
+          </div>
+
+          <div class="form-actions">
+            <div class="form-note"><i class="fas fa-lock"></i> Your information is secure and confidential.</div>
+            <button type="submit" class="btn btn-primary submit-btn">
+              <i class="fas fa-paper-plane"></i> Submit Application
+            </button>
+          </div>
+
+          </form>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+{% endblock %}

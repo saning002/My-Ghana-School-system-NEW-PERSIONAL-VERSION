@@ -1,0 +1,341 @@
+{% extends 'website/base.html' %}
+{% block page_title %}School Portal{% endblock %}
+{% block meta_description %}Access the {{ site.site_name|default:"School" }} staff and student portals. Secure, role-based access for administrators, teachers and students.{% endblock %}
+
+{% block extra_css %}
+.portal-hero {
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--navy) 0%, #0e1f42 40%, #1a1060 100%);
+  display: flex; align-items: center; position: relative; overflow: hidden;
+  padding-top: 76px;
+}
+.portal-hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(circle at 20% 80%, rgba(245,166,35,.12) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(79,70,229,.15) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(12,120,200,.08) 0%, transparent 70%);
+}
+.portal-grid-bg {
+  position: absolute; inset: 0; overflow: hidden; opacity: .04;
+  background-image: linear-gradient(var(--white) 1px, transparent 1px),
+                    linear-gradient(90deg, var(--white) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+.orb {
+  position: absolute; border-radius: 50%;
+  animation: orbFloat 8s ease-in-out infinite; pointer-events: none;
+}
+.orb-1 { width:400px;height:400px;background:radial-gradient(circle,rgba(245,166,35,.06),transparent 70%);top:-100px;right:-80px;animation-delay:0s; }
+.orb-2 { width:300px;height:300px;background:radial-gradient(circle,rgba(79,70,229,.08),transparent 70%);bottom:-60px;left:-60px;animation-delay:-3s; }
+.orb-3 { width:200px;height:200px;background:radial-gradient(circle,rgba(8,145,178,.07),transparent 70%);top:50%;left:50%;animation-delay:-6s; }
+@keyframes orbFloat {
+  0%,100%{ transform:translate(0,0) scale(1); }
+  33%    { transform:translate(20px,-30px) scale(1.05); }
+  66%    { transform:translate(-15px,20px) scale(.95); }
+}
+
+.portal-content {
+  position: relative; z-index: 2;
+  display: grid; grid-template-columns: 1fr 480px;
+  gap: 80px; align-items: center;
+  max-width: 1200px; margin: 0 auto; padding: 80px 24px;
+}
+
+/* ── Left branding ── */
+.portal-brand { color: var(--white); }
+.portal-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(245,166,35,.15); border: 1px solid rgba(245,166,35,.3);
+  color: var(--gold); padding: 6px 16px; border-radius: 100px;
+  font-size: .78rem; font-weight: 700; letter-spacing: .08em;
+  text-transform: uppercase; margin-bottom: 24px;
+}
+.portal-brand h1 {
+  font-family: 'Outfit',sans-serif;
+  font-size: clamp(2.4rem,5vw,3.8rem);
+  font-weight: 900; line-height: 1.1; color: var(--white); margin-bottom: 20px;
+}
+.portal-brand h1 span { color: var(--gold); }
+.portal-brand p {
+  font-size: 1.1rem; color: rgba(255,255,255,.7); line-height: 1.8;
+  max-width: 420px; margin-bottom: 40px;
+}
+
+.portal-features { display: flex; flex-direction: column; gap: 16px; }
+.portal-feature {
+  display: flex; align-items: center; gap: 14px;
+  background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.08);
+  border-radius: 12px; padding: 14px 18px; transition: var(--transition);
+}
+.portal-feature:hover { background: rgba(255,255,255,.08); border-color: rgba(245,166,35,.3); }
+.portal-feature-icon {
+  width: 40px; height: 40px; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  border-radius: 10px; display: flex; align-items: center; justify-content: center;
+  color: var(--navy); font-size: 1rem;
+}
+.portal-feature-text strong {
+  display: block; color: var(--white); font-weight: 600; font-size: .92rem;
+  font-family: 'Outfit',sans-serif;
+}
+.portal-feature-text span { font-size: .82rem; color: rgba(255,255,255,.5); }
+
+.stats-strip {
+  display: flex; gap: 32px; margin-top: 48px; flex-wrap: wrap;
+}
+.stat-item { color: rgba(255,255,255,.85); }
+.stat-item strong {
+  display: block; font-family: 'Outfit',sans-serif;
+  font-size: 1.8rem; font-weight: 900; color: var(--gold); line-height: 1;
+}
+.stat-item span { font-size: .82rem; color: rgba(255,255,255,.5); }
+
+/* ── Right card ── */
+.portal-card {
+  background: rgba(255,255,255,.97);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 24px;
+  box-shadow: 0 32px 80px rgba(0,0,0,.35), 0 0 0 1px rgba(255,255,255,.05);
+  overflow: hidden;
+}
+.portal-card-header {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
+  padding: 32px 36px 28px; text-align: center; position: relative; overflow: hidden;
+}
+.portal-card-header::before {
+  content: ''; position: absolute; inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23fff' fill-opacity='0.04'%3E%3Ccircle cx='20' cy='20' r='3'/%3E%3C/g%3E%3C/svg%3E");
+}
+.portal-shield {
+  width: 64px; height: 64px; border-radius: 18px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  margin: 0 auto 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.8rem; color: var(--navy);
+  box-shadow: 0 8px 24px rgba(245,166,35,.4); position: relative; z-index: 1;
+}
+.portal-card-header h2 {
+  font-family: 'Outfit',sans-serif; font-size: 1.5rem;
+  font-weight: 800; color: var(--white); position: relative; z-index: 1;
+}
+.portal-card-header p {
+  font-size: .85rem; color: rgba(255,255,255,.6); position: relative; z-index: 1; margin-top: 4px;
+}
+
+.portal-card-body { padding: 32px 36px; }
+
+/* ── Access buttons ── */
+.portal-access-grid { display: flex; flex-direction: column; gap: 14px; }
+
+.access-btn {
+  display: flex; align-items: center; gap: 16px;
+  padding: 18px 22px; border-radius: 14px; text-decoration: none;
+  transition: var(--transition); border: 2px solid transparent;
+  position: relative; overflow: hidden;
+}
+.access-btn::after {
+  content: '\f054'; font-family: 'Font Awesome 6 Free'; font-weight: 900;
+  position: absolute; right: 20px; top: 50%; transform: translateY(-50%);
+  font-size: .8rem; opacity: .5; transition: var(--transition);
+}
+.access-btn:hover::after { opacity: 1; right: 16px; }
+
+.access-btn-admin {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
+  color: var(--white);
+  box-shadow: 0 4px 20px rgba(15,35,71,.25);
+}
+.access-btn-admin:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 32px rgba(15,35,71,.35);
+  color: var(--white);
+}
+
+.access-btn-teacher {
+  background: linear-gradient(135deg, #7c3aed, #5b21b6);
+  color: var(--white);
+  box-shadow: 0 4px 20px rgba(124,58,237,.25);
+}
+.access-btn-teacher:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 32px rgba(124,58,237,.35);
+  color: var(--white);
+}
+
+.access-btn-student {
+  background: linear-gradient(135deg, #0891b2, #0e7490);
+  color: var(--white);
+  box-shadow: 0 4px 20px rgba(8,145,178,.25);
+}
+.access-btn-student:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 32px rgba(8,145,178,.35);
+  color: var(--white);
+}
+
+.access-btn-icon {
+  width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
+  background: rgba(255,255,255,.15);
+  display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+}
+.access-btn-text strong {
+  display: block; font-family: 'Outfit',sans-serif; font-weight: 700;
+  font-size: .98rem; margin-bottom: 2px;
+}
+.access-btn-text span { font-size: .78rem; opacity: .75; }
+
+.portal-divider {
+  display: flex; align-items: center; gap: 10px; margin: 20px 0;
+}
+.portal-divider::before,.portal-divider::after {
+  content:''; flex:1; height:1px; background: var(--gray-200);
+}
+.portal-divider span { font-size:.73rem; color:var(--gray-400); font-weight:600; white-space:nowrap; }
+
+.portal-note {
+  background: var(--gray-50); border-radius: 12px; padding: 14px 16px;
+  font-size: .82rem; color: var(--gray-500); line-height: 1.6;
+  display: flex; gap: 10px; align-items: flex-start; margin-top: 4px;
+}
+.portal-note i { color: var(--gold-dark); flex-shrink: 0; margin-top: 2px; }
+
+@media(max-width:1024px){
+  .portal-content { grid-template-columns:1fr; gap:40px; max-width:520px; }
+  .portal-brand { text-align:center; }
+  .portal-brand p { margin:0 auto 32px; }
+  .portal-features { max-width:420px; margin:0 auto; }
+  .stats-strip { justify-content:center; }
+}
+@media(max-width:540px){
+  .portal-card-body { padding:24px 20px; }
+  .portal-card-header { padding:24px 20px 20px; }
+}
+{% endblock %}
+
+{% block content %}
+<section class="portal-hero">
+  <div class="portal-grid-bg"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <div class="portal-content container">
+
+    <!-- ── Left: Branding ── -->
+    <div class="portal-brand fade-up">
+      <div class="portal-badge">
+        <i class="fas fa-shield-halved"></i>
+        Official School Portal
+      </div>
+      <h1>Welcome to the<br><span>{% if site %}{{ site.site_name }}{% else %}School{% endif %}</span><br>Portal Hub</h1>
+      <p>Your centralized gateway to school management. Select your portal below to access student records, academic results, attendance, fees, and more — all from one secure platform.</p>
+
+      <div class="portal-features">
+        <div class="portal-feature">
+          <div class="portal-feature-icon"><i class="fas fa-users-gear"></i></div>
+          <div class="portal-feature-text">
+            <strong>Student &amp; Parent Management</strong>
+            <span>Track enrollment, profiles and guardian records</span>
+          </div>
+        </div>
+        <div class="portal-feature">
+          <div class="portal-feature-icon"><i class="fas fa-graduation-cap"></i></div>
+          <div class="portal-feature-text">
+            <strong>Academic Records &amp; Results</strong>
+            <span>Enter grades, generate report cards and rankings</span>
+          </div>
+        </div>
+        <div class="portal-feature">
+          <div class="portal-feature-icon"><i class="fas fa-chart-bar"></i></div>
+          <div class="portal-feature-text">
+            <strong>Analytics &amp; Reports</strong>
+            <span>Real-time dashboards and performance insights</span>
+          </div>
+        </div>
+        <div class="portal-feature">
+          <div class="portal-feature-icon"><i class="fas fa-lock"></i></div>
+          <div class="portal-feature-text">
+            <strong>Role-Based Access Control</strong>
+            <span>Secure, permission-driven access for all roles</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="stats-strip">
+        <div class="stat-item"><strong>3</strong><span>Portals</span></div>
+        <div class="stat-item"><strong>100%</strong><span>Secure</span></div>
+        <div class="stat-item"><strong>24/7</strong><span>Accessible</span></div>
+      </div>
+    </div>
+
+    <!-- ── Right: Portal selection card ── -->
+    <div class="portal-card fade-up" style="animation-delay:.15s;">
+
+      <div class="portal-card-header">
+        <div class="portal-shield">
+          <i class="fas fa-school"></i>
+        </div>
+        <h2>{% if site %}{{ site.site_name }}{% else %}School{% endif %} Portals</h2>
+        <p>Choose your portal to sign in</p>
+      </div>
+
+      <div class="portal-card-body">
+        <div class="portal-access-grid">
+
+          <!-- Admin Portal -->
+          <a href="{{ portal_url }}" class="access-btn access-btn-admin">
+            <div class="access-btn-icon"><i class="fas fa-crown"></i></div>
+            <div class="access-btn-text">
+              <strong>Admin Portal</strong>
+              <span>School administrators &amp; branch managers</span>
+            </div>
+          </a>
+
+          <!-- Teacher Portal -->
+          <a href="{{ teacher_portal_url }}" class="access-btn access-btn-teacher">
+            <div class="access-btn-icon"><i class="fas fa-chalkboard-user"></i></div>
+            <div class="access-btn-text">
+              <strong>Teacher Portal</strong>
+              <span>Lecturers — attendance, exam scores &amp; reports</span>
+            </div>
+          </a>
+
+          <!-- Student Portal -->
+          <a href="{{ student_portal_url }}" class="access-btn access-btn-student">
+            <div class="access-btn-icon"><i class="fas fa-user-graduate"></i></div>
+            <div class="access-btn-text">
+              <strong>Student Portal</strong>
+              <span>Students — results, report cards &amp; notifications</span>
+            </div>
+          </a>
+
+        </div>
+
+        <div class="portal-divider"><span>Access Information</span></div>
+
+        <div class="portal-note">
+          <i class="fas fa-info-circle"></i>
+          <span>
+            Each portal has its own login page. Use the credentials provided by your school administrator.
+            If you have trouble logging in, contact the school office.
+          </span>
+        </div>
+
+        {% if site and site.contact_phone %}
+        <div class="portal-note" style="margin-top:10px;background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.2);">
+          <i class="fas fa-phone" style="color:var(--gold-dark);"></i>
+          <span style="color:var(--gray-700);">
+            Need help? Call us: <strong><a href="tel:{{ site.contact_phone }}" style="color:var(--navy);">{{ site.contact_phone }}</a></strong>
+          </span>
+        </div>
+        {% endif %}
+
+      </div>
+    </div>
+
+  </div>
+</section>
+{% endblock %}

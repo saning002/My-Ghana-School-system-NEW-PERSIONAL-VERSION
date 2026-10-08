@@ -1,0 +1,220 @@
+{% extends 'website/base.html' %}
+{% block page_title %}Contact Us{% endblock %}
+{% block meta_description %}Get in touch with EduCare International School. Send us a message, call us, or visit our school.{% endblock %}
+
+{% block extra_css %}
+.contact-section { padding: 96px 0; background: var(--cream); }
+.contact-layout  { display: grid; grid-template-columns: 1fr 2fr; gap: 48px; align-items: start; }
+
+.contact-info-cards { display: flex; flex-direction: column; gap: 20px; }
+.info-card {
+  background: var(--white); border-radius: 18px; padding: 28px;
+  box-shadow: var(--shadow); transition: var(--transition);
+  display: flex; gap: 18px; align-items: flex-start;
+}
+.info-card:hover { transform: translateX(6px); box-shadow: var(--shadow-lg); }
+.info-icon {
+  width: 52px; height: 52px; border-radius: 14px; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--navy), var(--navy-mid));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem; color: var(--gold);
+}
+.info-text h4 { font-size: .95rem; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.info-text p  { font-size: .88rem; color: var(--gray-500); line-height: 1.6; }
+.info-text a  { color: var(--navy-light); font-weight: 600; transition: var(--transition); }
+.info-text a:hover { color: var(--gold-dark); }
+
+.social-contact { background: var(--navy); border-radius: 18px; padding: 28px; }
+.social-contact h4 { color: var(--white); font-size:1rem; font-weight:700; margin-bottom:16px; }
+.social-links-row { display:flex; gap:10px; }
+.sc-link {
+  flex:1; height:44px; border-radius:10px;
+  background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.1);
+  color:rgba(255,255,255,.7); display:flex; align-items:center; justify-content:center;
+  font-size:.95rem; transition:var(--transition);
+}
+.sc-link:hover { background:var(--gold); color:var(--navy); border-color:var(--gold); }
+
+/* Contact Form */
+.contact-form-card {
+  background: var(--white); border-radius: 24px;
+  box-shadow: var(--shadow-xl); overflow: hidden;
+}
+.cf-header {
+  padding: 32px 40px; background: linear-gradient(90deg, var(--navy), var(--navy-mid));
+  display: flex; align-items: center; gap: 16px;
+}
+.cf-header i { font-size: 1.6rem; color: var(--gold); }
+.cf-header div h3 { color: var(--white); font-size: 1.2rem; font-weight: 700; }
+.cf-header div p  { color: rgba(255,255,255,.55); font-size: .85rem; }
+.cf-body { padding: 40px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+.form-group { margin-bottom: 20px; }
+.form-group label { display: block; font-size: .85rem; font-weight: 600; color: var(--gray-700); margin-bottom: 8px; }
+.form-control {
+  width: 100%; padding: 12px 16px; border-radius: 10px;
+  border: 2px solid var(--gray-200); font-size: .92rem; color: var(--gray-900);
+  transition: var(--transition); outline: none;
+}
+.form-control:focus { border-color: var(--navy-light); box-shadow: 0 0 0 4px rgba(37,84,160,.1); }
+.form-control::placeholder { color: var(--gray-400); }
+textarea.form-control { resize: vertical; min-height: 140px; }
+.cf-footer {
+  padding: 24px 40px; background: var(--gray-50);
+  border-top: 1px solid var(--gray-100);
+  display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;
+}
+.cf-note { font-size: .82rem; color: var(--gray-400); display:flex;align-items:center;gap:6px; }
+.cf-note i { color: var(--green); }
+
+/* Map */
+.map-section { padding: 0 0 96px; background: var(--cream); }
+.map-container { border-radius: var(--radius-xl); overflow: hidden; box-shadow: var(--shadow-xl); }
+.map-container iframe { width: 100%; height: 420px; border: none; display: block; }
+.map-placeholder {
+  height: 420px; background: linear-gradient(135deg, var(--navy), var(--navy-mid));
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  color: rgba(255,255,255,.6); font-size: 1rem; gap: 16px;
+}
+.map-placeholder i { font-size: 3rem; color: var(--gold); }
+
+@media(max-width:1024px){ .contact-layout{grid-template-columns:1fr;} }
+@media(max-width:600px)  { .form-row{grid-template-columns:1fr;} .cf-body{padding:24px 20px;} .cf-footer{flex-direction:column;align-items:stretch;} }
+{% endblock %}
+
+{% block content %}
+
+<div class="page-hero">
+  <h1>Contact <span>Us</span></h1>
+  <div class="breadcrumb">
+    <a href="{% url 'home' %}">Home</a>
+    <i class="fas fa-chevron-right"></i>
+    <span>Contact</span>
+  </div>
+</div>
+
+<section class="contact-section">
+  <div class="container">
+    <div class="contact-layout">
+
+      <!-- Info Cards -->
+      <div class="fade-up">
+        <div class="contact-info-cards">
+          <div class="info-card">
+            <div class="info-icon"><i class="fas fa-map-marker-alt"></i></div>
+            <div class="info-text">
+              <h4>Our Address</h4>
+              <p>{% if site and site.address %}{{ site.address }}{% else %}123 School Drive, Barangay Sunshine, Education City, 1234{% endif %}</p>
+            </div>
+          </div>
+          <div class="info-card">
+            <div class="info-icon"><i class="fas fa-phone-alt"></i></div>
+            <div class="info-text">
+              <h4>Phone Number</h4>
+              <p><a href="tel:{% if site and site.contact_phone %}{{ site.contact_phone }}{% else %}+63 912 345 6789{% endif %}">{% if site and site.contact_phone %}{{ site.contact_phone }}{% else %}+63 912 345 6789{% endif %}</a></p>
+              <p style="margin-top:4px;"><small>Mon–Fri, 7:00 AM – 5:00 PM</small></p>
+            </div>
+          </div>
+          <div class="info-card">
+            <div class="info-icon"><i class="fas fa-envelope"></i></div>
+            <div class="info-text">
+              <h4>Email Address</h4>
+              <p><a href="mailto:{% if site and site.contact_email %}{{ site.contact_email }}{% else %}info@nsms.school{% endif %}">{% if site and site.contact_email %}{{ site.contact_email }}{% else %}info@nsms.school{% endif %}</a></p>
+              <p style="margin-top:4px;"><small>We reply within 24 hours</small></p>
+            </div>
+          </div>
+          <div class="info-card">
+            <div class="info-icon"><i class="fas fa-clock"></i></div>
+            <div class="info-text">
+              <h4>Office Hours</h4>
+              <p>Monday – Friday: 7:00 AM – 5:00 PM<br/>Saturday: 8:00 AM – 12:00 PM<br/>Sunday: Closed</p>
+            </div>
+          </div>
+          <div class="social-contact">
+            <h4>Follow Us</h4>
+            <div class="social-links-row">
+              {% if site and site.facebook %}<a href="{{ site.facebook }}" class="sc-link" target="_blank"><i class="fab fa-facebook-f"></i></a>{% else %}<a href="#" class="sc-link"><i class="fab fa-facebook-f"></i></a>{% endif %}
+              {% if site and site.instagram %}<a href="{{ site.instagram }}" class="sc-link" target="_blank"><i class="fab fa-instagram"></i></a>{% else %}<a href="#" class="sc-link"><i class="fab fa-instagram"></i></a>{% endif %}
+              {% if site and site.youtube %}<a href="{{ site.youtube }}" class="sc-link" target="_blank"><i class="fab fa-youtube"></i></a>{% else %}<a href="#" class="sc-link"><i class="fab fa-youtube"></i></a>{% endif %}
+              {% if site and site.twitter %}<a href="{{ site.twitter }}" class="sc-link" target="_blank"><i class="fab fa-twitter"></i></a>{% else %}<a href="#" class="sc-link"><i class="fab fa-twitter"></i></a>{% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact Form -->
+      <div class="contact-form-card fade-up" style="transition-delay:.15s">
+        <div class="cf-header">
+          <i class="fas fa-paper-plane"></i>
+          <div>
+            <h3>Send Us a Message</h3>
+            <p>We'd love to hear from you. Fill in the form and we'll get back to you shortly.</p>
+          </div>
+        </div>
+        <div class="cf-body">
+          <form method="post" novalidate>
+            {% csrf_token %}
+            <div class="form-row">
+              <div class="form-group">
+                <label for="{{ form.name.id_for_label }}">Your Full Name</label>
+                {{ form.name }}
+                {% if form.name.errors %}<div style="color:var(--red);font-size:.8rem;margin-top:5px;">{{ form.name.errors|join:", " }}</div>{% endif %}
+              </div>
+              <div class="form-group">
+                <label for="{{ form.email.id_for_label }}">Email Address</label>
+                {{ form.email }}
+                {% if form.email.errors %}<div style="color:var(--red);font-size:.8rem;margin-top:5px;">{{ form.email.errors|join:", " }}</div>{% endif %}
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="{{ form.phone.id_for_label }}">Phone Number <small style="color:var(--gray-400)">(optional)</small></label>
+                {{ form.phone }}
+              </div>
+              <div class="form-group">
+                <label for="{{ form.subject.id_for_label }}">Subject</label>
+                {{ form.subject }}
+                {% if form.subject.errors %}<div style="color:var(--red);font-size:.8rem;margin-top:5px;">{{ form.subject.errors|join:", " }}</div>{% endif %}
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="{{ form.message.id_for_label }}">Your Message</label>
+              {{ form.message }}
+              {% if form.message.errors %}<div style="color:var(--red);font-size:.8rem;margin-top:5px;">{{ form.message.errors|join:", " }}</div>{% endif %}
+            </div>
+        </div>
+        <div class="cf-footer">
+          <div class="cf-note"><i class="fas fa-shield-alt"></i> Your information is safe with us.</div>
+          <button type="submit" class="btn btn-primary" style="padding:14px 40px;">
+            <i class="fas fa-paper-plane"></i> Send Message
+          </button>
+        </div>
+          </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ MAP ═══════════════════════════════════════════════════════════════ -->
+<section class="map-section">
+  <div class="container">
+    <div class="section-header fade-up" style="margin-bottom:36px;">
+      <span class="badge badge-gold"><i class="fas fa-map-marked-alt"></i> Find Us</span>
+      <h2>Our Location</h2>
+      <p>Visit us and see our beautiful facilities in person.</p>
+    </div>
+    <div class="map-container fade-up">
+      {% if site and site.map_embed_url %}
+        <iframe src="{{ site.map_embed_url }}" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      {% else %}
+        <div class="map-placeholder">
+          <i class="fas fa-map-marker-alt"></i>
+          <p>Google Map will appear here once configured in Site Settings.<br/>
+          <small>Set the <strong>Map Embed URL</strong> in the Django admin panel.</small></p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% endblock %}

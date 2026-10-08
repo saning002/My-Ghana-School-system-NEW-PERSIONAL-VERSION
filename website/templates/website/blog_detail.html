@@ -1,0 +1,156 @@
+{% extends 'website/base.html' %}
+{% block page_title %}{{ post.title }}{% endblock %}
+{% block meta_description %}{{ post.excerpt|default:post.content|truncatewords:25 }}{% endblock %}
+
+{% block extra_css %}
+.article-section { padding: 80px 0 96px; background: var(--white); }
+.article-layout  { display: grid; grid-template-columns: 1fr 360px; gap: 60px; align-items: start; }
+
+.article-header { margin-bottom: 36px; }
+.article-header h1 { font-size: clamp(1.8rem, 3.5vw, 2.6rem); font-weight: 800; color: var(--navy); margin-bottom: 20px; line-height: 1.25; }
+.article-meta { display: flex; gap: 20px; flex-wrap: wrap; color: var(--gray-400); font-size: .85rem; margin-bottom: 28px; }
+.article-meta span { display: flex; align-items: center; gap: 6px; }
+.article-meta i { color: var(--gold-dark); }
+.article-featured {
+  border-radius: var(--radius-xl); overflow: hidden; margin-bottom: 40px;
+  min-height: 360px; background: linear-gradient(135deg,var(--navy-light),var(--teal));
+  display: flex; align-items: center; justify-content: center; font-size: 5rem;
+  box-shadow: var(--shadow-xl);
+}
+.article-featured img { width:100%;height:100%;object-fit:cover; }
+
+.article-content { color: var(--gray-700); font-size: 1.02rem; line-height: 1.9; }
+.article-content p   { margin-bottom: 20px; }
+.article-content h2  { font-size: 1.5rem; font-weight: 800; color: var(--navy); margin: 36px 0 16px; }
+.article-content h3  { font-size: 1.2rem; font-weight: 700; color: var(--navy); margin: 28px 0 12px; }
+.article-content img { border-radius: var(--radius); margin: 24px 0; max-width: 100%; }
+.article-content blockquote {
+  border-left: 4px solid var(--gold); background: var(--cream);
+  padding: 20px 24px; border-radius: 0 12px 12px 0;
+  margin: 28px 0; font-style: italic; color: var(--navy);
+}
+.article-content ul,
+.article-content ol  { margin: 16px 0 20px 24px; }
+.article-content li  { margin-bottom: 8px; }
+
+.article-footer {
+  margin-top: 48px; padding-top: 32px; border-top: 2px solid var(--gray-100);
+  display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;
+}
+.share-box h4 { font-size: .88rem; color: var(--gray-500); margin-bottom: 10px; }
+.share-links { display: flex; gap: 10px; }
+.share-link {
+  width: 38px; height: 38px; border-radius: 10px; border: 2px solid var(--gray-200);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--gray-400); transition: var(--transition); font-size: .9rem;
+}
+.share-link:hover { background: var(--navy); color: var(--white); border-color: var(--navy); }
+
+/* Sidebar */
+.article-sidebar { position: sticky; top: 100px; }
+.sidebar-block { background: var(--gray-50); border-radius: 20px; padding: 28px; margin-bottom: 24px; }
+.sidebar-block h4 { font-size: .98rem; font-weight: 700; color: var(--navy); margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid var(--gray-200); display:flex;align-items:center;gap:8px; }
+.sidebar-block h4 i { color: var(--gold); }
+.recent-post { display: flex; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--gray-200); align-items: flex-start; }
+.recent-post:last-child { border-bottom: none; }
+.rp-thumb {
+  width: 56px; height: 56px; border-radius: 10px; flex-shrink: 0;
+  background: linear-gradient(135deg,var(--navy-light),var(--teal));
+  display: flex; align-items: center; justify-content: center; font-size: 1.4rem; overflow: hidden;
+}
+.rp-thumb img { width:100%;height:100%;object-fit:cover; }
+.rp-title { font-size: .85rem; font-weight: 600; color: var(--navy); transition: var(--transition); line-height: 1.4; }
+.rp-title:hover { color: var(--gold-dark); }
+.rp-date  { font-size: .75rem; color: var(--gray-400); margin-top: 4px; }
+
+@media(max-width:1024px){ .article-layout{grid-template-columns:1fr;} .article-sidebar{position:static;} }
+{% endblock %}
+
+{% block content %}
+
+<div class="page-hero">
+  <h1 style="font-size:clamp(1.6rem,3vw,2.4rem);max-width:700px;margin:0 auto 16px;">{{ post.title }}</h1>
+  <div class="breadcrumb">
+    <a href="{% url 'home' %}">Home</a>
+    <i class="fas fa-chevron-right"></i>
+    <a href="{% url 'blog' %}">Blog</a>
+    <i class="fas fa-chevron-right"></i>
+    <span>Article</span>
+  </div>
+</div>
+
+<section class="article-section">
+  <div class="container">
+    <div class="article-layout">
+
+      <!-- Article -->
+      <article class="fade-up">
+        <div class="article-header">
+          <div class="article-meta">
+            <span><i class="fas fa-calendar"></i> {{ post.created_at|date:"F j, Y" }}</span>
+            <span><i class="fas fa-clock"></i> {{ post.updated_at|date:"g:i A" }}</span>
+          </div>
+          <h1>{{ post.title }}</h1>
+        </div>
+
+        {% if post.featured_image %}
+        <div class="article-featured"><img src="{{ post.featured_image.url }}" alt="{{ post.title }}" /></div>
+        {% else %}
+        <div class="article-featured">📰</div>
+        {% endif %}
+
+        <div class="article-content">
+          {{ post.content|linebreaks }}
+        </div>
+
+        <div class="article-footer">
+          <a href="{% url 'blog' %}" class="btn btn-ghost"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+          <div class="share-box">
+            <h4>Share this article</h4>
+            <div class="share-links">
+              <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" class="share-link" target="_blank"><i class="fab fa-facebook-f"></i></a>
+              <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}&text={{ post.title|urlencode }}" class="share-link" target="_blank"><i class="fab fa-twitter"></i></a>
+              <a href="mailto:?subject={{ post.title|urlencode }}&body={{ request.build_absolute_uri }}" class="share-link"><i class="fas fa-envelope"></i></a>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Sidebar -->
+      <aside class="article-sidebar fade-up" style="transition-delay:.15s">
+        {% if recent_posts %}
+        <div class="sidebar-block">
+          <h4><i class="fas fa-clock"></i> Recent Posts</h4>
+          {% for rp in recent_posts %}
+          <div class="recent-post">
+            <div class="rp-thumb">
+              {% if rp.featured_image %}<img src="{{ rp.featured_image.url }}" alt="{{ rp.title }}" />
+              {% else %}📰{% endif %}
+            </div>
+            <div>
+              <a href="{% url 'blog_detail' rp.slug %}" class="rp-title">{{ rp.title }}</a>
+              <div class="rp-date">{{ rp.created_at|date:"M j, Y" }}</div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="sidebar-block" style="background:linear-gradient(135deg,var(--navy),var(--navy-mid));">
+          <h4 style="color:var(--white);border-color:rgba(255,255,255,.1);"><i class="fas fa-star"></i> Ready to Enroll?</h4>
+          <p style="font-size:.88rem;color:rgba(255,255,255,.65);margin-bottom:20px;">Open slots available for this school year. Apply online today!</p>
+          <a href="{% url 'apply' %}" class="btn btn-primary" style="width:100%;justify-content:center;"><i class="fas fa-file-alt"></i> Apply Now</a>
+        </div>
+
+        <div class="sidebar-block">
+          <h4><i class="fas fa-phone"></i> Get in Touch</h4>
+          <p style="font-size:.88rem;color:var(--gray-500);margin-bottom:16px;">Have questions? Our team is happy to help.</p>
+          <a href="{% url 'contact' %}" class="btn btn-navy" style="width:100%;justify-content:center;"><i class="fas fa-envelope"></i> Contact Us</a>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+</section>
+
+{% endblock %}

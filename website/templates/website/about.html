@@ -1,0 +1,263 @@
+{% extends 'website/base.html' %}
+{% block page_title %}About Us{% endblock %}
+{% block meta_description %}Learn about NSMS Little Stars – our history, mission, vision, core values, and the passionate team behind our school's success.{% endblock %}
+
+{% block extra_css %}
+.mission-vision { padding: 96px 0; background: var(--white); }
+.mv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+.mv-card {
+  border-radius: 24px; padding: 48px 40px; position: relative; overflow: hidden;
+}
+.mv-card.mission { background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%); }
+.mv-card.vision  { background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold) 100%); }
+.mv-card-icon {
+  width: 64px; height: 64px; border-radius: 18px; margin-bottom: 24px;
+  display: flex; align-items: center; justify-content: center; font-size: 1.8rem;
+}
+.mv-card.mission .mv-card-icon { background: rgba(255,255,255,.12); }
+.mv-card.vision  .mv-card-icon { background: rgba(15,35,71,.15); }
+.mv-card h3 { font-size: 1.6rem; font-weight: 800; margin-bottom: 16px; }
+.mv-card.mission h3 { color: var(--gold); }
+.mv-card.vision  h3 { color: var(--navy); }
+.mv-card p { line-height: 1.8; font-size: 1rem; }
+.mv-card.mission p { color: rgba(255,255,255,.8); }
+.mv-card.vision  p { color: rgba(15,35,71,.8); }
+.mv-watermark {
+  position: absolute; bottom: -20px; right: -20px;
+  font-size: 8rem; opacity: .06; line-height: 1;
+}
+
+.history-section { padding: 96px 0; background: var(--cream); }
+.history-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+.history-visual {
+  border-radius: var(--radius-xl); min-height: 420px;
+  background: linear-gradient(135deg, var(--navy-light), var(--teal));
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--shadow-xl); position: relative; overflow: hidden;
+}
+.history-visual .emoji-big { font-size: 7rem; }
+.history-timeline { position: absolute; bottom: 0; left: 0; right: 0; padding: 24px; background: rgba(15,35,71,.85); }
+.timeline-items { display: flex; gap: 24px; justify-content: space-around; }
+.timeline-item { text-align: center; }
+.timeline-year { font-family:'Outfit',sans-serif; font-size: 1.3rem; font-weight: 800; color: var(--gold); }
+.timeline-desc { font-size: .75rem; color: rgba(255,255,255,.6); }
+.history-text p  { font-size: 1.02rem; color: var(--gray-500); line-height: 1.8; margin-bottom: 20px; }
+.history-text h2 { font-size: 2.2rem; font-weight: 800; color: var(--navy); margin-bottom: 20px; }
+
+.values-section  { padding: 96px 0; background: var(--white); }
+.values-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+.value-card {
+  border-radius: 20px; padding: 36px 28px; text-align: center;
+  border: 2px solid var(--gray-100); transition: var(--transition);
+}
+.value-card:hover { border-color: var(--gold); transform: translateY(-6px); box-shadow: var(--shadow-lg); }
+.value-icon {
+  width: 70px; height: 70px; border-radius: 20px; margin: 0 auto 20px;
+  display: flex; align-items: center; justify-content: center; font-size: 2rem;
+}
+.value-card:nth-child(1) .value-icon { background: rgba(245,166,35,.12); }
+.value-card:nth-child(2) .value-icon { background: rgba(15,35,71,.08); }
+.value-card:nth-child(3) .value-icon { background: rgba(8,145,178,.1); }
+.value-card:nth-child(4) .value-icon { background: rgba(22,163,74,.1); }
+.value-card:nth-child(5) .value-icon { background: rgba(220,38,38,.08); }
+.value-card:nth-child(6) .value-icon { background: rgba(124,58,237,.08); }
+.value-card h3 { font-size: 1.1rem; font-weight: 700; color: var(--navy); margin-bottom: 10px; }
+.value-card p  { font-size: .9rem; color: var(--gray-500); line-height: 1.7; }
+
+.staff-section { padding: 96px 0; background: var(--gray-50); }
+.staff-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+.staff-card {
+  background: var(--white); border-radius: 20px; overflow: hidden;
+  box-shadow: var(--shadow); text-align: center; transition: var(--transition);
+}
+.staff-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-xl); }
+.staff-photo {
+  height: 220px; background: linear-gradient(135deg, var(--navy), var(--navy-mid));
+  display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;
+}
+.staff-photo img { width:100%;height:100%;object-fit:cover; }
+.staff-avatar {
+  width: 80px; height: 80px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2rem; font-weight: 800; color: var(--navy); font-family:'Outfit',sans-serif;
+}
+.staff-card-body { padding: 24px 20px; }
+.staff-card-body h3 { font-size: 1.05rem; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.staff-position { font-size: .82rem; color: var(--gold-dark); font-weight: 600; margin-bottom: 10px; }
+.staff-bio { font-size: .85rem; color: var(--gray-500); line-height: 1.6; }
+.staff-email { margin-top: 12px; display: inline-flex; align-items: center; gap: 6px; font-size: .8rem; color: var(--navy-light); transition: var(--transition); }
+.staff-email:hover { color: var(--gold-dark); }
+
+@media(max-width:1024px){ .staff-grid{grid-template-columns:repeat(2,1fr);} .history-grid{grid-template-columns:1fr;} }
+@media(max-width:768px){
+  .mv-grid{grid-template-columns:1fr;} .values-grid{grid-template-columns:1fr 1fr;}
+  .staff-grid{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:480px){ .values-grid{grid-template-columns:1fr;} .staff-grid{grid-template-columns:1fr;} }
+{% endblock %}
+
+{% block content %}
+
+<!-- Page Hero -->
+<div class="page-hero">
+  <h1>About <span>Our School</span></h1>
+  <div class="breadcrumb">
+    <a href="{% url 'home' %}">Home</a>
+    <i class="fas fa-chevron-right"></i>
+    <span>About Us</span>
+  </div>
+</div>
+
+<!-- ═══ MISSION & VISION ══════════════════════════════════════════════════ -->
+<section class="mission-vision">
+  <div class="container">
+    <div class="section-header fade-up">
+      <span class="badge badge-gold"><i class="fas fa-bullseye"></i> Our Purpose</span>
+      <h2>Mission & Vision</h2>
+      <p>Guided by clear values and a bold vision for every child's future.</p>
+    </div>
+    <div class="mv-grid">
+      <div class="mv-card mission fade-up">
+        <div class="mv-card-icon"><i class="fas fa-rocket"></i></div>
+        <h3>Our Mission</h3>
+        <p>{{ site.mission|default:"To provide a safe, nurturing, and stimulating learning environment that fosters the holistic development of every child — intellectually, emotionally, socially, and physically — through innovative, play-based education delivered by dedicated and compassionate educators." }}</p>
+        <div class="mv-watermark">🎯</div>
+      </div>
+      <div class="mv-card vision fade-up" style="transition-delay:.15s">
+        <div class="mv-card-icon"><i class="fas fa-eye"></i></div>
+        <h3>Our Vision</h3>
+        <p>{{ site.vision|default:"To be the leading early childhood institution in the community, recognized for excellence in education, holistic child development, and building the foundation for lifelong learning and leadership." }}</p>
+        <div class="mv-watermark">🌟</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SCHOOL HISTORY ════════════════════════════════════════════════════ -->
+<section class="history-section">
+  <div class="container">
+    <div class="history-grid">
+      <div class="history-visual fade-up">
+        <div class="emoji-big">🏫</div>
+        <div class="history-timeline">
+          <div class="timeline-items">
+            <div class="timeline-item"><div class="timeline-year">2010</div><div class="timeline-desc">Founded</div></div>
+            <div class="timeline-item"><div class="timeline-year">2015</div><div class="timeline-desc">Expanded</div></div>
+            <div class="timeline-item"><div class="timeline-year">2020</div><div class="timeline-desc">500 Alumni</div></div>
+            <div class="timeline-item"><div class="timeline-year">2025</div><div class="timeline-desc">15 Years!</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="history-text fade-up">
+        <span class="badge badge-navy"><i class="fas fa-history"></i> Our Story</span>
+        <h2>A Legacy of Nurturing Young Minds</h2>
+        <p>
+          {% if site and site.history %}{{ site.history }}{% else %}
+          NSMS Little Stars was founded in 2010 with a simple but powerful belief: every child deserves a joyful, nurturing start to their educational journey. What began as a small nursery with just 30 students and 5 teachers has grown into a thriving institution serving over 500 families.
+          {% endif %}
+        </p>
+        <p>Over the years, we have continually evolved our teaching methods, expanded our facilities, and grown our team to ensure every child who walks through our doors receives the very best in early childhood education.</p>
+        <p>Today, NSMS Little Stars stands as a pillar of the community — a place where children don't just learn; they flourish.</p>
+        <a href="{% url 'admissions' %}" class="btn btn-navy" style="margin-top:12px;"><i class="fas fa-arrow-right"></i> Join Our Family</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CORE VALUES ═══════════════════════════════════════════════════════ -->
+<section class="values-section">
+  <div class="container">
+    <div class="section-header fade-up">
+      <span class="badge badge-teal"><i class="fas fa-heart"></i> What We Stand For</span>
+      <h2>Our Core Values</h2>
+      <p>The principles that guide everything we do — from the classroom to the community.</p>
+    </div>
+    <div class="values-grid">
+      <div class="value-card fade-up">
+        <div class="value-icon">🌟</div>
+        <h3>Excellence</h3>
+        <p>We strive for the highest standards in every aspect of education and school life, continuously improving our methods and programs.</p>
+      </div>
+      <div class="value-card fade-up" style="transition-delay:.1s">
+        <div class="value-icon">🤝</div>
+        <h3>Respect</h3>
+        <p>Every child, parent, and staff member is treated with dignity, empathy, and genuine care for their wellbeing and growth.</p>
+      </div>
+      <div class="value-card fade-up" style="transition-delay:.2s">
+        <div class="value-icon">💡</div>
+        <h3>Innovation</h3>
+        <p>We embrace modern, research-based teaching methods and creative approaches that make learning exciting and effective.</p>
+      </div>
+      <div class="value-card fade-up" style="transition-delay:.1s">
+        <div class="value-icon">🌱</div>
+        <h3>Growth</h3>
+        <p>We celebrate every milestone and believe in nurturing the full potential of each child at their own unique pace.</p>
+      </div>
+      <div class="value-card fade-up" style="transition-delay:.2s">
+        <div class="value-icon">🛡️</div>
+        <h3>Safety</h3>
+        <p>The physical and emotional safety of every child is our top priority, maintained through vigilant protocols and caring supervision.</p>
+      </div>
+      <div class="value-card fade-up" style="transition-delay:.3s">
+        <div class="value-icon">🤗</div>
+        <h3>Community</h3>
+        <p>We build strong partnerships with families and the wider community, because education is most powerful when everyone works together.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ MEET THE STAFF ════════════════════════════════════════════════════ -->
+<section class="staff-section">
+  <div class="container">
+    <div class="section-header fade-up">
+      <span class="badge badge-gold"><i class="fas fa-users"></i> Our Team</span>
+      <h2>Meet Our Dedicated Staff</h2>
+      <p>Passionate, qualified educators committed to inspiring every child every single day.</p>
+    </div>
+    <div class="staff-grid">
+      {% if staff %}
+        {% for member in staff %}
+        <div class="staff-card fade-up" style="transition-delay:{{ forloop.counter0 }}00ms">
+          <div class="staff-photo">
+            {% if member.photo %}<img src="{{ member.photo.url }}" alt="{{ member.name }}" />
+            {% else %}<div class="staff-avatar">{{ member.name|first }}</div>{% endif %}
+          </div>
+          <div class="staff-card-body">
+            <h3>{{ member.name }}</h3>
+            <div class="staff-position">{{ member.position }}</div>
+            {% if member.bio %}<p class="staff-bio">{{ member.bio|truncatewords:20 }}</p>{% endif %}
+            {% if member.email %}<a href="mailto:{{ member.email }}" class="staff-email"><i class="fas fa-envelope"></i>{{ member.email }}</a>{% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        {% for s in "1234"|make_list %}
+        <div class="staff-card fade-up" style="transition-delay:{{ forloop.counter0 }}00ms">
+          <div class="staff-photo"><div class="staff-avatar">👩</div></div>
+          <div class="staff-card-body">
+            <h3>Staff Member</h3>
+            <div class="staff-position">Teacher / Educator</div>
+            <p class="staff-bio">A dedicated educator passionate about early childhood development and every child's growth journey.</p>
+          </div>
+        </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section style="padding:80px 0;background:linear-gradient(135deg,var(--navy) 0%,var(--navy-mid) 100%);text-align:center;">
+  <div class="container fade-up">
+    <h2 style="color:var(--white);font-size:2.2rem;margin-bottom:16px;">Want to Be Part of Our Story?</h2>
+    <p style="color:rgba(255,255,255,.7);font-size:1.05rem;margin-bottom:36px;">Applications for the new school year are now open. Spots fill up fast!</p>
+    <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+      <a href="{% url 'apply' %}" class="btn btn-primary"><i class="fas fa-star"></i> Apply Now</a>
+      <a href="{% url 'contact' %}" class="btn btn-outline"><i class="fas fa-phone"></i> Get in Touch</a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

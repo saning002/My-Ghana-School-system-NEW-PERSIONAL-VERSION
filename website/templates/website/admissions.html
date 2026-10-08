@@ -1,0 +1,253 @@
+{% extends 'website/base.html' %}
+{% block page_title %}Admissions{% endblock %}
+{% block meta_description %}Learn how to apply to NSMS Little Stars. Admission requirements, fees, and the online application process explained simply.{% endblock %}
+
+{% block extra_css %}
+.steps-section { padding: 96px 0; background: var(--white); }
+.steps-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; counter-reset: step; }
+.step-card {
+  background: var(--white); border-radius: 20px; padding: 36px 24px;
+  box-shadow: var(--shadow); text-align: center; transition: var(--transition);
+  border-top: 4px solid var(--gray-200); position: relative; counter-increment: step;
+}
+.step-card::before {
+  content: counter(step, decimal-leading-zero);
+  position: absolute; top: -16px; left: 50%; transform: translateX(-50%);
+  background: var(--gold); color: var(--navy);
+  width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family:'Outfit',sans-serif; font-size: .95rem; font-weight: 800;
+  box-shadow: 0 4px 16px rgba(245,166,35,.4);
+}
+.step-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-xl); border-top-color: var(--gold); }
+.step-icon {
+  width: 72px; height: 72px; border-radius: 20px; margin: 16px auto 20px;
+  display: flex; align-items: center; justify-content: center; font-size: 1.8rem;
+  background: linear-gradient(135deg, var(--navy), var(--navy-mid)); color: var(--gold);
+}
+.step-card h3 { font-size: 1.05rem; font-weight: 700; color: var(--navy); margin-bottom: 10px; }
+.step-card p  { font-size: .88rem; color: var(--gray-500); line-height: 1.7; }
+
+.requirements-section { padding: 96px 0; background: var(--cream); }
+.req-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
+.req-list-card { background: var(--white); border-radius: 20px; padding: 40px; box-shadow: var(--shadow); }
+.req-list-card h3 { font-size: 1.4rem; font-weight: 800; color: var(--navy); margin-bottom: 24px; display: flex; align-items: center; gap: 10px; }
+.req-list-card h3 i { color: var(--gold); }
+.req-item { display: flex; align-items: flex-start; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--gray-100); }
+.req-item:last-child { border-bottom: none; }
+.req-check { width: 30px; height: 30px; border-radius: 8px; background: rgba(22,163,74,.1); color: var(--green); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: .85rem; }
+.req-item-text { font-size: .92rem; color: var(--gray-700); line-height: 1.5; }
+.req-item-text strong { display: block; color: var(--navy); font-weight: 600; }
+
+.fees-section { padding: 96px 0; background: var(--white); }
+.fees-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+.fee-card {
+  border-radius: 20px; overflow: hidden; box-shadow: var(--shadow); transition: var(--transition);
+}
+.fee-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-xl); }
+.fee-header {
+  padding: 28px 24px 20px; text-align: center;
+  background: linear-gradient(135deg, var(--navy), var(--navy-mid));
+}
+.fee-header.gold { background: linear-gradient(135deg, var(--gold-dark), var(--gold)); }
+.fee-level { font-size: .78rem; color: rgba(255,255,255,.6); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 8px; }
+.fee-level.dark { color: rgba(15,35,71,.6); }
+.fee-name  { font-family:'Outfit',sans-serif; font-size: 1.2rem; font-weight: 800; color: var(--white); }
+.fee-name.dark  { color: var(--navy); }
+.fee-age   { font-size: .8rem; color: rgba(255,255,255,.5); margin-top: 4px; }
+.fee-age.dark   { color: rgba(15,35,71,.5); }
+.fee-body  { background: var(--white); padding: 24px; }
+.fee-price { text-align: center; padding-bottom: 20px; border-bottom: 1px solid var(--gray-100); margin-bottom: 20px; }
+.fee-amount { font-family:'Outfit',sans-serif; font-size: 2rem; font-weight: 800; color: var(--navy); }
+.fee-period { font-size: .78rem; color: var(--gray-400); }
+.fee-items li { display: flex; justify-content: space-between; padding: 7px 0; font-size: .85rem; border-bottom: 1px dashed var(--gray-100); }
+.fee-items li:last-child { border-bottom: none; }
+.fee-items .fee-key   { color: var(--gray-500); }
+.fee-items .fee-val   { color: var(--navy); font-weight: 600; }
+
+.brochure-section { padding: 80px 0; background: var(--gray-50); }
+.brochure-card {
+  background: var(--white); border-radius: 24px; padding: 48px;
+  box-shadow: var(--shadow-lg); display: flex; align-items: center;
+  gap: 40px; max-width: 800px; margin: 0 auto;
+}
+.brochure-icon {
+  width: 100px; height: 100px; border-radius: 24px; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--navy), var(--navy-mid));
+  display: flex; align-items: center; justify-content: center; font-size: 2.8rem; color: var(--gold);
+  box-shadow: 0 8px 28px rgba(15,35,71,.3);
+}
+.brochure-text h3 { font-size: 1.4rem; font-weight: 800; color: var(--navy); margin-bottom: 8px; }
+.brochure-text p  { color: var(--gray-500); margin-bottom: 20px; font-size: .95rem; }
+
+@media(max-width:1024px){ .steps-grid{grid-template-columns:repeat(2,1fr);} .fees-grid{grid-template-columns:repeat(2,1fr);} }
+@media(max-width:768px) { .req-grid{grid-template-columns:1fr;} .brochure-card{flex-direction:column;text-align:center;} }
+@media(max-width:480px) { .steps-grid{grid-template-columns:1fr;} .fees-grid{grid-template-columns:1fr;} }
+{% endblock %}
+
+{% block content %}
+
+<div class="page-hero">
+  <h1>Admission <span>Information</span></h1>
+  <div class="breadcrumb">
+    <a href="{% url 'home' %}">Home</a>
+    <i class="fas fa-chevron-right"></i>
+    <span>Admissions</span>
+  </div>
+</div>
+
+<!-- ═══ HOW TO APPLY ══════════════════════════════════════════════════════ -->
+<section class="steps-section">
+  <div class="container">
+    <div class="section-header fade-up">
+      <span class="badge badge-gold"><i class="fas fa-map-signs"></i> How to Apply</span>
+      <h2>Simple Enrollment in 4 Easy Steps</h2>
+      <p>We've made the process as smooth as possible so you can focus on what matters — your child's future.</p>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card fade-up">
+        <div class="step-icon"><i class="fas fa-file-alt"></i></div>
+        <h3>Submit Application</h3>
+        <p>Complete and submit our online application form with your child's basic information and preferred program.</p>
+      </div>
+      <div class="step-card fade-up" style="transition-delay:.1s">
+        <div class="step-icon"><i class="fas fa-folder-open"></i></div>
+        <h3>Submit Requirements</h3>
+        <p>Bring or upload the required documents. Our admissions team will review your submission promptly.</p>
+      </div>
+      <div class="step-card fade-up" style="transition-delay:.2s">
+        <div class="step-icon"><i class="fas fa-calendar-check"></i></div>
+        <h3>School Visit</h3>
+        <p>Schedule a tour of our facilities. Meet our teachers and let your child experience our welcoming environment.</p>
+      </div>
+      <div class="step-card fade-up" style="transition-delay:.3s">
+        <div class="step-icon"><i class="fas fa-check-circle"></i></div>
+        <h3>Confirm Enrollment</h3>
+        <p>Once accepted, settle the enrollment fee to officially secure your child's place for the school year.</p>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:48px;" class="fade-up">
+      <a href="{% url 'apply' %}" class="btn btn-primary" style="font-size:1.05rem;padding:18px 44px;">
+        <i class="fas fa-star"></i> Start Application Now
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ REQUIREMENTS ══════════════════════════════════════════════════════ -->
+<section class="requirements-section">
+  <div class="container">
+    <div class="section-header fade-up">
+      <span class="badge badge-navy"><i class="fas fa-clipboard-list"></i> Requirements</span>
+      <h2>Admission Requirements</h2>
+      <p>Please prepare the following documents when applying.</p>
+    </div>
+    <div class="req-grid">
+      <div class="req-list-card fade-up">
+        <h3><i class="fas fa-baby"></i> For the Child</h3>
+        <div class="req-item"><div class="req-check"><i class="fas fa-check"></i></div><div class="req-item-text"><strong>Birth Certificate (PSA)</strong>Original or certified true copy</div></div>
+        <div class="req-item"><div class="req-check"><i class="fas fa-check"></i></div><div class="req-item-text"><strong>Immunization Records</strong>Updated vaccination card or booklet</div></div>
+        <div class="req-item"><div class="req-check"><i class="fas fa-check"></i></div><div class="req-item-text"><strong>Recent ID Photo</strong>2×2 or passport size (2 copies)</div></div>
+        <div class="req-item"><div class="req-check"><i class="fas fa-check"></i></div><div class="req-item-text"><strong>Medical Certificate</strong>Issued within the last 6 months</div></div>
+        <div class="req-item"><div class="req-check"><i class="fas fa-check"></i></div><div class="req-item-text"><strong>Previous School Records</strong>Report card (if transferring)</div></div>
+      </div>
+      <div class="req-list-card fade-up" style="transition-delay:.15s">
+        <h3><i class="fas fa-user-tie"></i> For the Parent / Guardian</h3>
+        <div class="req-item"><div class="req-check"><i class="fas fa-check"></i></div><div class="req-item-text"><strong>Valid Government-issued ID</strong>Passport, Driver's License, or PhilSys</div></div>
+        <div class="req-item"><div class="req-check"><i class="fas fa-check"></i></div><div class="req-item-text"><strong>Proof of Billing / Address</strong>Utility bill or barangay certificate</div></div>
+        <div class="req-item"><div class="req-check"><i class="fas fa-check"></i></div><div class="req-item-text"><strong>Completed Application Form</strong>Online or printed form, fully filled out</div></div>
+        <div class="req-item"><div class="req-check"><i class="fas fa-check"></i></div><div class="req-item-text"><strong>Emergency Contact Information</strong>At least 2 emergency contacts</div></div>
+        <div class="req-item"><div class="req-check"><i class="fas fa-check"></i></div><div class="req-item-text"><strong>Enrollment Fee</strong>Non-refundable upon acceptance</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ TUITION & FEES ════════════════════════════════════════════════════ -->
+<section class="fees-section">
+  <div class="container">
+    <div class="section-header fade-up">
+      <span class="badge badge-teal"><i class="fas fa-tag"></i> Tuition & Fees</span>
+      <h2>Transparent, Affordable Pricing</h2>
+      <p>Quality early education that's accessible. Scholarship and payment plans available upon request.</p>
+    </div>
+    <div class="fees-grid">
+      <div class="fee-card fade-up">
+        <div class="fee-header"><div class="fee-level">Program</div><div class="fee-name">Day Care</div><div class="fee-age">Ages 1–2 yrs</div></div>
+        <div class="fee-body">
+          <div class="fee-price"><div class="fee-amount">₱3,500</div><div class="fee-period">per month</div></div>
+          <ul class="fee-items">
+            <li><span class="fee-key">Enrollment Fee</span><span class="fee-val">₱2,000</span></li>
+            <li><span class="fee-key">Annual Fee</span><span class="fee-val">₱5,000</span></li>
+            <li><span class="fee-key">Miscellaneous</span><span class="fee-val">₱1,500/yr</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="fee-card fade-up" style="transition-delay:.1s">
+        <div class="fee-header gold"><div class="fee-level dark">Program</div><div class="fee-name dark">Nursery</div><div class="fee-age dark">Ages 2–3 yrs</div></div>
+        <div class="fee-body">
+          <div class="fee-price"><div class="fee-amount">₱4,000</div><div class="fee-period">per month</div></div>
+          <ul class="fee-items">
+            <li><span class="fee-key">Enrollment Fee</span><span class="fee-val">₱2,500</span></li>
+            <li><span class="fee-key">Annual Fee</span><span class="fee-val">₱6,000</span></li>
+            <li><span class="fee-key">Miscellaneous</span><span class="fee-val">₱1,800/yr</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="fee-card fade-up" style="transition-delay:.2s">
+        <div class="fee-header"><div class="fee-level">Program</div><div class="fee-name">Preschool</div><div class="fee-age">Ages 3–4 yrs</div></div>
+        <div class="fee-body">
+          <div class="fee-price"><div class="fee-amount">₱4,500</div><div class="fee-period">per month</div></div>
+          <ul class="fee-items">
+            <li><span class="fee-key">Enrollment Fee</span><span class="fee-val">₱3,000</span></li>
+            <li><span class="fee-key">Annual Fee</span><span class="fee-val">₱7,000</span></li>
+            <li><span class="fee-key">Miscellaneous</span><span class="fee-val">₱2,000/yr</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="fee-card fade-up" style="transition-delay:.3s">
+        <div class="fee-header gold"><div class="fee-level dark">Program</div><div class="fee-name dark">Kindergarten</div><div class="fee-age dark">Ages 4–5 yrs</div></div>
+        <div class="fee-body">
+          <div class="fee-price"><div class="fee-amount">₱5,000</div><div class="fee-period">per month</div></div>
+          <ul class="fee-items">
+            <li><span class="fee-key">Enrollment Fee</span><span class="fee-val">₱3,500</span></li>
+            <li><span class="fee-key">Annual Fee</span><span class="fee-val">₱8,000</span></li>
+            <li><span class="fee-key">Miscellaneous</span><span class="fee-val">₱2,500/yr</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <p style="text-align:center;margin-top:28px;color:var(--gray-400);font-size:.88rem;"><i class="fas fa-info-circle"></i> Fees are subject to change. Contact us for the latest rates and available discounts.</p>
+  </div>
+</section>
+
+<!-- ═══ DOWNLOADABLE BROCHURE ══════════════════════════════════════════════ -->
+<section class="brochure-section">
+  <div class="container">
+    <div class="brochure-card fade-up">
+      <div class="brochure-icon"><i class="fas fa-file-pdf"></i></div>
+      <div class="brochure-text">
+        <h3>Download Our Admission Brochure</h3>
+        <p>Get all the details about our programs, fees, requirements, and school calendar in one convenient PDF document. Perfect to share with family members.</p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <a href="#" class="btn btn-navy"><i class="fas fa-download"></i> Download PDF Brochure</a>
+          <a href="{% url 'apply' %}" class="btn btn-primary"><i class="fas fa-star"></i> Apply Online</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section style="padding:80px 0;background:linear-gradient(135deg,var(--navy) 0%,var(--navy-mid) 100%);text-align:center;">
+  <div class="container fade-up">
+    <h2 style="color:var(--white);font-size:2rem;margin-bottom:14px;">Still Have Questions?</h2>
+    <p style="color:rgba(255,255,255,.7);margin-bottom:32px;">Our admissions team is happy to help. Reach out anytime!</p>
+    <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+      <a href="{% url 'contact' %}" class="btn btn-primary"><i class="fas fa-envelope"></i> Contact Us</a>
+      <a href="{% url 'apply' %}" class="btn btn-outline"><i class="fas fa-file-alt"></i> Apply Now</a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

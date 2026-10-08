@@ -1,0 +1,708 @@
+{% extends 'website/base.html' %}
+{% block page_title %}Welcome{% endblock %}
+{% block meta_description %}EduCare International School – Nurturing young minds through play, creativity, and a love of learning. Enroll today!{% endblock %}
+
+{% block extra_css %}
+/* ── HERO ─────────────────────────────────────────────────── */
+.hero {
+  min-height: 100vh; position: relative; overflow: hidden;
+  display: flex; align-items: center;
+  background: linear-gradient(135deg, #071629 0%, #0f2347 45%, #1a3a6b 100%);
+}
+.hero-bg-shapes { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.hero-blob {
+  position: absolute; border-radius: 50%;
+  background: radial-gradient(circle, rgba(245,166,35,.18), transparent 70%);
+  animation: blobFloat 8s ease-in-out infinite;
+}
+.hero-blob-1 { width: 600px; height: 600px; top: -200px; right: -100px; animation-delay: 0s; }
+.hero-blob-2 { width: 400px; height: 400px; bottom: -100px; left: -50px; animation-delay: -3s; }
+.hero-blob-3 { width: 300px; height: 300px; top: 40%; right: 30%; animation-delay: -5s; opacity:.5; }
+@keyframes blobFloat { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(30px,-20px) scale(1.08)} }
+
+.hero-grid-overlay {
+  position: absolute; inset: 0;
+  background-image: linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+.hero-content {
+  position: relative; z-index: 2; max-width: 1200px;
+  margin: 0 auto; padding: 120px 24px 80px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center;
+}
+.hero-text { }
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(245,166,35,.15); border: 1px solid rgba(245,166,35,.3);
+  color: var(--gold); padding: 8px 18px; border-radius: 100px;
+  font-size: .82rem; font-weight: 600; letter-spacing: .08em;
+  text-transform: uppercase; margin-bottom: 28px;
+  animation: fadeInDown .8s ease both;
+}
+.hero-eyebrow i { animation: pulse 2s ease infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+@keyframes fadeInDown { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:translateY(0)} }
+
+.hero-title {
+  font-size: clamp(2.8rem, 5.5vw, 4.2rem); font-weight: 900;
+  color: var(--white); line-height: 1.1; margin-bottom: 24px;
+  animation: fadeInUp .9s .1s ease both;
+}
+.hero-title span { color: var(--gold); }
+@keyframes fadeInUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+
+.hero-subtitle {
+  font-size: 1.15rem; color: rgba(255,255,255,.7); line-height: 1.8;
+  margin-bottom: 40px; max-width: 520px;
+  animation: fadeInUp .9s .2s ease both;
+}
+.hero-actions {
+  display: flex; gap: 16px; flex-wrap: wrap;
+  animation: fadeInUp .9s .3s ease both;
+}
+.hero-actions .btn { font-size: 1rem; padding: 16px 36px; }
+
+.hero-stats {
+  display: flex; gap: 36px; margin-top: 56px; padding-top: 36px;
+  border-top: 1px solid rgba(255,255,255,.1);
+  animation: fadeInUp .9s .4s ease both;
+}
+.hero-stat-num { font-family:'Outfit',sans-serif; font-size: 2.2rem; font-weight: 800; color: var(--gold); }
+.hero-stat-label { font-size: .82rem; color: rgba(255,255,255,.55); margin-top: 2px; }
+
+/* Hero visual side */
+.hero-visual { position: relative; animation: fadeInRight .9s .2s ease both; }
+@keyframes fadeInRight { from{opacity:0;transform:translateX(40px)} to{opacity:1;transform:translateX(0)} }
+
+.hero-card-main {
+  background: rgba(255,255,255,.08); backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,.12); border-radius: 24px;
+  padding: 32px; text-align: center;
+}
+.hero-card-icon {
+  width: 100px; height: 100px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.8rem; margin: 0 auto 20px; box-shadow: 0 8px 32px rgba(245,166,35,.4);
+  animation: iconFloat 4s ease-in-out infinite;
+}
+@keyframes iconFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+.hero-card-main h3 { font-size: 1.4rem; color: var(--white); margin-bottom: 8px; }
+.hero-card-main p  { font-size: .9rem; color: rgba(255,255,255,.6); }
+
+.hero-float-cards { display: flex; gap: 12px; margin-top: 16px; }
+.hero-float-card {
+  flex: 1; background: rgba(255,255,255,.08); backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,.1); border-radius: 16px; padding: 18px;
+}
+.hero-float-card .num { font-family:'Outfit',sans-serif; font-size: 1.8rem; font-weight: 800; color: var(--gold); }
+.hero-float-card .lbl { font-size: .78rem; color: rgba(255,255,255,.55); }
+
+/* ── ABOUT INTRO ──────────────────────────────────────────── */
+.about-intro { padding: 96px 0; background: var(--cream); }
+.about-intro-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+.about-intro-visual {
+  border-radius: var(--radius-xl); overflow: hidden;
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
+  min-height: 420px; display: flex; align-items: center; justify-content: center;
+  position: relative; box-shadow: var(--shadow-xl);
+}
+.about-intro-visual .big-icon { font-size: 8rem; opacity: .15; position: absolute; }
+.about-intro-visual .visual-content { text-align: center; z-index: 1; padding: 40px; }
+.about-intro-visual .visual-content h3 { font-size: 2rem; color: var(--white); margin-bottom: 8px; }
+.about-intro-visual .visual-content p  { color: rgba(255,255,255,.6); }
+.about-intro-badge {
+  position: absolute; bottom: 24px; right: 24px;
+  background: var(--gold); color: var(--navy); padding: 14px 20px;
+  border-radius: 16px; font-weight: 700; font-size: .85rem;
+  box-shadow: 0 4px 20px rgba(245,166,35,.5); line-height: 1.3;
+}
+.about-intro-text .badge { margin-bottom: 20px; }
+.about-intro-text h2 { font-size: 2.4rem; font-weight: 800; color: var(--navy); margin-bottom: 16px; }
+.about-intro-text p  { font-size: 1.05rem; color: var(--gray-500); line-height: 1.8; margin-bottom: 20px; }
+
+/* ── HIGHLIGHTS ───────────────────────────────────────────── */
+.highlights { padding: 0 0 96px; background: var(--cream); }
+.highlights-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+.highlight-card {
+  background: var(--white); border-radius: 20px; padding: 36px 28px;
+  box-shadow: var(--shadow); transition: var(--transition);
+  border-bottom: 4px solid transparent; text-align: center;
+}
+.highlight-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-xl); border-bottom-color: var(--gold); }
+.highlight-icon {
+  width: 72px; height: 72px; border-radius: 20px; margin: 0 auto 20px;
+  display: flex; align-items: center; justify-content: center; font-size: 1.8rem;
+}
+.highlight-icon.gold  { background: rgba(245,166,35,.12); color: var(--gold-dark); }
+.highlight-icon.navy  { background: rgba(15,35,71,.1);    color: var(--navy); }
+.highlight-icon.teal  { background: rgba(8,145,178,.1);   color: var(--teal); }
+.highlight-card h3 { font-size: 1.2rem; font-weight: 700; color: var(--navy); margin-bottom: 10px; }
+.highlight-card p  { font-size: .92rem; color: var(--gray-500); line-height: 1.7; }
+
+/* ── PROGRAMS PREVIEW ─────────────────────────────────────── */
+.programs-section { padding: 96px 0; background: var(--white); }
+.programs-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+.program-card {
+  border-radius: 20px; padding: 36px 24px 28px; text-align: center;
+  position: relative; overflow: hidden; transition: var(--transition);
+  box-shadow: var(--shadow);
+}
+.program-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+  background: linear-gradient(90deg, var(--gold), var(--gold-light));
+}
+.program-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-xl); }
+.program-num {
+  position: absolute; top: 16px; right: 20px; font-family:'Outfit',sans-serif;
+  font-size: 3rem; font-weight: 900; color: rgba(15,35,71,.06); line-height: 1;
+}
+.program-icon {
+  width: 64px; height: 64px; border-radius: 16px; margin: 0 auto 18px;
+  display: flex; align-items: center; justify-content: center; font-size: 1.7rem;
+  background: linear-gradient(135deg, var(--navy), var(--navy-mid));
+  color: var(--gold); box-shadow: 0 4px 16px rgba(15,35,71,.25);
+}
+.program-card h3 { font-size: 1.1rem; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+.program-age  { font-size: .8rem; color: var(--gold-dark); font-weight: 600; margin-bottom: 12px; }
+.program-card p { font-size: .88rem; color: var(--gray-500); line-height: 1.6; margin-bottom: 20px; }
+.program-link {
+  font-size: .85rem; color: var(--navy-light); font-weight: 600;
+  display: inline-flex; align-items: center; gap: 6px; transition: var(--transition);
+}
+.program-link:hover { color: var(--gold-dark); gap: 10px; }
+
+/* ── TESTIMONIALS ─────────────────────────────────────────── */
+.testimonials-section { background: var(--navy); padding: 96px 0; }
+.testimonials-section .section-header h2 { color: var(--white); }
+.testimonials-section .section-header p  { color: rgba(255,255,255,.55); }
+.testimonials-slider { position: relative; overflow: hidden; }
+.testimonials-track {
+  display: flex; gap: 28px;
+  transition: transform .5s cubic-bezier(.4,0,.2,1);
+}
+.testimonial-card {
+  flex: 0 0 calc(33.333% - 19px); background: rgba(255,255,255,.07);
+  backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,.1);
+  border-radius: 20px; padding: 32px; transition: var(--transition);
+}
+.testimonial-card:hover { border-color: rgba(245,166,35,.3); transform: translateY(-4px); }
+.testimonial-stars { color: var(--gold); font-size: .9rem; margin-bottom: 18px; }
+.testimonial-card blockquote { font-size: .95rem; color: rgba(255,255,255,.8); line-height: 1.8; margin-bottom: 24px; font-style: italic; }
+.testimonial-author { display: flex; align-items: center; gap: 14px; }
+.testimonial-avatar {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem; font-weight: 700; color: var(--navy); font-family:'Outfit',sans-serif;
+}
+.testimonial-name  { font-weight: 600; color: var(--white); font-size: .9rem; }
+.testimonial-child { font-size: .8rem; color: rgba(255,255,255,.5); }
+
+.slider-controls { display: flex; justify-content: center; gap: 12px; margin-top: 40px; }
+.slider-btn {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.15);
+  color: var(--white); cursor: pointer; font-size: .9rem;
+  display: flex; align-items: center; justify-content: center; transition: var(--transition);
+}
+.slider-btn:hover { background: var(--gold); color: var(--navy); border-color: var(--gold); }
+.slider-dots { display: flex; align-items: center; gap: 8px; }
+.slider-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: rgba(255,255,255,.3); cursor: pointer; transition: var(--transition); border: none;
+}
+.slider-dot.active { background: var(--gold); transform: scale(1.3); }
+
+/* ── GALLERY PREVIEW ──────────────────────────────────────── */
+.gallery-preview { padding: 96px 0; background: var(--white); }
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(2, 200px); gap: 12px;
+}
+.gallery-item { border-radius: var(--radius); overflow: hidden; position: relative; cursor: pointer; }
+.gallery-item:nth-child(1) { grid-column: span 2; grid-row: span 2; }
+.gallery-thumb {
+  width: 100%; height: 100%;
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
+  display: flex; align-items: center; justify-content: center; font-size: 2.5rem; opacity: .6;
+  transition: transform .5s ease;
+}
+.gallery-thumb img { width:100%;height:100%;object-fit:cover; transition: transform .5s ease; }
+.gallery-item:hover .gallery-thumb img,
+.gallery-item:hover .gallery-thumb { transform: scale(1.08); }
+.gallery-overlay {
+  position: absolute; inset: 0; background: rgba(15,35,71,.6);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: var(--transition);
+}
+.gallery-item:hover .gallery-overlay { opacity: 1; }
+.gallery-overlay i { color: var(--white); font-size: 1.8rem; }
+
+/* ── EVENTS PREVIEW ───────────────────────────────────────── */
+.events-preview { padding: 96px 0; background: var(--gray-50); }
+.events-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; }
+.event-card {
+  background: var(--white); border-radius: 20px; overflow: hidden;
+  box-shadow: var(--shadow); display: flex; flex-direction: column; transition: var(--transition);
+}
+.event-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-xl); }
+.event-date-pill {
+  background: linear-gradient(135deg, var(--navy), var(--navy-mid));
+  padding: 20px 24px; display: flex; align-items: center; gap: 16px;
+}
+.event-date-num { font-family:'Outfit',sans-serif; font-size: 2.5rem; font-weight: 800; color: var(--gold); line-height: 1; }
+.event-date-month { font-size: .8rem; color: rgba(255,255,255,.7); text-transform: uppercase; letter-spacing: .1em; }
+.event-body { padding: 24px; flex: 1; }
+.event-body h3 { font-size: 1.1rem; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+.event-body p  { font-size: .88rem; color: var(--gray-500); line-height: 1.6; margin-bottom: 14px; }
+.event-meta { display: flex; gap: 16px; flex-wrap: wrap; }
+.event-meta span { font-size: .8rem; color: var(--gray-400); display: flex; align-items: center; gap: 5px; }
+.event-meta i { color: var(--gold-dark); }
+
+/* ── LATEST NEWS ──────────────────────────────────────────── */
+.news-section { padding: 96px 0; background: var(--cream); }
+.news-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+.news-card { background: var(--white); border-radius: 20px; overflow: hidden; box-shadow: var(--shadow); transition: var(--transition); }
+.news-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-xl); }
+.news-card-img {
+  height: 180px;
+  background: linear-gradient(135deg, var(--navy-light), var(--teal));
+  display: flex; align-items: center; justify-content: center; font-size: 3rem;
+}
+.news-card-img img { width:100%;height:100%;object-fit:cover; }
+.news-card-body { padding: 24px; }
+.news-date { font-size: .78rem; color: var(--gray-400); margin-bottom: 8px; }
+.news-card-body h3 { font-size: 1.08rem; font-weight: 700; color: var(--navy); margin-bottom: 10px; line-height: 1.4; }
+.news-card-body p  { font-size: .88rem; color: var(--gray-500); line-height: 1.6; margin-bottom: 16px; }
+.news-link { font-size: .85rem; color: var(--navy-light); font-weight: 600; display: inline-flex; align-items: center; gap: 6px; transition: var(--transition); }
+.news-link:hover { color: var(--gold-dark); gap: 10px; }
+
+/* ── CTA BANNER ───────────────────────────────────────────── */
+.cta-banner {
+  padding: 96px 0;
+  background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold) 50%, var(--gold-light) 100%);
+  text-align: center; position: relative; overflow: hidden;
+}
+.cta-banner::before {
+  content:''; position:absolute; inset:0;
+  background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.06'%3E%3Ccircle cx='20' cy='20' r='3'/%3E%3C/g%3E%3C/svg%3E");
+}
+.cta-banner h2 { font-size: clamp(2rem,4vw,2.8rem); font-weight: 800; color: var(--navy); position: relative; margin-bottom: 16px; }
+.cta-banner p  { font-size: 1.1rem; color: rgba(15,35,71,.75); margin-bottom: 36px; position: relative; }
+.cta-banner .btn-navy { box-shadow: 0 8px 32px rgba(15,35,71,.35); }
+.cta-banner .btn-ghost { background:rgba(255,255,255,.2); border-color:rgba(15,35,71,.2); color:var(--navy); }
+.cta-banner .btn-ghost:hover { background:rgba(255,255,255,.4); }
+.cta-actions { display:flex; gap:16px; justify-content:center; flex-wrap:wrap; position:relative; }
+
+@media(max-width:1024px){
+  .hero-content { grid-template-columns: 1fr; text-align:center; }
+  .hero-visual   { display:none; }
+  .hero-stats    { justify-content: center; }
+  .about-intro-grid { grid-template-columns:1fr; }
+  .about-intro-visual { min-height:280px; }
+  .programs-grid { grid-template-columns: repeat(2,1fr); }
+  .testimonial-card { flex: 0 0 calc(50% - 14px); }
+}
+@media(max-width:768px){
+  .highlights-grid  { grid-template-columns:1fr; }
+  .programs-grid    { grid-template-columns:1fr; }
+  .gallery-grid     { grid-template-columns: repeat(2,1fr); grid-template-rows: auto; }
+  .gallery-item:nth-child(1){ grid-column:span 2; grid-row:span 1; height:200px; }
+  .events-grid      { grid-template-columns:1fr; }
+  .news-grid        { grid-template-columns:1fr; }
+  .hero-stats       { flex-wrap:wrap; gap:24px; }
+  .testimonial-card { flex: 0 0 100%; }
+}
+{% endblock %}
+
+{% block content %}
+
+<!-- ═══ HERO ══════════════════════════════════════════════════════════════ -->
+<section class="hero" id="hero">
+  <div class="hero-bg-shapes">
+    <div class="hero-blob hero-blob-1"></div>
+    <div class="hero-blob hero-blob-2"></div>
+    <div class="hero-blob hero-blob-3"></div>
+    <div class="hero-grid-overlay"></div>
+  </div>
+
+  <div class="hero-content">
+    <div class="hero-text">
+      <div class="hero-eyebrow">
+        <i class="fas fa-star"></i>
+        {% if site %}{{ site.tagline|truncatechars:40 }}{% else %}Nurturing Young Minds Since 2010{% endif %}
+      </div>
+      <h1 class="hero-title">
+        {% if site %}{{ site.hero_title }}{% else %}Welcome to <span>NSMS</span> Little Stars{% endif %}
+      </h1>
+      <p class="hero-subtitle">
+        {% if site and site.hero_subtitle %}{{ site.hero_subtitle }}{% else %}
+          A nurturing, joyful environment where every child thrives through play, creativity, and a love of learning.
+        {% endif %}
+      </p>
+      <div class="hero-actions">
+        <a href="{% url 'apply' %}" class="btn btn-primary"><i class="fas fa-star"></i> Enroll Now</a>
+        <a href="{% url 'contact' %}" class="btn btn-outline"><i class="fas fa-phone"></i> Contact Us</a>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hero-stat-num">500+</div>
+          <div class="hero-stat-label">Happy Students</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num">30+</div>
+          <div class="hero-stat-label">Expert Teachers</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num">15+</div>
+          <div class="hero-stat-label">Years of Excellence</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num">4</div>
+          <div class="hero-stat-label">Programs Offered</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="hero-card-main">
+        <div class="hero-card-icon">🎓</div>
+        <h3>World-Class Early Education</h3>
+        <p>Holistic development for ages 1–6</p>
+      </div>
+      <div class="hero-float-cards">
+        <div class="hero-float-card">
+          <div class="num">100%</div>
+          <div class="lbl">Safe Environment</div>
+        </div>
+        <div class="hero-float-card">
+          <div class="num">⭐ 4.9</div>
+          <div class="lbl">Parent Rating</div>
+        </div>
+        <div class="hero-float-card">
+          <div class="num">24/7</div>
+          <div class="lbl">Care & Support</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ ABOUT INTRO ═══════════════════════════════════════════════════════ -->
+<section class="about-intro">
+  <div class="container">
+    <div class="about-intro-grid">
+      <div class="about-intro-visual fade-up">
+        <i class="fas fa-graduation-cap big-icon"></i>
+        <div class="visual-content">
+          <div style="font-size:5rem;margin-bottom:20px;">🏫</div>
+          <h3>NSMS Little Stars</h3>
+          <p style="margin-top:8px;">Where every child shines</p>
+        </div>
+        <div class="about-intro-badge">
+          Est. 2010<br/>15+ Years of Excellence
+        </div>
+      </div>
+      <div class="about-intro-text fade-up">
+        <span class="badge badge-navy"><i class="fas fa-info-circle"></i> About Our School</span>
+        <h2>A Place Where Children Love to Learn</h2>
+        <p>
+          {% if site and site.about_text %}{{ site.about_text|truncatewords:60 }}{% else %}
+          At NSMS Little Stars, we believe every child is unique and deserves a nurturing environment where they feel safe, valued, and inspired. Our dedicated educators craft engaging, play-based learning experiences that develop the whole child — academically, socially, and emotionally.
+          {% endif %}
+        </p>
+        <p>From our qualified teaching staff to our modern, child-friendly facilities, every aspect of our school is designed with one goal in mind: your child's bright future.</p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:28px;">
+          <a href="{% url 'about' %}" class="btn btn-navy"><i class="fas fa-arrow-right"></i> Our Story</a>
+          <a href="{% url 'academics' %}" class="btn btn-ghost">View Programs</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ KEY HIGHLIGHTS ════════════════════════════════════════════════════ -->
+<section class="highlights">
+  <div class="container">
+    <div class="highlights-grid">
+      <div class="highlight-card fade-up">
+        <div class="highlight-icon gold"><i class="fas fa-chalkboard-teacher"></i></div>
+        <h3>Qualified Teachers</h3>
+        <p>All our educators are certified, experienced, and passionate about early childhood development. They receive continuous professional training.</p>
+      </div>
+      <div class="highlight-card fade-up" style="transition-delay:.15s">
+        <div class="highlight-icon navy"><i class="fas fa-shield-alt"></i></div>
+        <h3>Safe Environment</h3>
+        <p>We maintain the highest safety standards — secured premises, child-safe facilities, health protocols, and attentive supervision at all times.</p>
+      </div>
+      <div class="highlight-card fade-up" style="transition-delay:.25s">
+        <div class="highlight-icon teal"><i class="fas fa-lightbulb"></i></div>
+        <h3>Modern Learning Methods</h3>
+        <p>We combine play-based learning, Montessori principles, and digital tools to create an engaging, holistic curriculum tailored for young minds.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PROGRAMS ══════════════════════════════════════════════════════════ -->
+<section class="programs-section">
+  <div class="container">
+    <div class="section-header fade-up">
+      <span class="badge badge-gold"><i class="fas fa-graduation-cap"></i> Our Programs</span>
+      <h2>Programs Designed for Every Stage</h2>
+      <p>Age-appropriate programs that nurture curiosity, creativity, and confidence from the very first day.</p>
+    </div>
+    <div class="programs-grid">
+      {% if programs %}
+        {% for prog in programs %}
+        <div class="program-card card fade-up" style="transition-delay:{{ forloop.counter0|floatformat }}0{{ forloop.counter0 }}s">
+          <div class="program-num">0{{ forloop.counter }}</div>
+          <div class="program-icon">
+            {% if prog.icon %}<i class="{{ prog.icon }}"></i>
+            {% else %}<i class="fas fa-child"></i>{% endif %}
+          </div>
+          <h3>{{ prog.name }}</h3>
+          <div class="program-age">Ages {{ prog.age_range }}</div>
+          <p>{{ prog.description|truncatewords:20 }}</p>
+          <a href="{% url 'academics' %}" class="program-link">Learn More <i class="fas fa-arrow-right"></i></a>
+        </div>
+        {% endfor %}
+      {% else %}
+        {% for item in "DCNPKG"|make_list %}{% endfor %}
+        <div class="program-card card fade-up">
+          <div class="program-num">01</div>
+          <div class="program-icon"><i class="fas fa-baby"></i></div>
+          <h3>Day Care</h3>
+          <div class="program-age">Ages 1–2 years</div>
+          <p>Loving care and early stimulation for our youngest learners in a safe, home-like setting.</p>
+          <a href="{% url 'academics' %}" class="program-link">Learn More <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="program-card card fade-up" style="transition-delay:.1s">
+          <div class="program-num">02</div>
+          <div class="program-icon"><i class="fas fa-child"></i></div>
+          <h3>Nursery</h3>
+          <div class="program-age">Ages 2–3 years</div>
+          <p>Building social skills, language, and creativity through guided play and exploration.</p>
+          <a href="{% url 'academics' %}" class="program-link">Learn More <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="program-card card fade-up" style="transition-delay:.2s">
+          <div class="program-num">03</div>
+          <div class="program-icon"><i class="fas fa-star"></i></div>
+          <h3>Preschool</h3>
+          <div class="program-age">Ages 3–4 years</div>
+          <p>Laying the academic and social foundation for lifelong learning and self-expression.</p>
+          <a href="{% url 'academics' %}" class="program-link">Learn More <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="program-card card fade-up" style="transition-delay:.3s">
+          <div class="program-num">04</div>
+          <div class="program-icon"><i class="fas fa-graduation-cap"></i></div>
+          <h3>Kindergarten</h3>
+          <div class="program-age">Ages 4–5 years</div>
+          <p>Preparing children for primary school with literacy, numeracy, and critical thinking skills.</p>
+          <a href="{% url 'academics' %}" class="program-link">Learn More <i class="fas fa-arrow-right"></i></a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<!-- ═══ TESTIMONIALS ══════════════════════════════════════════════════════ -->
+<section class="testimonials-section">
+  <div class="container">
+    <div class="section-header fade-up">
+      <span class="badge badge-gold"><i class="fas fa-heart"></i> Parent Testimonials</span>
+      <h2>What Our Families Say</h2>
+      <p>Hear directly from the parents who trust us with their most precious gift.</p>
+    </div>
+    <div class="testimonials-slider fade-up">
+      <div class="testimonials-track" id="testimonialTrack">
+        {% if testimonials %}
+          {% for t in testimonials %}
+          <div class="testimonial-card">
+            <div class="testimonial-stars">
+              {% for i in "12345" %}{% if forloop.counter <= t.rating %}⭐{% endif %}{% endfor %}
+            </div>
+            <blockquote>"{{ t.message }}"</blockquote>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">{{ t.parent_name|first }}</div>
+              <div>
+                <div class="testimonial-name">{{ t.parent_name }}</div>
+                {% if t.child_name %}<div class="testimonial-child">Parent of {{ t.child_name }}</div>{% endif %}
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        {% else %}
+          {% for t in "ABCDEF"|make_list %}
+          <div class="testimonial-card">
+            <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+            <blockquote>"NSMS Little Stars transformed my child's love for learning. The teachers are incredibly dedicated and the environment is so warm and nurturing. We couldn't be happier!"</blockquote>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">M</div>
+              <div>
+                <div class="testimonial-name">Maria Santos</div>
+                <div class="testimonial-child">Parent of a Preschool student</div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        {% endif %}
+      </div>
+    </div>
+    <div class="slider-controls">
+      <button class="slider-btn" id="prevBtn"><i class="fas fa-chevron-left"></i></button>
+      <div class="slider-dots" id="sliderDots"></div>
+      <button class="slider-btn" id="nextBtn"><i class="fas fa-chevron-right"></i></button>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ GALLERY PREVIEW ═══════════════════════════════════════════════════ -->
+<section class="gallery-preview">
+  <div class="container">
+    <div class="section-header fade-up">
+      <span class="badge badge-navy"><i class="fas fa-images"></i> Photo Gallery</span>
+      <h2>Life at NSMS Little Stars</h2>
+      <p>A glimpse into the joyful everyday moments that make our school special.</p>
+    </div>
+    <div class="gallery-grid fade-up">
+      {% if gallery %}
+        {% for img in gallery %}
+        <div class="gallery-item">
+          <div class="gallery-thumb">{% if img.image %}<img src="{{ img.image.url }}" alt="{{ img.title }}" />{% else %}📸{% endif %}</div>
+          <div class="gallery-overlay"><i class="fas fa-expand-alt"></i></div>
+        </div>
+        {% endfor %}
+      {% else %}
+        {% for emoji in "📚🎨🎭🏃🎵🖼️🌱🏅"|make_list %}
+        <div class="gallery-item">
+          <div class="gallery-thumb" style="font-size:3rem;background:linear-gradient(135deg,var(--navy) 0%,var(--navy-mid) 100%)">{{ emoji }}</div>
+          <div class="gallery-overlay"><i class="fas fa-expand-alt"></i></div>
+        </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+    <div style="text-align:center;margin-top:40px;" class="fade-up">
+      <a href="{% url 'gallery' %}" class="btn btn-navy"><i class="fas fa-images"></i> View Full Gallery</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ UPCOMING EVENTS ═══════════════════════════════════════════════════ -->
+{% if events %}
+<section class="events-preview">
+  <div class="container">
+    <div class="section-header fade-up">
+      <span class="badge badge-gold"><i class="fas fa-calendar-alt"></i> Upcoming Events</span>
+      <h2>What's Happening</h2>
+      <p>Stay up-to-date with school events, activities, and important dates.</p>
+    </div>
+    <div class="events-grid">
+      {% for event in events %}
+      <div class="event-card fade-up" style="transition-delay:{{ forloop.counter0 }}00ms">
+        <div class="event-date-pill">
+          <div class="event-date-num">{{ event.date|date:"d" }}</div>
+          <div>
+            <div style="font-size:1rem;font-weight:700;color:var(--white);">{{ event.date|date:"F" }}</div>
+            <div class="event-date-month">{{ event.date|date:"Y" }}</div>
+          </div>
+        </div>
+        <div class="event-body">
+          <h3>{{ event.title }}</h3>
+          <p>{{ event.description|truncatewords:20 }}</p>
+          <div class="event-meta">
+            {% if event.time %}<span><i class="fas fa-clock"></i>{{ event.time|time:"g:i A" }}</span>{% endif %}
+            {% if event.location %}<span><i class="fas fa-map-marker-alt"></i>{{ event.location }}</span>{% endif %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <div style="text-align:center;margin-top:40px;" class="fade-up">
+      <a href="{% url 'events' %}" class="btn btn-ghost"><i class="fas fa-calendar-alt"></i> All Events & News</a>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- ═══ LATEST NEWS ════════════════════════════════════════════════════════ -->
+{% if posts %}
+<section class="news-section">
+  <div class="container">
+    <div class="section-header fade-up">
+      <span class="badge badge-teal"><i class="fas fa-newspaper"></i> Latest News</span>
+      <h2>From Our School Blog</h2>
+      <p>Stories, insights, and highlights from life at NSMS Little Stars.</p>
+    </div>
+    <div class="news-grid">
+      {% for post in posts %}
+      <div class="news-card fade-up" style="transition-delay:{{ forloop.counter0 }}00ms">
+        <div class="news-card-img">
+          {% if post.featured_image %}<img src="{{ post.featured_image.url }}" alt="{{ post.title }}" />
+          {% else %}📰{% endif %}
+        </div>
+        <div class="news-card-body">
+          <div class="news-date"><i class="fas fa-calendar"></i> {{ post.created_at|date:"F j, Y" }}</div>
+          <h3>{{ post.title }}</h3>
+          <p>{{ post.excerpt|default:post.content|truncatewords:25 }}</p>
+          <a href="{% url 'blog_detail' post.slug %}" class="news-link">Read More <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <div style="text-align:center;margin-top:40px;" class="fade-up">
+      <a href="{% url 'blog' %}" class="btn btn-ghost">View All Posts</a>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- ═══ CTA BANNER ════════════════════════════════════════════════════════ -->
+<section class="cta-banner">
+  <div class="container">
+    <h2>Ready to Give Your Child the Best Start?</h2>
+    <p>Join our growing family of happy students and parents. Limited slots available!</p>
+    <div class="cta-actions">
+      <a href="{% url 'apply' %}" class="btn btn-navy"><i class="fas fa-star"></i> Apply Now</a>
+      <a href="{% url 'contact' %}" class="btn btn-ghost"><i class="fas fa-phone"></i> Schedule a Visit</a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  /* Testimonial Slider */
+  const track  = document.getElementById('testimonialTrack');
+  const dotsEl = document.getElementById('sliderDots');
+  if (track) {
+    const cards    = track.querySelectorAll('.testimonial-card');
+    const total    = cards.length;
+    const perPage  = window.innerWidth < 768 ? 1 : window.innerWidth < 1024 ? 2 : 3;
+    const pages    = Math.ceil(total / perPage);
+    let current    = 0;
+
+    /* build dots */
+    for (let i = 0; i < pages; i++) {
+      const d = document.createElement('button');
+      d.className = 'slider-dot' + (i === 0 ? ' active' : '');
+      d.addEventListener('click', () => goTo(i));
+      dotsEl.appendChild(d);
+    }
+
+    function goTo(page) {
+      current = (page + pages) % pages;
+      const cardWidth = cards[0].offsetWidth + 28;
+      track.style.transform = `translateX(-${current * perPage * cardWidth}px)`;
+      dotsEl.querySelectorAll('.slider-dot').forEach((d, i) => d.classList.toggle('active', i === current));
+    }
+    document.getElementById('prevBtn').addEventListener('click', () => goTo(current - 1));
+    document.getElementById('nextBtn').addEventListener('click', () => goTo(current + 1));
+    setInterval(() => goTo(current + 1), 5000);
+  }
+</script>
+{% endblock %}

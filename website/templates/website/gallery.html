@@ -1,0 +1,191 @@
+{% extends 'website/base.html' %}
+{% block page_title %}Gallery{% endblock %}
+{% block meta_description %}Explore our photo and video gallery – Events, Classes, and Activities at EduCare International School.{% endblock %}
+
+{% block extra_css %}
+.gallery-section { padding: 80px 0 96px; background: var(--white); }
+.filter-bar {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  margin-bottom: 48px; justify-content: center;
+}
+.filter-btn {
+  padding: 10px 24px; border-radius: 100px; font-size: .85rem; font-weight: 600;
+  cursor: pointer; transition: var(--transition);
+  border: 2px solid var(--gray-200); background: var(--white); color: var(--gray-500);
+  font-family: 'Outfit', sans-serif;
+}
+.filter-btn:hover,
+.filter-btn.active { background: var(--navy); color: var(--white); border-color: var(--navy); }
+
+.gallery-masonry {
+  columns: 4; column-gap: 16px;
+}
+.gallery-masonry-item {
+  break-inside: avoid; margin-bottom: 16px; border-radius: var(--radius);
+  overflow: hidden; position: relative; cursor: pointer;
+  transition: var(--transition);
+}
+.gallery-masonry-item:hover { transform: scale(1.02); box-shadow: var(--shadow-lg); }
+.gallery-masonry-item img { width: 100%; display: block; }
+.gallery-thumb-placeholder {
+  background: linear-gradient(135deg, var(--navy), var(--navy-mid));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 3rem; color: rgba(255,255,255,.4);
+}
+.gallery-masonry-item:nth-child(3n+1) .gallery-thumb-placeholder { min-height: 220px; }
+.gallery-masonry-item:nth-child(3n+2) .gallery-thumb-placeholder { min-height: 160px; }
+.gallery-masonry-item:nth-child(3n)   .gallery-thumb-placeholder { min-height: 280px; }
+
+.gallery-overlay-info {
+  position: absolute; inset: 0;
+  background: linear-gradient(0deg, rgba(10,23,50,.8) 0%, transparent 50%);
+  opacity: 0; transition: var(--transition);
+  display: flex; align-items: flex-end;
+}
+.gallery-masonry-item:hover .gallery-overlay-info { opacity: 1; }
+.gallery-overlay-info .info { padding: 16px; }
+.gallery-overlay-info .info h4 { color: var(--white); font-size: .9rem; font-weight: 700; }
+.gallery-overlay-info .info span { font-size: .75rem; color: rgba(255,255,255,.6); }
+
+/* Lightbox */
+.lightbox {
+  position: fixed; inset: 0; background: rgba(5,10,25,.95);
+  z-index: 9000; display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: var(--transition);
+}
+.lightbox.open { opacity: 1; pointer-events: auto; }
+.lightbox-img { max-width: 90vw; max-height: 85vh; border-radius: var(--radius); box-shadow: var(--shadow-xl); }
+.lightbox-close {
+  position: absolute; top: 20px; right: 24px;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2);
+  color: var(--white); font-size: 1.1rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; transition: var(--transition);
+}
+.lightbox-close:hover { background: var(--red); }
+
+.gallery-empty {
+  text-align: center; padding: 80px 24px; color: var(--gray-400);
+}
+.gallery-empty .empty-icon { font-size: 5rem; margin-bottom: 20px; opacity: .4; }
+.gallery-empty h3 { font-size: 1.3rem; color: var(--gray-500); margin-bottom: 8px; }
+
+@media(max-width:1024px){ .gallery-masonry{columns:3;} }
+@media(max-width:768px) { .gallery-masonry{columns:2;} }
+@media(max-width:480px) { .gallery-masonry{columns:1;} }
+{% endblock %}
+
+{% block content %}
+
+<div class="page-hero">
+  <h1>Photo <span>Gallery</span></h1>
+  <div class="breadcrumb">
+    <a href="{% url 'home' %}">Home</a>
+    <i class="fas fa-chevron-right"></i>
+    <span>Gallery</span>
+  </div>
+</div>
+
+<section class="gallery-section">
+  <div class="container">
+    <div class="section-header fade-up">
+      <span class="badge badge-gold"><i class="fas fa-images"></i> Our Gallery</span>
+      <h2>Moments That Matter</h2>
+      <p>A collection of joyful memories from classroom activities, special events, and everyday adventures.</p>
+    </div>
+
+    <!-- Category Filter -->
+    <div class="filter-bar fade-up">
+      <button class="filter-btn active" data-filter="all">All Photos</button>
+      {% for cat in categories %}
+      <button class="filter-btn" data-filter="{{ cat.slug }}">{{ cat.name }}</button>
+      {% endfor %}
+      {% if not categories %}
+      <button class="filter-btn" data-filter="events">Events</button>
+      <button class="filter-btn" data-filter="classes">Classes</button>
+      <button class="filter-btn" data-filter="activities">Activities</button>
+      {% endif %}
+    </div>
+
+    <!-- Gallery Grid -->
+    {% if images %}
+    <div class="gallery-masonry fade-up" id="galleryGrid">
+      {% for img in images %}
+      <div class="gallery-masonry-item" data-category="{{ img.category.slug|default:'uncategorized' }}" onclick="openLightbox('{% if img.image %}{{ img.image.url }}{% endif %}', '{{ img.title }}', '{{ img.category.name|default:"Gallery" }}')">
+        {% if img.image %}
+          <img src="{{ img.image.url }}" alt="{{ img.title }}" loading="lazy" />
+        {% else %}
+          <div class="gallery-thumb-placeholder">📸</div>
+        {% endif %}
+        <div class="gallery-overlay-info">
+          <div class="info">
+            <h4>{{ img.title }}</h4>
+            <span>{{ img.category.name|default:"General" }}</span>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <!-- Demo gallery with placeholder -->
+    <div class="gallery-masonry fade-up" id="galleryGrid">
+      {% for item in "ABCDEFGHIJKL"|make_list %}
+      <div class="gallery-masonry-item" data-category="{% cycle 'events' 'classes' 'activities' %}">
+        <div class="gallery-thumb-placeholder">{% cycle '📚' '🎨' '🎭' '🏃' '🎵' '🌱' '🏅' '🖼️' '🎪' '🌈' '🎊' '📸' %}</div>
+        <div class="gallery-overlay-info">
+          <div class="info">
+            <h4>School Activity</h4>
+            <span>{% cycle 'Events' 'Classes' 'Activities' %}</span>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" onclick="closeLightbox()"><i class="fas fa-times"></i></button>
+  <img src="" alt="" class="lightbox-img" id="lightboxImg" />
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  /* Category Filter */
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  const galleryItems = document.querySelectorAll('.gallery-masonry-item');
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const filter = btn.dataset.filter;
+      galleryItems.forEach(item => {
+        const show = filter === 'all' || item.dataset.category === filter;
+        item.style.display = show ? '' : 'none';
+        item.style.animation = show ? 'fadeInUp .4s ease' : '';
+      });
+    });
+  });
+
+  /* Lightbox */
+  function openLightbox(src, title, cat) {
+    if (!src) return;
+    document.getElementById('lightboxImg').src = src;
+    document.getElementById('lightboxImg').alt = title;
+    document.getElementById('lightbox').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.getElementById('lightbox').addEventListener('click', function(e) {
+    if (e.target === this) closeLightbox();
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+</script>
+{% endblock %}

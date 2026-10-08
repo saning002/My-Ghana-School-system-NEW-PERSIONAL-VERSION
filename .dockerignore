@@ -1,0 +1,15 @@
+.env
+.env.*
+!.env.example
+.git
+.gitignore
+node_modules
+storage/framework/cache/data/*
+storage/framework/views/*
+storage/logs/*
+bootstrap/cache/*.php
+tests
+phpunit.xml
+README.md
+DEPLOY.md
+.kiro

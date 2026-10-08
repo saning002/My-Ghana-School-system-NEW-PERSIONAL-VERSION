@@ -1,0 +1,108 @@
+{% extends 'website/base.html' %}
+{% block page_title %}Our Team{% endblock %}
+{% block meta_description %}Meet the dedicated educators and staff of {% if site %}{{ site.site_name }}{% else %}our school{% endif %} — passionate professionals committed to every child's success.{% endblock %}
+
+{% block extra_css %}
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 28px;
+  padding: 80px 0 96px;
+}
+.team-card {
+  background: var(--white);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+  border: 1px solid var(--gray-100);
+  text-align: center;
+}
+.team-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-xl);
+}
+.team-card-banner {
+  height: 90px;
+  background: linear-gradient(135deg, var(--navy), var(--teal));
+}
+.team-card-photo {
+  width: 96px; height: 96px;
+  border-radius: 50%;
+  border: 4px solid var(--white);
+  margin: -48px auto 16px;
+  overflow: hidden;
+  background: var(--gray-100);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2rem; font-weight: 800; color: var(--navy-mid);
+  box-shadow: 0 4px 16px rgba(0,0,0,.12);
+}
+.team-card-photo img { width: 100%; height: 100%; object-fit: cover; }
+.team-card-body { padding: 0 24px 28px; }
+.team-card-body h3 { font-size: 1.1rem; font-weight: 800; color: var(--navy); margin-bottom: 4px; }
+.team-card-position {
+  font-size: .82rem; font-weight: 700;
+  color: var(--gold-dark); text-transform: uppercase; letter-spacing: .06em;
+  margin-bottom: 14px;
+}
+.team-card-bio { font-size: .88rem; color: var(--gray-500); line-height: 1.7; margin-bottom: 18px; }
+.team-card-email {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: .82rem; color: var(--navy-mid); font-weight: 600;
+  text-decoration: none; transition: var(--transition);
+}
+.team-card-email:hover { color: var(--gold-dark); }
+
+.team-empty {
+  text-align: center; padding: 80px 24px; color: var(--gray-400);
+}
+.team-empty i { font-size: 3rem; margin-bottom: 16px; display: block; }
+{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <h1>Our Dedicated Team</h1>
+  <p>Passionate educators and professionals committed to every child's success.</p>
+  <div class="breadcrumb">
+    <a href="{% url 'home' %}">Home</a>
+    <i class="fas fa-chevron-right"></i>
+    <span>Our Team</span>
+  </div>
+</div>
+
+<div class="container">
+  {% if staff_list %}
+  <div class="team-grid">
+    {% for member in staff_list %}
+    <div class="team-card fade-up" style="transition-delay: {{ forloop.counter0|divisibleby:4|yesno:'0,.1,.2,.3' }}s;">
+      <div class="team-card-banner"></div>
+      <div class="team-card-photo">
+        {% if member.photo %}
+          <img src="{{ member.photo.url }}" alt="{{ member.name }}">
+        {% else %}
+          {{ member.name|slice:":1"|upper }}
+        {% endif %}
+      </div>
+      <div class="team-card-body">
+        <h3>{{ member.name }}</h3>
+        <div class="team-card-position">{{ member.position }}</div>
+        {% if member.bio %}
+        <p class="team-card-bio">{{ member.bio|truncatewords:30 }}</p>
+        {% endif %}
+        {% if member.email %}
+        <a href="mailto:{{ member.email }}" class="team-card-email">
+          <i class="fas fa-envelope"></i> {{ member.email }}
+        </a>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="team-empty fade-up">
+    <i class="fas fa-users"></i>
+    <p>Staff profiles are being added. Check back soon!</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

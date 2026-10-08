@@ -1,0 +1,207 @@
+{% extends 'website/base.html' %}
+{% block page_title %}Events & News{% endblock %}
+{% block meta_description %}Stay updated on upcoming events, announcements, and latest news from EduCare International School.{% endblock %}
+
+{% block extra_css %}
+.events-section { padding: 96px 0; background: var(--white); }
+.events-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 48px; align-items: start; }
+
+/* Upcoming Events */
+.event-list { display: flex; flex-direction: column; gap: 24px; }
+.event-list-card {
+  background: var(--white); border-radius: 20px; box-shadow: var(--shadow);
+  overflow: hidden; display: grid; grid-template-columns: auto 1fr;
+  transition: var(--transition);
+}
+.event-list-card:hover { transform: translateX(6px); box-shadow: var(--shadow-lg); }
+.event-list-date {
+  width: 96px; background: linear-gradient(135deg, var(--navy), var(--navy-mid));
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 20px 12px; text-align: center;
+}
+.event-list-date .day   { font-family:'Outfit',sans-serif; font-size: 2.4rem; font-weight: 900; color: var(--gold); line-height: 1; }
+.event-list-date .month { font-size: .75rem; color: rgba(255,255,255,.6); text-transform: uppercase; letter-spacing: .08em; margin-top: 4px; }
+.event-list-date .year  { font-size: .7rem;  color: rgba(255,255,255,.4); }
+.event-list-body { padding: 24px 28px; }
+.event-list-body h3 { font-size: 1.1rem; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+.event-list-body p  { font-size: .9rem; color: var(--gray-500); line-height: 1.6; margin-bottom: 14px; }
+.event-meta-row { display: flex; gap: 20px; flex-wrap: wrap; }
+.event-meta-item { display: flex; align-items: center; gap: 6px; font-size: .8rem; color: var(--gray-400); }
+.event-meta-item i { color: var(--gold-dark); }
+
+.no-events { text-align:center; padding: 60px 24px; color: var(--gray-400); }
+.no-events .icon { font-size: 4rem; margin-bottom: 16px; opacity: .4; }
+
+/* Past Events */
+.past-events-section { padding: 0 0 96px; background: var(--gray-50); }
+.past-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
+.past-card {
+  background: var(--white); border-radius: 16px; overflow: hidden;
+  box-shadow: var(--shadow); transition: var(--transition); opacity: .8;
+}
+.past-card:hover { opacity:1; transform:translateY(-4px); box-shadow:var(--shadow-lg); }
+.past-card-header {
+  height: 120px; background: linear-gradient(135deg, var(--navy-light), var(--navy));
+  display: flex; align-items: center; justify-content: center; font-size: 2.5rem;
+  position: relative;
+}
+.past-badge {
+  position: absolute; top: 10px; right: 10px;
+  background: rgba(0,0,0,.4); color: rgba(255,255,255,.7);
+  padding: 4px 10px; border-radius: 100px; font-size: .7rem; font-weight: 600;
+}
+.past-card-body { padding: 18px 20px; }
+.past-card-body h4 { font-size: .97rem; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+.past-card-body p  { font-size: .83rem; color: var(--gray-400); }
+
+/* Sidebar */
+.events-sidebar { position: sticky; top: 100px; }
+.sidebar-widget { background: var(--gray-50); border-radius: 20px; padding: 28px; margin-bottom: 24px; }
+.sidebar-widget h4 { font-size: 1rem; font-weight: 700; color: var(--navy); margin-bottom: 20px; display:flex;align-items:center;gap:8px; }
+.sidebar-widget h4 i { color: var(--gold); }
+.news-item { padding: 14px 0; border-bottom: 1px solid var(--gray-200); }
+.news-item:last-child { border-bottom: none; }
+.news-item-date { font-size: .75rem; color: var(--gray-400); margin-bottom: 4px; }
+.news-item-title { font-size: .88rem; font-weight: 600; color: var(--navy); transition: var(--transition); }
+.news-item-title:hover { color: var(--gold-dark); }
+.news-item-excerpt { font-size: .8rem; color: var(--gray-500); margin-top: 4px; }
+
+.announce-item {
+  background: var(--white); border-left: 4px solid var(--gold);
+  border-radius: 0 10px 10px 0; padding: 14px 16px; margin-bottom: 12px;
+}
+.announce-date  { font-size: .73rem; color: var(--gray-400); margin-bottom: 4px; }
+.announce-title { font-size: .88rem; font-weight: 600; color: var(--navy); }
+
+@media(max-width:1024px){ .events-layout{grid-template-columns:1fr;} .events-sidebar{position:static;} .past-grid{grid-template-columns:1fr 1fr;} }
+@media(max-width:600px) { .past-grid{grid-template-columns:1fr;} }
+{% endblock %}
+
+{% block content %}
+
+<div class="page-hero">
+  <h1>Events <span>&amp; News</span></h1>
+  <div class="breadcrumb">
+    <a href="{% url 'home' %}">Home</a>
+    <i class="fas fa-chevron-right"></i>
+    <span>Events &amp; News</span>
+  </div>
+</div>
+
+<!-- ═══ UPCOMING EVENTS ═══════════════════════════════════════════════════ -->
+<section class="events-section">
+  <div class="container">
+    <div class="events-layout">
+      <div>
+        <div class="section-header fade-up" style="text-align:left;margin-bottom:36px;">
+          <span class="badge badge-gold"><i class="fas fa-calendar-alt"></i> Upcoming</span>
+          <h2 style="font-size:2rem;">Upcoming Events</h2>
+        </div>
+
+        {% if upcoming_events %}
+        <div class="event-list">
+          {% for event in upcoming_events %}
+          <div class="event-list-card fade-up" style="transition-delay:{{ forloop.counter0 }}00ms">
+            <div class="event-list-date">
+              <div class="day">{{ event.date|date:"d" }}</div>
+              <div class="month">{{ event.date|date:"M" }}</div>
+              <div class="year">{{ event.date|date:"Y" }}</div>
+            </div>
+            <div class="event-list-body">
+              <h3>{{ event.title }}</h3>
+              <p>{{ event.description }}</p>
+              <div class="event-meta-row">
+                {% if event.time %}<div class="event-meta-item"><i class="fas fa-clock"></i>{{ event.time|time:"g:i A" }}</div>{% endif %}
+                {% if event.location %}<div class="event-meta-item"><i class="fas fa-map-marker-alt"></i>{{ event.location }}</div>{% endif %}
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="no-events fade-up">
+          <div class="icon">📅</div>
+          <h3>No upcoming events at the moment.</h3>
+          <p>Check back soon — we always have something exciting planned!</p>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Sidebar: News & Announcements -->
+      <div class="events-sidebar fade-up" style="transition-delay:.2s">
+
+        {% if posts %}
+        <div class="sidebar-widget">
+          <h4><i class="fas fa-newspaper"></i> Latest News</h4>
+          {% for post in posts %}
+          <div class="news-item">
+            <div class="news-item-date"><i class="fas fa-calendar"></i> {{ post.created_at|date:"M j, Y" }}</div>
+            <a href="{% url 'blog_detail' post.slug %}" class="news-item-title">{{ post.title }}</a>
+            <div class="news-item-excerpt">{{ post.excerpt|default:post.content|truncatewords:12 }}</div>
+          </div>
+          {% endfor %}
+          <div style="margin-top:20px;">
+            <a href="{% url 'blog' %}" class="btn btn-ghost" style="width:100%;justify-content:center;">View All Posts</a>
+          </div>
+        </div>
+        {% endif %}
+
+        <div class="sidebar-widget">
+          <h4><i class="fas fa-bullhorn"></i> Announcements</h4>
+          <div class="announce-item">
+            <div class="announce-date">Enrollment Open</div>
+            <div class="announce-title">School Year 2025–2026 enrollment is now open. Apply online today!</div>
+          </div>
+          <div class="announce-item">
+            <div class="announce-date">Holiday Notice</div>
+            <div class="announce-title">School will be closed on April 17–18 for Holy Week observance.</div>
+          </div>
+          <div class="announce-item">
+            <div class="announce-date">Achievement</div>
+            <div class="announce-title">NSMS Little Stars awarded "Best Early Learning Center 2024" by the Regional Education Board!</div>
+          </div>
+          <div class="announce-item">
+            <div class="announce-date">Parent Meeting</div>
+            <div class="announce-title">General Parent Assembly scheduled for May 5, 2025 at 9:00 AM in the MPH.</div>
+          </div>
+        </div>
+
+        <div class="sidebar-widget" style="background:linear-gradient(135deg,var(--navy),var(--navy-mid));border:none;">
+          <h4 style="color:var(--white);"><i class="fas fa-envelope"></i> Stay in the Loop</h4>
+          <p style="font-size:.88rem;color:rgba(255,255,255,.65);margin-bottom:16px;">Get event updates and school news delivered to your inbox.</p>
+          <input type="email" placeholder="your@email.com" class="form-control" style="border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:var(--white);margin-bottom:12px;" />
+          <button class="btn btn-primary" style="width:100%;justify-content:center;">Subscribe</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PAST EVENTS ═══════════════════════════════════════════════════════ -->
+{% if past_events %}
+<section class="past-events-section">
+  <div class="container">
+    <div class="section-header fade-up">
+      <span class="badge badge-navy"><i class="fas fa-history"></i> Past Events</span>
+      <h2>Recent School Events</h2>
+    </div>
+    <div class="past-grid">
+      {% for event in past_events %}
+      <div class="past-card fade-up" style="transition-delay:{{ forloop.counter0 }}00ms">
+        <div class="past-card-header">
+          {% if event.image %}<img src="{{ event.image.url }}" alt="{{ event.title }}" style="width:100%;height:100%;object-fit:cover;" />
+          {% else %}🎊{% endif %}
+          <div class="past-badge">{{ event.date|date:"M Y" }}</div>
+        </div>
+        <div class="past-card-body">
+          <h4>{{ event.title }}</h4>
+          <p>{{ event.description|truncatewords:15 }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% endblock %}

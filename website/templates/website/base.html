@@ -1,0 +1,535 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}{% if site %}{{ site.site_name }}{% else %}EduCare International School{% endif %} – {% block page_title %}Home{% endblock %}{% endblock %}</title>
+  <meta name="description" content="{% block meta_description %}EduCare International School – Nurturing young minds for a bright future. Nursery, Preschool and Kindergarten excellence.{% endblock %}" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <style>
+    /* ═══════════════════════════════════════════════
+       DESIGN TOKENS
+    ═══════════════════════════════════════════════ */
+    :root {
+      --navy:         #0f2347;
+      --navy-mid:     #1a3a6b;
+      --navy-light:   #2554a0;
+      --gold:         #f5a623;
+      --gold-dark:    #d4891a;
+      --gold-light:   #fbbf24;
+      --cream:        #fef9f0;
+      --white:        #ffffff;
+      --gray-50:      #f9fafb;
+      --gray-100:     #f3f4f6;
+      --gray-200:     #e5e7eb;
+      --gray-400:     #9ca3af;
+      --gray-500:     #6b7280;
+      --gray-700:     #374151;
+      --gray-900:     #111827;
+      --teal:         #0891b2;
+      --green:        #16a34a;
+      --red:          #dc2626;
+      --shadow-sm:    0 1px 3px rgba(0,0,0,.1);
+      --shadow:       0 4px 16px rgba(0,0,0,.1);
+      --shadow-lg:    0 12px 40px rgba(0,0,0,.15);
+      --shadow-xl:    0 24px 60px rgba(0,0,0,.20);
+      --radius:       12px;
+      --radius-lg:    20px;
+      --radius-xl:    32px;
+      --transition:   all .3s cubic-bezier(.4,0,.2,1);
+    }
+
+    /* ═══════════════════════════════════════════════
+       RESET & BASE
+    ═══════════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      font-family: 'Inter', sans-serif;
+      color: var(--gray-700);
+      background: var(--white);
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+    h1,h2,h3,h4,h5,h6 { font-family: 'Outfit', sans-serif; line-height: 1.3; color: var(--gray-900); }
+    a { text-decoration: none; color: inherit; }
+    img { max-width: 100%; display: block; }
+    ul { list-style: none; }
+    button, input, textarea, select { font-family: inherit; }
+
+    /* ═══════════════════════════════════════════════
+       UTILITY CLASSES
+    ═══════════════════════════════════════════════ */
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    .section    { padding: 96px 0; }
+    .section-sm { padding: 64px 0; }
+
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 16px; border-radius: 100px; font-size: .78rem;
+      font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
+    }
+    .badge-gold   { background: rgba(245,166,35,.15); color: var(--gold-dark); }
+    .badge-navy   { background: rgba(15,35,71,.1);    color: var(--navy); }
+    .badge-teal   { background: rgba(8,145,178,.12);  color: var(--teal); }
+
+    .section-header { text-align: center; margin-bottom: 64px; }
+    .section-header h2 {
+      font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 800;
+      color: var(--navy); margin-bottom: 16px;
+    }
+    .section-header p { font-size: 1.1rem; color: var(--gray-500); max-width: 580px; margin: 0 auto; }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 14px 32px; border-radius: 100px; font-weight: 600;
+      font-size: .95rem; cursor: pointer; border: 2px solid transparent;
+      transition: var(--transition); white-space: nowrap; font-family: 'Outfit', sans-serif;
+    }
+    .btn-primary {
+      background: var(--gold); color: var(--navy);
+      box-shadow: 0 4px 20px rgba(245,166,35,.4);
+    }
+    .btn-primary:hover { background: var(--gold-dark); transform: translateY(-2px); box-shadow: 0 8px 28px rgba(245,166,35,.5); }
+    .btn-outline {
+      background: transparent; color: var(--white);
+      border-color: rgba(255,255,255,.5);
+    }
+    .btn-outline:hover { background: rgba(255,255,255,.1); border-color: var(--white); }
+    .btn-navy {
+      background: var(--navy); color: var(--white);
+      box-shadow: 0 4px 20px rgba(15,35,71,.3);
+    }
+    .btn-navy:hover { background: var(--navy-mid); transform: translateY(-2px); }
+    .btn-ghost { background: transparent; color: var(--gray-700); border-color: var(--gray-200); }
+    .btn-ghost:hover { background: var(--gray-50); border-color: var(--gray-400); }
+
+    .card {
+      background: var(--white); border-radius: var(--radius-lg);
+      box-shadow: var(--shadow); transition: var(--transition); overflow: hidden;
+    }
+    .card:hover { transform: translateY(-6px); box-shadow: var(--shadow-lg); }
+
+    /* ═══════════════════════════════════════════════
+       NAVBAR
+    ═══════════════════════════════════════════════ */
+    .navbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      padding: 0 24px;
+      transition: var(--transition);
+    }
+    .navbar.transparent { background: transparent; }
+    .navbar.scrolled {
+      background: rgba(15,35,71,.97);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 4px 24px rgba(0,0,0,.25);
+    }
+    .navbar-inner {
+      max-width: 1200px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 76px;
+    }
+    .navbar-brand { display: flex; align-items: center; gap: 12px; }
+    .brand-logo {
+      width: auto; height: auto; border-radius: 0;
+      background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; font-weight: 900; color: var(--navy); 
+      font-family: 'Outfit', sans-serif;
+      padding: 0 0;
+      letter-spacing: -0.02em;
+    }
+    .brand-logo-text {
+      font-size: 0.9rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-family: 'Outfit', sans-serif;
+    }
+    .brand-text { display: flex; flex-direction: column; line-height: 1.1; }
+    .brand-name { font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 1.25rem; color: var(--white); text-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+    .brand-sub  { font-size: .7rem; color: rgba(255,255,255,.6); letter-spacing: .06em; text-transform: uppercase; }
+
+    .navbar-links { display: flex; align-items: center; gap: 4px; }
+    .navbar-links a {
+      padding: 8px 14px; border-radius: 8px;
+      color: rgba(255,255,255,.85); font-size: .9rem; font-weight: 500;
+      transition: var(--transition); font-family: 'Outfit', sans-serif;
+    }
+    .navbar-links a:hover,
+    .navbar-links a.active { color: var(--gold); background: rgba(245,166,35,.1); }
+
+    .navbar-cta { margin-left: 12px; padding: 10px 24px !important; }
+
+    .hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      cursor: pointer; padding: 8px; border: none; background: none;
+    }
+    .hamburger span {
+      display: block; width: 24px; height: 2px;
+      background: var(--white); border-radius: 2px; transition: var(--transition);
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .mobile-nav {
+      display: none; position: fixed; top: 76px; left: 0; right: 0;
+      background: rgba(10,25,55,.98); backdrop-filter: blur(20px);
+      padding: 24px; z-index: 999; border-top: 1px solid rgba(255,255,255,.08);
+      transform: translateY(-20px); opacity: 0; transition: var(--transition);
+    }
+    .mobile-nav.open { display: block; transform: translateY(0); opacity: 1; }
+    .mobile-nav a {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 16px; color: rgba(255,255,255,.85); font-size: 1rem;
+      border-radius: 10px; transition: var(--transition); font-family: 'Outfit', sans-serif;
+    }
+    .mobile-nav a:hover { background: rgba(245,166,35,.1); color: var(--gold); }
+    .mobile-nav a i { width: 20px; text-align: center; color: var(--gold); }
+
+    /* ═══════════════════════════════════════════════
+       MESSAGES
+    ═══════════════════════════════════════════════ */
+    .messages-container { position: fixed; top: 90px; right: 24px; z-index: 2000; max-width: 400px; }
+    .message-alert {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 16px 20px; border-radius: var(--radius); margin-bottom: 12px;
+      box-shadow: var(--shadow-lg); animation: slideInRight .4s ease;
+    }
+    .message-alert.success { background: #f0fdf4; border-left: 4px solid var(--green); color: #166534; }
+    .message-alert.error   { background: #fef2f2; border-left: 4px solid var(--red);   color: #991b1b; }
+    .message-alert.warning { background: #fffbeb; border-left: 4px solid var(--gold);  color: #92400e; }
+    .message-close {
+      margin-left: auto; background: none; border: none;
+      cursor: pointer; color: inherit; opacity: .6; font-size: 1rem;
+    }
+    @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+    /* ═══════════════════════════════════════════════
+       FOOTER
+    ═══════════════════════════════════════════════ */
+    .footer {
+      background: var(--navy);
+      background-image: linear-gradient(135deg, #0f2347 0%, #1a3a6b 100%);
+      color: rgba(255,255,255,.75); padding: 80px 0 0;
+    }
+    .footer-grid {
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1.5fr; gap: 48px;
+      padding-bottom: 60px; border-bottom: 1px solid rgba(255,255,255,.1);
+    }
+    .footer-brand .brand-text-lg {
+      font-family: 'Outfit', sans-serif; font-size: 1.4rem;
+      font-weight: 800; color: var(--white); margin-bottom: 6px;
+    }
+    .footer-brand .tagline { font-size: .9rem; color: rgba(255,255,255,.5); margin-bottom: 24px; }
+    .footer-brand p { font-size: .9rem; line-height: 1.8; margin-bottom: 24px; }
+
+    .social-links { display: flex; gap: 10px; }
+    .social-link {
+      width: 38px; height: 38px; border-radius: 10px;
+      background: rgba(255,255,255,.08); display: flex; align-items: center;
+      justify-content: center; color: rgba(255,255,255,.7); font-size: .9rem;
+      transition: var(--transition);
+    }
+    .social-link:hover { background: var(--gold); color: var(--navy); transform: translateY(-3px); }
+
+    .footer-col h4 {
+      font-family: 'Outfit', sans-serif; font-size: 1rem; font-weight: 700;
+      color: var(--white); margin-bottom: 20px; position: relative; padding-bottom: 12px;
+    }
+    .footer-col h4::after {
+      content: ''; position: absolute; bottom: 0; left: 0;
+      width: 32px; height: 2px; background: var(--gold); border-radius: 2px;
+    }
+    .footer-col ul li { margin-bottom: 10px; }
+    .footer-col ul li a {
+      color: rgba(255,255,255,.65); font-size: .9rem; transition: var(--transition);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .footer-col ul li a:hover { color: var(--gold); padding-left: 4px; }
+    .footer-col ul li a i { font-size: .75rem; }
+
+    .contact-item { display: flex; gap: 12px; margin-bottom: 16px; align-items: flex-start; }
+    .contact-item i { color: var(--gold); width: 18px; margin-top: 3px; flex-shrink: 0; }
+    .contact-item span { font-size: .9rem; color: rgba(255,255,255,.65); }
+
+    .footer-bottom {
+      padding: 24px 0; display: flex; justify-content: space-between;
+      align-items: center; flex-wrap: wrap; gap: 12px;
+    }
+    .footer-bottom p { font-size: .85rem; color: rgba(255,255,255,.4); }
+    .footer-bottom-links { display: flex; gap: 20px; }
+    .footer-bottom-links a { font-size: .85rem; color: rgba(255,255,255,.4); transition: var(--transition); }
+    .footer-bottom-links a:hover { color: var(--gold); }
+
+    /* ═══════════════════════════════════════════════
+       SCROLL TO TOP
+    ═══════════════════════════════════════════════ */
+    .scroll-top {
+      position: fixed; bottom: 32px; right: 32px; z-index: 999;
+      width: 48px; height: 48px; border-radius: 50%;
+      background: var(--gold); color: var(--navy);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; cursor: pointer; border: none;
+      box-shadow: 0 4px 20px rgba(245,166,35,.4);
+      transition: var(--transition); opacity: 0; transform: translateY(20px);
+    }
+    .scroll-top.visible { opacity: 1; transform: translateY(0); }
+    .scroll-top:hover   { transform: translateY(-4px); }
+
+    /* ═══════════════════════════════════════════════
+       BREADCRUMB
+    ═══════════════════════════════════════════════ */
+    .page-hero {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
+      padding: 140px 0 72px; text-align: center; position: relative; overflow: hidden;
+    }
+    .page-hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .page-hero h1 {
+      font-family: 'Outfit', sans-serif; font-size: clamp(2.2rem, 5vw, 3.5rem);
+      font-weight: 800; color: var(--white); margin-bottom: 16px; position: relative;
+    }
+    .page-hero h1 span { color: var(--gold); }
+    .breadcrumb {
+      display: flex; align-items: center; justify-content: center;
+      gap: 8px; font-size: .9rem; color: rgba(255,255,255,.6); position: relative;
+    }
+    .breadcrumb a { color: var(--gold); transition: var(--transition); }
+    .breadcrumb a:hover { color: var(--gold-light); }
+    .breadcrumb i { font-size: .7rem; }
+
+    /* ═══════════════════════════════════════════════
+       ANIMATIONS
+    ═══════════════════════════════════════════════ */
+    .fade-up {
+      opacity: 0; transform: translateY(30px);
+      transition: opacity .7s ease, transform .7s ease;
+    }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+    /* ═══════════════════════════════════════════════
+       RESPONSIVE
+    ═══════════════════════════════════════════════ */
+    @media (max-width: 1024px) {
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 768px) {
+      .navbar-links, .navbar-cta { display: none; }
+      .hamburger { display: flex; }
+      .section { padding: 72px 0; }
+      .footer-grid { grid-template-columns: 1fr; gap: 32px; }
+      .footer-bottom { flex-direction: column; text-align: center; }
+    }
+
+    {% block extra_css %}{% endblock %}
+  </style>
+</head>
+<body>
+
+<!-- ─── NAVBAR ─────────────────────────────────────────────────────────── -->
+<nav class="navbar transparent" id="mainNav">
+  <div class="navbar-inner">
+    <a href="{% url 'home' %}" class="navbar-brand">
+      <svg width="50" height="50" viewBox="0 0 100 100" style="filter: drop-shadow(0 4px 12px rgba(0,0,0,0.2));">
+        <path d="M50 5 L15 25 L15 50 C15 75 50 95 50 95 C50 95 85 75 85 50 L85 25 L50 5 Z" fill="#0f2347" stroke="#f5a623" stroke-width="3"/>
+        <path d="M50 15 L25 30 L25 50 C25 65 50 85 50 85 C50 85 75 65 75 50 L75 30 L50 15 Z" fill="#1a3a6b"/>
+        <path d="M35 45 L50 35 L65 45 L65 65 L50 75 L35 65 Z" fill="#f5a623"/>
+        <path d="M45 40 L55 40 L55 60 L45 60 Z" fill="#0f2347"/>
+        <circle cx="50" cy="30" r="5" fill="#f5a623"/>
+        <path d="M30 70 Q50 80 70 70" fill="none" stroke="#f5a623" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <div class="brand-text">
+        <span class="brand-name">{% if site %}{{ site.site_name }}{% else %}EduCare International School{% endif %}</span>
+        <span class="brand-sub">Education & Excellence</span>
+      </div>
+    </a>
+
+    <div class="navbar-links">
+      <a href="{% url 'home' %}"       {% if request.resolver_match.url_name == 'home'       %}class="active"{% endif %}>Home</a>
+      <a href="{% url 'about' %}"      {% if request.resolver_match.url_name == 'about'      %}class="active"{% endif %}>About</a>
+      <a href="{% url 'academics' %}"  {% if request.resolver_match.url_name == 'academics'  %}class="active"{% endif %}>Academics</a>
+      <a href="{% url 'admissions' %}" {% if request.resolver_match.url_name == 'admissions' %}class="active"{% endif %}>Admissions</a>
+      <a href="{% url 'gallery' %}"    {% if request.resolver_match.url_name == 'gallery'    %}class="active"{% endif %}>Gallery</a>
+      <a href="{% url 'events' %}"     {% if request.resolver_match.url_name == 'events'     %}class="active"{% endif %}>Events</a>
+      <a href="{% url 'contact' %}"    {% if request.resolver_match.url_name == 'contact'    %}class="active"{% endif %}>Contact</a>
+
+      <!-- Portal CTA -->
+      <a href="{% url 'portal' %}" class="btn navbar-cta" style="background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.3);color:var(--white);backdrop-filter:blur(8px);">
+        <i class="fas fa-shield-halved"></i> Portals
+      </a>
+      <a href="{% url 'apply' %}" class="btn btn-primary navbar-cta">Enroll Now</a>
+    </div>
+
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- Mobile Nav -->
+<div class="mobile-nav" id="mobileNav">
+  <a href="{% url 'home' %}"><i class="fas fa-home"></i> Home</a>
+  <a href="{% url 'about' %}"><i class="fas fa-school"></i> About Us</a>
+  <a href="{% url 'academics' %}"><i class="fas fa-graduation-cap"></i> Academics</a>
+  <a href="{% url 'admissions' %}"><i class="fas fa-file-alt"></i> Admissions</a>
+  <a href="{% url 'gallery' %}"><i class="fas fa-images"></i> Gallery</a>
+  <a href="{% url 'events' %}"><i class="fas fa-calendar-alt"></i> Events &amp; News</a>
+  <a href="{% url 'contact' %}"><i class="fas fa-envelope"></i> Contact</a>
+  <div style="height:1px;background:rgba(255,255,255,.08);margin:8px 0;"></div>
+  <a href="{{ portal_url }}" style="background:rgba(245,166,35,.15);color:var(--gold);"><i class="fas fa-crown"></i> Admin Portal</a>
+  <a href="{{ teacher_portal_url }}" style="background:rgba(255,255,255,.07);color:rgba(255,255,255,.85);"><i class="fas fa-chalkboard-user"></i> Teacher Portal</a>
+  <a href="{{ student_portal_url }}" style="background:rgba(255,255,255,.07);color:rgba(255,255,255,.85);"><i class="fas fa-user-graduate"></i> Student Portal</a>
+  <a href="{% url 'apply' %}" style="background:rgba(245,166,35,.15);color:var(--gold);margin-top:4px;"><i class="fas fa-star"></i> Enroll Now</a>
+</div>
+
+<!-- ─── MESSAGES ───────────────────────────────────────────────────────── -->
+{% if messages %}
+<div class="messages-container">
+  {% for msg in messages %}
+  <div class="message-alert {% if msg.tags %}{{ msg.tags }}{% endif %}">
+    <i class="fas {% if 'success' in msg.tags %}fa-check-circle{% elif 'error' in msg.tags %}fa-times-circle{% else %}fa-info-circle{% endif %}"></i>
+    <span>{{ msg }}</span>
+    <button class="message-close" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<!-- ─── MAIN CONTENT ───────────────────────────────────────────────────── -->
+<main id="main-content">
+  {% block content %}{% endblock %}
+</main>
+
+<!-- ─── FOOTER ─────────────────────────────────────────────────────────── -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+
+      <!-- Brand col -->
+      <div class="footer-brand">
+        <svg width="60" height="60" viewBox="0 0 100 100" style="margin-bottom: 20px;">
+          <path d="M50 5 L15 25 L15 50 C15 75 50 95 50 95 C50 95 85 75 85 50 L85 25 L50 5 Z" fill="#ffffff" opacity="0.1" stroke="#f5a623" stroke-width="3"/>
+          <path d="M50 15 L25 30 L25 50 C25 65 50 85 50 85 C50 85 75 65 75 50 L75 30 L50 15 Z" fill="#ffffff" opacity="0.05"/>
+          <path d="M35 45 L50 35 L65 45 L65 65 L50 75 L35 65 Z" fill="#f5a623"/>
+          <path d="M45 40 L55 40 L55 60 L45 60 Z" fill="#1a3a6b"/>
+          <circle cx="50" cy="30" r="5" fill="#f5a623"/>
+        </svg>
+        <div class="brand-text-lg">{% if site %}{{ site.site_name }}{% else %}EduCare International School{% endif %}</div>
+        <div class="tagline">{% if site %}{{ site.tagline }}{% else %}Nurturing Young Minds for Excellence{% endif %}</div>
+        <p>A nurturing and joyful learning environment where every child is celebrated, respected, and inspired to reach their full potential.</p>
+        <div class="social-links">
+          {% if site and site.facebook %}<a href="{{ site.facebook }}" class="social-link" target="_blank"><i class="fab fa-facebook-f"></i></a>{% endif %}
+          {% if site and site.instagram %}<a href="{{ site.instagram }}" class="social-link" target="_blank"><i class="fab fa-instagram"></i></a>{% endif %}
+          {% if site and site.twitter %}<a href="{{ site.twitter }}" class="social-link" target="_blank"><i class="fab fa-twitter"></i></a>{% endif %}
+          {% if site and site.youtube %}<a href="{{ site.youtube }}" class="social-link" target="_blank"><i class="fab fa-youtube"></i></a>{% endif %}
+          {% if not site %}<a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a><a href="#" class="social-link"><i class="fab fa-instagram"></i></a>{% endif %}
+        </div>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="{% url 'home' %}"><i class="fas fa-chevron-right"></i> Home</a></li>
+          <li><a href="{% url 'about' %}"><i class="fas fa-chevron-right"></i> About Us</a></li>
+          <li><a href="{% url 'academics' %}"><i class="fas fa-chevron-right"></i> Academics</a></li>
+          <li><a href="{% url 'admissions' %}"><i class="fas fa-chevron-right"></i> Admissions</a></li>
+          <li><a href="{% url 'gallery' %}"><i class="fas fa-chevron-right"></i> Gallery</a></li>
+          <li><a href="{% url 'events' %}"><i class="fas fa-chevron-right"></i> Events &amp; News</a></li>
+          <li><a href="{% url 'contact' %}"><i class="fas fa-chevron-right"></i> Contact Us</a></li>
+          <li><a href="{% url 'portal' %}" style="color:var(--gold);"><i class="fas fa-shield-halved"></i> Staff Portal</a></li>
+        </ul>
+      </div>
+
+      <!-- Programs -->
+      <div class="footer-col">
+        <h4>Our Programs</h4>
+        <ul>
+          <li><a href="{% url 'academics' %}"><i class="fas fa-chevron-right"></i> Day Care (ages 1–2)</a></li>
+          <li><a href="{% url 'academics' %}"><i class="fas fa-chevron-right"></i> Nursery (ages 2–3)</a></li>
+          <li><a href="{% url 'academics' %}"><i class="fas fa-chevron-right"></i> Preschool (ages 3–4)</a></li>
+          <li><a href="{% url 'academics' %}"><i class="fas fa-chevron-right"></i> Kindergarten (ages 4–5)</a></li>
+          <li><a href="{% url 'apply' %}"><i class="fas fa-chevron-right"></i> Apply Online</a></li>
+        </ul>
+      </div>
+
+      <!-- Contact -->
+      <div class="footer-col">
+        <h4>Contact Us</h4>
+        {% if site %}
+          {% if site.address %}<div class="contact-item"><i class="fas fa-map-marker-alt"></i><span>{{ site.address }}</span></div>{% endif %}
+          {% if site.contact_phone %}<div class="contact-item"><i class="fas fa-phone"></i><span>{{ site.contact_phone }}</span></div>{% endif %}
+          {% if site.contact_email %}<div class="contact-item"><i class="fas fa-envelope"></i><span>{{ site.contact_email }}</span></div>{% endif %}
+        {% else %}
+          <div class="contact-item"><i class="fas fa-map-marker-alt"></i><span>123 School Drive, Education City</span></div>
+          <div class="contact-item"><i class="fas fa-phone"></i><span>+63 912 345 6789</span></div>
+          <div class="contact-item"><i class="fas fa-envelope"></i><span>info@nsms.school</span></div>
+        {% endif %}
+        <div class="contact-item"><i class="fas fa-clock"></i><span>Mon–Fri: 7:00 AM – 5:00 PM</span></div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; {% now "Y" %} {% if site %}{{ site.site_name }}{% else %}EduCare International School{% endif %}. All rights reserved.</p>
+      <div class="footer-bottom-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Use</a>
+        <a href="{% url 'contact' %}">Support</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ─── SCROLL TO TOP ──────────────────────────────────────────────────── -->
+<button class="scroll-top" id="scrollTop" aria-label="Back to top">
+  <i class="fas fa-arrow-up"></i>
+</button>
+
+<!-- ─── SCRIPTS ────────────────────────────────────────────────────────── -->
+<script>
+  /* Navbar scroll */
+  const nav = document.getElementById('mainNav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 40);
+    nav.classList.toggle('transparent', window.scrollY <= 40);
+  });
+  /* Hamburger */
+  const hbg = document.getElementById('hamburger');
+  const mob = document.getElementById('mobileNav');
+  hbg.addEventListener('click', () => {
+    hbg.classList.toggle('open');
+    mob.classList.toggle('open');
+  });
+  /* Scroll top */
+  const st = document.getElementById('scrollTop');
+  window.addEventListener('scroll', () => st.classList.toggle('visible', window.scrollY > 300));
+  st.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+  /* Intersection observer for fade-up */
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+  }, { threshold: .12 });
+  document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+  /* Auto-dismiss messages */
+  document.querySelectorAll('.message-alert').forEach(el => {
+    setTimeout(() => el.style.opacity = '0', 5000);
+    setTimeout(() => el.remove(), 5400);
+  });
+</script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,79 @@
+services:
+  - type: web
+    name: kmc-college
+    runtime: docker
+    plan: free
+    rootDir: .
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /up
+    buildCommand: ./render-build.sh
+    envVars:
+      - key: APP_NAME
+        value: "Kingdom Ministerial University College"
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: APP_KEY
+        generateValue: true
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        fromDatabase:
+          name: kmc-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: kmc-db
+          property: port
+      - key: DB_DATABASE
+        fromDatabase:
+          name: kmc-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: kmc-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: kmc-db
+          property: password
+      - key: SESSION_DRIVER
+        value: database
+      - key: CACHE_DRIVER
+        value: database
+      - key: QUEUE_CONNECTION
+        value: sync
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: LOG_LEVEL
+        value: error
+      - key: CLOUDINARY_URL
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      # ── Initial Admin Provisioning ──────────────────────────────────────────
+      # Set these in Render dashboard → Environment for your first deployment.
+      # After accounts are created they are ignored (seeder is idempotent).
+      - key: INITIAL_SUPER_ADMIN_NAME
+        sync: false
+      - key: INITIAL_SUPER_ADMIN_EMAIL
+        sync: false
+      - key: INITIAL_SUPER_ADMIN_PASSWORD
+        sync: false
+      - key: INITIAL_ADMIN_NAME
+        sync: false
+      - key: INITIAL_ADMIN_EMAIL
+        sync: false
+      - key: INITIAL_ADMIN_PASSWORD
+        sync: false
+
+databases:
+  - name: kmc-db
+    plan: free
+    databaseName: kmc_college
+    user: kmc_user

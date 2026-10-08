@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Academic Transcript Result Sheet</title>
+<style>
+/* Use generous margins — the outer border is on the body table, not a div */
+@page { margin: 8mm 8mm; size: A4 portrait; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: DejaVu Sans, sans-serif;
+    font-size: 10pt;
+    background: #ffffff;
+    color: #000;
+    border: 2pt solid #000;
+    margin: 0;
+    padding: 0;
+}
+
+/* Outer content wrapper — no border here, border is on body */
+.page-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #ffffff;
+}
+.page-cell {
+    padding: 8pt 10pt 12pt 10pt;
+    background: #ffffff;
+}
+
+/* ── HEADER ── */
+.hdr { width: 100%; border-collapse: collapse; }
+.hdr td { vertical-align: middle; padding: 0; }
+
+.hdr-logo { width: 70pt; text-align: center; vertical-align: middle; }
+.hdr-logo img {
+    width: 66pt;
+    height: 66pt;
+    border-radius: 33pt;
+    border: 2pt solid #000;
+    display: block;
+    margin: 0 auto;
+}
+
+.hdr-center { text-align: center; padding: 0 6pt; vertical-align: middle; }
+
+.hdr-photo { width: 37mm; text-align: right; vertical-align: top; padding-top: 2pt; }
+.hdr-photo img {
+    width: 35mm;
+    height: 45mm;
+    border: 1.5pt solid #000;
+    display: block;
+    margin-left: auto;
+}
+.initials-box {
+    width: 35mm;
+    height: 45mm;
+    border: 1.5pt solid #000;
+    background: #f0f0f0;
+    display: block;
+    margin-left: auto;
+    text-align: center;
+    line-height: 45mm;
+    font-size: 24pt;
+    font-weight: bold;
+    color: #555;
+}
+
+.college-name {
+    font-size: 14pt;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-decoration: underline;
+    letter-spacing: 0.3pt;
+    color: #000;
+    line-height: 1.2;
+}
+.ministry-name {
+    font-size: 10pt;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #1f6f8f;
+    margin-top: 2pt;
+}
+.tagline { font-size: 8.5pt; color: #000; margin-top: 2pt; }
+.campus-info { font-size: 9.5pt; font-weight: bold; color: #000; margin-top: 2pt; }
+.email-info { font-size: 8.5pt; color: #000; margin-top: 1pt; }
+
+/* ── DIVIDERS ── */
+.divider { border: none; border-top: 2.5pt solid #000; margin: 6pt 0 5pt 0; }
+.footer-divider { border: none; border-top: 2.5pt solid #000; margin: 6pt 0 6pt 0; }
+
+/* ── TITLE ── */
+.title-section { text-align: center; margin-bottom: 8pt; }
+.title-l1 { font-size: 12pt; font-weight: bold; text-transform: uppercase; letter-spacing: 0.3pt; color: #000; }
+.title-l2 { font-size: 11pt; font-weight: bold; text-transform: uppercase; color: #000; margin-top: 2pt; }
+.title-l3 { font-size: 11pt; font-weight: bold; text-transform: uppercase; color: #1f6f8f; margin-top: 2pt; }
+
+/* ── STUDENT INFO ── */
+.info-table { width: 100%; border-collapse: collapse; margin-bottom: 3pt; }
+.info-table td { font-size: 10pt; font-weight: bold; vertical-align: bottom; padding: 2pt 0; }
+.info-label { font-weight: bold; text-transform: uppercase; white-space: nowrap; padding-right: 3pt; }
+.info-value {
+    border-bottom: 1.5pt solid #000;
+    font-weight: bold;
+    text-transform: uppercase;
+    padding: 0 3pt 1pt 3pt;
+}
+
+/* ── SECTION HEADING ── */
+.section-heading {
+    text-align: center;
+    font-size: 10pt;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin: 8pt 0 5pt 0;
+    line-height: 1.4;
+}
+
+/* ── GRADES TABLE ── */
+.grades-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 0;
+    border: 1.5pt solid #000;
+}
+.grades-table th {
+    background: #1f6f8f;
+    color: #fff;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 9pt;
+    padding: 5pt 2pt;
+    border: 1pt solid #000;
+    text-align: center;
+    line-height: 1.2;
+}
+.grades-table td {
+    background: #ffffff;
+    font-size: 10pt;
+    font-weight: bold;
+    padding: 6pt 2pt;
+    border: 1pt solid #000;
+    text-align: center;
+    vertical-align: middle;
+    color: #000;
+}
+.grades-table td.course-name {
+    font-size: 9.5pt;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+/* ── FOOTER ── */
+.footer-table { width: 100%; border-collapse: collapse; }
+.footer-table td { vertical-align: top; }
+
+.scale-col { width: 30%; padding-right: 8pt; }
+.scale-title { font-size: 9.5pt; font-weight: bold; text-decoration: underline; text-transform: uppercase; margin-bottom: 4pt; }
+.scale-item { font-size: 9.5pt; font-weight: bold; margin-bottom: 2pt; line-height: 1.3; }
+
+.results-col { width: 42%; padding-right: 6pt; }
+.res-table { width: 100%; border-collapse: collapse; margin-bottom: 5pt; }
+.res-table td { font-size: 10pt; font-weight: bold; vertical-align: bottom; }
+.res-label { white-space: nowrap; width: 72pt; text-transform: uppercase; padding-right: 3pt; }
+.res-value {
+    border-bottom: 1.5pt solid #000;
+    text-transform: uppercase;
+    padding: 0 3pt 1pt 3pt;
+    line-height: 1.5;
+}
+
+.summary-col { width: 28%; }
+.summary-table { width: 100%; border-collapse: collapse; border: 1.5pt solid #000; }
+.summary-table th {
+    background: #1f6f8f;
+    color: #fff;
+    font-size: 8.5pt;
+    font-weight: bold;
+    text-transform: uppercase;
+    padding: 4pt 2pt;
+    border: 1pt solid #000;
+    text-align: center;
+    line-height: 1.2;
+}
+.summary-table td {
+    background: #ffffff;
+    font-size: 11pt;
+    font-weight: bold;
+    padding: 5pt 2pt;
+    border: 1pt solid #000;
+    text-align: center;
+    color: #000;
+}
+</style>
+</head>
+<body>
+
+<table class="page-table"><tr><td class="page-cell">
+
+    
+    <table class="hdr">
+        <tr>
+            <td class="hdr-logo">
+                            </td>
+            <td class="hdr-center">
+                <div class="college-name">Kingdom Ministerial</div>
+                <div class="ministry-name">University College</div>
+                <div class="tagline">(University College)</div>
+                <div class="campus-info">Regional Campus: MAIN CAMPUS, Ghana</div>
+                <div class="email-info">contact@school.edu</div>
+            </td>
+            <td class="hdr-photo">
+                                    <div class="initials-box">J</div>
+                            </td>
+        </tr>
+    </table>
+
+    
+    <div style="margin-top:18pt;">
+        <table style="width:100%;border-collapse:collapse;margin-top:6pt">
+            <tr>
+                <td style="width:33%;text-align:center">__________________________<br><span style="font-size:9pt">Class Teacher</span></td>
+                <td style="width:33%;text-align:center">__________________________<br><span style="font-size:9pt">Principal</span></td>
+                <td style="width:34%;text-align:center">__________________________<br><span style="font-size:9pt">Date</span></td>
+            </tr>
+        </table>
+    </div>
+
+    <hr class="divider">
+
+    
+    <div class="title-section">
+        <div class="title-l1">Academic Transcript Result Sheet</div>
+        <div class="title-l2">Certificate Semester Examination</div>
+        <div class="title-l3">PRE-COLLEGE PROGRAM</div>
+    </div>
+
+    
+    <table class="info-table">
+        <tr>
+            <td style="width:50%">
+                <table style="border-collapse:collapse;width:100%"><tr>
+                    <td class="info-label">Name:</td>
+                    <td class="info-value">JOHN SAMPLE</td>
+                </tr></table>
+            </td>
+            <td style="width:50%;padding-left:8pt">
+                <table style="border-collapse:collapse;width:100%">
+                    <tr>
+                        <td class="info-label">Reg No:</td>
+                        <td class="info-value">SAMP/001</td>
+                    </tr>
+                    <tr>
+                        <td class="info-label">Date:</td>
+                        <td class="info-value">JULY 2026</td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+    <table class="info-table" style="margin-top:3pt">
+        <tr>
+            <td>
+                <table style="border-collapse:collapse;width:100%"><tr>
+                    <td class="info-label">Campus:</td>
+                    <td class="info-value">MAIN CAMPUS, GHANA</td>
+                </tr></table>
+            </td>
+        </tr>
+    </table>
+
+    
+    <div class="section-heading">
+        General Semester Certificate Courses<br>
+        Analytical Reference Chart
+    </div>
+
+    
+    <table class="grades-table">
+        <thead>
+            <tr>
+                <th style="width:5%">S/N</th>
+                <th style="width:40%">Subject</th>
+                <th style="width:10%">CA</th>
+                <th style="width:10%">Exam</th>
+                <th style="width:10%">Total</th>
+                <th style="width:10%">Grade</th>
+                <th style="width:10%">Remark</th>
+                <th style="width:5%">Pos</th>
+            </tr>
+        </thead>
+        <tbody>
+                                    <tr>
+                <td style="font-size:10pt;font-weight:bold">1</td>
+                <td class="course-name">MATHEMATICS</td>
+                <td>29</td>
+                <td>80</td>
+                <td>109</td>
+                <td>A1</td>
+                <td style="font-size:9pt;color:#334155">A1 DISTINCTION</td>
+                <td>1&lt;sup style=&#039;font-size:6.5pt&#039;&gt;ST&lt;/sup&gt;</td>
+            </tr>
+                                    <tr>
+                <td style="font-size:10pt;font-weight:bold">2</td>
+                <td class="course-name">ENGLISH LANGUAGE</td>
+                <td>30</td>
+                <td>59</td>
+                <td>89</td>
+                <td>A1</td>
+                <td style="font-size:9pt;color:#334155">A1 DISTINCTION</td>
+                <td>2&lt;sup style=&#039;font-size:6.5pt&#039;&gt;ND&lt;/sup&gt;</td>
+            </tr>
+                                    <tr>
+                <td style="font-size:10pt;font-weight:bold">3</td>
+                <td class="course-name">INTEGRATED SCIENCE</td>
+                <td>22</td>
+                <td>63</td>
+                <td>85</td>
+                <td>A1</td>
+                <td style="font-size:9pt;color:#334155">A1 DISTINCTION</td>
+                <td>3&lt;sup style=&#039;font-size:6.5pt&#039;&gt;RD&lt;/sup&gt;</td>
+            </tr>
+                                    <tr>
+                <td style="font-size:10pt;font-weight:bold">4</td>
+                <td class="course-name">SOCIAL STUDIES</td>
+                <td>28</td>
+                <td>61</td>
+                <td>89</td>
+                <td>A1</td>
+                <td style="font-size:9pt;color:#334155">A1 DISTINCTION</td>
+                <td>4&lt;sup style=&#039;font-size:6.5pt&#039;&gt;TH&lt;/sup&gt;</td>
+            </tr>
+                                    <tr>
+                <td style="font-size:10pt;font-weight:bold">5</td>
+                <td class="course-name">ICT</td>
+                <td>24</td>
+                <td>63</td>
+                <td>87</td>
+                <td>A1</td>
+                <td style="font-size:9pt;color:#334155">A1 DISTINCTION</td>
+                <td>5&lt;sup style=&#039;font-size:6.5pt&#039;&gt;TH&lt;/sup&gt;</td>
+            </tr>
+                                    <tr>
+                <td style="font-size:10pt;font-weight:bold">6</td>
+                <td class="course-name">ECONOMICS</td>
+                <td>11</td>
+                <td>74</td>
+                <td>85</td>
+                <td>A1</td>
+                <td style="font-size:9pt;color:#334155">A1 DISTINCTION</td>
+                <td>6&lt;sup style=&#039;font-size:6.5pt&#039;&gt;TH&lt;/sup&gt;</td>
+            </tr>
+                    </tbody>
+    </table>
+
+    
+    <div style="height:60pt;"></div>
+
+    
+    <hr class="footer-divider">
+
+    <table class="footer-table">
+        <tr>
+            
+            <td class="scale-col">
+                <div class="scale-title">Scale of Grading:</div>
+                <div class="scale-item">A1 = 80–100 (Distinction)</div>
+                <div class="scale-item">A2 = 70–79 (Upper Division)</div>
+                <div class="scale-item">A3 = 60–69 (Lower Division)</div>
+                <div class="scale-item">B1 = 50–59 (Credit)</div>
+                <div class="scale-item">B2 = 40–49 (Pass)</div>
+                <div class="scale-item">F = 0–39 (Fail)</div>
+            </td>
+
+            
+            <td style="width:70%; vertical-align:top;">
+
+                
+                <table class="summary-table" style="margin-bottom:10pt;">
+                    <thead>
+                        <tr>
+                            <th>Total<br>Score</th>
+                            <th>Aggregate</th>
+                            <th>Average</th>
+                            <th>Placement</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>6</td>
+                            <td>544</td>
+                            <td>90.7%</td>
+                            <td>—</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                
+                <table class="res-table">
+                    <tr>
+                        <td class="res-label">Result:</td>
+                        <td class="res-value">PASS</td>
+                    </tr>
+                </table>
+                <table class="res-table">
+                    <tr>
+                        <td class="res-label">Grade:</td>
+                        <td class="res-value"></td>
+                    </tr>
+                </table>
+                <table class="res-table">
+                    <tr>
+                        <td class="res-label">Remarks:</td>
+                        <td class="res-value">PROMOTED</td>
+                    </tr>
+                </table>
+
+            </td>
+        </tr>
+    </table>
+
+</td></tr></table>
+</body>
+</html>

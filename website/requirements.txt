@@ -1,0 +1,19 @@
+# ─── Core ─────────────────────────────────────────────────────────────────────
+Django==5.0.6
+
+# ─── Production web server ────────────────────────────────────────────────────
+gunicorn==22.0.0
+
+# ─── Static files (serve directly from Django in production) ─────────────────
+whitenoise==6.7.0
+
+# ─── Postgres support (used when DATABASE_URL env var is set) ────────────────
+# Uncomment both lines below when deploying to a Postgres host (Render, Railway, etc.)
+# psycopg2-binary==2.9.9
+# dj-database-url==2.2.0
+
+# ─── Image uploads (gallery, staff photos, blog featured images) ─────────────
+Pillow==10.4.0
+
+# ─── Environment variables from .env file ────────────────────────────────────
+python-dotenv==1.0.1

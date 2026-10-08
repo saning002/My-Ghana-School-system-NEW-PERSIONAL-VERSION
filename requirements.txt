@@ -1,0 +1,4 @@
+python-docx
+pdfplumber
+# optional helper for complex PDFs
+pypdfium2

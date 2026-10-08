@@ -1,0 +1,263 @@
+{% extends 'website/base.html' %}
+{% block page_title %}Academics{% endblock %}
+{% block meta_description %}Explore NSMS Little Stars' academic programs – Day Care, Nursery, Preschool, and Kindergarten. Curriculum overview and daily schedules.{% endblock %}
+
+{% block extra_css %}
+.programs-hero-section { padding: 96px 0; background: var(--white); }
+.programs-list { display: flex; flex-direction: column; gap: 80px; }
+.program-detail {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start;
+}
+.program-detail:nth-child(even) { direction: rtl; }
+.program-detail:nth-child(even) > * { direction: ltr; }
+.program-detail-visual {
+  border-radius: var(--radius-xl); min-height: 380px; position: relative; overflow: hidden;
+  display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px;
+  box-shadow: var(--shadow-xl);
+}
+.program-detail-visual .prog-emoji { font-size: 5rem; }
+.program-detail-visual .prog-level-badge {
+  position: absolute; top: 20px; left: 20px;
+  background: var(--gold); color: var(--navy);
+  padding: 8px 18px; border-radius: 100px; font-size: .8rem; font-weight: 700;
+}
+.prog-age-ring {
+  position: absolute; bottom: -30px; right: -30px;
+  width: 120px; height: 120px; border-radius: 50%;
+  background: rgba(255,255,255,.15); display: flex; flex-direction: column;
+  align-items: center; justify-content: center; font-family:'Outfit',sans-serif;
+}
+.prog-age-ring .age-num { font-size: 1.6rem; font-weight: 800; color: var(--white); line-height: 1; }
+.prog-age-ring .age-lbl { font-size: .65rem; color: rgba(255,255,255,.7); text-align: center; }
+
+.program-detail-info {}
+.program-detail-info h2 { font-size: 2rem; font-weight: 800; color: var(--navy); margin-bottom: 8px; }
+.program-detail-info .age-tag {
+  display: inline-block; background: rgba(245,166,35,.15); color: var(--gold-dark);
+  padding: 4px 14px; border-radius: 100px; font-size: .82rem; font-weight: 600; margin-bottom: 20px;
+}
+.program-detail-info p { font-size: 1rem; color: var(--gray-500); line-height: 1.8; margin-bottom: 24px; }
+
+.features-list { margin-bottom: 28px; }
+.feature-item { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 14px; }
+.feature-check {
+  width: 28px; height: 28px; border-radius: 8px;
+  background: rgba(245,166,35,.12); color: var(--gold-dark);
+  display: flex; align-items: center; justify-content: center; font-size: .85rem; flex-shrink: 0; margin-top: 2px;
+}
+.feature-text h4 { font-size: .95rem; font-weight: 600; color: var(--navy); margin-bottom: 2px; }
+.feature-text p  { font-size: .85rem; color: var(--gray-500); }
+
+.schedule-block { background: var(--gray-50); border-radius: var(--radius); padding: 24px; margin-bottom: 24px; }
+.schedule-block h4 { font-size:.95rem; font-weight:700; color:var(--navy); margin-bottom:14px; display:flex;align-items:center;gap:8px; }
+.schedule-row { display:flex; gap:12px; align-items:center; padding:8px 0; border-bottom:1px solid var(--gray-200); }
+.schedule-row:last-child { border-bottom:none; }
+.schedule-time { font-size:.8rem; font-weight:600; color:var(--gold-dark); min-width:90px; }
+.schedule-act  { font-size:.88rem; color:var(--gray-700); }
+
+.curriculum-section { padding: 96px 0; background: var(--cream); }
+.curriculum-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.curriculum-card {
+  background: var(--white); border-radius: 20px; padding: 32px 24px;
+  box-shadow: var(--shadow); text-align: center; transition: var(--transition);
+  border-top: 4px solid transparent;
+}
+.curriculum-card:hover { transform: translateY(-6px); border-top-color: var(--gold); }
+.curriculum-icon {
+  width: 60px; height: 60px; border-radius: 16px; margin: 0 auto 18px;
+  display: flex; align-items: center; justify-content: center; font-size: 1.6rem;
+  background: linear-gradient(135deg, var(--navy), var(--navy-light));
+  color: var(--gold);
+}
+.curriculum-card h3 { font-size: 1.05rem; font-weight: 700; color: var(--navy); margin-bottom: 10px; }
+.curriculum-card p  { font-size: .88rem; color: var(--gray-500); line-height: 1.7; }
+
+.apply-cta { padding: 96px 0; background: var(--navy); text-align: center; }
+.apply-cta h2 { color: var(--white); font-size: 2.2rem; margin-bottom: 16px; }
+.apply-cta p  { color: rgba(255,255,255,.7); font-size: 1.05rem; margin-bottom: 36px; }
+
+@media(max-width:1024px){ .program-detail{grid-template-columns:1fr;direction:ltr !important;} .program-detail:nth-child(even){direction:ltr;} }
+@media(max-width:768px) { .curriculum-grid{grid-template-columns:1fr 1fr;} }
+@media(max-width:480px) { .curriculum-grid{grid-template-columns:1fr;} }
+{% endblock %}
+
+{% block content %}
+
+<div class="page-hero">
+  <h1>Our <span>Academic Programs</span></h1>
+  <div class="breadcrumb">
+    <a href="{% url 'home' %}">Home</a>
+    <i class="fas fa-chevron-right"></i>
+    <span>Academics</span>
+  </div>
+</div>
+
+<!-- ═══ PROGRAMS ══════════════════════════════════════════════════════════ -->
+<section class="programs-hero-section">
+  <div class="container">
+    <div class="section-header fade-up">
+      <span class="badge badge-gold"><i class="fas fa-graduation-cap"></i> Programs</span>
+      <h2>Learning Paths for Every Child</h2>
+      <p>Each program is carefully designed for the developmental stage of every child, ensuring a seamless and joyful journey of growth.</p>
+    </div>
+
+    <div class="programs-list">
+      {% if programs %}
+        {% for prog in programs %}
+        <div class="program-detail fade-up">
+          <div class="program-detail-visual" style="background:linear-gradient(135deg,{% cycle 'var(--navy-mid),var(--navy)' 'var(--gold-dark),#b97710' 'var(--teal),#06657e' 'var(--navy-light),var(--navy-mid)' %});">
+            <div class="prog-level-badge">{{ prog.get_level_display }}</div>
+            <div class="prog-emoji">{% if prog.icon %}<i class="{{ prog.icon }}" style="font-size:5rem;color:rgba(255,255,255,.8)"></i>{% else %}🌟{% endif %}</div>
+            <div class="prog-age-ring">
+              <div class="age-num">{{ prog.age_range }}</div>
+              <div class="age-lbl">years old</div>
+            </div>
+          </div>
+          <div class="program-detail-info">
+            <div class="age-tag">Ages {{ prog.age_range }}</div>
+            <h2>{{ prog.name }}</h2>
+            <p>{{ prog.description }}</p>
+            {% if prog.curriculum %}
+            <div class="features-list">
+              <div class="feature-item">
+                <div class="feature-check"><i class="fas fa-book"></i></div>
+                <div class="feature-text"><h4>Curriculum</h4><p>{{ prog.curriculum|truncatewords:25 }}</p></div>
+              </div>
+            </div>
+            {% endif %}
+            {% if prog.schedule %}
+            <div class="schedule-block">
+              <h4><i class="fas fa-clock"></i> Daily Schedule</h4>
+              <div class="schedule-row"><div class="schedule-time">7:00–8:00</div><div class="schedule-act">{{ prog.schedule|truncatewords:10 }}</div></div>
+            </div>
+            {% else %}
+            <div class="schedule-block">
+              <h4><i class="fas fa-clock"></i> Sample Daily Schedule</h4>
+              <div class="schedule-row"><div class="schedule-time">7:00–8:00</div><div class="schedule-act">Morning arrival & free play</div></div>
+              <div class="schedule-row"><div class="schedule-time">8:00–9:00</div><div class="schedule-act">Morning circle / flag ceremony</div></div>
+              <div class="schedule-row"><div class="schedule-time">9:00–10:30</div><div class="schedule-act">Structured learning activities</div></div>
+              <div class="schedule-row"><div class="schedule-time">10:30–11:00</div><div class="schedule-act">Snack time</div></div>
+              <div class="schedule-row"><div class="schedule-time">11:00–12:00</div><div class="schedule-act">Creative arts / outdoor play</div></div>
+              <div class="schedule-row"><div class="schedule-time">12:00–1:00</div><div class="schedule-act">Lunch & rest</div></div>
+              <div class="schedule-row"><div class="schedule-time">1:00–3:00</div><div class="schedule-act">Afternoon lessons & activities</div></div>
+              <div class="schedule-row"><div class="schedule-time">3:00–5:00</div><div class="schedule-act">Afternoon care / dismissal</div></div>
+            </div>
+            {% endif %}
+            <a href="{% url 'apply' %}" class="btn btn-navy"><i class="fas fa-star"></i> Apply for {{ prog.name }}</a>
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <!-- Default Programs -->
+        <div class="program-detail fade-up">
+          <div class="program-detail-visual" style="background:linear-gradient(135deg,var(--teal),#0369a1)">
+            <div class="prog-level-badge">Day Care</div>
+            <div class="prog-emoji">👶</div>
+            <div class="prog-age-ring"><div class="age-num">1–2</div><div class="age-lbl">years old</div></div>
+          </div>
+          <div class="program-detail-info">
+            <div class="age-tag">Ages 1–2 years</div>
+            <h2>Day Care Program</h2>
+            <p>Our Day Care program provides loving, attentive care for our youngest learners in a warm, home-like setting. Through gentle sensory activities, music, and play, we support each child's earliest stages of exploration and development.</p>
+            <div class="features-list">
+              <div class="feature-item"><div class="feature-check"><i class="fas fa-check"></i></div><div class="feature-text"><h4>Sensory Play</h4><p>Age-appropriate materials that stimulate senses and early learning.</p></div></div>
+              <div class="feature-item"><div class="feature-check"><i class="fas fa-check"></i></div><div class="feature-text"><h4>Caregiver Ratio 1:4</h4><p>Individual attention and emotional security for every toddler.</p></div></div>
+              <div class="feature-item"><div class="feature-check"><i class="fas fa-check"></i></div><div class="feature-text"><h4>Nap & Nutrition</h4><p>Healthy meals and supervised rest periods built into the daily routine.</p></div></div>
+            </div>
+            <a href="{% url 'apply' %}" class="btn btn-navy"><i class="fas fa-star"></i> Apply for Day Care</a>
+          </div>
+        </div>
+
+        <div class="program-detail fade-up">
+          <div class="program-detail-visual" style="background:linear-gradient(135deg,var(--gold-dark),#a06010)">
+            <div class="prog-level-badge">Nursery</div>
+            <div class="prog-emoji">🌱</div>
+            <div class="prog-age-ring"><div class="age-num">2–3</div><div class="age-lbl">years old</div></div>
+          </div>
+          <div class="program-detail-info">
+            <div class="age-tag">Ages 2–3 years</div>
+            <h2>Nursery Program</h2>
+            <p>The Nursery program builds on natural curiosity through guided exploration, storytelling, art, and group activities. Children develop language skills, social confidence, and independence in a joyful, safe environment.</p>
+            <div class="features-list">
+              <div class="feature-item"><div class="feature-check"><i class="fas fa-check"></i></div><div class="feature-text"><h4>Language Development</h4><p>Stories, songs, and conversation to build communication skills.</p></div></div>
+              <div class="feature-item"><div class="feature-check"><i class="fas fa-check"></i></div><div class="feature-text"><h4>Social Skills</h4><p>Guided group play that builds sharing, turn-taking, and friendship.</p></div></div>
+              <div class="feature-item"><div class="feature-check"><i class="fas fa-check"></i></div><div class="feature-text"><h4>Creative Arts</h4><p>Painting, crafts, and music to nurture self-expression.</p></div></div>
+            </div>
+            <a href="{% url 'apply' %}" class="btn btn-navy"><i class="fas fa-star"></i> Apply for Nursery</a>
+          </div>
+        </div>
+
+        <div class="program-detail fade-up">
+          <div class="program-detail-visual" style="background:linear-gradient(135deg,var(--green),#0f6b38)">
+            <div class="prog-level-badge">Preschool</div>
+            <div class="prog-emoji">⭐</div>
+            <div class="prog-age-ring"><div class="age-num">3–4</div><div class="age-lbl">years old</div></div>
+          </div>
+          <div class="program-detail-info">
+            <div class="age-tag">Ages 3–4 years</div>
+            <h2>Preschool Program</h2>
+            <p>Our Preschool program lays the essential academic and social foundation for school readiness. Children engage with early numeracy, literacy, science experiments, and creative projects that ignite a lifelong love of learning.</p>
+            <div class="features-list">
+              <div class="feature-item"><div class="feature-check"><i class="fas fa-check"></i></div><div class="feature-text"><h4>Early Literacy</h4><p>Phonics, alphabet, and pre-reading activities to build strong readers.</p></div></div>
+              <div class="feature-item"><div class="feature-check"><i class="fas fa-check"></i></div><div class="feature-text"><h4>Early Numeracy</h4><p>Counting, shapes, patterns, and basic number concepts through play.</p></div></div>
+              <div class="feature-item"><div class="feature-check"><i class="fas fa-check"></i></div><div class="feature-text"><h4>STEM Discovery</h4><p>Simple science, technology, and engineering explorations.</p></div></div>
+            </div>
+            <a href="{% url 'apply' %}" class="btn btn-navy"><i class="fas fa-star"></i> Apply for Preschool</a>
+          </div>
+        </div>
+
+        <div class="program-detail fade-up">
+          <div class="program-detail-visual" style="background:linear-gradient(135deg,var(--navy-mid),var(--navy))">
+            <div class="prog-level-badge">Kindergarten</div>
+            <div class="prog-emoji">🎓</div>
+            <div class="prog-age-ring"><div class="age-num">4–5</div><div class="age-lbl">years old</div></div>
+          </div>
+          <div class="program-detail-info">
+            <div class="age-tag">Ages 4–5 years</div>
+            <h2>Kindergarten Program</h2>
+            <p>Our Kindergarten program fully prepares children for primary school with a structured curriculum balancing academics, creativity, and character development. Graduates leave as confident, curious, and capable young learners.</p>
+            <div class="features-list">
+              <div class="feature-item"><div class="feature-check"><i class="fas fa-check"></i></div><div class="feature-text"><h4>Reading & Writing</h4><p>Structured phonics and writing programs for full literacy readiness.</p></div></div>
+              <div class="feature-item"><div class="feature-check"><i class="fas fa-check"></i></div><div class="feature-text"><h4>Mathematics</h4><p>Addition, subtraction, measurement, and problem-solving concepts.</p></div></div>
+              <div class="feature-item"><div class="feature-check"><i class="fas fa-check"></i></div><div class="feature-text"><h4>Values Formation</h4><p>Character education, discipline, and leadership skills.</p></div></div>
+            </div>
+            <a href="{% url 'apply' %}" class="btn btn-navy"><i class="fas fa-star"></i> Apply for Kindergarten</a>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CURRICULUM OVERVIEW ═══════════════════════════════════════════════ -->
+<section class="curriculum-section">
+  <div class="container">
+    <div class="section-header fade-up">
+      <span class="badge badge-navy"><i class="fas fa-book-open"></i> Curriculum</span>
+      <h2>Our Holistic Curriculum Approach</h2>
+      <p>A balanced, research-based curriculum that develops every dimension of the whole child.</p>
+    </div>
+    <div class="curriculum-grid">
+      <div class="curriculum-card fade-up"><div class="curriculum-icon"><i class="fas fa-language"></i></div><h3>Language & Literacy</h3><p>Phonics, storytelling, reading readiness, and expressive communication through daily language-rich activities.</p></div>
+      <div class="curriculum-card fade-up" style="transition-delay:.1s"><div class="curriculum-icon"><i class="fas fa-calculator"></i></div><h3>Mathematics</h3><p>Number sense, geometry, patterns, and logical reasoning through hands-on, concrete experiences.</p></div>
+      <div class="curriculum-card fade-up" style="transition-delay:.2s"><div class="curriculum-icon"><i class="fas fa-flask"></i></div><h3>Science & Discovery</h3><p>Wonder-driven exploration of the natural world through simple experiments and nature walks.</p></div>
+      <div class="curriculum-card fade-up" style="transition-delay:.1s"><div class="curriculum-icon"><i class="fas fa-palette"></i></div><h3>Arts & Creativity</h3><p>Drawing, painting, crafts, music, and dramatic play that nurture imagination and self-expression.</p></div>
+      <div class="curriculum-card fade-up" style="transition-delay:.2s"><div class="curriculum-icon"><i class="fas fa-running"></i></div><h3>Physical Education</h3><p>Gross and fine motor development through structured movement, outdoor play, and sports.</p></div>
+      <div class="curriculum-card fade-up" style="transition-delay:.3s"><div class="curriculum-icon"><i class="fas fa-heart"></i></div><h3>Values & Character</h3><p>Emotional intelligence, respect, kindness, and responsibility woven throughout daily school life.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="apply-cta">
+  <div class="container fade-up">
+    <h2>Ready to Start Your Child's Journey?</h2>
+    <p>Slots are limited. Secure your child's place in our next school year today.</p>
+    <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+      <a href="{% url 'apply' %}" class="btn btn-primary"><i class="fas fa-star"></i> Apply Now</a>
+      <a href="{% url 'admissions' %}" class="btn btn-outline"><i class="fas fa-file-alt"></i> Admission Info</a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
