@@ -126,22 +126,30 @@ class Tenant extends Model
 
     /**
      * Get DB connection config array for this tenant.
+     * Supports both standard MySQL/Postgres and Neon (sslmode=require).
      */
     public function dbConfig(): array
     {
-        return [
-            'driver'    => 'mysql',
-            'host'      => $this->db_host,
-            'port'      => $this->db_port,
-            'database'  => $this->db_name,
-            'username'  => $this->db_username,
-            'password'  => $this->db_password,
-            'charset'   => 'utf8mb4',
-            'collation' => 'utf8mb4_unicode_ci',
-            'prefix'    => '',
-            'strict'    => true,
-            'engine'    => null,
+        $isNeon = str_contains($this->db_host, 'neon.tech');
+
+        $config = [
+            'driver'   => 'pgsql',
+            'host'     => $this->db_host,
+            'port'     => $this->db_port ?: '5432',
+            'database' => $this->db_name,
+            'username' => $this->db_username,
+            'password' => $this->db_password,
+            'charset'  => 'utf8',
+            'prefix'   => '',
+            'schema'   => 'public',
         ];
+
+        // Neon and most cloud Postgres providers require SSL
+        if ($isNeon || str_contains($this->db_host, 'render.com') || str_contains($this->db_host, 'supabase.co')) {
+            $config['sslmode'] = 'require';
+        }
+
+        return $config;
     }
 
     public function getStatusBadgeAttribute(): string

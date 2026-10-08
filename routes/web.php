@@ -733,6 +733,110 @@ Route::get('/headteacher-portal/login', fn() => redirect()->route('staff-portal.
 Route::get('/secretary-portal/login',   fn() => redirect()->route('staff-portal.login.role', 'secretary'))->name('secretary-portal.login');
 
 // ═══════════════════════════════════════════════════════════════════════════
+// TENANT DB SETUP — run migrations + create admin for a specific school
+// Visit: /setup-tenant/{slug}/{secret}
+// ═══════════════════════════════════════════════════════════════════════════
+Route::get('/setup-tenant/{slug}/{secret}', function(string $slug, string $secret) {
+    $validSecret = env('ADMIN_SETUP_SECRET', 'setup-admin-2026');
+
+    if ($secret !== $validSecret) {
+        abort(403, 'Invalid secret.');
+    }
+
+    $tenant = \App\Models\Tenant::where('slug', $slug)
+        ->orWhere('subdomain', $slug)
+        ->first();
+
+    if (!$tenant) {
+        return response()->json(['status' => 'error', 'message' => "Tenant '{$slug}' not found."], 404);
+    }
+
+    $results = [];
+
+    // 1. Switch to tenant's DB
+    try {
+        \Illuminate\Support\Facades\DB::purge('tenant');
+        \Illuminate\Support\Facades\Config::set('database.connections.tenant', $tenant->dbConfig());
+        \Illuminate\Support\Facades\DB::setDefaultConnection('tenant');
+        \Illuminate\Support\Facades\DB::connection('tenant')->getPdo();
+        $results['db_connection'] = 'OK — connected to ' . $tenant->db_name;
+    } catch (\Exception $e) {
+        \Illuminate\Support\Facades\DB::setDefaultConnection('pgsql');
+        return response()->json([
+            'status'  => 'error',
+            'message' => 'Could not connect to tenant database: ' . $e->getMessage(),
+        ], 500);
+    }
+
+    // 2. Run migrations against tenant DB
+    try {
+        \Illuminate\Support\Facades\Artisan::call('migrate', [
+            '--force'    => true,
+            '--database' => 'tenant',
+        ]);
+        $results['migrations'] = trim(\Illuminate\Support\Facades\Artisan::output()) ?: 'Migrations ran (no output)';
+    } catch (\Exception $e) {
+        $results['migrations'] = 'FAILED: ' . $e->getMessage();
+    }
+
+    // 3. Seed SettingsSeeder against tenant DB
+    try {
+        \Illuminate\Support\Facades\Artisan::call('db:seed', [
+            '--class'    => 'SettingsSeeder',
+            '--database' => 'tenant',
+            '--force'    => true,
+        ]);
+        $results['settings_seeder'] = 'OK';
+    } catch (\Exception $e) {
+        $results['settings_seeder'] = 'FAILED: ' . $e->getMessage();
+    }
+
+    // 4. Create the school's super admin
+    $name     = request('name', env('TENANT_ADMIN_NAME', ''));
+    $email    = request('email', env('TENANT_ADMIN_EMAIL', ''));
+    $password = request('password', env('TENANT_ADMIN_PASSWORD', ''));
+
+    if (empty($name) || empty($email) || empty($password)) {
+        $results['admin'] = 'SKIPPED — pass ?name=X&email=X&password=X in the URL, or set TENANT_ADMIN_NAME/EMAIL/PASSWORD env vars';
+    } else {
+        try {
+            $exists = \Illuminate\Support\Facades\DB::connection('tenant')
+                ->table('users')
+                ->where('email', $email)
+                ->exists();
+
+            if ($exists) {
+                $results['admin'] = "SKIPPED — admin '{$email}' already exists in tenant DB";
+            } else {
+                \Illuminate\Support\Facades\DB::connection('tenant')->table('users')->insert([
+                    'full_name'      => $name,
+                    'email'          => $email,
+                    'password'       => \Illuminate\Support\Facades\Hash::make($password),
+                    'role'           => 'admin',
+                    'is_super_admin' => true,
+                    'created_at'     => now(),
+                    'updated_at'     => now(),
+                ]);
+                $results['admin'] = "OK — super admin '{$email}' created in tenant DB";
+            }
+        } catch (\Exception $e) {
+            $results['admin'] = 'FAILED: ' . $e->getMessage();
+        }
+    }
+
+    // 5. Reset to central DB
+    \Illuminate\Support\Facades\DB::setDefaultConnection('pgsql');
+    \Illuminate\Support\Facades\DB::purge('tenant');
+
+    return response()->json([
+        'status'       => 'done',
+        'school'       => $tenant->name,
+        'login_url'    => url('/school/' . $tenant->slug . '/login'),
+        'results'      => $results,
+    ], 200, [], JSON_PRETTY_PRINT);
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
 // ONE-TIME OWNER ACCOUNT CREATION — visit URL then remove from code
 // ═══════════════════════════════════════════════════════════════════════════
 Route::get('/create-owner/{secret}', function(string $secret) {
