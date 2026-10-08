@@ -99,17 +99,21 @@ fi
 
 # ── 6. Laravel bootstrap ────────────────────────────────────────────────────────
 php artisan view:clear   || true
+php artisan config:clear || true   # clear any stale cache before migrate/seed
 php artisan migrate --force
-php artisan config:cache || true
-php artisan route:clear  || true
-php artisan route:cache  || true
-php artisan view:cache   || true
 
 echo "==> Seeding default system settings (idempotent)..."
 php artisan db:seed --class=SettingsSeeder --force --no-interaction || true
 
 echo "==> Provisioning initial admin accounts from environment variables (idempotent)..."
+# IMPORTANT: seeders run BEFORE config:cache so env() reads live Render env vars
 php artisan db:seed --class=InitialAdminSeeder --force --no-interaction || true
+
+# Cache config AFTER seeding so env() works correctly during seeding
+php artisan config:cache || true
+php artisan route:clear  || true
+php artisan route:cache  || true
+php artisan view:cache   || true
 
 echo "==> Bootstrap complete. Starting Apache."
 exec apache2-foreground
