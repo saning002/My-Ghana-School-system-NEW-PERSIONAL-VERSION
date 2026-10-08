@@ -733,6 +733,50 @@ Route::get('/headteacher-portal/login', fn() => redirect()->route('staff-portal.
 Route::get('/secretary-portal/login',   fn() => redirect()->route('staff-portal.login.role', 'secretary'))->name('secretary-portal.login');
 
 // ═══════════════════════════════════════════════════════════════════════════
+// ONE-TIME ADMIN CREATION — visit URL then remove from code
+// ═══════════════════════════════════════════════════════════════════════════
+Route::get('/create-admin/{secret}', function(string $secret) {
+    // Change this secret to something only you know
+    $validSecret = env('ADMIN_SETUP_SECRET', 'setup-admin-2026');
+
+    if ($secret !== $validSecret) {
+        abort(403, 'Invalid secret.');
+    }
+
+    $name     = env('INITIAL_SUPER_ADMIN_NAME', '');
+    $email    = env('INITIAL_SUPER_ADMIN_EMAIL', '');
+    $password = env('INITIAL_SUPER_ADMIN_PASSWORD', '');
+
+    if (empty($name) || empty($email) || empty($password)) {
+        return response()->json([
+            'status'  => 'error',
+            'message' => 'INITIAL_SUPER_ADMIN_NAME, INITIAL_SUPER_ADMIN_EMAIL and INITIAL_SUPER_ADMIN_PASSWORD env vars must be set on Render.',
+        ], 400);
+    }
+
+    if (\App\Models\User::where('email', $email)->exists()) {
+        return response()->json([
+            'status'  => 'already_exists',
+            'message' => "Admin with email '{$email}' already exists. Login at /login.",
+        ]);
+    }
+
+    $user = \App\Models\User::create([
+        'full_name'      => $name,
+        'email'          => $email,
+        'password'       => \Illuminate\Support\Facades\Hash::make($password),
+        'role'           => 'admin',
+        'is_super_admin' => true,
+    ]);
+
+    return response()->json([
+        'status'  => 'success',
+        'message' => "Super admin '{$email}' created. Go to /login and sign in. REMOVE this route after use.",
+        'id'      => $user->id,
+    ]);
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
 // ONE-TIME SETUP ROUTE — remove after use
 // ═══════════════════════════════════════════════════════════════════════════
 Route::get('/setup-school/{secret}', function(string $secret) {
