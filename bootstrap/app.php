@@ -25,6 +25,11 @@ return Application::configure(basePath: dirname(__DIR__))
             'tenant'       => \App\Http\Middleware\TenantMiddleware::class,
             'feature'      => \App\Http\Middleware\FeatureMiddleware::class,
         ]);
+
+        // Exclude Paystack webhook from CSRF — Paystack sends raw POST with no token
+        $middleware->validateCsrfTokens(except: [
+            'paystack/webhook',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

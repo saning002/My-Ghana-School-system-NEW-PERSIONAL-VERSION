@@ -1132,3 +1132,28 @@ Route::prefix('owner')->name('owner.')->group(function () {
         Route::post('/profile', [\App\Http\Controllers\Owner\ProfileController::class, 'update'])->name('profile.update');
     });
 });
+
+// ═══════════════════════════════════════════════════════════════════════════
+// PAYSTACK PAYMENT ROUTES
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ── 1. Webhook — server-to-server, NO CSRF (must be excluded) ─────────────
+Route::post('/paystack/webhook', [\App\Http\Controllers\PaystackWebhookController::class, 'handle'])
+    ->name('paystack.webhook');
+
+// ── 2. Subscription payments (school pays owner for platform access) ──────
+Route::prefix('owner/schools')->name('paystack.subscription.')->group(function () {
+    // Owner sends this link to the school: /owner/schools/{tenant}/pay
+    Route::get('/{tenant}/pay',        [\App\Http\Controllers\Owner\SubscriptionPaymentController::class, 'showPaymentPage'])->name('page');
+    Route::post('/{tenant}/pay',       [\App\Http\Controllers\Owner\SubscriptionPaymentController::class, 'initialize'])->name('initialize');
+    Route::get('/payment/callback',    [\App\Http\Controllers\Owner\SubscriptionPaymentController::class, 'callback'])->name('callback');
+});
+
+// ── 3. School fee payments (student/parent pays school fees) ──────────────
+Route::prefix('portal')->name('portal.fee.')->middleware('portal.auth')->group(function () {
+    Route::get('/pay-fees',            [\App\Http\Controllers\Student\FeePaymentController::class, 'showPayPage'])->name('pay');
+    Route::post('/pay-fees/initialize',[\App\Http\Controllers\Student\FeePaymentController::class, 'initialize'])->name('pay.initialize');
+});
+
+// Fee callback — no middleware (Paystack redirects here after payment)
+Route::get('/paystack/fee/callback',   [\App\Http\Controllers\Student\FeePaymentController::class, 'callback'])->name('paystack.fee.callback');
