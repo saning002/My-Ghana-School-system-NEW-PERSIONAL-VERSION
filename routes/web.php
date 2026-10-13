@@ -271,10 +271,18 @@ Route::get('/diag', function () {
 // ── Emergency cache clear (run once after deploy if views are stale) ──────
 Route::get('/clear-views', function () {
     $cleared = [];
-    try { \Artisan::call('view:clear');  $cleared[] = 'views cleared'; }  catch (\Throwable $e) { $cleared[] = 'view:clear failed: '.$e->getMessage(); }
-    try { \Artisan::call('cache:clear'); $cleared[] = 'cache cleared'; }  catch (\Throwable $e) { $cleared[] = 'cache:clear failed: '.$e->getMessage(); }
-    try { \Artisan::call('view:cache');  $cleared[] = 'views recompiled'; } catch (\Throwable $e) { $cleared[] = 'view:cache failed: '.$e->getMessage(); }
-    return response()->json(['done' => true, 'steps' => $cleared]);
+    try { \Artisan::call('view:clear');   $cleared[] = 'views cleared'; }   catch (\Throwable $e) { $cleared[] = 'view:clear failed: '.$e->getMessage(); }
+    try { \Artisan::call('cache:clear');  $cleared[] = 'cache cleared'; }   catch (\Throwable $e) { $cleared[] = 'cache:clear failed: '.$e->getMessage(); }
+    try { \Artisan::call('route:clear');  $cleared[] = 'routes cleared'; }  catch (\Throwable $e) { $cleared[] = 'route:clear failed: '.$e->getMessage(); }
+    try { \Artisan::call('config:clear'); $cleared[] = 'config cleared'; }  catch (\Throwable $e) { $cleared[] = 'config:clear failed: '.$e->getMessage(); }
+    try { \Artisan::call('view:cache');   $cleared[] = 'views recompiled'; } catch (\Throwable $e) { $cleared[] = 'view:cache failed: '.$e->getMessage(); }
+
+    // List all registered routes containing 'owner/schools' to verify no conflicts
+    $ownerRoutes = collect(\Route::getRoutes())->filter(function($r) {
+        return str_contains($r->uri(), 'owner/schools') || str_contains($r->uri(), 'pay-subscription');
+    })->map(fn($r) => ['method' => implode('|',$r->methods()), 'uri' => $r->uri(), 'name' => $r->getName()])->values();
+
+    return response()->json(['done' => true, 'steps' => $cleared, 'owner_school_routes' => $ownerRoutes]);
 });
 
 // ── Fix academic periods (run once if attendance periods are empty) ────────
