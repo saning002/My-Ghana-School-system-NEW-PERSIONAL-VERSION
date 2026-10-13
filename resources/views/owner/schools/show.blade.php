@@ -3,7 +3,7 @@
 @section('page-title', $tenant->name)
 
 @section('topbar-actions')
-    <a href="{{ route('owner.schools.edit', ['school' => $tenant->id]) }}" class="btn btn-sm btn-outline-secondary">
+    <a href="{{ route('owner.schools.edit', $tenant) }}" class="btn btn-sm btn-outline-secondary">
         <i class="fas fa-edit me-1"></i> Edit
     </a>
     <a href="{{ route('owner.payments.create') }}?tenant_id={{ $tenant->id }}" class="btn btn-sm btn-owner-primary">
@@ -52,7 +52,7 @@
             <div class="col-md-5 text-md-end mt-3 mt-md-0">
                 <span class="badge badge-{{ $tenant->status }} fs-6 px-3 py-2">{{ ucfirst($tenant->status) }}</span>
                 <div class="mt-2">
-                    <form method="POST" action="{{ route('owner.schools.status', ['tenant' => $tenant->id]) }}" class="d-inline-flex gap-2 align-items-center">
+                    <form method="POST" action="{{ route('owner.schools.status', $tenant) }}" class="d-inline-flex gap-2 align-items-center">
                         @csrf
                         <select name="status" class="form-select form-select-sm" style="width:auto;">
                             @foreach(['active','trial','suspended','expired'] as $s)
@@ -119,7 +119,7 @@
                     Check to <strong>enable</strong> a feature for this school. Uncheck to <strong>disable</strong>.
                     <span class="text-success"><i class="fas fa-layer-group"></i></span> = included in their plan.
                 </p>
-                <form method="POST" action="{{ route('owner.schools.features', ['tenant' => $tenant->id]) }}">
+                <form method="POST" action="{{ route('owner.schools.features', $tenant) }}">
                     @csrf
                     @forelse($features as $group => $groupFeatures)
                     <div class="mb-4">
@@ -203,7 +203,7 @@
     <div class="tab-pane fade" id="tab-backups">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h6 class="fw-bold mb-0">Backup History</h6>
-            <form method="POST" action="{{ route('owner.backups.create', ['tenant' => $tenant->id]) }}">
+            <form method="POST" action="{{ route('owner.backups.create', $tenant) }}">
                 @csrf
                 <button type="submit" class="btn btn-sm btn-owner-primary">
                     <i class="fas fa-database me-1"></i> Backup Now

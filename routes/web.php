@@ -1131,7 +1131,8 @@ Route::prefix('owner')->name('owner.')->group(function () {
         Route::get('/dashboard', [\App\Http\Controllers\Owner\DashboardController::class, 'index'])->name('dashboard');
 
         // Schools (Tenants)
-        Route::resource('schools', \App\Http\Controllers\Owner\TenantController::class);
+        Route::resource('schools', \App\Http\Controllers\Owner\TenantController::class)
+            ->parameters(['schools' => 'tenant']);
         Route::post('/schools/{tenant}/status',   [\App\Http\Controllers\Owner\TenantController::class, 'updateStatus'])->name('schools.status');
         Route::post('/schools/{tenant}/features', [\App\Http\Controllers\Owner\TenantController::class, 'updateFeatures'])->name('schools.features');
 
