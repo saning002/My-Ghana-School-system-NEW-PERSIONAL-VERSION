@@ -60,44 +60,84 @@ class TenantSetupController extends Controller
             $existingTables = array_column($rows, 'tablename');
         } catch (\Throwable $e) {}
 
-        // Step 5: Mark ALL migration files as already run if core tables exist
+        // Step 5: Selectively mark only already-existing-table migrations as run
+        // Then let remaining migrations actually execute
         if (in_array('users', $existingTables)) {
-            $results['detected'] = 'Existing tables detected — marking all migrations as run to skip them';
+            $results['detected'] = 'Existing tables detected — marking only completed migrations as run';
+
+            // Map migration filenames to table names they create
+            $migrationTableMap = [
+                '0000_01_01_000000_create_users_table'            => ['users', 'sessions', 'password_reset_tokens'],
+                '0000_01_01_000001_create_cache_table'            => ['cache'],
+                '0000_01_01_000002_create_jobs_table'             => ['jobs'],
+            ];
+
             $migrationFiles = glob(database_path('migrations/*.php'));
             $batch = 1;
+
             foreach ($migrationFiles as $file) {
                 $name = pathinfo($file, PATHINFO_FILENAME);
-                try {
-                    $exists = DB::connection('tenant')
-                        ->table('migrations')
-                        ->where('migration', $name)
-                        ->exists();
-                    if (!$exists) {
-                        DB::connection('tenant')->table('migrations')->insert([
-                            'migration' => $name,
-                            'batch'     => $batch,
-                        ]);
+
+                // Check if this migration's table already exists
+                $shouldMark = false;
+
+                if (isset($migrationTableMap[$name])) {
+                    // Only mark if ALL tables for this migration exist
+                    $tables = $migrationTableMap[$name];
+                    $shouldMark = count(array_intersect($tables, $existingTables)) === count($tables);
+                }
+                // For all other migrations, check if their expected table exists
+                // by looking for table name patterns in the migration filename
+                else {
+                    // Extract table name from migration filename (e.g. create_students_table -> students)
+                    if (preg_match('/create_(\w+)_table/', $name, $m)) {
+                        $shouldMark = in_array($m[1], $existingTables);
+                    } elseif (preg_match('/add_\w+_to_(\w+)_table/', $name, $m)) {
+                        // Column additions — only mark if the table exists AND the column exists
+                        // For safety, we let these re-run (they use IF NOT EXISTS checks)
+                        $shouldMark = false;
                     }
-                } catch (\Throwable $e) {
-                    DB::connection('tenant')->statement('ROLLBACK');
+                }
+
+                if ($shouldMark) {
+                    try {
+                        $exists = DB::connection('tenant')
+                            ->table('migrations')
+                            ->where('migration', $name)
+                            ->exists();
+                        if (!$exists) {
+                            DB::connection('tenant')->table('migrations')->insert([
+                                'migration' => $name,
+                                'batch'     => $batch,
+                            ]);
+                        }
+                    } catch (\Throwable $e) {
+                        try { DB::connection('tenant')->statement('ROLLBACK'); } catch (\Throwable $e2) {}
+                    }
                 }
             }
-            $results['migrations'] = 'Existing DB — all migrations marked as run. Only new migrations will execute in future.';
         }
 
         // Step 6: Run any genuinely new migrations
         try {
+            // Fresh rollback before migrate to clear any stuck state
+            try { DB::connection('tenant')->statement('ROLLBACK'); } catch (\Throwable $e) {}
+
             Artisan::call('migrate', [
                 '--force'    => true,
                 '--database' => 'tenant',
             ]);
             $output = trim(Artisan::output());
-            if ($output && !str_contains($output, 'Nothing to migrate')) {
-                $results['new_migrations'] = $output;
-            }
+            $results['migrations'] = $output ?: 'All migrations ran successfully';
         } catch (\Throwable $e) {
             try { DB::connection('tenant')->statement('ROLLBACK'); } catch (\Throwable $e2) {}
-            $results['new_migrations_note'] = 'No new migrations needed (all up to date)';
+            // Try one more time
+            try {
+                Artisan::call('migrate', ['--force' => true, '--database' => 'tenant']);
+                $results['migrations'] = trim(Artisan::output()) ?: 'Migrations completed on retry';
+            } catch (\Throwable $e3) {
+                $results['migrations_error'] = 'Migration error: ' . $e3->getMessage();
+            }
         }
 
         // Step 7: Seed settings if table exists
