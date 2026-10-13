@@ -1133,8 +1133,14 @@ Route::prefix('owner')->name('owner.')->group(function () {
         // Schools (Tenants)
         Route::resource('schools', \App\Http\Controllers\Owner\TenantController::class)
             ->parameters(['schools' => 'tenant']);
-        Route::post('/schools/{tenant}/status',   [\App\Http\Controllers\Owner\TenantController::class, 'updateStatus'])->name('schools.status');
-        Route::post('/schools/{tenant}/features', [\App\Http\Controllers\Owner\TenantController::class, 'updateFeatures'])->name('schools.features');
+        Route::post('/schools/{tenant}/status',         [\App\Http\Controllers\Owner\TenantController::class,      'updateStatus'])->name('schools.status');
+        Route::post('/schools/{tenant}/features',       [\App\Http\Controllers\Owner\TenantController::class,      'updateFeatures'])->name('schools.features');
+
+        // School setup — run migrations, create/reset admin
+        Route::post('/schools/{tenant}/setup/migrate',       [\App\Http\Controllers\Owner\TenantSetupController::class, 'runMigrations'])->name('schools.setup.migrate');
+        Route::post('/schools/{tenant}/setup/create-admin',  [\App\Http\Controllers\Owner\TenantSetupController::class, 'createAdmin'])->name('schools.setup.create-admin');
+        Route::post('/schools/{tenant}/setup/reset-password',[\App\Http\Controllers\Owner\TenantSetupController::class, 'resetAdminPassword'])->name('schools.setup.reset-password');
+        Route::get('/schools/{tenant}/setup/admins',         [\App\Http\Controllers\Owner\TenantSetupController::class, 'listAdmins'])->name('schools.setup.admins');
 
         // Plans
         Route::resource('plans', \App\Http\Controllers\Owner\PlanController::class);

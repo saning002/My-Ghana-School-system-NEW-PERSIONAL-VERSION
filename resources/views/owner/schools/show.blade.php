@@ -102,9 +102,12 @@
 
 {{-- Tabs --}}
 <ul class="nav nav-tabs mb-3" id="schoolTabs">
-    <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#tab-features">Features</a></li>
+    <li class="nav-item"><a class="nav-link {{ session('active_tab') === 'setup' ? '' : 'active' }}" data-bs-toggle="tab" href="#tab-features">Features</a></li>
     <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-payments">Payments</a></li>
     <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-backups">Backups</a></li>
+    <li class="nav-item"><a class="nav-link {{ session('active_tab') === 'setup' ? 'active' : '' }}" data-bs-toggle="tab" href="#tab-setup">
+        <i class="fas fa-tools me-1"></i> Setup
+    </a></li>
     <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-info">Info</a></li>
 </ul>
 
@@ -255,6 +258,164 @@
         </div>
     </div>
 
+    {{-- Setup Tab --}}
+    <div class="tab-pane fade {{ session('active_tab') === 'setup' ? 'show active' : '' }}" id="tab-setup">
+
+        {{-- Alerts --}}
+        @if(session('setup_success'))
+        <div class="alert alert-success alert-dismissible fade show" style="border-radius:10px;" role="alert">
+            <i class="fas fa-check-circle me-2"></i>{{ session('setup_success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        @endif
+        @if(session('setup_error'))
+        <div class="alert alert-danger alert-dismissible fade show" style="border-radius:10px;" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>{{ session('setup_error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        @endif
+
+        <div class="row g-4">
+
+            {{-- Step 1: Run Migrations --}}
+            <div class="col-md-6">
+                <div class="owner-card h-100">
+                    <div class="card-header d-flex align-items-center gap-2">
+                        <span class="badge bg-primary">Step 1</span>
+                        Run Database Migrations
+                    </div>
+                    <div class="card-body">
+                        <p style="font-size:0.875rem;color:#64748b;">
+                            Connects to <strong>{{ $tenant->name }}</strong>'s database and runs all Laravel migrations to set up the school's tables. Also seeds default settings.
+                        </p>
+                        <div style="background:#f8fafc;border-radius:8px;padding:0.75rem 1rem;margin-bottom:1rem;font-size:0.8rem;">
+                            <div style="color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;font-size:0.7rem;margin-bottom:0.25rem;">Target Database</div>
+                            <code>{{ $tenant->db_host }}:{{ $tenant->db_port }} / {{ $tenant->db_name }}</code>
+                        </div>
+                        <form method="POST" action="{{ route('owner.schools.setup.migrate', $tenant) }}"
+                              onsubmit="return confirm('Run migrations on {{ $tenant->name }}\'s database? This is safe to run multiple times.')">
+                            @csrf
+                            <button type="submit" class="btn btn-owner-primary w-100">
+                                <i class="fas fa-database me-2"></i> Run Migrations & Seed Settings
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Step 2: Create Admin --}}
+            <div class="col-md-6">
+                <div class="owner-card h-100">
+                    <div class="card-header d-flex align-items-center gap-2">
+                        <span class="badge bg-success">Step 2</span>
+                        Create Initial Super Admin
+                    </div>
+                    <div class="card-body">
+                        <p style="font-size:0.875rem;color:#64748b;">
+                            Creates the first super admin account for <strong>{{ $tenant->name }}</strong>. Run Step 1 first if the database is brand new.
+                        </p>
+                        <form method="POST" action="{{ route('owner.schools.setup.create-admin', $tenant) }}">
+                            @csrf
+                            <div class="mb-2">
+                                <label class="form-label fw-semibold" style="font-size:0.85rem;">Full Name <span class="text-danger">*</span></label>
+                                <input type="text" name="admin_full_name" class="form-control form-control-sm"
+                                    placeholder="e.g. John Mensah" required>
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label fw-semibold" style="font-size:0.85rem;">Email Address <span class="text-danger">*</span></label>
+                                <input type="email" name="admin_email" class="form-control form-control-sm"
+                                    placeholder="admin@school.com" required>
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label fw-semibold" style="font-size:0.85rem;">Password <span class="text-danger">*</span></label>
+                                <input type="password" name="admin_password" class="form-control form-control-sm"
+                                    placeholder="Min 8 characters" required minlength="8">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold" style="font-size:0.85rem;">Confirm Password <span class="text-danger">*</span></label>
+                                <input type="password" name="admin_password_confirmation" class="form-control form-control-sm"
+                                    placeholder="Repeat password" required>
+                            </div>
+                            <button type="submit" class="btn btn-success w-100">
+                                <i class="fas fa-user-plus me-2"></i> Create Super Admin
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Existing Admins --}}
+            <div class="col-12">
+                <div class="owner-card">
+                    <div class="card-header d-flex align-items-center justify-content-between">
+                        <span><i class="fas fa-users me-2"></i> Existing Admins in this School</span>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="loadAdmins()">
+                            <i class="fas fa-sync me-1"></i> Load Admins
+                        </button>
+                    </div>
+                    <div class="card-body p-0" id="adminsTableWrap">
+                        <div class="text-center text-muted py-4" style="font-size:0.875rem;">
+                            Click "Load Admins" to fetch the list from the school's database.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Reset Password --}}
+            <div class="col-md-6">
+                <div class="owner-card">
+                    <div class="card-header d-flex align-items-center gap-2">
+                        <span class="badge bg-warning text-dark">Tool</span>
+                        Reset Admin Password
+                    </div>
+                    <div class="card-body">
+                        <p style="font-size:0.875rem;color:#64748b;">Reset the password for any existing admin in this school's database.</p>
+                        <form method="POST" action="{{ route('owner.schools.setup.reset-password', $tenant) }}">
+                            @csrf
+                            <div class="mb-2">
+                                <label class="form-label fw-semibold" style="font-size:0.85rem;">Admin Email <span class="text-danger">*</span></label>
+                                <input type="email" name="reset_email" class="form-control form-control-sm"
+                                    placeholder="admin@school.com" required>
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label fw-semibold" style="font-size:0.85rem;">New Password <span class="text-danger">*</span></label>
+                                <input type="password" name="reset_password" class="form-control form-control-sm"
+                                    placeholder="Min 8 characters" required minlength="8">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold" style="font-size:0.85rem;">Confirm New Password <span class="text-danger">*</span></label>
+                                <input type="password" name="reset_password_confirmation" class="form-control form-control-sm"
+                                    placeholder="Repeat password" required>
+                            </div>
+                            <button type="submit" class="btn btn-warning w-100"
+                                onclick="return confirm('Reset this admin\'s password?')">
+                                <i class="fas fa-key me-2"></i> Reset Password
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Login URL --}}
+            <div class="col-md-6">
+                <div class="owner-card">
+                    <div class="card-header"><i class="fas fa-link me-2"></i> School Login URL</div>
+                    <div class="card-body">
+                        <p style="font-size:0.875rem;color:#64748b;">Send this URL to the school's admin so they can log in.</p>
+                        <div style="background:#f1f5f9;border-radius:8px;padding:0.75rem 1rem;margin-bottom:1rem;">
+                            <code id="loginUrlSetup" style="font-size:0.875rem;word-break:break-all;">{{ url('/school/' . $tenant->slug . '/login') }}</code>
+                        </div>
+                        <button onclick="navigator.clipboard.writeText(document.getElementById('loginUrlSetup').innerText.trim()).then(()=>alert('Copied!'))"
+                            class="btn btn-outline-primary w-100">
+                            <i class="fas fa-copy me-2"></i> Copy Login URL
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
     {{-- Info Tab --}}
     <div class="tab-pane fade" id="tab-info">
         <div class="owner-card">
@@ -288,3 +449,35 @@
 
 </div>
 @endsection
+
+@push('scripts')
+<script>
+function loadAdmins() {
+    const wrap = document.getElementById('adminsTableWrap');
+    wrap.innerHTML = '<div class="text-center py-4"><div class="spinner-border spinner-border-sm text-secondary"></div> Loading...</div>';
+
+    fetch('{{ route('owner.schools.setup.admins', $tenant) }}')
+        .then(r => r.json())
+        .then(admins => {
+            if (!admins.length) {
+                wrap.innerHTML = '<div class="text-center text-muted py-4" style="font-size:0.875rem;">No admins found. Run migrations first, then create an admin using Step 2.</div>';
+                return;
+            }
+            let html = '<table class="table mb-0"><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Created</th></tr></thead><tbody>';
+            admins.forEach(a => {
+                html += `<tr>
+                    <td style="font-size:0.875rem;font-weight:500;">${a.full_name}</td>
+                    <td style="font-size:0.875rem;">${a.email}</td>
+                    <td><span class="badge ${a.is_super_admin ? 'bg-danger' : 'bg-secondary'}" style="font-size:0.72rem;">${a.is_super_admin ? 'Super Admin' : 'Admin'}</span></td>
+                    <td style="font-size:0.8rem;color:#94a3b8;">${a.created_at ? a.created_at.substring(0,10) : '—'}</td>
+                </tr>`;
+            });
+            html += '</tbody></table>';
+            wrap.innerHTML = html;
+        })
+        .catch(e => {
+            wrap.innerHTML = '<div class="text-center text-danger py-4" style="font-size:0.875rem;">Failed to load admins: ' + e.message + '</div>';
+        });
+}
+</script>
+@endpush
