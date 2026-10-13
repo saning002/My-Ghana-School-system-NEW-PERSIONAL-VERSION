@@ -76,7 +76,13 @@
                 <i class="fas fa-graduation-cap"></i>
             </div>
             <div class="school-name">{{ $tenant->name }}</div>
-            <div class="school-sub">School Management System</div>
+            <div class="school-sub">
+                @if(($role ?? '') === 'lecturer')
+                    Teacher / Lecturer Login
+                @else
+                    Administrator Login
+                @endif
+            </div>
         </div>
 
         @if($tenant->isOnTrial())
@@ -93,8 +99,7 @@
         </div>
         @endif
 
-        <form method="POST" action="{{ route('school.login.submit', $tenant->slug) }}">
-            @csrf
+        <form method="POST" action="{{ route('school.login.submit', $tenant->slug) }}">            @csrf
 
             <div class="mb-3">
                 <label class="form-label">Email Address</label>

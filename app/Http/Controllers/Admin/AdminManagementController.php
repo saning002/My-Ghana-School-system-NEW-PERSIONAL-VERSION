@@ -5,15 +5,17 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\ChurchBranch;
 use App\Models\User;
+use App\Services\TenantService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class AdminManagementController extends Controller
 {
-    private function ensureSuperAdmin()
+    private function ensureSuperAdmin(): void
     {
-        if (! auth()->check() || ! auth()->user()->isSuperAdmin()) {
+        if (!auth()->check() || !auth()->user()->isSuperAdmin()) {
             abort(403, 'Unauthorized Access. Super admin only.');
         }
     }
@@ -44,12 +46,18 @@ class AdminManagementController extends Controller
 
         $validated = $request->validate([
             'full_name'        => 'required|string|max:255',
-            'email'            => 'required|email|unique:users,email',
+            'email'            => 'required|email',
             'password'         => 'required|string|min:6|confirmed',
             'phone'            => 'nullable|string|max:20',
-            'church_branch_id' => 'nullable|exists:church_branches,id',
+            'church_branch_id' => 'nullable',
             'is_super_admin'   => 'nullable|boolean',
         ]);
+
+        // Check email uniqueness on the correct connection
+        $emailExists = User::where('email', $validated['email'])->exists();
+        if ($emailExists) {
+            return back()->withErrors(['email' => 'An admin with this email already exists.'])->withInput();
+        }
 
         User::create([
             'full_name'        => $validated['full_name'],
@@ -57,11 +65,12 @@ class AdminManagementController extends Controller
             'password'         => Hash::make($validated['password']),
             'phone'            => $validated['phone'] ?? null,
             'role'             => 'admin',
-            'is_super_admin'   => $request->boolean('is_super_admin'),
+            'is_super_admin'   => $request->boolean('is_super_admin', false),
             'church_branch_id' => $request->filled('church_branch_id') ? $validated['church_branch_id'] : null,
         ]);
 
-        return redirect()->route('admin.admins.index')->with('success', 'Administrator created successfully.');
+        return redirect()->route('admin.admins.index')
+            ->with('success', 'Administrator created successfully.');
     }
 
     public function edit(User $admin)
@@ -86,25 +95,25 @@ class AdminManagementController extends Controller
 
         $validated = $request->validate([
             'full_name'        => 'required|string|max:255',
-            'email'            => 'required|email|unique:users,email,' . $admin->id,
+            'email'            => 'required|email',
             'phone'            => 'nullable|string|max:20',
-            'church_branch_id' => 'nullable|exists:church_branches,id',
+            'church_branch_id' => 'nullable',
             'is_super_admin'   => 'nullable|boolean',
             'password'         => 'nullable|string|min:6|confirmed',
         ]);
+
+        // Prevent removing own super admin status
+        if ($admin->id === auth()->id() && !$request->boolean('is_super_admin')) {
+            return back()->with('error', 'You cannot remove your own Super Admin privileges.');
+        }
 
         $updates = [
             'full_name'        => $validated['full_name'],
             'email'            => $validated['email'],
             'phone'            => $validated['phone'] ?? null,
-            'is_super_admin'   => $request->boolean('is_super_admin'),
+            'is_super_admin'   => $request->boolean('is_super_admin', false),
             'church_branch_id' => $request->filled('church_branch_id') ? $validated['church_branch_id'] : null,
         ];
-
-        // If the Super Admin changes their own super admin status, reject to prevent lockout
-        if ($admin->id === auth()->id() && !$request->boolean('is_super_admin')) {
-            return back()->with('error', 'You cannot remove your own Super Admin privileges.');
-        }
 
         if ($request->filled('password')) {
             $updates['password'] = Hash::make($validated['password']);
@@ -112,7 +121,8 @@ class AdminManagementController extends Controller
 
         $admin->update($updates);
 
-        return redirect()->route('admin.admins.index')->with('success', 'Administrator updated successfully.');
+        return redirect()->route('admin.admins.index')
+            ->with('success', 'Administrator updated successfully.');
     }
 
     public function destroy(User $admin)
@@ -128,16 +138,20 @@ class AdminManagementController extends Controller
             return back()->with('error', 'You cannot delete your own account.');
         }
 
-        // Prevent deleting the last Super Admin
+        // Allow deleting super admins as long as at least one remains after deletion
         if ($admin->isSuperAdmin()) {
-            $superAdminCount = User::where('role', 'admin')->where('is_super_admin', true)->count();
+            $superAdminCount = User::where('role', 'admin')
+                ->where('is_super_admin', true)
+                ->count();
+
             if ($superAdminCount <= 1) {
-                return back()->with('error', 'You cannot delete the last remaining Super Admin.');
+                return back()->with('error', 'Cannot delete the last Super Admin. Create another Super Admin first.');
             }
         }
 
         $admin->delete();
 
-        return redirect()->route('admin.admins.index')->with('success', 'Administrator deleted successfully.');
+        return redirect()->route('admin.admins.index')
+            ->with('success', 'Administrator deleted successfully.');
     }
 }

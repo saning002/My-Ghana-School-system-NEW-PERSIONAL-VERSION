@@ -94,11 +94,12 @@
       </div>
       <div class="portal-card-body">
         <div class="access-list">
-          <a href="{{ route('admin.login') }}" class="access-btn ab-admin">
+          @php $tenantSlug = session('tenant_slug'); @endphp
+          <a href="{{ $tenantSlug ? route('school.admin.login', $tenantSlug) : route('admin.login') }}" class="access-btn ab-admin">
             <div class="ab-icon"><i class="fas fa-crown"></i></div>
             <div><span class="ab-strong">Admin Portal</span><span class="ab-sub">School administrators &amp; branch managers</span></div>
           </a>
-          <a href="{{ route('teachers-portal.login') }}" class="access-btn ab-teacher">
+          <a href="{{ $tenantSlug ? route('school.lecturer.login', $tenantSlug) : route('teachers-portal.login') }}" class="access-btn ab-teacher">
             <div class="ab-icon"><i class="fas fa-chalkboard-user"></i></div>
             <div><span class="ab-strong">Teacher Portal</span><span class="ab-sub">Attendance, exam scores &amp; reports</span></div>
           </a>

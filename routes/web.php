@@ -1106,12 +1106,22 @@ Route::name('website.')->group(function () {
 
 // ═══════════════════════════════════════════════════════════════════════════
 // SCHOOL SLUG-BASED LOGIN (Option A — single Render URL, multiple schools)
-// Each school accesses: /school/{slug}/login
+// /school/{slug}        → redirects to school public website portal
+// /school/{slug}/admin  → admin login for this school
+// /school/{slug}/teacher→ lecturer login for this school
 // ═══════════════════════════════════════════════════════════════════════════
 Route::prefix('school')->name('school.')->group(function () {
-    Route::get('/{slug}/login',  [\App\Http\Controllers\Owner\SchoolAccessController::class, 'showLogin'])->name('login');
-    Route::post('/{slug}/login', [\App\Http\Controllers\Owner\SchoolAccessController::class, 'login'])->name('login.submit');
-    Route::post('/logout',       [\App\Http\Controllers\Owner\SchoolAccessController::class, 'logout'])->name('logout');
+    // Main entry — redirects to school's public website
+    Route::get('/{slug}',         [\App\Http\Controllers\Owner\SchoolAccessController::class, 'showLogin'])->name('login');
+    Route::get('/{slug}/login',   [\App\Http\Controllers\Owner\SchoolAccessController::class, 'showLogin'])->name('login.page');
+    Route::post('/{slug}/login',  [\App\Http\Controllers\Owner\SchoolAccessController::class, 'login'])->name('login.submit');
+    Route::post('/logout',        [\App\Http\Controllers\Owner\SchoolAccessController::class, 'logout'])->name('logout');
+
+    // Direct portal logins (linked from the school's public website portal page)
+    Route::get('/{slug}/admin',   [\App\Http\Controllers\Owner\SchoolAccessController::class, 'showAdminLogin'])->name('admin.login');
+    Route::post('/{slug}/admin',  [\App\Http\Controllers\Owner\SchoolAccessController::class, 'login'])->name('admin.submit');
+    Route::get('/{slug}/teacher', [\App\Http\Controllers\Owner\SchoolAccessController::class, 'showLecturerLogin'])->name('lecturer.login');
+    Route::post('/{slug}/teacher',[\App\Http\Controllers\Owner\SchoolAccessController::class, 'login'])->name('lecturer.submit');
 });
 
 // ═══════════════════════════════════════════════════════════════════════════

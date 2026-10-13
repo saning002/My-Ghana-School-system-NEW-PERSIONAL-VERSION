@@ -25,6 +25,26 @@ use Illuminate\Validation\ValidationException;
  */
 class SchoolAccessController extends Controller
 {
+    public function showAdminLogin(string $slug)
+    {
+        $tenant = Tenant::where('slug', $slug)->orWhere('subdomain', $slug)->first();
+        if (!$tenant) abort(404);
+        if ($tenant->isSuspended()) return view('tenant.suspended', compact('tenant'));
+        if ($tenant->isExpired())   return view('tenant.expired',    compact('tenant'));
+        session(['tenant_slug' => $tenant->slug, 'tenant_id' => $tenant->id]);
+        return view('owner.school-login', ['tenant' => $tenant, 'role' => 'admin']);
+    }
+
+    public function showLecturerLogin(string $slug)
+    {
+        $tenant = Tenant::where('slug', $slug)->orWhere('subdomain', $slug)->first();
+        if (!$tenant) abort(404);
+        if ($tenant->isSuspended()) return view('tenant.suspended', compact('tenant'));
+        if ($tenant->isExpired())   return view('tenant.expired',    compact('tenant'));
+        session(['tenant_slug' => $tenant->slug, 'tenant_id' => $tenant->id]);
+        return view('owner.school-login', ['tenant' => $tenant, 'role' => 'lecturer']);
+    }
+
     public function showLogin(string $slug)
     {
         $tenant = Tenant::where('slug', $slug)
@@ -43,7 +63,13 @@ class SchoolAccessController extends Controller
             return view('tenant.expired', compact('tenant'));
         }
 
-        return view('owner.school-login', compact('tenant'));
+        // Store tenant in session before redirecting to website
+        // so the website knows which school's content to show
+        session(['tenant_slug' => $tenant->slug, 'tenant_id' => $tenant->id]);
+
+        // Redirect to the school's public website portal page
+        // which has links to admin, teacher and student login
+        return redirect()->route('website.portal');
     }
 
     public function login(Request $request, string $slug)
