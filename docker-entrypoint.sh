@@ -99,8 +99,8 @@ fi
 
 # ── 6. Laravel bootstrap ────────────────────────────────────────────────────────
 php artisan view:clear   || true
-php artisan config:clear || true   # clear any stale cache before migrate/seed
-php artisan route:clear  || true   # clear route cache so owner routes resolve correctly
+php artisan config:clear || true
+php artisan route:clear  || true
 php artisan migrate --force --path=database/migrations 2>&1
 
 echo "==> Seeding default system settings (idempotent)..."

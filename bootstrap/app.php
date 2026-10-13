@@ -14,8 +14,14 @@ return Application::configure(basePath: dirname(__DIR__))
         // Trust all proxies — required for Render's load balancer to pass HTTPS correctly
         $middleware->trustProxies(at: '*');
 
-        // Authenticated admins hitting /login must not go to "/" (root redirects back to login → redirect loop)
-        $middleware->redirectUsersTo(fn () => route('admin.dashboard'));
+        // Redirect authenticated web users to admin dashboard
+        // But never redirect owner panel users — they use a separate guard
+        $middleware->redirectUsersTo(function (\Illuminate\Http\Request $request) {
+            if ($request->is('owner/*') || $request->is('owner')) {
+                return route('owner.dashboard');
+            }
+            return route('admin.dashboard');
+        });
 
         $middleware->alias([
             'role'         => \App\Http\Middleware\EnsureUserHasRole::class,
