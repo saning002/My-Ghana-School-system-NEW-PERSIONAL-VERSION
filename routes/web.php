@@ -1168,12 +1168,12 @@ Route::prefix('owner')->name('owner.')->group(function () {
 Route::post('/paystack/webhook', [\App\Http\Controllers\PaystackWebhookController::class, 'handle'])
     ->name('paystack.webhook');
 
-// ── 2. Subscription payments (school pays owner for platform access) ──────
-Route::prefix('owner/schools')->name('paystack.subscription.')->group(function () {
-    // Owner sends this link to the school: /owner/schools/{tenant}/pay
-    Route::get('/{tenant}/pay',        [\App\Http\Controllers\Owner\SubscriptionPaymentController::class, 'showPaymentPage'])->name('page');
-    Route::post('/{tenant}/pay',       [\App\Http\Controllers\Owner\SubscriptionPaymentController::class, 'initialize'])->name('initialize');
-    Route::get('/payment/callback',    [\App\Http\Controllers\Owner\SubscriptionPaymentController::class, 'callback'])->name('callback');
+// ── 2. Subscription payment page — school pays for their subscription
+//       Uses /pay-subscription/ prefix to avoid conflicting with /owner/schools/{id}
+Route::prefix('pay-subscription')->name('paystack.subscription.')->group(function () {
+    Route::get('/{tenant}',         [\App\Http\Controllers\Owner\SubscriptionPaymentController::class, 'showPaymentPage'])->name('page');
+    Route::post('/{tenant}',        [\App\Http\Controllers\Owner\SubscriptionPaymentController::class, 'initialize'])->name('initialize');
+    Route::get('/callback/confirm', [\App\Http\Controllers\Owner\SubscriptionPaymentController::class, 'callback'])->name('callback');
 });
 
 // ── 3. School fee payments (student/parent pays school fees) ──────────────
@@ -1183,4 +1183,4 @@ Route::prefix('portal')->name('portal.fee.')->middleware('portal.auth')->group(f
 });
 
 // Fee callback — no middleware (Paystack redirects here after payment)
-Route::get('/paystack/fee/callback',   [\App\Http\Controllers\Student\FeePaymentController::class, 'callback'])->name('paystack.fee.callback');
+Route::get('/paystack/fee/callback', [\App\Http\Controllers\Student\FeePaymentController::class, 'callback'])->name('paystack.fee.callback');
