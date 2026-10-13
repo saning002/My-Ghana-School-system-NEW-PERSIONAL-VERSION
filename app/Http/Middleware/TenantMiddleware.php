@@ -109,8 +109,8 @@ class TenantMiddleware
      */
     private function resetDatabase(): void
     {
-        $default = config('database.default_central', 'mysql');
-        DB::setDefaultConnection($default);
+        // Always reset to pgsql (the central DB) — never mysql
+        DB::setDefaultConnection('pgsql');
         DB::purge('tenant');
     }
 }
