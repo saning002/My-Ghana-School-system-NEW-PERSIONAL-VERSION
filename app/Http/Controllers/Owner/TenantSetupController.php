@@ -88,6 +88,107 @@ class TenantSetupController extends Controller
     }
 
     /**
+     * Delete an admin from tenant DB (owner panel action).
+     */
+    public function deleteAdmin(Request $request, Tenant $tenant)
+    {
+        $userId = $request->validate(['user_id' => 'required|integer'])['user_id'];
+
+        try {
+            DB::purge('tenant');
+            Config::set('database.connections.tenant', $tenant->dbConfig());
+            DB::setDefaultConnection('tenant');
+
+            // Count super admins before deleting
+            $superAdminCount = DB::connection('tenant')
+                ->table('users')
+                ->where('role', 'admin')
+                ->where('is_super_admin', true)
+                ->count();
+
+            $user = DB::connection('tenant')->table('users')->where('id', $userId)->first();
+
+            if (!$user) {
+                DB::setDefaultConnection('pgsql'); DB::purge('tenant');
+                return response()->json(['error' => 'User not found.'], 404);
+            }
+
+            if ($user->is_super_admin && $superAdminCount <= 1) {
+                DB::setDefaultConnection('pgsql'); DB::purge('tenant');
+                return response()->json(['error' => 'Cannot delete the last Super Admin.'], 422);
+            }
+
+            DB::connection('tenant')->table('users')->where('id', $userId)->delete();
+            DB::setDefaultConnection('pgsql'); DB::purge('tenant');
+
+            AuditLog::record('tenant.admin_deleted', "Admin ID {$userId} deleted from '{$tenant->name}'", $tenant->id);
+
+            return response()->json(['success' => true, 'message' => 'Admin deleted successfully.']);
+
+        } catch (\Throwable $e) {
+            try { DB::setDefaultConnection('pgsql'); } catch (\Throwable $e2) {}
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Update an admin in tenant DB (owner panel action).
+     */
+    public function updateAdmin(Request $request, Tenant $tenant)
+    {
+        $validated = $request->validate([
+            'user_id'        => 'required|integer',
+            'full_name'      => 'required|string|max:255',
+            'email'          => 'required|email|max:255',
+            'is_super_admin' => 'nullable|boolean',
+            'new_password'   => 'nullable|string|min:8',
+        ]);
+
+        try {
+            DB::purge('tenant');
+            Config::set('database.connections.tenant', $tenant->dbConfig());
+            DB::setDefaultConnection('tenant');
+
+            // Check email uniqueness (exclude self)
+            $emailTaken = DB::connection('tenant')
+                ->table('users')
+                ->where('email', $validated['email'])
+                ->where('id', '!=', $validated['user_id'])
+                ->exists();
+
+            if ($emailTaken) {
+                DB::setDefaultConnection('pgsql'); DB::purge('tenant');
+                return response()->json(['error' => "Email '{$validated['email']}' is already taken."], 422);
+            }
+
+            $updates = [
+                'full_name'      => $validated['full_name'],
+                'email'          => $validated['email'],
+                'is_super_admin' => $request->boolean('is_super_admin', false),
+                'updated_at'     => now(),
+            ];
+
+            if (!empty($validated['new_password'])) {
+                $updates['password'] = Hash::make($validated['new_password']);
+            }
+
+            DB::connection('tenant')->table('users')
+                ->where('id', $validated['user_id'])
+                ->update($updates);
+
+            DB::setDefaultConnection('pgsql'); DB::purge('tenant');
+
+            AuditLog::record('tenant.admin_updated', "Admin ID {$validated['user_id']} updated in '{$tenant->name}'", $tenant->id);
+
+            return response()->json(['success' => true, 'message' => 'Admin updated successfully.']);
+
+        } catch (\Throwable $e) {
+            try { DB::setDefaultConnection('pgsql'); } catch (\Throwable $e2) {}
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
      * Create initial super admin in tenant DB.
      */
     public function createAdmin(Request $request, Tenant $tenant)

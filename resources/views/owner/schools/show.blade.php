@@ -452,11 +452,17 @@
 
 @push('scripts')
 <script>
+const TENANT_ID = {{ $tenant->id }};
+const CSRF     = '{{ csrf_token() }}';
+const ADMINS_URL  = '{{ route('owner.schools.setup.admins', $tenant) }}';
+const DELETE_BASE = '/owner/schools/' + TENANT_ID + '/setup/admins/';
+const UPDATE_BASE = '/owner/schools/' + TENANT_ID + '/setup/admins/';
+
 function loadAdmins() {
     const wrap = document.getElementById('adminsTableWrap');
     wrap.innerHTML = '<div class="text-center py-4"><div class="spinner-border spinner-border-sm text-secondary"></div> Loading...</div>';
 
-    fetch('{{ route('owner.schools.setup.admins', $tenant) }}')
+    fetch(ADMINS_URL)
         .then(r => {
             if (!r.ok) return r.text().then(t => { throw new Error('Server error: ' + t.substring(0, 200)); });
             return r.json();
@@ -470,13 +476,28 @@ function loadAdmins() {
                 wrap.innerHTML = '<div class="text-center text-muted py-4" style="font-size:0.875rem;">No admins found. Run migrations first, then create an admin using Step 2.</div>';
                 return;
             }
-            let html = '<table class="table mb-0"><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Created</th></tr></thead><tbody>';
+            let html = `<table class="table mb-0">
+                <thead><tr>
+                    <th>Name</th><th>Email</th><th>Role</th><th>Created</th><th>Actions</th>
+                </tr></thead><tbody>`;
             admins.forEach(a => {
-                html += `<tr>
+                html += `<tr id="admin-row-${a.id}">
                     <td style="font-size:0.875rem;font-weight:500;">${a.full_name}</td>
                     <td style="font-size:0.875rem;">${a.email}</td>
-                    <td><span class="badge ${a.is_super_admin ? 'bg-danger' : 'bg-secondary'}" style="font-size:0.72rem;">${a.is_super_admin ? 'Super Admin' : 'Admin'}</span></td>
+                    <td><span class="badge ${a.is_super_admin ? 'bg-danger' : 'bg-secondary'}" style="font-size:0.72rem;">
+                        ${a.is_super_admin ? 'Super Admin' : 'Admin'}
+                    </span></td>
                     <td style="font-size:0.8rem;color:#94a3b8;">${a.created_at ? a.created_at.substring(0,10) : '—'}</td>
+                    <td>
+                        <div class="d-flex gap-1">
+                            <button class="btn btn-sm btn-outline-warning" onclick="openEditModal(${a.id},'${a.full_name.replace(/'/g,"\\'")}','${a.email}',${a.is_super_admin ? 1 : 0})" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteAdmin(${a.id},'${a.full_name.replace(/'/g,"\\'")}',${a.is_super_admin ? 1 : 0})" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
                 </tr>`;
             });
             html += '</tbody></table>';
@@ -486,5 +507,111 @@ function loadAdmins() {
             wrap.innerHTML = '<div class="text-center text-danger py-4" style="font-size:0.875rem;">Failed: ' + e.message + '</div>';
         });
 }
+
+function deleteAdmin(userId, name, isSuperAdmin) {
+    if (!confirm(`Delete admin "${name}"? This cannot be undone.`)) return;
+
+    fetch(DELETE_BASE + userId, {
+        method: 'DELETE',
+        headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId })
+    })
+    .then(r => r.json())
+    .then(res => {
+        if (res.error) { alert('Error: ' + res.error); return; }
+        // Remove row from table
+        const row = document.getElementById('admin-row-' + userId);
+        if (row) row.remove();
+        showSetupAlert('success', res.message || 'Admin deleted.');
+    })
+    .catch(e => alert('Delete failed: ' + e.message));
+}
+
+function openEditModal(userId, fullName, email, isSuperAdmin) {
+    document.getElementById('editAdminId').value    = userId;
+    document.getElementById('editFullName').value   = fullName;
+    document.getElementById('editEmail').value      = email;
+    document.getElementById('editSuperAdmin').checked = !!isSuperAdmin;
+    document.getElementById('editPassword').value   = '';
+    const modal = new bootstrap.Modal(document.getElementById('editAdminModal'));
+    modal.show();
+}
+
+function submitEditAdmin() {
+    const userId      = document.getElementById('editAdminId').value;
+    const fullName    = document.getElementById('editFullName').value;
+    const email       = document.getElementById('editEmail').value;
+    const isSuperAdmin= document.getElementById('editSuperAdmin').checked;
+    const newPassword = document.getElementById('editPassword').value;
+
+    fetch(UPDATE_BASE + userId, {
+        method: 'PUT',
+        headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            user_id: userId,
+            full_name: fullName,
+            email: email,
+            is_super_admin: isSuperAdmin,
+            new_password: newPassword || null,
+        })
+    })
+    .then(r => r.json())
+    .then(res => {
+        if (res.error) { alert('Error: ' + res.error); return; }
+        bootstrap.Modal.getInstance(document.getElementById('editAdminModal')).hide();
+        showSetupAlert('success', res.message || 'Admin updated.');
+        loadAdmins(); // Refresh the list
+    })
+    .catch(e => alert('Update failed: ' + e.message));
+}
+
+function showSetupAlert(type, message) {
+    const div = document.createElement('div');
+    div.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show`;
+    div.style.cssText = 'border-radius:10px;margin-bottom:1rem;';
+    div.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} me-2"></i>${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>`;
+    const setupTab = document.getElementById('tab-setup');
+    setupTab.insertBefore(div, setupTab.firstChild);
+    setTimeout(() => div.remove(), 5000);
+}
 </script>
+
+{{-- Edit Admin Modal --}}
+<div class="modal fade" id="editAdminModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title fw-bold"><i class="fas fa-edit me-2"></i>Edit Admin</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editAdminId">
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Full Name</label>
+                    <input type="text" id="editFullName" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Email</label>
+                    <input type="email" id="editEmail" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">New Password <small class="text-muted">(leave blank to keep current)</small></label>
+                    <input type="password" id="editPassword" class="form-control" placeholder="Min 8 characters" minlength="8">
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="editSuperAdmin">
+                    <label class="form-check-label fw-semibold" for="editSuperAdmin">Super Admin</label>
+                    <div class="form-text">Super admins have full access including creating other admins.</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-owner-primary" onclick="submitEditAdmin()">
+                    <i class="fas fa-save me-1"></i> Save Changes
+                </button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
 @endpush

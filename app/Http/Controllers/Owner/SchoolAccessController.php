@@ -108,16 +108,51 @@ class SchoolAccessController extends Controller
             ]);
         }
 
-        $user = Auth::user();
+        $user     = Auth::user();
+        $loginRole = $request->input('login_role', 'superadmin'); // superadmin | admin | lecturer
 
-        // Only admins and lecturers can log in
-        if (!in_array($user->role, ['admin', 'lecturer']) && !$user->isSuperAdmin()) {
-            Auth::logout();
-            $this->resetDatabase();
-
-            throw ValidationException::withMessages([
-                'email' => 'Access restricted to administrators and lecturers.',
-            ]);
+        // Validate the user matches the selected role
+        if ($loginRole === 'lecturer') {
+            if ($user->role !== 'lecturer') {
+                Auth::logout();
+                $this->resetDatabase();
+                throw ValidationException::withMessages([
+                    'email' => 'This account is not a Lecturer account.',
+                ]);
+            }
+        } elseif ($loginRole === 'superadmin') {
+            if (!$user->isSuperAdmin()) {
+                Auth::logout();
+                $this->resetDatabase();
+                throw ValidationException::withMessages([
+                    'email' => 'This account is not a Super Admin. Try the Admin tab instead.',
+                ]);
+            }
+        } elseif ($loginRole === 'admin') {
+            if ($user->role !== 'admin') {
+                Auth::logout();
+                $this->resetDatabase();
+                throw ValidationException::withMessages([
+                    'email' => 'This account is not an Admin account.',
+                ]);
+            }
+            // Standard admins must NOT be super admins
+            if ($user->isSuperAdmin()) {
+                Auth::logout();
+                $this->resetDatabase();
+                throw ValidationException::withMessages([
+                    'email' => 'This is a Super Admin account. Please use the Super Admin tab.',
+                ]);
+            }
+        } else {
+            // Fallback — any admin or lecturer
+            if (!in_array($user->role, ['admin', 'lecturer']) && !$user->isSuperAdmin()) {
+                Auth::logout();
+                $this->resetDatabase();
+                throw ValidationException::withMessages([
+                    'email' => 'Access restricted to administrators and lecturers.',
+                ]);
+            }
         }
 
         $request->session()->regenerate();

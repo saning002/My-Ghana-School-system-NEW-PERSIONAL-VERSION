@@ -20,9 +20,33 @@ class AdminManagementController extends Controller
         }
     }
 
+    /**
+     * Ensure we are connected to the tenant DB before any admin operation.
+     * When a school admin is logged in via /school/{slug}/login, the session
+     * has tenant_slug set and TenantMiddleware switches the DB automatically.
+     * This is a safety guard for cases where the connection may have reset.
+     */
+    private function ensureTenantDb(): void
+    {
+        $slug = session('tenant_slug');
+        if (!$slug) return; // Not in tenant context — skip
+
+        $currentDb = \Illuminate\Support\Facades\DB::getDefaultConnection();
+        if ($currentDb !== 'tenant') {
+            // Re-switch to tenant DB
+            $tenant = \App\Models\Tenant::where('slug', $slug)->first();
+            if ($tenant) {
+                \Illuminate\Support\Facades\DB::purge('tenant');
+                \Illuminate\Support\Facades\Config::set('database.connections.tenant', $tenant->dbConfig());
+                \Illuminate\Support\Facades\DB::setDefaultConnection('tenant');
+            }
+        }
+    }
+
     public function index()
     {
         $this->ensureSuperAdmin();
+        $this->ensureTenantDb();
 
         $admins = User::where('role', 'admin')
             ->with('branch')
@@ -36,6 +60,7 @@ class AdminManagementController extends Controller
     public function create()
     {
         $this->ensureSuperAdmin();
+        $this->ensureTenantDb();
         $branches = ChurchBranch::all();
         return view('admin.admins.create', compact('branches'));
     }
@@ -43,6 +68,7 @@ class AdminManagementController extends Controller
     public function store(Request $request)
     {
         $this->ensureSuperAdmin();
+        $this->ensureTenantDb();
 
         $validated = $request->validate([
             'full_name'        => 'required|string|max:255',
@@ -76,6 +102,7 @@ class AdminManagementController extends Controller
     public function edit(User $admin)
     {
         $this->ensureSuperAdmin();
+        $this->ensureTenantDb();
 
         if ($admin->role !== 'admin') {
             abort(404);
@@ -88,6 +115,7 @@ class AdminManagementController extends Controller
     public function update(Request $request, User $admin)
     {
         $this->ensureSuperAdmin();
+        $this->ensureTenantDb();
 
         if ($admin->role !== 'admin') {
             abort(404);
@@ -128,6 +156,7 @@ class AdminManagementController extends Controller
     public function destroy(User $admin)
     {
         $this->ensureSuperAdmin();
+        $this->ensureTenantDb();
 
         if ($admin->role !== 'admin') {
             abort(404);
