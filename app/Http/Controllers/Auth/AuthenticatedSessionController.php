@@ -149,9 +149,19 @@ class AuthenticatedSessionController extends Controller
 
     public function destroy(Request $request)
     {
+        $tenantSlug = session('tenant_slug');
+
         Auth::guard('web')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
+        // If this was a school user (logged in via /school/{slug}/login),
+        // redirect back to their school's login page
+        if ($tenantSlug) {
+            return redirect()->route('school.login', $tenantSlug);
+        }
+
+        // Otherwise go to the public website
         return redirect()->route('website.home');
     }
 }
