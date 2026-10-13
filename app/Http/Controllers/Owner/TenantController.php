@@ -84,6 +84,9 @@ class TenantController extends Controller
 
     public function show(Tenant $tenant)
     {
+        // Explicitly re-fetch to ensure we have a clean model with correct ID
+        $tenant = Tenant::findOrFail($tenant->id);
+
         // Load plan safely
         try { $tenant->load('plan'); } catch (\Throwable $e) {}
 
@@ -112,21 +115,21 @@ class TenantController extends Controller
             }
         } catch (\Throwable $e) {}
 
-        // Tenant overrides — direct DB query, never crashes
+        // Tenant overrides — direct DB query using explicit tenant ID
         $tenantOverrides = [];
         try {
             $tenantOverrides = DB::table('tenant_features')
-                ->where('tenant_id', $tenant->id)
+                ->where('tenant_id', (int) $tenant->id)
                 ->get(['feature_id', 'enabled'])
-                ->mapWithKeys(fn($row) => [$row->feature_id => (bool) $row->enabled])
+                ->mapWithKeys(fn($row) => [(int)$row->feature_id => (bool) $row->enabled])
                 ->toArray();
         } catch (\Throwable $e) {}
 
-        // Total paid
+        // Total paid using explicit tenant ID
         $totalPaid = 0;
         try {
             $totalPaid = DB::table('owner_payments')
-                ->where('tenant_id', $tenant->id)
+                ->where('tenant_id', (int) $tenant->id)
                 ->sum('amount');
         } catch (\Throwable $e) {}
 
