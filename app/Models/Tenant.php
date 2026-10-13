@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Crypt;
 
 class Tenant extends Model
 {
@@ -27,16 +26,29 @@ class Tenant extends Model
     // Encrypt password on set
     public function setDbPasswordAttribute(string $value): void
     {
-        $this->attributes['db_password'] = Crypt::encryptString($value);
+        // Only encrypt if it's not already encrypted (doesn't start with eyJ)
+        if (!empty($value)) {
+            try {
+                // Test if it's already a valid encrypted value
+                \Illuminate\Support\Facades\Crypt::decryptString($value);
+                // Already encrypted — store as-is
+                $this->attributes['db_password'] = $value;
+            } catch (\Exception $e) {
+                // Plain text — encrypt it
+                $this->attributes['db_password'] = \Illuminate\Support\Facades\Crypt::encryptString($value);
+            }
+        }
     }
 
-    // Decrypt password on get
-    public function getDbPasswordAttribute(string $value): string
+    // Decrypt password on get — always safe, never throws
+    public function getDbPasswordAttribute(?string $value): string
     {
+        if (empty($value)) return '';
         try {
-            return Crypt::decryptString($value);
+            return \Illuminate\Support\Facades\Crypt::decryptString($value);
         } catch (\Exception $e) {
-            return $value; // fallback if already plain (migration edge case)
+            // Value is not encrypted (legacy plain text) — return as-is
+            return $value;
         }
     }
 

@@ -84,39 +84,69 @@ class TenantController extends Controller
 
     public function show(Tenant $tenant)
     {
-        // Load relationships safely — each in its own try/catch
+        // Load plan safely
         try { $tenant->load('plan'); } catch (\Throwable $e) {}
-        try { $tenant->load(['payments' => fn($q) => $q->orderByDesc('payment_date')->limit(10)]); } catch (\Throwable $e) {}
-        try { $tenant->load(['backups'  => fn($q) => $q->orderByDesc('created_at')->limit(5)]); } catch (\Throwable $e) {}
 
+        // Load payments safely
+        try {
+            $tenant->load(['payments' => fn($q) => $q->orderByDesc('payment_date')->limit(10)]);
+        } catch (\Throwable $e) {}
+
+        // Load backups safely
+        try {
+            $tenant->load(['backups' => fn($q) => $q->orderByDesc('created_at')->limit(5)]);
+        } catch (\Throwable $e) {}
+
+        // Get features grouped
         $features = collect();
         try {
-            $features = Feature::orderBy('group')->orderBy('sort_order')->get()->groupBy('group');
+            $rawFeatures = Feature::orderBy('group')->orderBy('sort_order')->get();
+            $features    = $rawFeatures->groupBy('group');
         } catch (\Throwable $e) {}
 
+        // Plan feature IDs
         $planFeatureIds = [];
         try {
-            $planFeatureIds = $tenant->plan?->features()->pluck('features.id')->toArray() ?? [];
+            if ($tenant->plan_id && $tenant->relationLoaded('plan') && $tenant->plan) {
+                $planFeatureIds = $tenant->plan->features()->pluck('features.id')->toArray();
+            }
         } catch (\Throwable $e) {}
 
+        // Tenant overrides — direct DB query, never crashes
         $tenantOverrides = [];
         try {
             $tenantOverrides = DB::table('tenant_features')
                 ->where('tenant_id', $tenant->id)
-                ->pluck('enabled', 'feature_id')
-                ->map(fn($v) => (bool) $v)
+                ->get(['feature_id', 'enabled'])
+                ->mapWithKeys(fn($row) => [$row->feature_id => (bool) $row->enabled])
                 ->toArray();
         } catch (\Throwable $e) {}
 
+        // Total paid
         $totalPaid = 0;
-        try { $totalPaid = $tenant->payments()->sum('amount'); } catch (\Throwable $e) {}
+        try {
+            $totalPaid = DB::table('owner_payments')
+                ->where('tenant_id', $tenant->id)
+                ->sum('amount');
+        } catch (\Throwable $e) {}
 
-        return view('owner.schools.show', compact('tenant', 'features', 'planFeatureIds', 'tenantOverrides', 'totalPaid'));
+        // Collections for view
+        $paymentsCollection = $tenant->relationLoaded('payments') ? $tenant->payments : collect();
+        $backupsCollection  = $tenant->relationLoaded('backups')  ? $tenant->backups  : collect();
+
+        return view('owner.schools.show', compact(
+            'tenant', 'features', 'planFeatureIds', 'tenantOverrides',
+            'totalPaid', 'paymentsCollection', 'backupsCollection'
+        ));
     }
 
     public function edit(Tenant $tenant)
     {
-        $plans = Plan::where('is_active', true)->get();
+        $plans = collect();
+        try {
+            $plans = Plan::where('is_active', true)->get();
+        } catch (\Throwable $e) {}
+
         return view('owner.schools.edit', compact('tenant', 'plans'));
     }
 

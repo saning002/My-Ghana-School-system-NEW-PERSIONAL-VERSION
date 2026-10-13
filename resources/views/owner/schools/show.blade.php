@@ -69,8 +69,9 @@
 
 {{-- Stats row --}}
 @php
-    $paymentsCollection = $tenant->relationLoaded('payments') ? $tenant->payments : collect();
-    $backupsCollection  = $tenant->relationLoaded('backups')  ? $tenant->backups  : collect();
+    // Use variables passed from controller — no relationship calls in the view
+    $paymentsCollection = $paymentsCollection ?? collect();
+    $backupsCollection  = $backupsCollection  ?? collect();
 @endphp
 <div class="row g-3 mb-4">
     <div class="col-6 col-md-3">
