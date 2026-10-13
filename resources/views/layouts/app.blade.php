@@ -159,6 +159,7 @@
                     ['route'=>'admin.portal-settings',          'icon'=>'fa-graduation-cap',     'label'=>$sidebarLabels['portals'],     'perm'=>null],
                     ['route'=>'admin.settings',                 'icon'=>'fa-sliders-h',          'label'=>$sidebarLabels['settings'],    'perm'=>null],
                     ['route'=>'admin.guide',                    'icon'=>'fa-question-circle',    'label'=>$sidebarLabels['guide'],       'perm'=>null],
+                    ['route'=>'admin.subscription.show',        'icon'=>'fa-shield-alt',          'label'=>'Subscription',                 'perm'=>null],
                     ['route'=>'admin.profile',                  'icon'=>'fa-user-circle',         'label'=>'My Profile',                  'perm'=>'__always__'],
                 ];
 

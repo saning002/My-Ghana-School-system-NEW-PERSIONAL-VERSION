@@ -571,6 +571,10 @@ Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(functi
     // Admin Guide
     Route::get('/guide', [\App\Http\Controllers\Admin\GuideController::class, 'index'])->name('guide');
 
+    // Subscription — only super admins can access
+    Route::get('/subscription',  [\App\Http\Controllers\Admin\SubscriptionController::class, 'show'])->name('subscription.show');
+    Route::get('/subscription/pay', [\App\Http\Controllers\Admin\SubscriptionController::class, 'pay'])->name('subscription.pay');
+
     // Notifications
     Route::get('/notifications',                    [NotificationController::class, 'index'])->name('notifications.index');
     Route::post('/notifications',                   [NotificationController::class, 'store'])->name('notifications.store');
