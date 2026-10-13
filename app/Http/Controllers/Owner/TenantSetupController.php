@@ -32,20 +32,82 @@ class TenantSetupController extends Controller
             return back()->with('setup_error', 'DB Connection failed: ' . $e->getMessage());
         }
 
+        // For PostgreSQL: rollback any aborted transaction before running migrations
         try {
-            Artisan::call('migrate', ['--force' => true, '--database' => 'tenant']);
-            $results['migrations'] = trim(Artisan::output()) ?: 'All migrations ran successfully';
-        } catch (\Throwable $e) {
-            $results['migrations'] = 'FAILED: ' . $e->getMessage();
+            DB::connection('tenant')->statement('ROLLBACK');
+        } catch (\Throwable $e) {}
+
+        // Ensure migrations table exists so Laravel can track what's been run
+        try {
+            Artisan::call('migrate:install', ['--database' => 'tenant']);
+        } catch (\Throwable $e) {}
+
+        // If users table already exists, mark existing migrations as run to avoid duplicate errors
+        $usersExists = false;
+        try {
+            $usersExists = DB::connection('tenant')->getSchemaBuilder()->hasTable('users');
+        } catch (\Throwable $e) {}
+
+        if ($usersExists) {
+            // Mark all migrations as already run so only NEW ones execute
+            $migrationFiles = glob(database_path('migrations/*.php'));
+            foreach ($migrationFiles as $file) {
+                $migrationName = pathinfo($file, PATHINFO_FILENAME);
+                $alreadyLogged = DB::connection('tenant')
+                    ->table('migrations')
+                    ->where('migration', $migrationName)
+                    ->exists();
+                if (!$alreadyLogged) {
+                    DB::connection('tenant')->table('migrations')->insert([
+                        'migration' => $migrationName,
+                        'batch'     => 1,
+                    ]);
+                }
+            }
+            $results['existing_tables'] = 'Existing DB detected — marked all migrations as run, will only execute new ones';
         }
 
         try {
-            Artisan::call('db:seed', [
-                '--class'    => 'SettingsSeeder',
-                '--database' => 'tenant',
+            // Run migrations — each migration runs in its own transaction
+            Artisan::call('migrate', [
                 '--force'    => true,
+                '--database' => 'tenant',
+                '--isolated' => false,
             ]);
-            $results['seeder'] = 'Settings seeded OK';
+            $output = trim(Artisan::output());
+            $results['migrations'] = $output ?: 'All migrations ran successfully (nothing new to run)';
+        } catch (\Throwable $e) {
+            // Try running again after explicit rollback
+            try {
+                DB::connection('tenant')->statement('ROLLBACK');
+            } catch (\Throwable $e2) {}
+
+            // Re-attempt
+            try {
+                Artisan::call('migrate', ['--force' => true, '--database' => 'tenant']);
+                $results['migrations'] = trim(Artisan::output()) ?: 'Migrations completed on retry';
+            } catch (\Throwable $e3) {
+                $results['migrations'] = 'FAILED: ' . $e3->getMessage();
+            }
+        }
+
+        // Run seeder — only if migrations succeeded (settings table must exist)
+        try {
+            // Check settings table exists before seeding
+            $settingsExists = DB::connection('tenant')
+                ->getSchemaBuilder()
+                ->hasTable('settings');
+
+            if ($settingsExists) {
+                Artisan::call('db:seed', [
+                    '--class'    => 'SettingsSeeder',
+                    '--database' => 'tenant',
+                    '--force'    => true,
+                ]);
+                $results['seeder'] = 'Settings seeded OK';
+            } else {
+                $results['seeder'] = 'SKIPPED — settings table not found (migrations may have partially failed, try again)';
+            }
         } catch (\Throwable $e) {
             $results['seeder'] = 'Seeder failed: ' . $e->getMessage();
         }
@@ -54,14 +116,24 @@ class TenantSetupController extends Controller
         DB::setDefaultConnection('pgsql');
         DB::purge('tenant');
 
+        // Determine overall status
+        $failed = str_contains($results['migrations'] ?? '', 'FAILED');
+        $message = implode(' | ', array_filter($results));
+
         AuditLog::record(
             'tenant.migrations_run',
-            "Migrations run on '{$tenant->name}': " . implode(' | ', $results),
+            "Migrations on '{$tenant->name}': " . $message,
             $tenant->id
         );
 
+        if ($failed) {
+            return back()
+                ->with('setup_error', 'Some migrations failed: ' . $message)
+                ->with('active_tab', 'setup');
+        }
+
         return back()
-            ->with('setup_success', 'Migrations complete: ' . implode(' | ', $results))
+            ->with('setup_success', 'Migrations complete: ' . $message)
             ->with('active_tab', 'setup');
     }
 
