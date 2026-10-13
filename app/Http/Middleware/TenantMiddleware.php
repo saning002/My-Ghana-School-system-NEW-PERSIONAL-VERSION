@@ -13,6 +13,11 @@ class TenantMiddleware
 {
     public function handle(Request $request, Closure $next): Response
     {
+        // Never run tenant switching on owner panel routes
+        if ($request->is('owner/*') || $request->is('owner')) {
+            return $next($request);
+        }
+
         $tenant = $this->resolveTenant($request);
 
         if (!$tenant) {

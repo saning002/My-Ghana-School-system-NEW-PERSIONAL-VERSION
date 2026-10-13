@@ -13,6 +13,11 @@ class TenantService
      */
     public static function current(): ?Tenant
     {
+        // Never resolve a tenant on owner panel routes
+        if (request()->is('owner/*') || request()->is('owner')) {
+            return null;
+        }
+
         // 1. Check if TenantMiddleware already resolved it
         try {
             $tenant = app('tenant');

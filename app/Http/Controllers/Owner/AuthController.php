@@ -27,6 +27,9 @@ class AuthController extends Controller
         if (Auth::guard('owner')->attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
 
+            // Clear any school tenant session so owner panel uses central DB only
+            $request->session()->forget(['tenant_slug', 'tenant_id']);
+
             // Update last login info
             $owner = Auth::guard('owner')->user();
             $owner->update([
