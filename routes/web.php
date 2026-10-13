@@ -742,40 +742,63 @@ Route::get('/secretary-portal/login',   fn() => redirect()->route('staff-portal.
 Route::get('/owner-debug/school/{id}', function(int $id) {
     try {
         $tenant = \App\Models\Tenant::findOrFail($id);
-        $out = ['tenant' => $tenant->only(['id','name','slug','status','plan_id'])];
+        $out = ['tenant_basic' => $tenant->only(['id','name','slug','status','plan_id'])];
 
+        // Test password decryption
+        try {
+            $pwd = $tenant->db_password;
+            $out['password_decryption'] = 'OK, length=' . strlen($pwd);
+        } catch (\Throwable $e) {
+            $out['password_error'] = $e->getMessage();
+        }
+
+        // Test plan load
         try {
             $out['plan'] = $tenant->plan?->name ?? 'no plan';
         } catch (\Throwable $e) { $out['plan_error'] = $e->getMessage(); }
 
+        // Test features
         try {
             $out['features_count'] = \App\Models\Feature::count();
         } catch (\Throwable $e) { $out['features_error'] = $e->getMessage(); }
 
+        // Test tenant_features
         try {
             $out['tenant_features'] = \Illuminate\Support\Facades\DB::table('tenant_features')
                 ->where('tenant_id', $id)->count();
         } catch (\Throwable $e) { $out['tenant_features_error'] = $e->getMessage(); }
 
+        // Test payments
         try {
-            $out['payments_count'] = $tenant->payments()->count();
+            $out['payments_count'] = \App\Models\OwnerPayment::where('tenant_id', $id)->count();
         } catch (\Throwable $e) { $out['payments_error'] = $e->getMessage(); }
 
+        // Test backups
         try {
-            $out['backups_count'] = $tenant->backups()->count();
+            $out['backups_count'] = \App\Models\Backup::where('tenant_id', $id)->count();
         } catch (\Throwable $e) { $out['backups_error'] = $e->getMessage(); }
 
+        // Test rendering the show view
         try {
-            $features = \App\Models\Feature::orderBy('group')->orderBy('sort_order')->get()->groupBy('group');
-            $out['feature_groups'] = $features->keys()->toArray();
-        } catch (\Throwable $e) { $out['feature_groups_error'] = $e->getMessage(); }
+            $controller = new \App\Http\Controllers\Owner\TenantController();
+            $response = $controller->show($tenant);
+            $out['show_view'] = 'OK — rendered successfully';
+        } catch (\Throwable $e) {
+            $out['show_view_error'] = $e->getMessage();
+            $out['show_view_file']  = basename($e->getFile()) . ':' . $e->getLine();
+            $out['show_view_trace'] = array_slice(
+                array_map(fn($l) => basename(str_replace('\\','/',$l)), explode("\n", $e->getTraceAsString())),
+                0, 8
+            );
+        }
 
         return response()->json($out, 200, [], JSON_PRETTY_PRINT);
+
     } catch (\Throwable $e) {
         return response()->json([
-            'error' => $e->getMessage(),
-            'file'  => $e->getFile() . ':' . $e->getLine(),
-            'trace' => array_slice(explode("\n", $e->getTraceAsString()), 0, 10),
+            'fatal_error' => $e->getMessage(),
+            'file'        => $e->getFile() . ':' . $e->getLine(),
+            'trace'       => array_slice(explode("\n", $e->getTraceAsString()), 0, 10),
         ], 500);
     }
 })->middleware('owner.auth');
