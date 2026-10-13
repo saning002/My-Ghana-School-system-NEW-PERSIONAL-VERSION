@@ -8,15 +8,28 @@ class TenantService
 {
     /**
      * Get the current tenant bound to this request.
+     * Checks app container first (TenantMiddleware), then session (Option A slug login).
      * Returns null when running outside tenant context (e.g. owner panel, CLI).
      */
     public static function current(): ?Tenant
     {
+        // 1. Check if TenantMiddleware already resolved it
         try {
-            return app('tenant');
+            $tenant = app('tenant');
+            if ($tenant instanceof Tenant) {
+                return $tenant;
+            }
         } catch (\Exception $e) {
-            return null;
+            // Not bound yet — fall through
         }
+
+        // 2. Check session (Option A — school admin logged in via /school/{slug}/login)
+        $slug = session('tenant_slug');
+        if ($slug) {
+            return Tenant::where('slug', $slug)->first();
+        }
+
+        return null;
     }
 
     /**
