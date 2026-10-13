@@ -175,24 +175,33 @@ class TenantSetupController extends Controller
      */
     public function listAdmins(Tenant $tenant)
     {
-        $admins = collect();
         try {
             DB::purge('tenant');
             Config::set('database.connections.tenant', $tenant->dbConfig());
             DB::setDefaultConnection('tenant');
 
-            $admins = DB::connection('tenant')->table('users')
+            // Test connection first
+            DB::connection('tenant')->getPdo();
+
+            $admins = DB::connection('tenant')
+                ->table('users')
                 ->where('role', 'admin')
                 ->orderByDesc('is_super_admin')
                 ->orderBy('full_name')
                 ->get(['id', 'full_name', 'email', 'is_super_admin', 'created_at']);
 
-            DB::setDefaultConnection('pgsql'); DB::purge('tenant');
-        } catch (\Throwable $e) {
             DB::setDefaultConnection('pgsql');
-        }
+            DB::purge('tenant');
 
-        return response()->json($admins);
+            return response()->json($admins);
+
+        } catch (\Throwable $e) {
+            try { DB::setDefaultConnection('pgsql'); } catch (\Throwable $e2) {}
+            return response()->json([
+                'error'   => true,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
     }
 
     // ─── Table Definitions ──────────────────────────────────────────────────────

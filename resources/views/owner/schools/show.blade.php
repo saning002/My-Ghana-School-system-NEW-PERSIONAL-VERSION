@@ -457,8 +457,15 @@ function loadAdmins() {
     wrap.innerHTML = '<div class="text-center py-4"><div class="spinner-border spinner-border-sm text-secondary"></div> Loading...</div>';
 
     fetch('{{ route('owner.schools.setup.admins', $tenant) }}')
-        .then(r => r.json())
+        .then(r => {
+            if (!r.ok) return r.text().then(t => { throw new Error('Server error: ' + t.substring(0, 200)); });
+            return r.json();
+        })
         .then(admins => {
+            if (admins.error) {
+                wrap.innerHTML = '<div class="text-center text-danger py-4" style="font-size:0.875rem;">Error: ' + admins.message + '</div>';
+                return;
+            }
             if (!admins.length) {
                 wrap.innerHTML = '<div class="text-center text-muted py-4" style="font-size:0.875rem;">No admins found. Run migrations first, then create an admin using Step 2.</div>';
                 return;
@@ -476,7 +483,7 @@ function loadAdmins() {
             wrap.innerHTML = html;
         })
         .catch(e => {
-            wrap.innerHTML = '<div class="text-center text-danger py-4" style="font-size:0.875rem;">Failed to load admins: ' + e.message + '</div>';
+            wrap.innerHTML = '<div class="text-center text-danger py-4" style="font-size:0.875rem;">Failed: ' + e.message + '</div>';
         });
 }
 </script>
