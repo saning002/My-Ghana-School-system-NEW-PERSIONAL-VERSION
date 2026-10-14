@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Admin\Concerns\UsesTenantDb;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
@@ -11,6 +12,7 @@ use Illuminate\Support\Facades\Hash;
 
 class AdminManagementController extends Controller
 {
+    use UsesTenantDb;
     private function ensureSuperAdmin(): void
     {
         if (!auth()->check() || !auth()->user()->isSuperAdmin()) {

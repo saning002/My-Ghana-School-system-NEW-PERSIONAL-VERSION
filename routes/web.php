@@ -318,7 +318,7 @@ Route::prefix('lecturer')->name('lecturer.')->group(function () {
     Route::post('/login', [LecturerAuthController::class, 'login'])->name('login.submit');
     Route::post('/logout',[LecturerAuthController::class, 'logout'])->name('logout');
 
-    Route::middleware(['auth', 'role:lecturer'])->group(function () {
+    Route::middleware(['auth', 'role:lecturer', 'tenant'])->group(function () {
         Route::get('/dashboard', [LecturerDashboardController::class, 'index'])->name('dashboard');
 
         Route::get('/profile',  [LecturerProfileController::class, 'edit'])->name('profile.edit');
@@ -400,7 +400,7 @@ Route::prefix('lecturer')->name('lecturer.')->group(function () {
 // ═══════════════════════════════════════════════════════════════════════════
 // ADMIN PANEL
 // ═══════════════════════════════════════════════════════════════════════════
-Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['role:admin', 'tenant'])->prefix('admin')->name('admin.')->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 

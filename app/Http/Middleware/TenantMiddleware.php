@@ -20,8 +20,21 @@ class TenantMiddleware
 
         $tenant = $this->resolveTenant($request);
 
+        // No tenant found — if this is an admin/lecturer route, allow through
+        // (they may be using the legacy direct login without a school slug)
+        // If this is a school/website route expecting a tenant, show not-found
         if (!$tenant) {
-            return response()->view('tenant.not-found', [], 404);
+            $isSchoolRoute = $request->is('school/*')
+                || $request->is('website/*')
+                || $request->is('portal/*');
+
+            if ($isSchoolRoute) {
+                return response()->view('tenant.not-found', [], 404);
+            }
+
+            // Admin/lecturer routes without tenant context — pass through
+            // (direct login case — no DB switching needed)
+            return $next($request);
         }
 
         // Store tenant on the request so controllers/views can access it
@@ -34,7 +47,6 @@ class TenantMiddleware
         }
 
         if ($tenant->isExpired()) {
-            // Auto-update status in DB
             $tenant->update(['status' => 'expired']);
             return response()->view('tenant.expired', compact('tenant'), 403);
         }
@@ -47,7 +59,7 @@ class TenantMiddleware
 
         $response = $next($request);
 
-        // Reset to central DB after request (important for queued jobs, etc.)
+        // Reset to central DB after request
         $this->resetDatabase();
 
         return $response;
