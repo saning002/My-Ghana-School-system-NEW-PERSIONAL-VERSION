@@ -6,13 +6,26 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Admin\Concerns\UsesTenantDb;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
+/**
+ * AdminManagementController
+ * ─────────────────────────────────────────────────────────────────────────
+ * TenantMiddleware already switches the DB to the school's Neon DB before
+ * this controller runs — so all Eloquent/DB calls go to the correct DB.
+ *
+ * IMPORTANT: Do NOT call ensureTenantDb() here — it would try to query
+ * the `tenants` table which doesn't exist in the Neon DB.
+ *
+ * Route model binding (User $admin) works correctly because TenantMiddleware
+ * has already switched the default connection before binding resolves.
+ * However we use int $id + manual find to be extra safe.
+ */
 class AdminManagementController extends Controller
 {
     use UsesTenantDb;
+
     private function ensureSuperAdmin(): void
     {
         if (!auth()->check() || !auth()->user()->isSuperAdmin()) {
@@ -20,36 +33,17 @@ class AdminManagementController extends Controller
         }
     }
 
-    /**
-     * Force connection to the tenant DB.
-     * MUST be called before every DB operation.
-     * Route model binding runs BEFORE this, so never use User $admin in method signatures.
-     * Always resolve users manually after switching to tenant DB.
-     */
-    private function ensureTenantDb(): void
-    {
-        $slug = session('tenant_slug');
-        if (!$slug) return;
-
-        $tenant = \App\Models\Tenant::where('slug', $slug)->first();
-        if ($tenant) {
-            DB::purge('tenant');
-            Config::set('database.connections.tenant', $tenant->dbConfig());
-            DB::setDefaultConnection('tenant');
-        }
-    }
-
-    /** Resolve a user from the TENANT DB by ID — never use route model binding */
+    /** Resolve admin from current (tenant) DB by ID */
     private function findAdmin(int $id): User
     {
-        $admin = User::find($id); // runs on current default connection (tenant after ensureTenantDb)
+        $admin = User::find($id);
         if (!$admin || $admin->role !== 'admin') {
             abort(404, 'Admin not found.');
         }
         return $admin;
     }
 
-    /** Get branches from tenant DB */
+    /** Get branches from tenant DB — connection already switched by TenantMiddleware */
     private function getBranches(): \Illuminate\Support\Collection
     {
         try {
@@ -62,20 +56,16 @@ class AdminManagementController extends Controller
     public function index()
     {
         $this->ensureSuperAdmin();
-        $this->ensureTenantDb();
-
         $admins = User::where('role', 'admin')
             ->orderByDesc('is_super_admin')
             ->orderBy('full_name')
             ->paginate(15);
-
         return view('admin.admins.index', compact('admins'));
     }
 
     public function create()
     {
         $this->ensureSuperAdmin();
-        $this->ensureTenantDb();
         $branches = $this->getBranches();
         return view('admin.admins.create', compact('branches'));
     }
@@ -83,7 +73,6 @@ class AdminManagementController extends Controller
     public function store(Request $request)
     {
         $this->ensureSuperAdmin();
-        $this->ensureTenantDb();
 
         $validated = $request->validate([
             'full_name'        => 'required|string|max:255',
@@ -112,11 +101,9 @@ class AdminManagementController extends Controller
             ->with('success', 'Administrator created successfully.');
     }
 
-    // Use int $admin (ID) instead of User $admin to bypass route model binding
     public function edit(int $admin)
     {
         $this->ensureSuperAdmin();
-        $this->ensureTenantDb();
         $adminModel = $this->findAdmin($admin);
         $branches   = $this->getBranches();
         return view('admin.admins.edit', ['admin' => $adminModel, 'branches' => $branches]);
@@ -125,7 +112,6 @@ class AdminManagementController extends Controller
     public function update(Request $request, int $admin)
     {
         $this->ensureSuperAdmin();
-        $this->ensureTenantDb();
         $adminModel = $this->findAdmin($admin);
 
         $validated = $request->validate([
@@ -162,7 +148,6 @@ class AdminManagementController extends Controller
     public function destroy(int $admin)
     {
         $this->ensureSuperAdmin();
-        $this->ensureTenantDb();
         $adminModel = $this->findAdmin($admin);
 
         if ($adminModel->id === auth()->id()) {
