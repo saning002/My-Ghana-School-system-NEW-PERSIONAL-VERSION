@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\ChurchBranch;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
@@ -21,20 +20,31 @@ class AdminManagementController extends Controller
 
     /**
      * Force connection to the tenant DB.
-     * Called before every operation to guarantee data goes to the school's DB only.
+     * MUST be called before every DB operation.
+     * Route model binding runs BEFORE this, so never use User $admin in method signatures.
+     * Always resolve users manually after switching to tenant DB.
      */
     private function ensureTenantDb(): void
     {
         $slug = session('tenant_slug');
         if (!$slug) return;
 
-        // Always re-switch to tenant — never trust the current connection state
         $tenant = \App\Models\Tenant::where('slug', $slug)->first();
         if ($tenant) {
             DB::purge('tenant');
             Config::set('database.connections.tenant', $tenant->dbConfig());
             DB::setDefaultConnection('tenant');
         }
+    }
+
+    /** Resolve a user from the TENANT DB by ID — never use route model binding */
+    private function findAdmin(int $id): User
+    {
+        $admin = User::find($id); // runs on current default connection (tenant after ensureTenantDb)
+        if (!$admin || $admin->role !== 'admin') {
+            abort(404, 'Admin not found.');
+        }
+        return $admin;
     }
 
     /** Get branches from tenant DB */
@@ -53,9 +63,8 @@ class AdminManagementController extends Controller
         $this->ensureTenantDb();
 
         $admins = User::where('role', 'admin')
-            ->with('branch')
-            ->orderBy('is_super_admin', 'desc')
-            ->orderBy('id')
+            ->orderByDesc('is_super_admin')
+            ->orderBy('full_name')
             ->paginate(15);
 
         return view('admin.admins.index', compact('admins'));
@@ -65,7 +74,6 @@ class AdminManagementController extends Controller
     {
         $this->ensureSuperAdmin();
         $this->ensureTenantDb();
-
         $branches = $this->getBranches();
         return view('admin.admins.create', compact('branches'));
     }
@@ -84,7 +92,6 @@ class AdminManagementController extends Controller
             'is_super_admin'   => 'nullable|boolean',
         ]);
 
-        // Check uniqueness in tenant DB
         if (User::where('email', $validated['email'])->exists()) {
             return back()->withErrors(['email' => 'An admin with this email already exists.'])->withInput();
         }
@@ -103,23 +110,21 @@ class AdminManagementController extends Controller
             ->with('success', 'Administrator created successfully.');
     }
 
-    public function edit(User $admin)
+    // Use int $admin (ID) instead of User $admin to bypass route model binding
+    public function edit(int $admin)
     {
         $this->ensureSuperAdmin();
         $this->ensureTenantDb();
-
-        if ($admin->role !== 'admin') abort(404);
-
-        $branches = $this->getBranches();
-        return view('admin.admins.edit', compact('admin', 'branches'));
+        $adminModel = $this->findAdmin($admin);
+        $branches   = $this->getBranches();
+        return view('admin.admins.edit', ['admin' => $adminModel, 'branches' => $branches]);
     }
 
-    public function update(Request $request, User $admin)
+    public function update(Request $request, int $admin)
     {
         $this->ensureSuperAdmin();
         $this->ensureTenantDb();
-
-        if ($admin->role !== 'admin') abort(404);
+        $adminModel = $this->findAdmin($admin);
 
         $validated = $request->validate([
             'full_name'        => 'required|string|max:255',
@@ -130,7 +135,7 @@ class AdminManagementController extends Controller
             'password'         => 'nullable|string|min:6|confirmed',
         ]);
 
-        if ($admin->id === auth()->id() && !$request->boolean('is_super_admin')) {
+        if ($adminModel->id === auth()->id() && !$request->boolean('is_super_admin')) {
             return back()->with('error', 'You cannot remove your own Super Admin privileges.');
         }
 
@@ -146,31 +151,30 @@ class AdminManagementController extends Controller
             $updates['password'] = Hash::make($validated['password']);
         }
 
-        $admin->update($updates);
+        $adminModel->update($updates);
 
         return redirect()->route('admin.admins.index')
             ->with('success', 'Administrator updated successfully.');
     }
 
-    public function destroy(User $admin)
+    public function destroy(int $admin)
     {
         $this->ensureSuperAdmin();
         $this->ensureTenantDb();
+        $adminModel = $this->findAdmin($admin);
 
-        if ($admin->role !== 'admin') abort(404);
-
-        if ($admin->id === auth()->id()) {
+        if ($adminModel->id === auth()->id()) {
             return back()->with('error', 'You cannot delete your own account.');
         }
 
-        if ($admin->isSuperAdmin()) {
+        if ($adminModel->isSuperAdmin()) {
             $count = User::where('role', 'admin')->where('is_super_admin', true)->count();
             if ($count <= 1) {
                 return back()->with('error', 'Cannot delete the last Super Admin.');
             }
         }
 
-        $admin->delete();
+        $adminModel->delete();
 
         return redirect()->route('admin.admins.index')
             ->with('success', 'Administrator deleted successfully.');

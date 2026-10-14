@@ -619,8 +619,18 @@ function showSetupAlert(type, message) {
 
 // Pre-load branches when Setup tab is clicked
 document.addEventListener('DOMContentLoaded', function () {
-    document.querySelector('a[href="#tab-setup"]')?.addEventListener('shown.bs.tab', function () {
+    // Load branches immediately so they're ready when the tab opens
+    loadBranches(function(branches) {
         populateBranchSelect(document.getElementById('createAdminBranch'), null);
+    });
+
+    // Also reload on tab click in case it wasn't loaded yet
+    document.querySelectorAll('a[href="#tab-setup"]').forEach(el => {
+        el.addEventListener('click', function () {
+            setTimeout(() => {
+                populateBranchSelect(document.getElementById('createAdminBranch'), null);
+            }, 100);
+        });
     });
 });
 </script>
