@@ -1150,9 +1150,10 @@ Route::prefix('owner')->name('owner.')->group(function () {
         Route::post('/schools/{tenant}/setup/migrate',       [\App\Http\Controllers\Owner\TenantSetupController::class, 'runMigrations'])->name('schools.setup.migrate');
         Route::post('/schools/{tenant}/setup/create-admin',  [\App\Http\Controllers\Owner\TenantSetupController::class, 'createAdmin'])->name('schools.setup.create-admin');
         Route::post('/schools/{tenant}/setup/reset-password',[\App\Http\Controllers\Owner\TenantSetupController::class, 'resetAdminPassword'])->name('schools.setup.reset-password');
-        Route::get('/schools/{tenant}/setup/admins',         [\App\Http\Controllers\Owner\TenantSetupController::class, 'listAdmins'])->name('schools.setup.admins');
-        Route::delete('/schools/{tenant}/setup/admins/{userId}', [\App\Http\Controllers\Owner\TenantSetupController::class, 'deleteAdmin'])->name('schools.setup.delete-admin');
-        Route::put('/schools/{tenant}/setup/admins/{userId}',    [\App\Http\Controllers\Owner\TenantSetupController::class, 'updateAdmin'])->name('schools.setup.update-admin');
+        Route::get('/schools/{tenant}/setup/admins',              [\App\Http\Controllers\Owner\TenantSetupController::class, 'listAdmins'])->name('schools.setup.admins');
+        Route::get('/schools/{tenant}/setup/branches',             [\App\Http\Controllers\Owner\TenantSetupController::class, 'listBranches'])->name('schools.setup.branches');
+        Route::delete('/schools/{tenant}/setup/admins/{userId}',   [\App\Http\Controllers\Owner\TenantSetupController::class, 'deleteAdmin'])->name('schools.setup.delete-admin');
+        Route::put('/schools/{tenant}/setup/admins/{userId}',      [\App\Http\Controllers\Owner\TenantSetupController::class, 'updateAdmin'])->name('schools.setup.update-admin');
 
         // Plans
         Route::resource('plans', \App\Http\Controllers\Owner\PlanController::class);

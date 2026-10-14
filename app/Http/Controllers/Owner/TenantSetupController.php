@@ -137,11 +137,12 @@ class TenantSetupController extends Controller
     public function updateAdmin(Request $request, Tenant $tenant)
     {
         $validated = $request->validate([
-            'user_id'        => 'required|integer',
-            'full_name'      => 'required|string|max:255',
-            'email'          => 'required|email|max:255',
-            'is_super_admin' => 'nullable|boolean',
-            'new_password'   => 'nullable|string|min:8',
+            'user_id'          => 'required|integer',
+            'full_name'        => 'required|string|max:255',
+            'email'            => 'required|email|max:255',
+            'is_super_admin'   => 'nullable|boolean',
+            'church_branch_id' => 'nullable|integer',
+            'new_password'     => 'nullable|string|min:8',
         ]);
 
         try {
@@ -149,7 +150,6 @@ class TenantSetupController extends Controller
             Config::set('database.connections.tenant', $tenant->dbConfig());
             DB::setDefaultConnection('tenant');
 
-            // Check email uniqueness (exclude self)
             $emailTaken = DB::connection('tenant')
                 ->table('users')
                 ->where('email', $validated['email'])
@@ -162,10 +162,11 @@ class TenantSetupController extends Controller
             }
 
             $updates = [
-                'full_name'      => $validated['full_name'],
-                'email'          => $validated['email'],
-                'is_super_admin' => $request->boolean('is_super_admin', false),
-                'updated_at'     => now(),
+                'full_name'        => $validated['full_name'],
+                'email'            => $validated['email'],
+                'is_super_admin'   => $request->boolean('is_super_admin', false),
+                'church_branch_id' => $request->filled('church_branch_id') ? $validated['church_branch_id'] : null,
+                'updated_at'       => now(),
             ];
 
             if (!empty($validated['new_password'])) {
@@ -194,9 +195,11 @@ class TenantSetupController extends Controller
     public function createAdmin(Request $request, Tenant $tenant)
     {
         $validated = $request->validate([
-            'admin_full_name' => 'required|string|max:255',
-            'admin_email'     => 'required|email|max:255',
-            'admin_password'  => 'required|string|min:8|confirmed',
+            'admin_full_name'  => 'required|string|max:255',
+            'admin_email'      => 'required|email|max:255',
+            'admin_password'   => 'required|string|min:8|confirmed',
+            'church_branch_id' => 'nullable|integer',
+            'is_super_admin'   => 'nullable|boolean',
         ]);
 
         try {
@@ -217,13 +220,14 @@ class TenantSetupController extends Controller
             }
 
             DB::connection('tenant')->table('users')->insert([
-                'full_name'      => $validated['admin_full_name'],
-                'email'          => $validated['admin_email'],
-                'password'       => Hash::make($validated['admin_password']),
-                'role'           => 'admin',
-                'is_super_admin' => true,
-                'created_at'     => now(),
-                'updated_at'     => now(),
+                'full_name'        => $validated['admin_full_name'],
+                'email'            => $validated['admin_email'],
+                'password'         => Hash::make($validated['admin_password']),
+                'role'             => 'admin',
+                'is_super_admin'   => $request->boolean('is_super_admin', true),
+                'church_branch_id' => $request->filled('church_branch_id') ? $validated['church_branch_id'] : null,
+                'created_at'       => now(),
+                'updated_at'       => now(),
             ]);
         } catch (\Throwable $e) {
             DB::setDefaultConnection('pgsql'); DB::purge('tenant');
@@ -272,6 +276,31 @@ class TenantSetupController extends Controller
     }
 
     /**
+     * List branches in tenant DB (JSON for AJAX).
+     */
+    public function listBranches(Tenant $tenant)
+    {
+        try {
+            DB::purge('tenant');
+            Config::set('database.connections.tenant', $tenant->dbConfig());
+            DB::setDefaultConnection('tenant');
+            DB::connection('tenant')->getPdo();
+
+            $branches = DB::connection('tenant')
+                ->table('church_branches')
+                ->orderBy('name')
+                ->get(['id', 'name']);
+
+            DB::setDefaultConnection('pgsql'); DB::purge('tenant');
+            return response()->json($branches);
+
+        } catch (\Throwable $e) {
+            try { DB::setDefaultConnection('pgsql'); } catch (\Throwable $e2) {}
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
      * List admins in tenant DB (JSON for AJAX).
      */
     public function listAdmins(Tenant $tenant)
@@ -286,10 +315,19 @@ class TenantSetupController extends Controller
 
             $admins = DB::connection('tenant')
                 ->table('users')
-                ->where('role', 'admin')
-                ->orderByDesc('is_super_admin')
-                ->orderBy('full_name')
-                ->get(['id', 'full_name', 'email', 'is_super_admin', 'created_at']);
+                ->leftJoin('church_branches', 'users.church_branch_id', '=', 'church_branches.id')
+                ->where('users.role', 'admin')
+                ->orderByDesc('users.is_super_admin')
+                ->orderBy('users.full_name')
+                ->get([
+                    'users.id',
+                    'users.full_name',
+                    'users.email',
+                    'users.is_super_admin',
+                    'users.church_branch_id',
+                    'users.created_at',
+                    'church_branches.name as branch_name',
+                ]);
 
             DB::setDefaultConnection('pgsql');
             DB::purge('tenant');

@@ -56,7 +56,7 @@
                         <option value="">Global / No Branch</option>
                         @foreach($branches as $branch)
                             <option value="{{ $branch->id }}" {{ old('church_branch_id') == $branch->id ? 'selected' : '' }}>
-                                {{ $branch->name }} ({{ $branch->code ? strtoupper($branch->code) : $branch->getCodeOrDerived() }})
+                                {{ $branch->name }}
                             </option>
                         @endforeach
                     </select>

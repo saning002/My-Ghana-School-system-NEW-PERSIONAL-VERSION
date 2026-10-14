@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\ChurchBranch;
 use App\Models\User;
-use App\Services\TenantService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
@@ -21,25 +20,30 @@ class AdminManagementController extends Controller
     }
 
     /**
-     * Ensure we are connected to the tenant DB before any admin operation.
-     * When a school admin is logged in via /school/{slug}/login, the session
-     * has tenant_slug set and TenantMiddleware switches the DB automatically.
-     * This is a safety guard for cases where the connection may have reset.
+     * Force connection to the tenant DB.
+     * Called before every operation to guarantee data goes to the school's DB only.
      */
     private function ensureTenantDb(): void
     {
         $slug = session('tenant_slug');
-        if (!$slug) return; // Not in tenant context — skip
+        if (!$slug) return;
 
-        $currentDb = \Illuminate\Support\Facades\DB::getDefaultConnection();
-        if ($currentDb !== 'tenant') {
-            // Re-switch to tenant DB
-            $tenant = \App\Models\Tenant::where('slug', $slug)->first();
-            if ($tenant) {
-                \Illuminate\Support\Facades\DB::purge('tenant');
-                \Illuminate\Support\Facades\Config::set('database.connections.tenant', $tenant->dbConfig());
-                \Illuminate\Support\Facades\DB::setDefaultConnection('tenant');
-            }
+        // Always re-switch to tenant — never trust the current connection state
+        $tenant = \App\Models\Tenant::where('slug', $slug)->first();
+        if ($tenant) {
+            DB::purge('tenant');
+            Config::set('database.connections.tenant', $tenant->dbConfig());
+            DB::setDefaultConnection('tenant');
+        }
+    }
+
+    /** Get branches from tenant DB */
+    private function getBranches(): \Illuminate\Support\Collection
+    {
+        try {
+            return DB::table('church_branches')->orderBy('name')->get();
+        } catch (\Throwable $e) {
+            return collect();
         }
     }
 
@@ -61,7 +65,8 @@ class AdminManagementController extends Controller
     {
         $this->ensureSuperAdmin();
         $this->ensureTenantDb();
-        $branches = ChurchBranch::all();
+
+        $branches = $this->getBranches();
         return view('admin.admins.create', compact('branches'));
     }
 
@@ -79,9 +84,8 @@ class AdminManagementController extends Controller
             'is_super_admin'   => 'nullable|boolean',
         ]);
 
-        // Check email uniqueness on the correct connection
-        $emailExists = User::where('email', $validated['email'])->exists();
-        if ($emailExists) {
+        // Check uniqueness in tenant DB
+        if (User::where('email', $validated['email'])->exists()) {
             return back()->withErrors(['email' => 'An admin with this email already exists.'])->withInput();
         }
 
@@ -104,11 +108,9 @@ class AdminManagementController extends Controller
         $this->ensureSuperAdmin();
         $this->ensureTenantDb();
 
-        if ($admin->role !== 'admin') {
-            abort(404);
-        }
+        if ($admin->role !== 'admin') abort(404);
 
-        $branches = ChurchBranch::all();
+        $branches = $this->getBranches();
         return view('admin.admins.edit', compact('admin', 'branches'));
     }
 
@@ -117,9 +119,7 @@ class AdminManagementController extends Controller
         $this->ensureSuperAdmin();
         $this->ensureTenantDb();
 
-        if ($admin->role !== 'admin') {
-            abort(404);
-        }
+        if ($admin->role !== 'admin') abort(404);
 
         $validated = $request->validate([
             'full_name'        => 'required|string|max:255',
@@ -130,7 +130,6 @@ class AdminManagementController extends Controller
             'password'         => 'nullable|string|min:6|confirmed',
         ]);
 
-        // Prevent removing own super admin status
         if ($admin->id === auth()->id() && !$request->boolean('is_super_admin')) {
             return back()->with('error', 'You cannot remove your own Super Admin privileges.');
         }
@@ -158,23 +157,16 @@ class AdminManagementController extends Controller
         $this->ensureSuperAdmin();
         $this->ensureTenantDb();
 
-        if ($admin->role !== 'admin') {
-            abort(404);
-        }
+        if ($admin->role !== 'admin') abort(404);
 
-        // Prevent self-deletion
         if ($admin->id === auth()->id()) {
             return back()->with('error', 'You cannot delete your own account.');
         }
 
-        // Allow deleting super admins as long as at least one remains after deletion
         if ($admin->isSuperAdmin()) {
-            $superAdminCount = User::where('role', 'admin')
-                ->where('is_super_admin', true)
-                ->count();
-
-            if ($superAdminCount <= 1) {
-                return back()->with('error', 'Cannot delete the last Super Admin. Create another Super Admin first.');
+            $count = User::where('role', 'admin')->where('is_super_admin', true)->count();
+            if ($count <= 1) {
+                return back()->with('error', 'Cannot delete the last Super Admin.');
             }
         }
 

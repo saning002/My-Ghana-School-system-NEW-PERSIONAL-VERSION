@@ -318,26 +318,35 @@
                             @csrf
                             <div class="mb-2">
                                 <label class="form-label fw-semibold" style="font-size:0.85rem;">Full Name <span class="text-danger">*</span></label>
-                                <input type="text" name="admin_full_name" class="form-control form-control-sm"
-                                    placeholder="e.g. John Mensah" required>
+                                <input type="text" name="admin_full_name" class="form-control form-control-sm" placeholder="e.g. John Mensah" required>
                             </div>
                             <div class="mb-2">
                                 <label class="form-label fw-semibold" style="font-size:0.85rem;">Email Address <span class="text-danger">*</span></label>
-                                <input type="email" name="admin_email" class="form-control form-control-sm"
-                                    placeholder="admin@school.com" required>
+                                <input type="email" name="admin_email" class="form-control form-control-sm" placeholder="admin@school.com" required>
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label fw-semibold" style="font-size:0.85rem;">Branch</label>
+                                <select name="church_branch_id" class="form-select form-select-sm" id="createAdminBranch">
+                                    <option value="">— No Branch (Global Super Admin) —</option>
+                                </select>
+                                <div class="form-text" style="font-size:0.78rem;">Leave empty for global access across all branches.</div>
+                            </div>
+                            <div class="mb-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="is_super_admin" value="1" id="createIsSuperAdmin" checked>
+                                    <label class="form-check-label fw-semibold" for="createIsSuperAdmin" style="font-size:0.85rem;">Super Admin</label>
+                                </div>
                             </div>
                             <div class="mb-2">
                                 <label class="form-label fw-semibold" style="font-size:0.85rem;">Password <span class="text-danger">*</span></label>
-                                <input type="password" name="admin_password" class="form-control form-control-sm"
-                                    placeholder="Min 8 characters" required minlength="8">
+                                <input type="password" name="admin_password" class="form-control form-control-sm" placeholder="Min 8 characters" required minlength="8">
                             </div>
                             <div class="mb-3">
                                 <label class="form-label fw-semibold" style="font-size:0.85rem;">Confirm Password <span class="text-danger">*</span></label>
-                                <input type="password" name="admin_password_confirmation" class="form-control form-control-sm"
-                                    placeholder="Repeat password" required>
+                                <input type="password" name="admin_password_confirmation" class="form-control form-control-sm" placeholder="Repeat password" required>
                             </div>
                             <button type="submit" class="btn btn-success w-100">
-                                <i class="fas fa-user-plus me-2"></i> Create Super Admin
+                                <i class="fas fa-user-plus me-2"></i> Create Admin
                             </button>
                         </form>
                     </div>
@@ -452,11 +461,35 @@
 
 @push('scripts')
 <script>
-const TENANT_ID = {{ $tenant->id }};
-const CSRF     = '{{ csrf_token() }}';
-const ADMINS_URL  = '{{ route('owner.schools.setup.admins', $tenant) }}';
+const TENANT_ID   = {{ $tenant->id }};
+const CSRF        = '{{ csrf_token() }}';
+const ADMINS_URL  = '{{ route('owner.schools.setup.admins',   $tenant) }}';
+const BRANCHES_URL= '{{ route('owner.schools.setup.branches', $tenant) }}';
 const DELETE_BASE = '/owner/schools/' + TENANT_ID + '/setup/admins/';
 const UPDATE_BASE = '/owner/schools/' + TENANT_ID + '/setup/admins/';
+
+let branchCache = null;
+
+function loadBranches(callback) {
+    if (branchCache) { callback(branchCache); return; }
+    fetch(BRANCHES_URL)
+        .then(r => r.json())
+        .then(b => { branchCache = b; callback(b); })
+        .catch(() => callback([]));
+}
+
+function populateBranchSelect(selectEl, selectedId) {
+    loadBranches(branches => {
+        selectEl.innerHTML = '<option value="">— No Branch (Global) —</option>';
+        branches.forEach(b => {
+            const opt = document.createElement('option');
+            opt.value = b.id;
+            opt.textContent = b.name;
+            if (selectedId && parseInt(b.id) === parseInt(selectedId)) opt.selected = true;
+            selectEl.appendChild(opt);
+        });
+    });
+}
 
 function loadAdmins() {
     const wrap = document.getElementById('adminsTableWrap');
@@ -478,24 +511,28 @@ function loadAdmins() {
             }
             let html = `<table class="table mb-0">
                 <thead><tr>
-                    <th>Name</th><th>Email</th><th>Role</th><th>Created</th><th>Actions</th>
+                    <th>Name</th><th>Email</th><th>Role</th><th>Branch</th><th>Created</th><th>Actions</th>
                 </tr></thead><tbody>`;
             admins.forEach(a => {
+                const branchLabel = a.branch_name
+                    ? `<span class="badge bg-light text-dark border" style="font-size:0.72rem;">${a.branch_name}</span>`
+                    : '<span style="font-size:0.75rem;color:#94a3b8;">Global</span>';
                 html += `<tr id="admin-row-${a.id}">
                     <td style="font-size:0.875rem;font-weight:500;">${a.full_name}</td>
                     <td style="font-size:0.875rem;">${a.email}</td>
                     <td><span class="badge ${a.is_super_admin ? 'bg-danger' : 'bg-secondary'}" style="font-size:0.72rem;">
                         ${a.is_super_admin ? 'Super Admin' : 'Admin'}
                     </span></td>
+                    <td>${branchLabel}</td>
                     <td style="font-size:0.8rem;color:#94a3b8;">${a.created_at ? a.created_at.substring(0,10) : '—'}</td>
                     <td>
                         <div class="d-flex gap-1">
-                            <button class="btn btn-sm btn-outline-warning" onclick="openEditModal(${a.id},'${a.full_name.replace(/'/g,"\\'")}','${a.email}',${a.is_super_admin ? 1 : 0})" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn btn-sm btn-outline-danger" onclick="deleteAdmin(${a.id},'${a.full_name.replace(/'/g,"\\'")}',${a.is_super_admin ? 1 : 0})" title="Delete">
-                                <i class="fas fa-trash"></i>
-                            </button>
+                            <button class="btn btn-sm btn-outline-warning"
+                                onclick="openEditModal(${a.id},'${a.full_name.replace(/'/g,"\\'")}','${a.email}',${a.is_super_admin ? 1 : 0},${a.church_branch_id || 0})"
+                                title="Edit"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-sm btn-outline-danger"
+                                onclick="deleteAdmin(${a.id},'${a.full_name.replace(/'/g,"\\'")}',${a.is_super_admin ? 1 : 0})"
+                                title="Delete"><i class="fas fa-trash"></i></button>
                         </div>
                     </td>
                 </tr>`;
@@ -510,7 +547,6 @@ function loadAdmins() {
 
 function deleteAdmin(userId, name, isSuperAdmin) {
     if (!confirm(`Delete admin "${name}"? This cannot be undone.`)) return;
-
     fetch(DELETE_BASE + userId, {
         method: 'DELETE',
         headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json', 'Content-Type': 'application/json' },
@@ -519,40 +555,45 @@ function deleteAdmin(userId, name, isSuperAdmin) {
     .then(r => r.json())
     .then(res => {
         if (res.error) { alert('Error: ' + res.error); return; }
-        // Remove row from table
-        const row = document.getElementById('admin-row-' + userId);
-        if (row) row.remove();
+        document.getElementById('admin-row-' + userId)?.remove();
         showSetupAlert('success', res.message || 'Admin deleted.');
     })
     .catch(e => alert('Delete failed: ' + e.message));
 }
 
-function openEditModal(userId, fullName, email, isSuperAdmin) {
-    document.getElementById('editAdminId').value    = userId;
-    document.getElementById('editFullName').value   = fullName;
-    document.getElementById('editEmail').value      = email;
-    document.getElementById('editSuperAdmin').checked = !!isSuperAdmin;
-    document.getElementById('editPassword').value   = '';
+function openEditModal(userId, fullName, email, isSuperAdmin, branchId) {
+    document.getElementById('editAdminId').value       = userId;
+    document.getElementById('editFullName').value      = fullName;
+    document.getElementById('editEmail').value         = email;
+    document.getElementById('editSuperAdmin').checked  = !!isSuperAdmin;
+    document.getElementById('editPassword').value      = '';
+
+    // Populate branch dropdown then select current
+    const branchSel = document.getElementById('editBranchId');
+    populateBranchSelect(branchSel, branchId);
+
     const modal = new bootstrap.Modal(document.getElementById('editAdminModal'));
     modal.show();
 }
 
 function submitEditAdmin() {
-    const userId      = document.getElementById('editAdminId').value;
-    const fullName    = document.getElementById('editFullName').value;
-    const email       = document.getElementById('editEmail').value;
-    const isSuperAdmin= document.getElementById('editSuperAdmin').checked;
-    const newPassword = document.getElementById('editPassword').value;
+    const userId       = document.getElementById('editAdminId').value;
+    const fullName     = document.getElementById('editFullName').value;
+    const email        = document.getElementById('editEmail').value;
+    const isSuperAdmin = document.getElementById('editSuperAdmin').checked;
+    const newPassword  = document.getElementById('editPassword').value;
+    const branchId     = document.getElementById('editBranchId').value;
 
     fetch(UPDATE_BASE + userId, {
         method: 'PUT',
         headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json', 'Content-Type': 'application/json' },
         body: JSON.stringify({
-            user_id: userId,
-            full_name: fullName,
-            email: email,
-            is_super_admin: isSuperAdmin,
-            new_password: newPassword || null,
+            user_id:          userId,
+            full_name:        fullName,
+            email:            email,
+            is_super_admin:   isSuperAdmin,
+            new_password:     newPassword || null,
+            church_branch_id: branchId    || null,
         })
     })
     .then(r => r.json())
@@ -560,7 +601,7 @@ function submitEditAdmin() {
         if (res.error) { alert('Error: ' + res.error); return; }
         bootstrap.Modal.getInstance(document.getElementById('editAdminModal')).hide();
         showSetupAlert('success', res.message || 'Admin updated.');
-        loadAdmins(); // Refresh the list
+        loadAdmins();
     })
     .catch(e => alert('Update failed: ' + e.message));
 }
@@ -572,9 +613,16 @@ function showSetupAlert(type, message) {
     div.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} me-2"></i>${message}
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>`;
     const setupTab = document.getElementById('tab-setup');
-    setupTab.insertBefore(div, setupTab.firstChild);
+    if (setupTab) setupTab.insertBefore(div, setupTab.firstChild);
     setTimeout(() => div.remove(), 5000);
 }
+
+// Pre-load branches when Setup tab is clicked
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelector('a[href="#tab-setup"]')?.addEventListener('shown.bs.tab', function () {
+        populateBranchSelect(document.getElementById('createAdminBranch'), null);
+    });
+});
 </script>
 
 {{-- Edit Admin Modal --}}
@@ -594,6 +642,13 @@ function showSetupAlert(type, message) {
                 <div class="mb-3">
                     <label class="form-label fw-semibold">Email</label>
                     <input type="email" id="editEmail" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Branch</label>
+                    <select id="editBranchId" class="form-select">
+                        <option value="">— No Branch (Global) —</option>
+                    </select>
+                    <div class="form-text">Assign to a specific branch, or leave empty for global access.</div>
                 </div>
                 <div class="mb-3">
                     <label class="form-label fw-semibold">New Password <small class="text-muted">(leave blank to keep current)</small></label>
