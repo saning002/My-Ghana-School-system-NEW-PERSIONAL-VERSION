@@ -1104,6 +1104,56 @@ Route::middleware('tenant')->name('website.')->group(function () {
     Route::get('/website/portal',      [WebsiteController::class, 'portal'])->name('portal');
 });
 
+// ── Replay pending Paystack transactions (owner only) ─────────────────────
+Route::get('/owner-debug/replay-pending', function() {
+    // First fix the constraint
+    try {
+        \Illuminate\Support\Facades\DB::statement('ALTER TABLE "owner_payments" DROP CONSTRAINT IF EXISTS "owner_payments_payment_method_check"');
+        \Illuminate\Support\Facades\DB::statement('ALTER TABLE "owner_payments" ALTER COLUMN "payment_method" TYPE VARCHAR(255)');
+    } catch (\Throwable $e) {}
+
+    $paystack   = app(\App\Services\PaystackService::class);
+    $controller = app(\App\Http\Controllers\Owner\SubscriptionPaymentController::class);
+    $results    = [];
+
+    $pending = \App\Models\PaystackTransaction::where('status', 'pending')
+        ->whereNull('owner_payment_id')
+        ->get();
+
+    foreach ($pending as $tx) {
+        try {
+            $verification = $paystack->verifyTransaction($tx->reference);
+            if ($verification['status'] && $verification['paid']) {
+                // Use reflection to call private method
+                $ref = new \ReflectionClass($controller);
+                $method = $ref->getMethod('recordSubscriptionPayment');
+                $method->setAccessible(true);
+                $method->invoke($controller, $tx, $verification);
+
+                $results[] = [
+                    'reference' => $tx->reference,
+                    'amount'    => $tx->amount,
+                    'status'    => 'RECORDED',
+                ];
+            } else {
+                $tx->update(['status' => 'failed']);
+                $results[] = [
+                    'reference' => $tx->reference,
+                    'status'    => 'FAILED - ' . ($verification['message'] ?? 'not paid'),
+                ];
+            }
+        } catch (\Throwable $e) {
+            $results[] = ['reference' => $tx->reference, 'error' => $e->getMessage()];
+        }
+    }
+
+    return response()->json([
+        'processed' => count($pending),
+        'results'   => $results,
+        'payments'  => \App\Models\OwnerPayment::orderByDesc('created_at')->take(5)->get(['id','receipt_number','amount','payment_method','payment_date']),
+    ], 200, [], JSON_PRETTY_PRINT);
+})->middleware('owner.auth');
+
 // ── Debug paystack transactions ───────────────────────────────────────────
 Route::get('/owner-debug/paystack-transactions', function() {
     $txs = \App\Models\PaystackTransaction::orderByDesc('created_at')->take(10)->get([
