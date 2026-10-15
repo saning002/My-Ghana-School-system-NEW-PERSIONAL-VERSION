@@ -144,19 +144,27 @@ class Tenant extends Model
     {
         $isNeon = str_contains($this->db_host, 'neon.tech');
 
+        // For Neon: convert pooler URL to direct URL to avoid
+        // "cached plan must not change result type" error from pgBouncer pooler.
+        // Pooler URL:  ep-xxx-pooler.region.aws.neon.tech
+        // Direct URL:  ep-xxx.region.aws.neon.tech (remove "-pooler")
+        $host = $this->db_host;
+        if ($isNeon) {
+            $host = str_replace('-pooler', '', $host);
+        }
+
         $config = [
-            'driver'   => 'pgsql',
-            'host'     => $this->db_host,
-            'port'     => $this->db_port ?: '5432',
-            'database' => $this->db_name,
-            'username' => $this->db_username,
-            'password' => $this->db_password,
-            'charset'  => 'utf8',
-            'prefix'   => '',
-            'schema'   => 'public',
+            'driver'      => 'pgsql',
+            'host'        => $host,
+            'port'        => $this->db_port ?: '5432',
+            'database'    => $this->db_name,
+            'username'    => $this->db_username,
+            'password'    => $this->db_password,
+            'charset'     => 'utf8',
+            'prefix'      => '',
+            'schema'      => 'public',
         ];
 
-        // Neon and most cloud Postgres providers require SSL
         if ($isNeon || str_contains($this->db_host, 'render.com') || str_contains($this->db_host, 'supabase.co')) {
             $config['sslmode'] = 'require';
         }

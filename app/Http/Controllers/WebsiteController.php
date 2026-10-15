@@ -19,7 +19,19 @@ class WebsiteController extends Controller
     // ── Shared site data ───────────────────────────────────────────────────
     private function site(): SiteSetting
     {
-        return SiteSetting::instance();
+        try {
+            return SiteSetting::instance();
+        } catch (\Illuminate\Database\QueryException $e) {
+            // Neon pooler "cached plan must not change result type" error
+            // Fix: run DISCARD ALL to clear the plan cache, then retry
+            if (str_contains($e->getMessage(), 'cached plan must not change result type')) {
+                try {
+                    \Illuminate\Support\Facades\DB::statement('DISCARD ALL');
+                } catch (\Throwable $ignored) {}
+                return SiteSetting::instance();
+            }
+            throw $e;
+        }
     }
 
     // ── HOME ───────────────────────────────────────────────────────────────
