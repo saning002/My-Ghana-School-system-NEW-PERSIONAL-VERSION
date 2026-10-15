@@ -147,13 +147,17 @@ class DashboardController extends Controller
             : Student::with(['user', 'program'])->latest()->take(5)->get();
 
         // Recent attendances — most recent by date
-        $recentAttendances = Attendance::with(['student.user', 'student.program'])
-            ->when($isBranchAdmin, fn($q) => $q->whereHas('student',
-                fn($s) => $s->where('church_branch_id', $branchId)))
-            ->orderByDesc('date')
-            ->orderByDesc('id')
-            ->take(8)
-            ->get();
+        $recentAttendances = collect();
+        try {
+            $recentAttendances = Attendance::with(['student.user', 'student.program'])
+                ->when($isBranchAdmin, fn($q) => $q->whereHas('student',
+                    fn($s) => $s->where('church_branch_id', $branchId)))
+                ->orderByDesc('id')
+                ->take(8)
+                ->get();
+        } catch (\Throwable $e) {
+            \Log::warning('Recent attendances query failed: ' . $e->getMessage());
+        }
 
         $storageHealth = $this->buildStorageHealth();
 

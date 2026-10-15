@@ -64,6 +64,16 @@ class TenantSetupController extends Controller
         }
         $results[] = '✅ Indexes and constraints applied';
 
+        // Step 3b: Add missing columns to existing tables (idempotent DO blocks)
+        foreach ($this->columnAdditions() as $stmt) {
+            try {
+                DB::connection('tenant')->statement($stmt);
+            } catch (\Throwable $e) {
+                try { DB::connection('tenant')->statement('ROLLBACK'); } catch (\Throwable $ignored) {}
+            }
+        }
+        $results[] = '✅ Column additions applied';
+
         // Step 4: Seed settings
         try {
             $exists = DB::connection('tenant')->getSchemaBuilder()->hasTable('settings');
@@ -356,15 +366,15 @@ class TenantSetupController extends Controller
             'jobs' => 'CREATE TABLE IF NOT EXISTS "jobs" ("id" BIGSERIAL PRIMARY KEY, "queue" VARCHAR(255) NOT NULL, "payload" TEXT NOT NULL, "attempts" SMALLINT NOT NULL DEFAULT 0, "reserved_at" INTEGER NULL, "available_at" INTEGER NOT NULL, "created_at" INTEGER NOT NULL)',
             'settings' => 'CREATE TABLE IF NOT EXISTS "settings" ("id" BIGSERIAL PRIMARY KEY, "key" VARCHAR(255) NOT NULL UNIQUE, "value" TEXT NULL, "created_at" TIMESTAMP NULL, "updated_at" TIMESTAMP NULL)',
             'site_settings' => 'CREATE TABLE IF NOT EXISTS "site_settings" ("id" BIGSERIAL PRIMARY KEY, "site_name" VARCHAR(255) NOT NULL DEFAULT \'School\', "site_subtitle" VARCHAR(255) NULL, "site_logo_url" TEXT NULL, "theme" JSON NULL, "created_at" TIMESTAMP NULL, "updated_at" TIMESTAMP NULL)',
-            'church_branches' => 'CREATE TABLE IF NOT EXISTS "church_branches" ("id" BIGSERIAL PRIMARY KEY, "name" VARCHAR(255) NOT NULL, "address" TEXT NULL, "created_at" TIMESTAMP NULL, "updated_at" TIMESTAMP NULL)',
+            'church_branches' => 'CREATE TABLE IF NOT EXISTS "church_branches" ("id" BIGSERIAL PRIMARY KEY, "name" VARCHAR(255) NOT NULL, "code" VARCHAR(50) NULL, "location" VARCHAR(255) NULL, "address" TEXT NULL, "created_at" TIMESTAMP NULL, "updated_at" TIMESTAMP NULL)',
             'users' => 'CREATE TABLE IF NOT EXISTS "users" ("id" BIGSERIAL PRIMARY KEY, "full_name" VARCHAR(255) NOT NULL, "surname" VARCHAR(255) NULL, "other_names" VARCHAR(255) NULL, "email" VARCHAR(255) NOT NULL, "date_of_birth" DATE NULL, "place_of_birth" VARCHAR(255) NULL, "religion" VARCHAR(255) NULL, "first_language" VARCHAR(255) NULL, "other_language" VARCHAR(255) NULL, "phone" VARCHAR(255) NULL, "address" TEXT NULL, "photo" VARCHAR(255) NULL, "qualification" VARCHAR(255) NULL, "bio" TEXT NULL, "gender" VARCHAR(255) NULL, "marital_status" VARCHAR(255) NULL, "nationality" VARCHAR(255) NULL, "role" VARCHAR(255) NOT NULL DEFAULT \'admin\', "is_super_admin" BOOLEAN NOT NULL DEFAULT FALSE, "church_branch_id" BIGINT NULL, "login_background_url" TEXT NULL, "email_verified_at" TIMESTAMP NULL, "password" VARCHAR(255) NOT NULL, "remember_token" VARCHAR(100) NULL, "created_at" TIMESTAMP NULL, "updated_at" TIMESTAMP NULL)',
-            'programs' => 'CREATE TABLE IF NOT EXISTS "programs" ("id" BIGSERIAL PRIMARY KEY, "name" VARCHAR(255) NOT NULL, "description" TEXT NULL, "sequence" INTEGER NOT NULL DEFAULT 0, "church_branch_id" BIGINT NULL, "duration_years" INTEGER NULL, "created_at" TIMESTAMP NULL, "updated_at" TIMESTAMP NULL)',
+            'programs' => 'CREATE TABLE IF NOT EXISTS "programs" ("id" BIGSERIAL PRIMARY KEY, "name" VARCHAR(255) NOT NULL, "code" VARCHAR(50) NULL, "description" TEXT NULL, "sequence" INTEGER NOT NULL DEFAULT 0, "church_branch_id" BIGINT NULL, "duration_years" INTEGER NULL, "created_at" TIMESTAMP NULL, "updated_at" TIMESTAMP NULL)',
             'courses' => 'CREATE TABLE IF NOT EXISTS "courses" ("id" BIGSERIAL PRIMARY KEY, "name" VARCHAR(255) NOT NULL, "code" VARCHAR(255) NULL, "description" TEXT NULL, "program_id" BIGINT NULL, "created_at" TIMESTAMP NULL, "updated_at" TIMESTAMP NULL)',
-            'students' => 'CREATE TABLE IF NOT EXISTS "students" ("id" BIGSERIAL PRIMARY KEY, "user_id" BIGINT NOT NULL, "student_id" VARCHAR(255) NOT NULL, "program_id" BIGINT NULL, "church_branch_id" BIGINT NULL, "status" VARCHAR(255) NOT NULL DEFAULT \'active\', "year_of_admission" INTEGER NULL, "portal_password" VARCHAR(255) NULL, "created_at" TIMESTAMP NULL, "updated_at" TIMESTAMP NULL)',
+            'students' => 'CREATE TABLE IF NOT EXISTS "students" ("id" BIGSERIAL PRIMARY KEY, "user_id" BIGINT NOT NULL, "student_id" VARCHAR(255) NOT NULL, "program_id" BIGINT NULL, "church_branch_id" BIGINT NULL, "status" VARCHAR(255) NOT NULL DEFAULT \'active\', "year_of_admission" INTEGER NULL, "portal_password" VARCHAR(255) NULL, "gender" VARCHAR(255) NULL, "date_of_birth" DATE NULL, "phone" VARCHAR(255) NULL, "address" TEXT NULL, "photo" VARCHAR(255) NULL, "nationality" VARCHAR(255) NULL, "religion" VARCHAR(255) NULL, "guardian_name" VARCHAR(255) NULL, "guardian_phone" VARCHAR(255) NULL, "guardian_email" VARCHAR(255) NULL, "created_at" TIMESTAMP NULL, "updated_at" TIMESTAMP NULL)',
             'enrollments' => 'CREATE TABLE IF NOT EXISTS "enrollments" ("id" BIGSERIAL PRIMARY KEY, "student_id" BIGINT NOT NULL, "course_id" BIGINT NOT NULL, "created_at" TIMESTAMP NULL, "updated_at" TIMESTAMP NULL)',
             'academic_sessions' => 'CREATE TABLE IF NOT EXISTS "academic_sessions" ("id" BIGSERIAL PRIMARY KEY, "year" VARCHAR(255) NOT NULL, "created_at" TIMESTAMP NULL, "updated_at" TIMESTAMP NULL)',
             'academic_periods' => 'CREATE TABLE IF NOT EXISTS "academic_periods" ("id" BIGSERIAL PRIMARY KEY, "academic_session_id" BIGINT NOT NULL, "month" VARCHAR(255) NOT NULL, "is_active" BOOLEAN NOT NULL DEFAULT FALSE, "created_at" TIMESTAMP NULL, "updated_at" TIMESTAMP NULL)',
-            'attendances' => 'CREATE TABLE IF NOT EXISTS "attendances" ("id" BIGSERIAL PRIMARY KEY, "student_id" BIGINT NOT NULL, "academic_period_id" BIGINT NOT NULL, "present_days" INTEGER NOT NULL DEFAULT 0, "absent_days" INTEGER NOT NULL DEFAULT 0, "created_at" TIMESTAMP NULL, "updated_at" TIMESTAMP NULL)',
+            'attendances' => 'CREATE TABLE IF NOT EXISTS "attendances" ("id" BIGSERIAL PRIMARY KEY, "student_id" BIGINT NOT NULL, "academic_period_id" BIGINT NOT NULL, "course_id" BIGINT NULL, "date" DATE NULL, "status" VARCHAR(255) NULL DEFAULT \'present\', "present_days" INTEGER NOT NULL DEFAULT 0, "absent_days" INTEGER NOT NULL DEFAULT 0, "created_at" TIMESTAMP NULL, "updated_at" TIMESTAMP NULL)',
             'exam_scores' => 'CREATE TABLE IF NOT EXISTS "exam_scores" ("id" BIGSERIAL PRIMARY KEY, "student_id" BIGINT NOT NULL, "course_id" BIGINT NOT NULL, "class_score" DECIMAL(8,2) NULL, "exam_score" DECIMAL(8,2) NULL, "academic_session_id" BIGINT NULL, "created_at" TIMESTAMP NULL, "updated_at" TIMESTAMP NULL)',
             'program_fees' => 'CREATE TABLE IF NOT EXISTS "program_fees" ("id" BIGSERIAL PRIMARY KEY, "program_id" BIGINT NOT NULL, "church_branch_id" BIGINT NULL, "amount" DECIMAL(10,2) NOT NULL DEFAULT 0, "exam_fee" DECIMAL(10,2) NOT NULL DEFAULT 0, "created_at" TIMESTAMP NULL, "updated_at" TIMESTAMP NULL)',
             'student_fees' => 'CREATE TABLE IF NOT EXISTS "student_fees" ("id" BIGSERIAL PRIMARY KEY, "student_id" BIGINT NOT NULL, "amount" DECIMAL(10,2) NULL, "exam_fee" DECIMAL(10,2) NULL, "notes" TEXT NULL, "created_at" TIMESTAMP NULL, "updated_at" TIMESTAMP NULL)',
@@ -386,6 +396,57 @@ class TenantSetupController extends Controller
             'attribute_definitions' => 'CREATE TABLE IF NOT EXISTS "attribute_definitions" ("id" BIGSERIAL PRIMARY KEY, "label" VARCHAR(255) NOT NULL, "type" VARCHAR(255) NOT NULL DEFAULT \'rating\', "sort_order" INTEGER NOT NULL DEFAULT 0, "created_at" TIMESTAMP NULL, "updated_at" TIMESTAMP NULL)',
             'student_reports' => 'CREATE TABLE IF NOT EXISTS "student_reports" ("id" BIGSERIAL PRIMARY KEY, "student_id" BIGINT NOT NULL, "academic_session_id" BIGINT NULL, "conduct" VARCHAR(255) NULL, "attitude" VARCHAR(255) NULL, "class_teacher_remarks" TEXT NULL, "head_teacher_remarks" TEXT NULL, "created_at" TIMESTAMP NULL, "updated_at" TIMESTAMP NULL)',
             'student_report_attributes' => 'CREATE TABLE IF NOT EXISTS "student_report_attributes" ("id" BIGSERIAL PRIMARY KEY, "student_report_id" BIGINT NOT NULL, "attribute_definition_id" BIGINT NOT NULL, "value" VARCHAR(255) NULL, "created_at" TIMESTAMP NULL, "updated_at" TIMESTAMP NULL)',
+        ];
+    }
+
+    private function columnAdditions(): array
+    {
+        // Each statement uses DO $$ BEGIN ... END $$ to check before adding
+        // Safe to run multiple times — never fails if column already exists
+        return [
+            // attendances — add date, status, course_id
+            "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='attendances' AND column_name='date') THEN ALTER TABLE attendances ADD COLUMN \"date\" DATE NULL; END IF; END \$\$",
+            "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='attendances' AND column_name='status') THEN ALTER TABLE attendances ADD COLUMN \"status\" VARCHAR(255) NULL DEFAULT 'present'; END IF; END \$\$",
+            "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='attendances' AND column_name='course_id') THEN ALTER TABLE attendances ADD COLUMN \"course_id\" BIGINT NULL; END IF; END \$\$",
+
+            // students — add extra profile columns
+            "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='students' AND column_name='gender') THEN ALTER TABLE students ADD COLUMN \"gender\" VARCHAR(255) NULL; END IF; END \$\$",
+            "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='students' AND column_name='date_of_birth') THEN ALTER TABLE students ADD COLUMN \"date_of_birth\" DATE NULL; END IF; END \$\$",
+            "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='students' AND column_name='phone') THEN ALTER TABLE students ADD COLUMN \"phone\" VARCHAR(255) NULL; END IF; END \$\$",
+            "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='students' AND column_name='address') THEN ALTER TABLE students ADD COLUMN \"address\" TEXT NULL; END IF; END \$\$",
+            "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='students' AND column_name='photo') THEN ALTER TABLE students ADD COLUMN \"photo\" VARCHAR(255) NULL; END IF; END \$\$",
+            "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='students' AND column_name='nationality') THEN ALTER TABLE students ADD COLUMN \"nationality\" VARCHAR(255) NULL; END IF; END \$\$",
+            "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='students' AND column_name='religion') THEN ALTER TABLE students ADD COLUMN \"religion\" VARCHAR(255) NULL; END IF; END \$\$",
+            "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='students' AND column_name='guardian_name') THEN ALTER TABLE students ADD COLUMN \"guardian_name\" VARCHAR(255) NULL; END IF; END \$\$",
+            "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='students' AND column_name='guardian_phone') THEN ALTER TABLE students ADD COLUMN \"guardian_phone\" VARCHAR(255) NULL; END IF; END \$\$",
+            "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='students' AND column_name='guardian_email') THEN ALTER TABLE students ADD COLUMN \"guardian_email\" VARCHAR(255) NULL; END IF; END \$\$",
+
+            // users — add extra profile columns
+            "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='users' AND column_name='qualification') THEN ALTER TABLE users ADD COLUMN \"qualification\" VARCHAR(255) NULL; END IF; END \$\$",
+            "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='users' AND column_name='bio') THEN ALTER TABLE users ADD COLUMN \"bio\" TEXT NULL; END IF; END \$\$",
+            "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='users' AND column_name='gender') THEN ALTER TABLE users ADD COLUMN \"gender\" VARCHAR(255) NULL; END IF; END \$\$",
+            "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='users' AND column_name='marital_status') THEN ALTER TABLE users ADD COLUMN \"marital_status\" VARCHAR(255) NULL; END IF; END \$\$",
+            "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='users' AND column_name='nationality') THEN ALTER TABLE users ADD COLUMN \"nationality\" VARCHAR(255) NULL; END IF; END \$\$",
+            "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='users' AND column_name='date_of_birth') THEN ALTER TABLE users ADD COLUMN \"date_of_birth\" DATE NULL; END IF; END \$\$",
+            "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='users' AND column_name='place_of_birth') THEN ALTER TABLE users ADD COLUMN \"place_of_birth\" VARCHAR(255) NULL; END IF; END \$\$",
+            "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='users' AND column_name='religion') THEN ALTER TABLE users ADD COLUMN \"religion\" VARCHAR(255) NULL; END IF; END \$\$",
+            "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='users' AND column_name='first_language') THEN ALTER TABLE users ADD COLUMN \"first_language\" VARCHAR(255) NULL; END IF; END \$\$",
+            "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='users' AND column_name='other_language') THEN ALTER TABLE users ADD COLUMN \"other_language\" VARCHAR(255) NULL; END IF; END \$\$",
+            "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='users' AND column_name='surname') THEN ALTER TABLE users ADD COLUMN \"surname\" VARCHAR(255) NULL; END IF; END \$\$",
+            "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='users' AND column_name='other_names') THEN ALTER TABLE users ADD COLUMN \"other_names\" VARCHAR(255) NULL; END IF; END \$\$",
+
+            // programs — add code
+            "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='programs' AND column_name='code') THEN ALTER TABLE programs ADD COLUMN \"code\" VARCHAR(50) NULL; END IF; END \$\$",
+
+            // church_branches — add code and location
+            "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='church_branches' AND column_name='code') THEN ALTER TABLE church_branches ADD COLUMN \"code\" VARCHAR(50) NULL; END IF; END \$\$",
+            "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='church_branches' AND column_name='location') THEN ALTER TABLE church_branches ADD COLUMN \"location\" VARCHAR(255) NULL; END IF; END \$\$",
+
+            // exam_scores — add extra columns
+            "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='exam_scores' AND column_name='sba_score') THEN ALTER TABLE exam_scores ADD COLUMN \"sba_score\" DECIMAL(8,2) NULL; END IF; END \$\$",
+            "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='exam_scores' AND column_name='total_score') THEN ALTER TABLE exam_scores ADD COLUMN \"total_score\" DECIMAL(8,2) NULL; END IF; END \$\$",
+            "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='exam_scores' AND column_name='grade') THEN ALTER TABLE exam_scores ADD COLUMN \"grade\" VARCHAR(10) NULL; END IF; END \$\$",
+            "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='exam_scores' AND column_name='remarks') THEN ALTER TABLE exam_scores ADD COLUMN \"remarks\" VARCHAR(255) NULL; END IF; END \$\$",
         ];
     }
 
