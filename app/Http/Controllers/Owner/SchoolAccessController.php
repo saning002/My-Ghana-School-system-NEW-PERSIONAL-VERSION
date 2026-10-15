@@ -127,8 +127,13 @@ class SchoolAccessController extends Controller
             throw ValidationException::withMessages(['email' => $roleError]);
         }
 
-        // All good — regenerate session and store tenant context
+        // All good — store tenant BEFORE session regeneration so it survives
+        session(['tenant_slug' => $tenant->slug, 'tenant_id' => $tenant->id]);
+
+        // Regenerate session (preserves existing session data including tenant_slug)
         $request->session()->regenerate();
+
+        // Set tenant_slug again after regenerate to be safe
         session(['tenant_slug' => $tenant->slug, 'tenant_id' => $tenant->id]);
 
         // Keep tenant DB active — TenantMiddleware will handle it on next request

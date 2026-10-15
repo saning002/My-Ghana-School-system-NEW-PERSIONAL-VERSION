@@ -43,6 +43,20 @@ class EnsureUserHasRole
     {
         $user = $request->user();
 
+        // ── If no user found, try switching to tenant DB and re-fetching ─────
+        // This handles the case where the session has tenant_slug but the
+        // default DB connection hasn't been switched yet
+        if (!$user && session()->has('tenant_slug')) {
+            $slug   = session('tenant_slug');
+            $tenant = \App\Models\Tenant::where('slug', $slug)->first();
+            if ($tenant) {
+                \Illuminate\Support\Facades\DB::purge('tenant');
+                \Illuminate\Support\Facades\Config::set('database.connections.tenant', $tenant->dbConfig());
+                \Illuminate\Support\Facades\DB::setDefaultConnection('tenant');
+                $user = $request->user(); // retry after switching DB
+            }
+        }
+
         // ── Check normal user auth ────────────────────────────────────────────
         if ($user) {
             $userRole = $user->role ?? 'unknown';
