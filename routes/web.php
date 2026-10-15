@@ -1104,7 +1104,31 @@ Route::middleware('tenant')->name('website.')->group(function () {
     Route::get('/website/portal',      [WebsiteController::class, 'portal'])->name('portal');
 });
 
-// ── Debug school login (temporary) ───────────────────────────────────────
+// ── Debug paystack transactions ───────────────────────────────────────────
+Route::get('/owner-debug/paystack-transactions', function() {
+    $txs = \App\Models\PaystackTransaction::orderByDesc('created_at')->take(10)->get([
+        'id','type','reference','amount','status','payer_email','paid_at','owner_payment_id','created_at'
+    ]);
+    $payments = \App\Models\OwnerPayment::orderByDesc('created_at')->take(10)->get([
+        'id','receipt_number','tenant_id','amount','payment_method','payment_date','created_at'
+    ]);
+    // Check constraint on owner_payments
+    try {
+        $constraint = \Illuminate\Support\Facades\DB::select("
+            SELECT conname, consrc
+            FROM pg_constraint
+            WHERE conrelid = 'owner_payments'::regclass
+            AND conname LIKE '%payment_method%'
+        ");
+    } catch (\Throwable $e) {
+        $constraint = ['error' => $e->getMessage()];
+    }
+    return response()->json([
+        'paystack_transactions' => $txs,
+        'owner_payments'        => $payments,
+        'constraint'            => $constraint,
+    ], 200, [], JSON_PRETTY_PRINT);
+})->middleware('owner.auth');
 Route::get('/debug-school-login/{slug}', function(string $slug, \Illuminate\Http\Request $request) {
     $out = [];
     $email    = $request->query('email', '');
