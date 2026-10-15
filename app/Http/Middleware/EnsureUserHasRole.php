@@ -48,7 +48,7 @@ class EnsureUserHasRole
         // default DB connection hasn't been switched yet
         if (!$user && session()->has('tenant_slug')) {
             $slug   = session('tenant_slug');
-            $tenant = \App\Models\Tenant::where('slug', $slug)->first();
+            $tenant = \App\Models\Tenant::on('pgsql')->where('slug', $slug)->first();
             if ($tenant) {
                 \Illuminate\Support\Facades\DB::purge('tenant');
                 \Illuminate\Support\Facades\Config::set('database.connections.tenant', $tenant->dbConfig());

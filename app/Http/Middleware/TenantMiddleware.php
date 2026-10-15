@@ -65,15 +65,16 @@ class TenantMiddleware
         return $response;
     }
 
-    /**
-     * Resolve tenant from subdomain, session (Option A), header, or query param.
-     */
     private function resolveTenant(Request $request): ?Tenant
     {
+        // IMPORTANT: Tenant model must ALWAYS query the central DB (pgsql)
+        // Never query it on the tenant connection — tenants table doesn't exist there
+
         // 1. Session-based (Option A — slug login at /school/{slug}/login)
         $sessionSlug = session('tenant_slug');
         if ($sessionSlug) {
-            return Tenant::where('slug', $sessionSlug)->first();
+            // Force central DB for this query
+            return Tenant::on('pgsql')->where('slug', $sessionSlug)->first();
         }
 
         // 2. Try subdomain — e.g. "accra-academy" from "accra-academy.yourdomain.com"
@@ -83,20 +84,20 @@ class TenantMiddleware
         if ($appDomain && str_ends_with($host, '.' . $appDomain)) {
             $subdomain = str_replace('.' . $appDomain, '', $host);
             if ($subdomain && $subdomain !== $appDomain) {
-                return Tenant::where('subdomain', $subdomain)->first();
+                return Tenant::on('pgsql')->where('subdomain', $subdomain)->first();
             }
         }
 
-        // 3. Try X-Tenant-Slug header (useful for local dev / Postman testing)
+        // 3. Try X-Tenant-Slug header
         $slug = $request->header('X-Tenant-Slug');
         if ($slug) {
-            return Tenant::where('slug', $slug)->first();
+            return Tenant::on('pgsql')->where('slug', $slug)->first();
         }
 
-        // 4. Try ?tenant= query param (last resort for local dev)
+        // 4. Try ?tenant= query param
         $tenantParam = $request->query('tenant');
         if ($tenantParam) {
-            return Tenant::where('slug', $tenantParam)->orWhere('subdomain', $tenantParam)->first();
+            return Tenant::on('pgsql')->where('slug', $tenantParam)->orWhere('subdomain', $tenantParam)->first();
         }
 
         return null;

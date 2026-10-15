@@ -31,7 +31,8 @@ class TenantService
         // 2. Check session (Option A — school admin logged in via /school/{slug}/login)
         $slug = session('tenant_slug');
         if ($slug) {
-            return Tenant::where('slug', $slug)->first();
+            // Always query tenants from central DB — never from tenant DB
+            return Tenant::on('pgsql')->where('slug', $slug)->first();
         }
 
         return null;
