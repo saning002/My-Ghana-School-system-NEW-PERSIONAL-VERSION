@@ -95,8 +95,15 @@ class EnsureUserHasRole
             session()->forget(['staff_portal_user_id','staff_portal_user_name','staff_portal_user_role']);
         }
 
-        // ── No auth at all — redirect to login ───────────────────────────────
+        // ── No auth at all — redirect to correct login ───────────────────────
         Log::warning('EnsureUserHasRole: No authenticated user found');
+
+        // If this is a school tenant session, redirect to the school's login page
+        $tenantSlug = session('tenant_slug');
+        if ($tenantSlug) {
+            return redirect()->route('school.admin.login', $tenantSlug);
+        }
+
         return redirect()->route('login');
     }
 }

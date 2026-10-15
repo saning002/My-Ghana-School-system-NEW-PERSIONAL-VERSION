@@ -160,8 +160,9 @@ class SchoolAccessController extends Controller
         // Store tenant slug in session — TenantMiddleware reads this on every request
         session(['tenant_slug' => $tenant->slug, 'tenant_id' => $tenant->id]);
 
-        // Reset to central DB after auth — TenantMiddleware will re-switch per request
-        $this->resetDatabase();
+        // Do NOT reset DB here — keep tenant connection active so the redirect
+        // can re-authenticate the user from the correct DB via TenantMiddleware
+        // TenantMiddleware will handle switching on the next request via session
 
         if ($user->role === 'lecturer') {
             return redirect()->route('lecturer.dashboard');
