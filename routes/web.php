@@ -1105,42 +1105,49 @@ Route::middleware('tenant')->name('website.')->group(function () {
 });
 
 // ── Debug school login (temporary) ───────────────────────────────────────
-Route::post('/debug-school-login/{slug}', function(string $slug, \Illuminate\Http\Request $request) {
+Route::get('/debug-school-login/{slug}', function(string $slug, \Illuminate\Http\Request $request) {
     $out = [];
+    $email    = $request->query('email', '');
+    $password = $request->query('password', '');
 
     try {
         $tenant = \App\Models\Tenant::where('slug', $slug)->orWhere('subdomain', $slug)->first();
         if (!$tenant) return response()->json(['error' => 'Tenant not found']);
-        $out['tenant'] = $tenant->slug;
+        $out['tenant']   = $tenant->slug;
+        $out['db_host']  = $tenant->db_host;
+        $out['db_name']  = $tenant->db_name;
 
         // Switch to tenant DB
         \Illuminate\Support\Facades\DB::purge('tenant');
         \Illuminate\Support\Facades\Config::set('database.connections.tenant', $tenant->dbConfig());
         \Illuminate\Support\Facades\DB::setDefaultConnection('tenant');
-        $out['db_switched'] = true;
+        $out['db_switched'] = \Illuminate\Support\Facades\DB::getDefaultConnection();
 
-        // Check if user exists
-        $email = $request->input('email', '');
-        $user  = \Illuminate\Support\Facades\DB::table('users')->where('email', $email)->first();
-        $out['user_found']  = $user ? true : false;
-        $out['user_role']   = $user->role ?? 'N/A';
-        $out['is_super']    = $user->is_super_admin ?? 'N/A';
+        // List all admins in the DB
+        $admins = \Illuminate\Support\Facades\DB::table('users')
+            ->where('role', 'admin')
+            ->get(['id','full_name','email','is_super_admin','created_at']);
+        $out['admins_in_db'] = $admins;
 
-        // Try Auth::attempt
-        $attempted = \Illuminate\Support\Facades\Auth::attempt([
-            'email'    => $request->input('email'),
-            'password' => $request->input('password'),
-        ]);
-        $out['auth_attempt'] = $attempted;
-        $out['auth_user']    = $attempted ? \Illuminate\Support\Facades\Auth::user()?->email : null;
-        $out['default_conn'] = \Illuminate\Support\Facades\DB::getDefaultConnection();
+        // Check specific user if email provided
+        if ($email) {
+            $user = \Illuminate\Support\Facades\DB::table('users')->where('email', $email)->first();
+            $out['user_found']     = $user ? true : false;
+            $out['user_role']      = $user->role ?? 'N/A';
+            $out['user_is_super']  = $user->is_super_admin ?? 'N/A';
+            $out['password_hash']  = $user ? substr($user->password, 0, 20) . '...' : 'N/A';
+
+            if ($password && $user) {
+                $out['password_matches'] = \Illuminate\Support\Facades\Hash::check($password, $user->password);
+            }
+        }
 
     } catch (\Throwable $e) {
         $out['error'] = $e->getMessage();
     }
 
     \Illuminate\Support\Facades\DB::setDefaultConnection('pgsql');
-    return response()->json($out);
+    return response()->json($out, 200, [], JSON_PRETTY_PRINT);
 })->name('debug.school.login');
 
 // ═══════════════════════════════════════════════════════════════════════════
