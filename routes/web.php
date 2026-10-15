@@ -704,8 +704,8 @@ Route::prefix('staff-portal')->name('staff-portal.')->group(function () {
     Route::post('/login',              [\App\Http\Controllers\StaffPortal\AuthController::class, 'login'])->name('login.submit');
     Route::post('/logout',             [\App\Http\Controllers\StaffPortal\AuthController::class, 'logout'])->name('logout');
 
-    // All authenticated staff portal routes
-    Route::middleware('staff.auth')->group(function () {
+    // All authenticated staff portal routes — tenant middleware ensures school DB
+    Route::middleware(['staff.auth', 'tenant'])->group(function () {
         Route::get('/dashboard',            [\App\Http\Controllers\StaffPortal\DashboardController::class, 'index'])->name('dashboard');
         Route::get('/student-reports',      [\App\Http\Controllers\StaffPortal\SectionController::class, 'studentReports'])->name('student-reports');
         Route::get('/profile',              [\App\Http\Controllers\StaffPortal\ProfileController::class, 'edit'])->name('profile');
@@ -1072,7 +1072,7 @@ Route::prefix('portal')->name('portal.')->group(function () {
     Route::post('/login', [PortalController::class, 'login'])->name('login.submit');
     Route::post('/logout',[PortalController::class, 'logout'])->name('logout');
 
-    Route::middleware('portal.auth')->group(function () {
+    Route::middleware(['portal.auth', 'tenant'])->group(function () {
         Route::get('/dashboard',               [PortalController::class, 'dashboard'])->name('dashboard');
         Route::get('/photo/{student}',         [PortalController::class, 'photo'])->name('photo');
         Route::get('/background/{student}',    [PortalController::class, 'backgroundPhoto'])->name('background');
@@ -1085,9 +1085,9 @@ Route::prefix('portal')->name('portal.')->group(function () {
 });
 
 // ═══════════════════════════════════════════════════════════════════════════
-// PUBLIC SCHOOL WEBSITE
+// PUBLIC SCHOOL WEBSITE — tenant middleware ensures school's own DB is used
 // ═══════════════════════════════════════════════════════════════════════════
-Route::name('website.')->group(function () {
+Route::middleware('tenant')->name('website.')->group(function () {
     Route::get('/website',             [WebsiteController::class, 'home'])->name('home');
     Route::get('/website/about',       [WebsiteController::class, 'about'])->name('about');
     Route::get('/website/academics',   [WebsiteController::class, 'academics'])->name('academics');
@@ -1207,7 +1207,7 @@ Route::prefix('pay-subscription')->name('paystack.subscription.')->group(functio
 // ── 3. School fee payments (student/parent pays school fees) ──────────────
 // These are inside the portal prefix but added here to keep Paystack routes together.
 // Routes: /portal/pay-fees (GET) and /portal/pay-fees/initialize (POST)
-Route::prefix('portal')->name('portal.fee.')->middleware('portal.auth')->group(function () {
+Route::prefix('portal')->name('portal.fee.')->middleware(['portal.auth', 'tenant'])->group(function () {
     Route::get('/pay-fees',             [\App\Http\Controllers\Student\FeePaymentController::class, 'showPayPage'])->name('pay');
     Route::post('/pay-fees/initialize', [\App\Http\Controllers\Student\FeePaymentController::class, 'initialize'])->name('pay.initialize');
 });

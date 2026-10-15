@@ -51,14 +51,9 @@ class DashboardController extends Controller
                 ", [$branchId])->cnt ?? 0;
 
                 $presentDeduped = \DB::selectOne("
-                    SELECT COUNT(*) as cnt FROM (
-                        SELECT student_id, date
-                        FROM attendances
-                        INNER JOIN students ON students.id = attendances.student_id
-                        WHERE students.church_branch_id = ?
-                        GROUP BY student_id, date
-                        HAVING MAX(CASE WHEN attendances.status = 'present' THEN 1 ELSE 0 END) = 1
-                    ) sub
+                    SELECT SUM(present_days) as cnt FROM attendances
+                    INNER JOIN students ON students.id = attendances.student_id
+                    WHERE students.church_branch_id = ?
                 ", [$branchId])->cnt ?? 0;
             } else {
                 $totalDeduped = \DB::selectOne("
@@ -68,20 +63,21 @@ class DashboardController extends Controller
                 ")->cnt ?? 0;
 
                 $presentDeduped = \DB::selectOne("
-                    SELECT COUNT(*) as cnt FROM (
-                        SELECT student_id, date FROM attendances
-                        GROUP BY student_id, date
-                        HAVING MAX(CASE WHEN status = 'present' THEN 1 ELSE 0 END) = 1
-                    ) sub
+                    SELECT SUM(present_days) as cnt FROM attendances
                 ")->cnt ?? 0;
             }
             $attendanceRate = $totalDeduped > 0 ? round(($presentDeduped / $totalDeduped) * 100) : 0;
         } catch (\Throwable $e) {
             \Log::warning('Attendance rate query failed: ' . $e->getMessage());
-            // Simple fallback
-            $total = Attendance::when($isBranchAdmin, fn($q) => $q->whereHas('student', fn($s) => $s->where('church_branch_id', $branchId)))->count();
-            $present = Attendance::where('status', 'present')->when($isBranchAdmin, fn($q) => $q->whereHas('student', fn($s) => $s->where('church_branch_id', $branchId)))->count();
-            $attendanceRate = $total > 0 ? round(($present / $total) * 100) : 0;
+            // Safe fallback using present_days/absent_days columns
+            try {
+                $presentDays = Attendance::when($isBranchAdmin, fn($q) => $q->whereHas('student', fn($s) => $s->where('church_branch_id', $branchId)))->sum('present_days');
+                $absentDays  = Attendance::when($isBranchAdmin, fn($q) => $q->whereHas('student', fn($s) => $s->where('church_branch_id', $branchId)))->sum('absent_days');
+                $totalDays   = $presentDays + $absentDays;
+                $attendanceRate = $totalDays > 0 ? round(($presentDays / $totalDays) * 100) : 0;
+            } catch (\Throwable $e2) {
+                $attendanceRate = 0;
+            }
         }
 
         $fees = $this->feeService->getSummary($isBranchAdmin ? $branchId : null);
@@ -104,31 +100,21 @@ class DashboardController extends Controller
             if ($isBranchAdmin) {
                 $rows = \DB::select("
                     SELECT date,
-                        SUM(CASE WHEN max_present = 1 THEN 1 ELSE 0 END) as present_count,
-                        SUM(CASE WHEN max_present = 0 THEN 1 ELSE 0 END) as absent_count
-                    FROM (
-                        SELECT attendances.student_id, attendances.date,
-                            MAX(CASE WHEN attendances.status = 'present' THEN 1 ELSE 0 END) as max_present
-                        FROM attendances
-                        INNER JOIN students ON students.id = attendances.student_id
-                        WHERE attendances.date >= ?
-                          AND students.church_branch_id = ?
-                        GROUP BY attendances.student_id, attendances.date
-                    ) sub
+                        SUM(a.present_days) as present_count,
+                        SUM(a.absent_days)  as absent_count
+                    FROM attendances a
+                    INNER JOIN students s ON s.id = a.student_id
+                    WHERE a.date >= ?
+                      AND s.church_branch_id = ?
                     GROUP BY date
                 ", [$since, $branchId]);
             } else {
                 $rows = \DB::select("
                     SELECT date,
-                        SUM(CASE WHEN max_present = 1 THEN 1 ELSE 0 END) as present_count,
-                        SUM(CASE WHEN max_present = 0 THEN 1 ELSE 0 END) as absent_count
-                    FROM (
-                        SELECT student_id, date,
-                            MAX(CASE WHEN status = 'present' THEN 1 ELSE 0 END) as max_present
-                        FROM attendances
-                        WHERE date >= ?
-                        GROUP BY student_id, date
-                    ) sub
+                        SUM(present_days) as present_count,
+                        SUM(absent_days)  as absent_count
+                    FROM attendances
+                    WHERE date >= ?
                     GROUP BY date
                 ", [$since]);
             }
@@ -160,20 +146,14 @@ class DashboardController extends Controller
             ? Student::with(['user', 'program'])->where('church_branch_id', $branchId)->latest()->take(5)->get()
             : Student::with(['user', 'program'])->latest()->take(5)->get();
 
-        // Recent attendances — one record per student per date (most recent dates first)
-        // Uses the highest-priority status: present beats absent for the same student+date
-        $recentAttendances = Attendance::with(['student.user', 'student.program', 'course'])
+        // Recent attendances — most recent by date
+        $recentAttendances = Attendance::with(['student.user', 'student.program'])
             ->when($isBranchAdmin, fn($q) => $q->whereHas('student',
                 fn($s) => $s->where('church_branch_id', $branchId)))
             ->orderByDesc('date')
             ->orderByDesc('id')
-            ->get()
-            // Deduplicate: keep one entry per student+date, preferring 'present'
-            ->groupBy(fn($a) => $a->student_id . '_' . $a->date)
-            ->map(fn($group) => $group->sortByDesc(fn($a) => $a->status === 'present' ? 1 : 0)->first())
-            ->sortByDesc(fn($a) => $a->date . '_' . $a->id)
             ->take(8)
-            ->values();
+            ->get();
 
         $storageHealth = $this->buildStorageHealth();
 
