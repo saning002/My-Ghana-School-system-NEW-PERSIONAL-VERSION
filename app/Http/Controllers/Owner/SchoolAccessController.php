@@ -78,91 +78,54 @@ class SchoolAccessController extends Controller
             ->orWhere('subdomain', $slug)
             ->first();
 
-        if (!$tenant) {
-            abort(404, 'School not found.');
-        }
-
-        if ($tenant->isSuspended()) {
-            return view('tenant.suspended', compact('tenant'));
-        }
-
-        if ($tenant->isExpired()) {
-            return view('tenant.expired', compact('tenant'));
-        }
+        if (!$tenant) abort(404, 'School not found.');
+        if ($tenant->isSuspended()) return view('tenant.suspended', compact('tenant'));
+        if ($tenant->isExpired())   return view('tenant.expired',   compact('tenant'));
 
         $request->validate([
             'email'    => 'required|email',
             'password' => 'required|string',
         ]);
 
-        // Switch to this tenant's database
+        // Switch to tenant DB — must stay switched through the whole login
         $this->switchToTenant($tenant);
 
-        // Attempt authentication against tenant's DB
+        // Attempt authentication against tenant's Neon DB
         if (!Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {
-            // Switch back to central DB
             $this->resetDatabase();
-
             throw ValidationException::withMessages([
                 'email' => 'These credentials do not match our records.',
             ]);
         }
 
-        $user     = Auth::user();
-        $loginRole = $request->input('login_role', 'superadmin'); // superadmin | admin | lecturer
+        $user      = Auth::user();
+        $loginRole = $request->input('login_role', 'superadmin');
 
-        // Validate the user matches the selected role
-        if ($loginRole === 'lecturer') {
-            if ($user->role !== 'lecturer') {
-                Auth::logout();
-                $this->resetDatabase();
-                throw ValidationException::withMessages([
-                    'email' => 'This account is not a Lecturer account.',
-                ]);
-            }
-        } elseif ($loginRole === 'superadmin') {
-            if (!$user->isSuperAdmin()) {
-                Auth::logout();
-                $this->resetDatabase();
-                throw ValidationException::withMessages([
-                    'email' => 'This account is not a Super Admin. Try the Admin tab instead.',
-                ]);
-            }
-        } elseif ($loginRole === 'admin') {
-            if ($user->role !== 'admin') {
-                Auth::logout();
-                $this->resetDatabase();
-                throw ValidationException::withMessages([
-                    'email' => 'This account is not an Admin account.',
-                ]);
-            }
-            // Standard admins must NOT be super admins
-            if ($user->isSuperAdmin()) {
-                Auth::logout();
-                $this->resetDatabase();
-                throw ValidationException::withMessages([
-                    'email' => 'This is a Super Admin account. Please use the Super Admin tab.',
-                ]);
-            }
-        } else {
-            // Fallback — any admin or lecturer
-            if (!in_array($user->role, ['admin', 'lecturer']) && !$user->isSuperAdmin()) {
-                Auth::logout();
-                $this->resetDatabase();
-                throw ValidationException::withMessages([
-                    'email' => 'Access restricted to administrators and lecturers.',
-                ]);
-            }
+        // Validate role matches selected tab
+        $roleError = null;
+
+        if ($loginRole === 'lecturer' && $user->role !== 'lecturer') {
+            $roleError = 'This account is not a Lecturer account. Try the Admin or Super Admin tab.';
+        } elseif ($loginRole === 'superadmin' && !$user->isSuperAdmin()) {
+            $roleError = 'This account is not a Super Admin. Try the Admin tab instead.';
+        } elseif ($loginRole === 'admin' && $user->role !== 'admin') {
+            $roleError = 'This account is not an Admin account.';
+        } elseif (!in_array($user->role, ['admin', 'lecturer']) && !$user->isSuperAdmin()) {
+            $roleError = 'Access restricted to administrators and lecturers only.';
         }
 
-        $request->session()->regenerate();
+        if ($roleError) {
+            Auth::logout();
+            $this->resetDatabase();
+            throw ValidationException::withMessages(['email' => $roleError]);
+        }
 
-        // Store tenant slug in session — TenantMiddleware reads this on every request
+        // All good — regenerate session and store tenant context
+        $request->session()->regenerate();
         session(['tenant_slug' => $tenant->slug, 'tenant_id' => $tenant->id]);
 
-        // Do NOT reset DB here — keep tenant connection active so the redirect
-        // can re-authenticate the user from the correct DB via TenantMiddleware
-        // TenantMiddleware will handle switching on the next request via session
+        // Keep tenant DB active — TenantMiddleware will handle it on next request
+        // Do NOT reset DB here as it would cause the redirect to lose auth context
 
         if ($user->role === 'lecturer') {
             return redirect()->route('lecturer.dashboard');
@@ -194,7 +157,7 @@ class SchoolAccessController extends Controller
 
     private function resetDatabase(): void
     {
-        DB::setDefaultConnection('mysql');
+        DB::setDefaultConnection('pgsql');
         DB::purge('tenant');
     }
 }
