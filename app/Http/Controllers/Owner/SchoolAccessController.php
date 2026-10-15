@@ -90,15 +90,22 @@ class SchoolAccessController extends Controller
         // Switch to tenant DB — must stay switched through the whole login
         $this->switchToTenant($tenant);
 
-        // Attempt authentication against tenant's Neon DB
-        if (!Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {
+        // Auth::attempt() uses its own cached connection internally.
+        // Bypass it — find the user manually from the tenant DB, verify password,
+        // then log in using Auth::login() which doesn't need a DB call.
+        $userRecord = \App\Models\User::where('email', $request->input('email'))->first();
+
+        if (!$userRecord || !\Illuminate\Support\Facades\Hash::check($request->input('password'), $userRecord->password)) {
             $this->resetDatabase();
             throw ValidationException::withMessages([
                 'email' => 'These credentials do not match our records.',
             ]);
         }
 
-        $user      = Auth::user();
+        // Log in the user directly — no DB query needed
+        Auth::login($userRecord, $request->boolean('remember'));
+
+        $user      = $userRecord;
         $loginRole = $request->input('login_role', 'superadmin');
 
         // Validate role matches selected tab
