@@ -112,8 +112,25 @@ return new class extends Migration
             });
         }
 
-        // programs — add missing columns
-        if (Schema::hasTable('programs')) {
+        // site_settings — add all missing columns that the app expects
+        if (Schema::hasTable('site_settings')) {
+            Schema::table('site_settings', function (Blueprint $table) {
+                $cols = ['tagline', 'hero_title', 'hero_subtitle', 'theme_colors',
+                         'contact_email', 'contact_phone', 'contact_address',
+                         'facebook_url', 'twitter_url', 'instagram_url', 'youtube_url'];
+                foreach ($cols as $col) {
+                    if (!Schema::hasColumn('site_settings', $col)) {
+                        if (in_array($col, ['hero_subtitle', 'contact_address'])) {
+                            $table->text($col)->nullable();
+                        } elseif (in_array($col, ['theme_colors'])) {
+                            $table->json($col)->nullable();
+                        } else {
+                            $table->string($col)->nullable();
+                        }
+                    }
+                }
+            });
+        }
             Schema::table('programs', function (Blueprint $table) {
                 if (!Schema::hasColumn('programs', 'code')) {
                     $table->string('code')->nullable();
