@@ -1104,6 +1104,45 @@ Route::middleware('tenant')->name('website.')->group(function () {
     Route::get('/website/portal',      [WebsiteController::class, 'portal'])->name('portal');
 });
 
+// ── Debug school login (temporary) ───────────────────────────────────────
+Route::post('/debug-school-login/{slug}', function(string $slug, \Illuminate\Http\Request $request) {
+    $out = [];
+
+    try {
+        $tenant = \App\Models\Tenant::where('slug', $slug)->orWhere('subdomain', $slug)->first();
+        if (!$tenant) return response()->json(['error' => 'Tenant not found']);
+        $out['tenant'] = $tenant->slug;
+
+        // Switch to tenant DB
+        \Illuminate\Support\Facades\DB::purge('tenant');
+        \Illuminate\Support\Facades\Config::set('database.connections.tenant', $tenant->dbConfig());
+        \Illuminate\Support\Facades\DB::setDefaultConnection('tenant');
+        $out['db_switched'] = true;
+
+        // Check if user exists
+        $email = $request->input('email', '');
+        $user  = \Illuminate\Support\Facades\DB::table('users')->where('email', $email)->first();
+        $out['user_found']  = $user ? true : false;
+        $out['user_role']   = $user->role ?? 'N/A';
+        $out['is_super']    = $user->is_super_admin ?? 'N/A';
+
+        // Try Auth::attempt
+        $attempted = \Illuminate\Support\Facades\Auth::attempt([
+            'email'    => $request->input('email'),
+            'password' => $request->input('password'),
+        ]);
+        $out['auth_attempt'] = $attempted;
+        $out['auth_user']    = $attempted ? \Illuminate\Support\Facades\Auth::user()?->email : null;
+        $out['default_conn'] = \Illuminate\Support\Facades\DB::getDefaultConnection();
+
+    } catch (\Throwable $e) {
+        $out['error'] = $e->getMessage();
+    }
+
+    \Illuminate\Support\Facades\DB::setDefaultConnection('pgsql');
+    return response()->json($out);
+})->name('debug.school.login');
+
 // ═══════════════════════════════════════════════════════════════════════════
 // SCHOOL SLUG-BASED LOGIN (Option A — single Render URL, multiple schools)
 // /school/{slug}        → redirects to school public website portal
