@@ -397,6 +397,12 @@ class TenantSetupController extends Controller
             'student_reports' => 'CREATE TABLE IF NOT EXISTS "student_reports" ("id" BIGSERIAL PRIMARY KEY, "student_id" BIGINT NOT NULL, "academic_session_id" BIGINT NULL, "conduct" VARCHAR(255) NULL, "attitude" VARCHAR(255) NULL, "class_teacher_remarks" TEXT NULL, "head_teacher_remarks" TEXT NULL, "created_at" TIMESTAMP NULL, "updated_at" TIMESTAMP NULL)',
             'student_report_attributes' => 'CREATE TABLE IF NOT EXISTS "student_report_attributes" ("id" BIGSERIAL PRIMARY KEY, "student_report_id" BIGINT NOT NULL, "attribute_definition_id" BIGINT NOT NULL, "value" VARCHAR(255) NULL, "created_at" TIMESTAMP NULL, "updated_at" TIMESTAMP NULL)',
 
+            // Term fee billing
+            'term_fee_bills' => 'CREATE TABLE IF NOT EXISTS "term_fee_bills" ("id" BIGSERIAL PRIMARY KEY, "student_id" BIGINT NOT NULL, "academic_session_id" BIGINT NOT NULL, "program_fee" DECIMAL(10,2) NOT NULL DEFAULT 0, "exam_fee" DECIMAL(10,2) NOT NULL DEFAULT 0, "other_fees" DECIMAL(10,2) NOT NULL DEFAULT 0, "other_fees_label" VARCHAR(255) NULL, "total_billed" DECIMAL(10,2) NOT NULL DEFAULT 0, "notes" TEXT NULL, "created_at" TIMESTAMP NULL, "updated_at" TIMESTAMP NULL)',
+
+            // Fee reminders log
+            'fee_reminders' => 'CREATE TABLE IF NOT EXISTS "fee_reminders" ("id" BIGSERIAL PRIMARY KEY, "student_id" BIGINT NOT NULL, "academic_session_id" BIGINT NULL, "channel" VARCHAR(50) NOT NULL, "recipient" VARCHAR(255) NOT NULL, "recipient_name" VARCHAR(255) NULL, "message" TEXT NOT NULL, "amount_owed" DECIMAL(10,2) NOT NULL DEFAULT 0, "status" VARCHAR(50) NOT NULL DEFAULT \'pending\', "error_message" TEXT NULL, "sent_by" VARCHAR(255) NULL, "sent_at" TIMESTAMP NULL, "created_at" TIMESTAMP NULL, "updated_at" TIMESTAMP NULL)',
+
             // Website tables
             'website_blog_posts' => 'CREATE TABLE IF NOT EXISTS "website_blog_posts" ("id" BIGSERIAL PRIMARY KEY, "title" VARCHAR(255) NOT NULL, "slug" VARCHAR(255) NOT NULL UNIQUE, "excerpt" TEXT NULL, "content" TEXT NULL, "featured_image_path" VARCHAR(255) NULL, "published" BOOLEAN NOT NULL DEFAULT FALSE, "published_at" TIMESTAMP NULL, "created_at" TIMESTAMP NULL, "updated_at" TIMESTAMP NULL)',
             'website_events' => 'CREATE TABLE IF NOT EXISTS "website_events" ("id" BIGSERIAL PRIMARY KEY, "title" VARCHAR(255) NOT NULL, "description" TEXT NULL, "date" DATE NOT NULL DEFAULT CURRENT_DATE, "time" VARCHAR(255) NULL, "location" VARCHAR(255) NULL, "image_path" VARCHAR(255) NULL, "is_published" BOOLEAN NOT NULL DEFAULT FALSE, "created_at" TIMESTAMP NULL, "updated_at" TIMESTAMP NULL)',
@@ -449,6 +455,13 @@ class TenantSetupController extends Controller
             // website tables — fix wrong column names from previous run
             "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='website_blog_posts' AND column_name='published') THEN ALTER TABLE website_blog_posts ADD COLUMN \"published\" BOOLEAN NOT NULL DEFAULT FALSE; END IF; END \$\$",
             "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='website_blog_posts' AND column_name='featured_image_path') THEN ALTER TABLE website_blog_posts ADD COLUMN \"featured_image_path\" VARCHAR(255) NULL; END IF; END \$\$",
+            // payments — add receipt_number, academic_session_id, payer info
+            "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='payments' AND column_name='receipt_number') THEN ALTER TABLE payments ADD COLUMN \"receipt_number\" VARCHAR(255) NULL; END IF; END \$\$",
+            "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='payments' AND column_name='academic_session_id') THEN ALTER TABLE payments ADD COLUMN \"academic_session_id\" BIGINT NULL; END IF; END \$\$",
+            "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='payments' AND column_name='payer_name') THEN ALTER TABLE payments ADD COLUMN \"payer_name\" VARCHAR(255) NULL; END IF; END \$\$",
+            "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='payments' AND column_name='payer_phone') THEN ALTER TABLE payments ADD COLUMN \"payer_phone\" VARCHAR(255) NULL; END IF; END \$\$",
+            "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='payments' AND column_name='receipt_path') THEN ALTER TABLE payments ADD COLUMN \"receipt_path\" VARCHAR(255) NULL; END IF; END \$\$",
+
             // website_events — fix wrong columns (model uses date, is_published, time)
             "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='website_events' AND column_name='date') THEN ALTER TABLE website_events ADD COLUMN \"date\" DATE NOT NULL DEFAULT CURRENT_DATE; END IF; END \$\$",
             "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='website_events' AND column_name='time') THEN ALTER TABLE website_events ADD COLUMN \"time\" VARCHAR(255) NULL; END IF; END \$\$",

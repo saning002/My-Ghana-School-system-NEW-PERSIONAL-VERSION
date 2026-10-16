@@ -583,6 +583,20 @@ Route::middleware(['role:admin', 'tenant'])->prefix('admin')->name('admin.')->gr
     Route::get('/subscription',  [\App\Http\Controllers\Admin\SubscriptionController::class, 'show'])->name('subscription.show');
     Route::get('/subscription/pay', [\App\Http\Controllers\Admin\SubscriptionController::class, 'pay'])->name('subscription.pay');
 
+    // ── Term Fee Ledger ────────────────────────────────────────────────────
+    Route::get('/fees/term-ledger',                [\App\Http\Controllers\Admin\TermFeeBillController::class, 'index'])->name('fees.term.index');
+    Route::get('/fees/term-ledger/{student}',      [\App\Http\Controllers\Admin\TermFeeBillController::class, 'studentHistory'])->name('fees.term.student-history');
+    Route::post('/fees/term-ledger/bulk-bill',     [\App\Http\Controllers\Admin\TermFeeBillController::class, 'bulkBill'])->name('fees.term.bulk-bill');
+    Route::post('/fees/term-ledger/bill',          [\App\Http\Controllers\Admin\TermFeeBillController::class, 'storeBill'])->name('fees.term.bill');
+    Route::post('/fees/term-ledger/payment',       [\App\Http\Controllers\Admin\TermFeeBillController::class, 'recordPayment'])->name('fees.term.payment');
+    Route::get('/fees/receipt/{paymentId}',        [\App\Http\Controllers\Admin\TermFeeBillController::class, 'receipt'])->name('fees.receipt');
+
+    // ── Fee Reminders ──────────────────────────────────────────────────────
+    Route::get('/fees/reminders',                  [\App\Http\Controllers\Admin\FeeReminderController::class, 'index'])->name('fees.reminders.index');
+    Route::get('/fees/reminders/preview',          [\App\Http\Controllers\Admin\FeeReminderController::class, 'preview'])->name('fees.reminders.preview');
+    Route::post('/fees/reminders/send',            [\App\Http\Controllers\Admin\FeeReminderController::class, 'send'])->name('fees.reminders.send');
+    Route::get('/fees/reminders/log',              [\App\Http\Controllers\Admin\FeeReminderController::class, 'log'])->name('fees.reminders.log');
+
     // Notifications
     Route::get('/notifications',                    [NotificationController::class, 'index'])->name('notifications.index');
     Route::post('/notifications',                   [NotificationController::class, 'store'])->name('notifications.store');
