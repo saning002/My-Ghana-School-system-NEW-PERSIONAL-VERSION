@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class MessagingCredit extends Model
 {
+    // Always use central DB — this table lives in the owner DB, not tenant DB
+    protected $connection = 'pgsql';
     protected $fillable = [
         'tenant_id', 'sms_credits', 'whatsapp_credits',
         'sms_used', 'whatsapp_used', 'last_topped_up_at',

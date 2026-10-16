@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class MessagingCreditPayment extends Model
 {
+    protected $connection = 'pgsql'; // central DB always
     protected $fillable = [
         'tenant_id', 'package_id', 'receipt_number', 'amount', 'currency',
         'sms_credits_added', 'whatsapp_credits_added', 'payment_method',

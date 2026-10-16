@@ -90,9 +90,16 @@ class FeeReminderService
         $summary = $this->feeService->getStudentTermSummary($student, $sessionId);
         $results = [];
 
-        // Get tenant credits from central DB
+        // Get tenant credits from central DB (always pgsql, never tenant DB)
         $tenantId = session('tenant_id');
-        $credits  = $tenantId ? \App\Models\MessagingCredit::forTenant($tenantId) : null;
+        $credits  = null;
+        if ($tenantId) {
+            try {
+                $credits = \App\Models\MessagingCredit::on('pgsql')->forTenant((int) $tenantId);
+            } catch (\Throwable $e) {
+                $credits = null;
+            }
+        }
 
         foreach ($channels as $channel) {
             // Check credits before sending

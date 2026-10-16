@@ -114,9 +114,17 @@
 
     {{-- Messaging Credits --}}
     @php
-        $tenantSlug = session('tenant_slug');
-        $msgTenant  = $tenantSlug ? \App\Models\Tenant::on('pgsql')->where('slug', $tenantSlug)->first() : null;
-        $msgCredits = $msgTenant ? \App\Models\MessagingCredit::forTenant($msgTenant->id) : null;
+        $msgCredits = null;
+        $msgTenant  = null;
+        try {
+            $tenantSlug = session('tenant_slug');
+            $msgTenant  = $tenantSlug
+                ? \App\Models\Tenant::on('pgsql')->where('slug', $tenantSlug)->first()
+                : null;
+            if ($msgTenant) {
+                $msgCredits = \App\Models\MessagingCredit::on('pgsql')->forTenant($msgTenant->id);
+            }
+        } catch (\Throwable $e) {}
     @endphp
     @if($msgTenant && $msgCredits)
     <div class="card border-0 shadow-sm mb-4" style="border-radius:16px;overflow:hidden;">
