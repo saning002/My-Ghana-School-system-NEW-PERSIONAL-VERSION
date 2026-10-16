@@ -152,5 +152,81 @@
                 </select>
             </div>
         </div>
+
+        {{-- Cloudinary --}}
+        <div class="owner-card mt-4">
+            <div class="card-header d-flex align-items-center gap-2">
+                <i class="fas fa-cloud" style="color:#3448c5;"></i> Cloudinary (Image Storage)
+            </div>
+            <div class="card-body">
+                <div class="form-text mb-3" style="font-size:0.8rem;">
+                    Each school gets their own Cloudinary account for storing student photos and website images.
+                    Get credentials at <a href="https://cloudinary.com" target="_blank">cloudinary.com</a>.
+                </div>
+                <div class="mb-2">
+                    <label class="form-label fw-semibold" style="font-size:0.85rem;">Cloud Name</label>
+                    <input type="text" name="cloudinary_cloud_name" class="form-control form-control-sm"
+                        value="{{ old('cloudinary_cloud_name', $t->cloudinary_cloud_name ?? '') }}"
+                        placeholder="e.g. my-school-cloud">
+                </div>
+                <div class="mb-2">
+                    <label class="form-label fw-semibold" style="font-size:0.85rem;">API Key</label>
+                    <input type="text" name="cloudinary_api_key" class="form-control form-control-sm"
+                        value="{{ old('cloudinary_api_key', $t->cloudinary_api_key ?? '') }}"
+                        placeholder="123456789012345">
+                </div>
+                <div class="mb-0">
+                    <label class="form-label fw-semibold" style="font-size:0.85rem;">API Secret</label>
+                    <input type="password" name="cloudinary_api_secret" class="form-control form-control-sm"
+                        placeholder="{{ $t ? 'Leave blank to keep existing' : 'Enter API Secret' }}"
+                        autocomplete="new-password">
+                </div>
+            </div>
+        </div>
+
+        {{-- Backblaze B2 --}}
+        <div class="owner-card mt-4">
+            <div class="card-header d-flex align-items-center gap-2">
+                <i class="fas fa-hdd" style="color:#e87722;"></i> Backblaze B2 (File Storage)
+            </div>
+            <div class="card-body">
+                <div class="form-text mb-3" style="font-size:0.8rem;">
+                    Optional — for storing documents, exam files and backups.
+                    Get credentials at <a href="https://www.backblaze.com/b2" target="_blank">backblaze.com/b2</a>.
+                </div>
+                <div class="row g-2">
+                    <div class="col-6">
+                        <label class="form-label fw-semibold" style="font-size:0.85rem;">Key ID</label>
+                        <input type="text" name="b2_key_id" class="form-control form-control-sm"
+                            value="{{ old('b2_key_id', $t->b2_key_id ?? '') }}"
+                            placeholder="Application Key ID">
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label fw-semibold" style="font-size:0.85rem;">Application Key</label>
+                        <input type="password" name="b2_application_key" class="form-control form-control-sm"
+                            placeholder="{{ $t ? 'Leave blank to keep' : 'Application Key' }}"
+                            autocomplete="new-password">
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label fw-semibold" style="font-size:0.85rem;">Bucket Name</label>
+                        <input type="text" name="b2_bucket_name" class="form-control form-control-sm"
+                            value="{{ old('b2_bucket_name', $t->b2_bucket_name ?? '') }}"
+                            placeholder="my-school-bucket">
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label fw-semibold" style="font-size:0.85rem;">Bucket ID</label>
+                        <input type="text" name="b2_bucket_id" class="form-control form-control-sm"
+                            value="{{ old('b2_bucket_id', $t->b2_bucket_id ?? '') }}"
+                            placeholder="Bucket ID">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-semibold" style="font-size:0.85rem;">Endpoint URL</label>
+                        <input type="text" name="b2_endpoint" class="form-control form-control-sm"
+                            value="{{ old('b2_endpoint', $t->b2_endpoint ?? '') }}"
+                            placeholder="https://s3.us-west-004.backblazeb2.com">
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

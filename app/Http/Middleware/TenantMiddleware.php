@@ -115,6 +115,30 @@ class TenantMiddleware
 
         // Set tenant as the default connection for this request
         DB::setDefaultConnection('tenant');
+
+        // Configure school's own Cloudinary if credentials are set
+        if ($tenant->cloudinary_cloud_name && $tenant->cloudinary_api_key && $tenant->cloudinary_api_secret) {
+            Config::set('cloudinary.cloud_url',
+                "cloudinary://{$tenant->cloudinary_api_key}:{$tenant->cloudinary_api_secret}@{$tenant->cloudinary_cloud_name}"
+            );
+            Config::set('cloudinary.cloud_name', $tenant->cloudinary_cloud_name);
+            Config::set('cloudinary.api_key',    $tenant->cloudinary_api_key);
+            Config::set('cloudinary.api_secret', $tenant->cloudinary_api_secret);
+        }
+
+        // Configure school's own Backblaze B2 if credentials are set
+        if ($tenant->b2_key_id && $tenant->b2_application_key && $tenant->b2_bucket_name) {
+            Config::set('filesystems.disks.b2', [
+                'driver'   => 's3',
+                'key'      => $tenant->b2_key_id,
+                'secret'   => $tenant->b2_application_key,
+                'region'   => 'us-west-004',
+                'bucket'   => $tenant->b2_bucket_name,
+                'url'      => $tenant->b2_endpoint ?? '',
+                'endpoint' => $tenant->b2_endpoint ?? '',
+            ]);
+            Config::set('filesystems.default', 'b2');
+        }
     }
 
     /**

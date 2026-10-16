@@ -15,6 +15,10 @@ class Tenant extends Model
         'db_host', 'db_port', 'db_name', 'db_username', 'db_password',
         'plan_id', 'status', 'trial_ends_at', 'subscription_ends_at',
         'backup_frequency', 'last_backup_at', 'notes',
+        // Cloudinary per school
+        'cloudinary_cloud_name', 'cloudinary_api_key', 'cloudinary_api_secret',
+        // Backblaze B2 per school
+        'b2_key_id', 'b2_application_key', 'b2_bucket_name', 'b2_bucket_id', 'b2_endpoint',
     ];
 
     protected $casts = [

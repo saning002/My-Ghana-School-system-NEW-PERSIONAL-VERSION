@@ -443,6 +443,8 @@
                         'Backup Frequency'   => ucfirst($tenant->backup_frequency ?? '—'),
                         'Trial Ends'         => $tenant->trial_ends_at?->format('d M Y') ?? '—',
                         'Subscription Ends'  => $tenant->subscription_ends_at?->format('d M Y') ?? '—',
+                        'Cloudinary'         => $tenant->cloudinary_cloud_name ? '✅ ' . $tenant->cloudinary_cloud_name : '❌ Not configured',
+                        'Backblaze B2'       => $tenant->b2_bucket_name ? '✅ ' . $tenant->b2_bucket_name : '❌ Not configured',
                         'Created'            => $tenant->created_at->format('d M Y'),
                         'Notes'              => $tenant->notes ?? '—',
                     ] as $label => $value)

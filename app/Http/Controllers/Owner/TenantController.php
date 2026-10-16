@@ -61,6 +61,15 @@ class TenantController extends Controller
             'db_password'   => 'required|string|max:500',
             'backup_frequency' => 'required|in:daily,weekly,monthly,off',
             'notes'         => 'nullable|string',
+            // Storage credentials
+            'cloudinary_cloud_name'  => 'nullable|string|max:255',
+            'cloudinary_api_key'     => 'nullable|string|max:255',
+            'cloudinary_api_secret'  => 'nullable|string|max:500',
+            'b2_key_id'              => 'nullable|string|max:255',
+            'b2_application_key'     => 'nullable|string|max:500',
+            'b2_bucket_name'         => 'nullable|string|max:255',
+            'b2_bucket_id'           => 'nullable|string|max:255',
+            'b2_endpoint'            => 'nullable|string|max:255',
         ]);
 
         $validated['slug'] = Str::slug($validated['subdomain']);
@@ -174,6 +183,14 @@ class TenantController extends Controller
             'db_password'   => 'nullable|string|max:500',
             'backup_frequency' => 'required|in:daily,weekly,monthly,off',
             'notes'         => 'nullable|string',
+            'cloudinary_cloud_name'  => 'nullable|string|max:255',
+            'cloudinary_api_key'     => 'nullable|string|max:255',
+            'cloudinary_api_secret'  => 'nullable|string|max:500',
+            'b2_key_id'              => 'nullable|string|max:255',
+            'b2_application_key'     => 'nullable|string|max:500',
+            'b2_bucket_name'         => 'nullable|string|max:255',
+            'b2_bucket_id'           => 'nullable|string|max:255',
+            'b2_endpoint'            => 'nullable|string|max:255',
         ]);
 
         $validated['slug'] = Str::slug($validated['subdomain']);
