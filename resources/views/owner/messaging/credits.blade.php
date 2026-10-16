@@ -32,18 +32,18 @@
                 </a>
             </td>
             <td>
-                <span style="font-weight:700;color:{{ ($credit->sms_credits ?? 0) > 0 ? '#16a34a' : '#ef4444' }};">
-                    {{ number_format($credit->sms_credits ?? 0) }}
+                <span style="font-weight:700;color:{{ ($credit?->sms_credits ?? 0) > 0 ? '#16a34a' : '#ef4444' }};">
+                    {{ number_format($credit?->sms_credits ?? 0) }}
                 </span>
             </td>
             <td>
-                <span style="font-weight:700;color:{{ ($credit->whatsapp_credits ?? 0) > 0 ? '#16a34a' : '#ef4444' }};">
-                    {{ number_format($credit->whatsapp_credits ?? 0) }}
+                <span style="font-weight:700;color:{{ ($credit?->whatsapp_credits ?? 0) > 0 ? '#16a34a' : '#ef4444' }};">
+                    {{ number_format($credit?->whatsapp_credits ?? 0) }}
                 </span>
             </td>
-            <td><small class="text-muted">{{ number_format($credit->sms_used ?? 0) }}</small></td>
-            <td><small class="text-muted">{{ number_format($credit->whatsapp_used ?? 0) }}</small></td>
-            <td><small class="text-muted">{{ $credit->last_topped_up_at?->format('d M Y') ?? '—' }}</small></td>
+            <td><small class="text-muted">{{ number_format($credit?->sms_used ?? 0) }}</small></td>
+            <td><small class="text-muted">{{ number_format($credit?->whatsapp_used ?? 0) }}</small></td>
+            <td><small class="text-muted">{{ $credit?->last_topped_up_at?->format('d M Y') ?? '—' }}</small></td>
             <td>
                 <button class="btn btn-sm btn-owner-primary"
                     data-bs-toggle="modal"
