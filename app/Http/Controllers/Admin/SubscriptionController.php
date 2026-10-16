@@ -27,7 +27,19 @@ class SubscriptionController extends Controller
 
         $tenant->load('plan');
 
-        return view('admin.subscription.show', compact('tenant'));
+        // Get messaging credits from central DB
+        $msgCredits = null;
+        try {
+            $msgCredits = \App\Models\MessagingCredit::on('pgsql')->forTenant($tenant->id);
+        } catch (\Throwable $e) {}
+
+        // Get messaging packages
+        $msgPackages = collect();
+        try {
+            $msgPackages = \App\Models\MessagingCreditPackage::on('pgsql')->active()->get();
+        } catch (\Throwable $e) {}
+
+        return view('admin.subscription.show', compact('tenant', 'msgCredits', 'msgPackages'));
     }
 
     /**
