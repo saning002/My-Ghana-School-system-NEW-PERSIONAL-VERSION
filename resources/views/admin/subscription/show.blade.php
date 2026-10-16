@@ -112,10 +112,55 @@
         </div>
     </div>
 
+    {{-- Messaging Credits --}}
+    @php
+        $tenantSlug = session('tenant_slug');
+        $msgTenant  = $tenantSlug ? \App\Models\Tenant::on('pgsql')->where('slug', $tenantSlug)->first() : null;
+        $msgCredits = $msgTenant ? \App\Models\MessagingCredit::forTenant($msgTenant->id) : null;
+    @endphp
+    @if($msgTenant && $msgCredits)
+    <div class="card border-0 shadow-sm mb-4" style="border-radius:16px;overflow:hidden;">
+        <div class="card-header bg-white py-3" style="border-bottom:1px solid #f1f5f9;">
+            <strong><i class="fas fa-sms me-2"></i> Messaging Credits</strong>
+        </div>
+        <div class="card-body">
+            <div class="row g-3 mb-3">
+                <div class="col-6">
+                    <div style="background:#eff6ff;border-radius:10px;padding:1rem;text-align:center;">
+                        <div style="font-size:2rem;font-weight:800;color:#3b82f6;">{{ number_format($msgCredits->sms_credits) }}</div>
+                        <div style="font-size:0.75rem;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">SMS Credits</div>
+                        @if($msgCredits->sms_credits == 0)
+                            <small style="color:#ef4444;">No credits remaining</small>
+                        @elseif($msgCredits->sms_credits < 20)
+                            <small style="color:#f59e0b;">Running low</small>
+                        @endif
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div style="background:#f0fdf4;border-radius:10px;padding:1rem;text-align:center;">
+                        <div style="font-size:2rem;font-weight:800;color:#25d366;">{{ number_format($msgCredits->whatsapp_credits) }}</div>
+                        <div style="font-size:0.75rem;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">WhatsApp Credits</div>
+                        @if($msgCredits->whatsapp_credits == 0)
+                            <small style="color:#ef4444;">No credits remaining</small>
+                        @elseif($msgCredits->whatsapp_credits < 10)
+                            <small style="color:#f59e0b;">Running low</small>
+                        @endif
+                    </div>
+                </div>
+            </div>
+            <p style="font-size:0.85rem;color:#64748b;">Credits are used when sending fee reminders to parents via SMS or WhatsApp.</p>
+            <a href="{{ route('paystack.messaging.buy', $msgTenant) }}"
+               class="btn fw-bold w-100" style="background:linear-gradient(135deg,#1a1a2e,#0f3460);color:#fff;border-radius:10px;">
+                <i class="fas fa-plus me-2"></i> Buy More Credits
+            </a>
+        </div>
+    </div>
+    @endif
+
     {{-- Payment history --}}
     <div class="card border-0 shadow-sm" style="border-radius:16px;overflow:hidden;">
         <div class="card-header bg-white py-3" style="border-bottom:1px solid #f1f5f9;">
-            <strong><i class="fas fa-receipt me-2"></i> Recent Payments</strong>
+            <strong><i class="fas fa-receipt me-2"></i> Recent Subscription Payments</strong>
         </div>
         <div class="card-body p-0">
             @php

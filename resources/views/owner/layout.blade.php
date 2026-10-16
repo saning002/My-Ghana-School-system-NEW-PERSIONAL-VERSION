@@ -128,6 +128,9 @@
         <a href="{{ route('owner.payments.index') }}" class="{{ request()->routeIs('owner.payments.*') ? 'active' : '' }}">
             <i class="fas fa-money-bill-wave"></i> Payments
         </a>
+        <a href="{{ route('owner.messaging.packages') }}" class="{{ request()->routeIs('owner.messaging.*') ? 'active' : '' }}">
+            <i class="fas fa-sms"></i> Messaging Credits
+        </a>
 
         <div class="nav-section">System</div>
         <a href="{{ route('owner.backups.index') }}" class="{{ request()->routeIs('owner.backups.*') ? 'active' : '' }}">

@@ -1316,6 +1316,15 @@ Route::prefix('owner')->name('owner.')->group(function () {
         // Audit Logs
         Route::get('/audit-logs', [\App\Http\Controllers\Owner\AuditLogController::class, 'index'])->name('audit-logs.index');
 
+        // Messaging Credits
+        Route::get('/messaging/packages',                    [\App\Http\Controllers\Owner\MessagingCreditController::class, 'packages'])->name('messaging.packages');
+        Route::post('/messaging/packages',                   [\App\Http\Controllers\Owner\MessagingCreditController::class, 'storePackage'])->name('messaging.packages.store');
+        Route::put('/messaging/packages/{package}',          [\App\Http\Controllers\Owner\MessagingCreditController::class, 'updatePackage'])->name('messaging.packages.update');
+        Route::delete('/messaging/packages/{package}',       [\App\Http\Controllers\Owner\MessagingCreditController::class, 'destroyPackage'])->name('messaging.packages.destroy');
+        Route::get('/messaging/credits',                     [\App\Http\Controllers\Owner\MessagingCreditController::class, 'allCredits'])->name('messaging.credits');
+        Route::post('/messaging/credits/{tenant}',           [\App\Http\Controllers\Owner\MessagingCreditController::class, 'addCredits'])->name('messaging.add-credits');
+        Route::get('/messaging/receipts/{payment}',          [\App\Http\Controllers\Owner\MessagingCreditController::class, 'receipt'])->name('messaging.receipt');
+
         // Owner Profile
         Route::get('/profile',  [\App\Http\Controllers\Owner\ProfileController::class, 'edit'])->name('profile.edit');
         Route::post('/profile', [\App\Http\Controllers\Owner\ProfileController::class, 'update'])->name('profile.update');
@@ -1348,3 +1357,10 @@ Route::prefix('portal')->name('portal.fee.')->middleware(['portal.auth', 'tenant
 
 // Fee callback — no middleware (Paystack redirects here after payment)
 Route::get('/paystack/fee/callback', [\App\Http\Controllers\Student\FeePaymentController::class, 'callback'])->name('paystack.fee.callback');
+
+// ── Messaging credits purchase (school buys SMS/WA credits via Paystack) ──
+Route::prefix('pay-credits')->name('paystack.messaging.')->group(function () {
+    Route::get('/{tenant}',         [\App\Http\Controllers\Owner\MessagingCreditController::class, 'buyCredits'])->name('buy');
+    Route::post('/{tenant}',        [\App\Http\Controllers\Owner\MessagingCreditController::class, 'initializePurchase'])->name('initialize');
+    Route::get('/callback/confirm', [\App\Http\Controllers\Owner\MessagingCreditController::class, 'callback'])->name('callback');
+});

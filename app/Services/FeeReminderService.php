@@ -81,6 +81,7 @@ class FeeReminderService
 
     /**
      * Send reminder to one student via specified channels.
+     * Checks credits before sending, deducts after success.
      * Returns array of results per channel.
      */
     public function sendReminder(Student $student, int $sessionId, array $channels, string $sentBy = 'Admin'): array
@@ -89,7 +90,25 @@ class FeeReminderService
         $summary = $this->feeService->getStudentTermSummary($student, $sessionId);
         $results = [];
 
+        // Get tenant credits from central DB
+        $tenantId = session('tenant_id');
+        $credits  = $tenantId ? \App\Models\MessagingCredit::forTenant($tenantId) : null;
+
         foreach ($channels as $channel) {
+            // Check credits before sending
+            if ($credits) {
+                if ($channel === 'sms' && !$credits->hasSmsCredits()) {
+                    $results[$channel] = ['status' => 'failed', 'error' => 'Insufficient SMS credits. Please top up.'];
+                    $this->logReminder($student, $sessionId, $channel, 'N/A', $message, $summary['balance'], 'failed', 'Insufficient SMS credits', $sentBy);
+                    continue;
+                }
+                if ($channel === 'whatsapp' && !$credits->hasWhatsappCredits()) {
+                    $results[$channel] = ['status' => 'failed', 'error' => 'Insufficient WhatsApp credits. Please top up.'];
+                    $this->logReminder($student, $sessionId, $channel, 'N/A', $message, $summary['balance'], 'failed', 'Insufficient WhatsApp credits', $sentBy);
+                    continue;
+                }
+            }
+
             $recipient = match($channel) {
                 'email'     => $student->user?->email ?? $student->guardian_email ?? null,
                 'sms'       => $student->user?->phone ?? $student->guardian_phone ?? $student->phone ?? null,
@@ -109,6 +128,12 @@ class FeeReminderService
                 'whatsapp' => $this->sendWhatsApp($recipient, $message),
                 default    => ['status' => 'failed', 'error' => 'Unknown channel'],
             };
+
+            // Deduct credits on success
+            if ($result['status'] === 'sent' && $credits) {
+                if ($channel === 'sms')      $credits->deductSms();
+                if ($channel === 'whatsapp') $credits->deductWhatsapp();
+            }
 
             $results[$channel] = $result;
             $this->logReminder(

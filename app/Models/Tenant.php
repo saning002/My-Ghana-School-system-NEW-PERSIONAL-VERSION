@@ -79,6 +79,16 @@ class Tenant extends Model
         return $this->hasMany(Backup::class);
     }
 
+    public function messagingCredit()
+    {
+        return $this->hasOne(\App\Models\MessagingCredit::class);
+    }
+
+    public function messagingCreditPayments()
+    {
+        return $this->hasMany(\App\Models\MessagingCreditPayment::class);
+    }
+
     public function auditLogs()
     {
         return $this->hasMany(AuditLog::class);
