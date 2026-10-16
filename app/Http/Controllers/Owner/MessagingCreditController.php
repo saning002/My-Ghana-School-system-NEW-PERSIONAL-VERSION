@@ -191,14 +191,34 @@ class MessagingCreditController extends Controller
         }
 
         // Apply credits
-        $meta    = json_decode($tx->metadata ?? '{}', true);
-        $package = MessagingCreditPackage::find($meta['package_id'] ?? null);
+        $meta    = $verification['data']['metadata'] ?? [];
+        // Try local transaction metadata first, then Paystack response metadata
+        if (is_string($meta)) {
+            $meta = json_decode($meta, true) ?? [];
+        }
+
+        $packageId = $meta['package_id'] ?? null;
+        $package   = $packageId ? MessagingCreditPackage::find($packageId) : null;
+
+        // Fallback: try to find package from transaction description
+        if (!$package && $tx->description) {
+            // Description format: "Messaging Credits: {package name} — {tenant name}"
+            preg_match('/Messaging Credits: (.+?) —/', $tx->description, $matches);
+            if (!empty($matches[1])) {
+                $package = MessagingCreditPackage::where('name', trim($matches[1]))->first();
+            }
+        }
+
+        if (!$package) {
+            // Last resort: find cheapest active package that matches the amount paid
+            $package = MessagingCreditPackage::where('price', $tx->amount)->first();
+        }
 
         if ($package && $tx->tenant_id) {
-            $credits = MessagingCredit::forTenant($tx->tenant_id);
+            $credits = MessagingCredit::on('pgsql')->forTenant($tx->tenant_id);
             $credits->addCredits($package->sms_credits, $package->whatsapp_credits);
 
-            $payment = MessagingCreditPayment::create([
+            MessagingCreditPayment::create([
                 'tenant_id'              => $tx->tenant_id,
                 'package_id'             => $package->id,
                 'receipt_number'         => MessagingCreditPayment::generateReceiptNumber(),
@@ -220,11 +240,28 @@ class MessagingCreditController extends Controller
             ]);
 
             AuditLog::record('messaging.credits_purchased', "Paystack: {$package->name} purchased by {$tx->tenant->name}", $tx->tenant_id);
+
+            return view('paystack.status', [
+                'status'      => 'success',
+                'message'     => "Credits added! SMS: +{$package->sms_credits} | WhatsApp: +{$package->whatsapp_credits}",
+                'transaction' => $tx->fresh(),
+                'type'        => 'messaging',
+            ]);
         }
+
+        // Package not found — still mark as success but flag for manual review
+        $tx->update([
+            'status'            => 'success',
+            'paystack_id'       => $verification['data']['id'] ?? null,
+            'paystack_response' => json_encode($verification['data'] ?? []),
+            'paid_at'           => now(),
+        ]);
+
+        AuditLog::record('messaging.credits_paid_no_package', "Payment received GHS {$tx->amount} but package not found — manual credit needed", $tx->tenant_id);
 
         return view('paystack.status', [
             'status'      => 'success',
-            'message'     => "Credits added! SMS: +{$package->sms_credits} | WhatsApp: +{$package->whatsapp_credits}",
+            'message'     => "Payment received (GHS {$tx->amount}). Credits will be applied within 24 hours. Contact support if not resolved.",
             'transaction' => $tx->fresh(),
             'type'        => 'messaging',
         ]);

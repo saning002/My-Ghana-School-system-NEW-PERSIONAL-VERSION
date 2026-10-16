@@ -9,7 +9,7 @@ class PaystackTransaction extends Model
     protected $fillable = [
         'type', 'tenant_id', 'student_id', 'student_name',
         'payer_email', 'payer_name', 'reference',
-        'amount', 'currency', 'months_paid', 'description',
+        'amount', 'currency', 'months_paid', 'description', 'metadata',
         'status', 'paystack_id', 'channel', 'paystack_response',
         'owner_payment_id', 'school_payment_id', 'paid_at',
     ];
