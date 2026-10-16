@@ -13,47 +13,22 @@ class User extends Authenticatable
 
     /**
      * Dynamically resolve the DB connection.
-     * If a tenant session exists and the tenant connection is configured,
-     * use it. Otherwise fall back to default.
+     * Uses the tenant connection if TenantMiddleware has already configured it.
      * This ensures Auth::user() always loads from the correct school DB.
+     * No extra DB queries — just checks the current config state.
      */
     public function getConnectionName()
     {
-        // If tenant connection is already active, use it
+        // If TenantMiddleware already switched to tenant DB, use it
         $default = \Illuminate\Support\Facades\DB::getDefaultConnection();
         if ($default === 'tenant') {
             return 'tenant';
         }
 
-        // Check session for tenant slug and switch connection
-        $slug = session('tenant_slug');
-        if ($slug) {
-            try {
-                $tenant = \Illuminate\Support\Facades\DB::connection('pgsql')
-                    ->table('tenants')
-                    ->where('slug', $slug)
-                    ->whereNull('deleted_at')
-                    ->first();
-
-                if ($tenant) {
-                    \Illuminate\Support\Facades\DB::purge('tenant');
-                    \Illuminate\Support\Facades\Config::set('database.connections.tenant', [
-                        'driver'   => 'pgsql',
-                        'host'     => str_replace('-pooler', '', $tenant->db_host),
-                        'port'     => $tenant->db_port ?: '5432',
-                        'database' => $tenant->db_name,
-                        'username' => $tenant->db_username,
-                        'password' => \Illuminate\Support\Facades\Crypt::decryptString($tenant->db_password),
-                        'charset'  => 'utf8',
-                        'prefix'   => '',
-                        'schema'   => 'public',
-                        'sslmode'  => 'require',
-                    ]);
-                    return 'tenant';
-                }
-            } catch (\Throwable $e) {
-                // Fall through to default
-            }
+        // Check if tenant connection is configured (has a database set)
+        $tenantDb = config('database.connections.tenant.database', '');
+        if (!empty($tenantDb) && session()->has('tenant_slug')) {
+            return 'tenant';
         }
 
         return $this->connection ?? config('database.default');

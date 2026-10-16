@@ -38,11 +38,17 @@ class WebsiteController extends Controller
     public function home()
     {
         $site         = $this->site();
-        $programs     = WebsiteProgram::active()->take(4)->get();
-        $testimonials = WebsiteTestimonial::active()->inRandomOrder()->take(6)->get();
-        $posts        = WebsiteBlogPost::published()->take(3)->get();
-        $staff        = WebsiteStaffMember::take(6)->get();
-        $events       = WebsiteEvent::published()->upcoming()->take(6)->get();
+        $programs     = collect();
+        $testimonials = collect();
+        $posts        = collect();
+        $staff        = collect();
+        $events       = collect();
+
+        try { $programs     = WebsiteProgram::active()->take(4)->get(); }     catch (\Throwable $e) {}
+        try { $testimonials = WebsiteTestimonial::active()->inRandomOrder()->take(6)->get(); } catch (\Throwable $e) {}
+        try { $posts        = WebsiteBlogPost::published()->take(3)->get(); } catch (\Throwable $e) {}
+        try { $staff        = WebsiteStaffMember::take(6)->get(); }           catch (\Throwable $e) {}
+        try { $events       = WebsiteEvent::published()->upcoming()->take(6)->get(); } catch (\Throwable $e) {}
 
         return view('website.home', compact('site','programs','testimonials','posts','staff','events'));
     }
@@ -51,41 +57,34 @@ class WebsiteController extends Controller
     public function about()
     {
         $site  = $this->site();
-        $staff = WebsiteStaffMember::all();
+        $staff = collect();
+        try { $staff = WebsiteStaffMember::all(); } catch (\Throwable $e) {}
         return view('website.about', compact('site','staff'));
     }
 
     // ── ACADEMICS ─────────────────────────────────────────────────────────
     public function academics()
     {
-        $site = $this->site();
+        $site     = $this->site();
+        $programs = collect();
 
-        // Primary source: website_programs (admin-managed, has full card data)
-        $programs = WebsiteProgram::active()->orderBy('order')->orderBy('name')->get();
+        try {
+            $programs = WebsiteProgram::active()->get();
+        } catch (\Throwable $e) {}
 
-        // Fallback: pull from the school's actual programs table if website_programs is empty
+        // Fallback: pull from school programs table if website_programs is empty or errored
         if ($programs->isEmpty()) {
             try {
-                $schoolPrograms = \App\Models\Program::orderBy('sequence')->get();
-                $programs = $schoolPrograms->map(fn($p) => (object)[
-                    'id'          => $p->id,
-                    'name'        => $p->name,
-                    'level'       => strtolower(str_replace(' ', '_', $p->name)),
-                    'age_range'   => null,
-                    'description' => $p->requirements
-                        ? $p->requirements
-                        : $p->name . ' — a comprehensive program designed to equip students with the knowledge, skills, and character needed for excellence.',
-                    'curriculum'  => $p->duration ? 'Duration: ' . $p->duration : null,
-                    'schedule'    => null,
-                    'icon'        => '🎓',
-                    'color'       => 'indigo',
-                    'image_path'  => null,
-                    'features'    => null,
-                    'highlights'  => null,
-                ]);
-            } catch (\Throwable $e) {
-                $programs = collect();
-            }
+                $programs = \App\Models\Program::orderBy('sequence')->get()
+                    ->map(fn($p) => (object)[
+                        'id' => $p->id, 'name' => $p->name,
+                        'level' => null, 'age_range' => null,
+                        'description' => $p->name . ' program.',
+                        'curriculum' => null, 'schedule' => null,
+                        'icon' => '🎓', 'color' => 'indigo',
+                        'image_path' => null, 'features' => null, 'highlights' => null,
+                    ]);
+            } catch (\Throwable $e) {}
         }
 
         return view('website.academics', compact('site', 'programs'));
@@ -102,7 +101,8 @@ class WebsiteController extends Controller
     public function applyForm()
     {
         $site     = $this->site();
-        $programs = WebsiteProgram::active()->get();
+        $programs = collect();
+        try { $programs = WebsiteProgram::active()->get(); } catch (\Throwable $e) {}
         return view('website.apply', compact('site','programs'));
     }
 
@@ -134,15 +134,17 @@ class WebsiteController extends Controller
     public function gallery(Request $request)
     {
         $site       = $this->site();
-        $categories = WebsiteGalleryCategory::withCount('images')->get();
-        $query      = WebsiteGalleryImage::with('category');
-
-        if ($request->filled('category')) {
-            $cat = WebsiteGalleryCategory::where('slug', $request->category)->first();
-            if ($cat) $query->where('category_id', $cat->id);
-        }
-
-        $images = $query->paginate(18);
+        $categories = collect();
+        $images     = new \Illuminate\Pagination\LengthAwarePaginator(collect(), 0, 18);
+        try {
+            $categories = WebsiteGalleryCategory::withCount('images')->get();
+            $query      = WebsiteGalleryImage::with('category');
+            if ($request->filled('category')) {
+                $cat = WebsiteGalleryCategory::where('slug', $request->category)->first();
+                if ($cat) $query->where('category_id', $cat->id);
+            }
+            $images = $query->paginate(18);
+        } catch (\Throwable $e) {}
         return view('website.gallery', compact('site','categories','images'));
     }
 
@@ -150,8 +152,10 @@ class WebsiteController extends Controller
     public function events()
     {
         $site     = $this->site();
-        $upcoming = WebsiteEvent::published()->upcoming()->get();
-        $past     = WebsiteEvent::published()->past()->take(6)->get();
+        $upcoming = collect();
+        $past     = collect();
+        try { $upcoming = WebsiteEvent::published()->upcoming()->get(); } catch (\Throwable $e) {}
+        try { $past     = WebsiteEvent::published()->past()->take(6)->get(); } catch (\Throwable $e) {}
         return view('website.events', compact('site','upcoming','past'));
     }
 
@@ -159,15 +163,24 @@ class WebsiteController extends Controller
     public function blog()
     {
         $site  = $this->site();
-        $posts = WebsiteBlogPost::published()->paginate(9);
+        $posts = new \Illuminate\Pagination\LengthAwarePaginator(collect(), 0, 9);
+        try { $posts = WebsiteBlogPost::published()->paginate(9); } catch (\Throwable $e) {}
         return view('website.blog', compact('site','posts'));
     }
 
     public function blogDetail(string $slug)
     {
-        $site         = $this->site();
-        $post         = WebsiteBlogPost::published()->where('slug', $slug)->firstOrFail();
-        $recentPosts  = WebsiteBlogPost::published()->where('id','!=',$post->id)->take(4)->get();
+        $site        = $this->site();
+        $post        = null;
+        $recentPosts = collect();
+        try {
+            $post        = WebsiteBlogPost::published()->where('slug', $slug)->firstOrFail();
+            $recentPosts = WebsiteBlogPost::published()->where('id','!=',$post->id)->take(4)->get();
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            abort(404);
+        } catch (\Throwable $e) {
+            abort(404);
+        }
         return view('website.blog-detail', compact('site','post','recentPosts'));
     }
 
@@ -175,7 +188,8 @@ class WebsiteController extends Controller
     public function staff()
     {
         $site  = $this->site();
-        $staff = WebsiteStaffMember::all();
+        $staff = collect();
+        try { $staff = WebsiteStaffMember::all(); } catch (\Throwable $e) {}
         return view('website.staff', compact('site','staff'));
     }
 
