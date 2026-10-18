@@ -56,25 +56,47 @@
 
 {{-- Revenue Cards --}}
 <div class="row g-3 mb-4">
-    <div class="col-md-6">
+    <div class="col-md-3">
         <div class="stat-card d-flex align-items-center gap-3">
             <div class="stat-icon" style="background:#fdf4ff;color:#a855f7;font-size:1.5rem;width:56px;height:56px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                 <i class="fas fa-chart-line"></i>
             </div>
             <div>
-                <div class="stat-value" style="font-size:1.4rem;">GHS {{ number_format($revenueThisMonth, 2) }}</div>
+                <div class="stat-value" style="font-size:1.2rem;">GHS {{ number_format($revenueThisMonth, 2) }}</div>
                 <div class="stat-label">Revenue This Month</div>
             </div>
         </div>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-3">
         <div class="stat-card d-flex align-items-center gap-3">
             <div class="stat-icon" style="background:#ecfdf5;color:#10b981;font-size:1.5rem;width:56px;height:56px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                 <i class="fas fa-coins"></i>
             </div>
             <div>
-                <div class="stat-value" style="font-size:1.4rem;">GHS {{ number_format($revenueTotal, 2) }}</div>
+                <div class="stat-value" style="font-size:1.2rem;">GHS {{ number_format($revenueTotal, 2) }}</div>
                 <div class="stat-label">Total Revenue (All Time)</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card d-flex align-items-center gap-3">
+            <div class="stat-icon" style="background:#eff6ff;color:#3b82f6;font-size:1.5rem;width:56px;height:56px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <i class="fas fa-calendar-check"></i>
+            </div>
+            <div>
+                <div class="stat-value" style="font-size:1.2rem;">GHS {{ number_format($subscriptionRevenueTotal, 2) }}</div>
+                <div class="stat-label">Subscriptions (All Time)</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card d-flex align-items-center gap-3">
+            <div class="stat-icon" style="background:#fef3c7;color:#d97706;font-size:1.5rem;width:56px;height:56px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <i class="fas fa-sms"></i>
+            </div>
+            <div>
+                <div class="stat-value" style="font-size:1.2rem;">GHS {{ number_format($messagingRevenueTotal, 2) }}</div>
+                <div class="stat-label">Messaging Credits (All Time)</div>
             </div>
         </div>
     </div>
@@ -148,17 +170,35 @@
                 <a href="{{ route('owner.payments.index') }}" class="btn btn-sm btn-outline-secondary" style="font-size:0.75rem;">View All</a>
             </div>
             <div class="card-body p-0">
+                {{-- Subscription payments --}}
                 @forelse($recentPayments as $p)
                 <div class="d-flex align-items-center justify-content-between px-3 py-2 border-bottom">
                     <div>
                         <div style="font-weight:600;font-size:0.8rem;">{{ $p->tenant->name ?? '—' }}</div>
                         <small class="text-muted">{{ $p->payment_date->format('d M Y') }} · {{ $p->receipt_number }}</small>
+                        <span class="badge ms-1" style="background:#eff6ff;color:#3b82f6;font-size:0.65rem;">Subscription</span>
                     </div>
                     <span style="font-weight:700;color:#16a34a;font-size:0.875rem;">GHS {{ number_format($p->amount, 2) }}</span>
                 </div>
                 @empty
-                <div class="text-center text-muted py-4" style="font-size:0.875rem;">No payments yet</div>
+                <div class="text-center text-muted py-2" style="font-size:0.8rem;">No subscription payments yet</div>
                 @endforelse
+
+                {{-- Messaging credit payments --}}
+                @foreach($recentMessagingPayments as $mp)
+                <div class="d-flex align-items-center justify-content-between px-3 py-2 border-bottom">
+                    <div>
+                        <div style="font-weight:600;font-size:0.8rem;">{{ $mp->tenant->name ?? '—' }}</div>
+                        <small class="text-muted">{{ $mp->created_at->format('d M Y') }} · {{ $mp->receipt_number }}</small>
+                        <span class="badge ms-1" style="background:#fef3c7;color:#d97706;font-size:0.65rem;">Messaging</span>
+                    </div>
+                    <span style="font-weight:700;color:#16a34a;font-size:0.875rem;">GHS {{ number_format($mp->amount, 2) }}</span>
+                </div>
+                @endforeach
+
+                @if($recentPayments->isEmpty() && $recentMessagingPayments->isEmpty())
+                <div class="text-center text-muted py-4" style="font-size:0.875rem;">No payments yet</div>
+                @endif
             </div>
         </div>
     </div>
