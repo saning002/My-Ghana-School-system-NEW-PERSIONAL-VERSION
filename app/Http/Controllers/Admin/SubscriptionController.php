@@ -28,16 +28,24 @@ class SubscriptionController extends Controller
         $tenant->load('plan');
 
         // Get messaging credits from central DB
+        // NOTE: Do NOT use ::on('pgsql') here — forTenant() is a custom static method
+        // that returns a Builder via Model::__callStatic, and calling it on a Builder
+        // via on() throws BadMethodCallException. The model already has
+        // protected $connection = 'pgsql' so it always hits the central DB.
         $msgCredits = null;
         try {
-            $msgCredits = \App\Models\MessagingCredit::on('pgsql')->forTenant($tenant->id);
-        } catch (\Throwable $e) {}
+            $msgCredits = \App\Models\MessagingCredit::forTenant($tenant->id);
+        } catch (\Throwable $e) {
+            \Log::error('Failed to load messaging credits for tenant ' . $tenant->id . ': ' . $e->getMessage());
+        }
 
-        // Get messaging packages
+        // Get messaging packages — active() is a scope so on('pgsql') works here
         $msgPackages = collect();
         try {
-            $msgPackages = \App\Models\MessagingCreditPackage::on('pgsql')->active()->get();
-        } catch (\Throwable $e) {}
+            $msgPackages = \App\Models\MessagingCreditPackage::active()->get();
+        } catch (\Throwable $e) {
+            \Log::error('Failed to load messaging packages: ' . $e->getMessage());
+        }
 
         return view('admin.subscription.show', compact('tenant', 'msgCredits', 'msgPackages'));
     }

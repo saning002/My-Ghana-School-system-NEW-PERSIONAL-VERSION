@@ -95,7 +95,7 @@ class FeeReminderService
         $credits  = null;
         if ($tenantId) {
             try {
-                $credits = \App\Models\MessagingCredit::on('pgsql')->forTenant((int) $tenantId);
+                $credits = \App\Models\MessagingCredit::forTenant((int) $tenantId);
             } catch (\Throwable $e) {
                 $credits = null;
             }
