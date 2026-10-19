@@ -46,7 +46,24 @@ class SeedTestData extends Command
 
         $now = now();
 
-        // ── 0. Ensure missing columns exist ──────────────────────────────────
+        // ── 0a. Ensure missing TABLES exist ──────────────────────────────────
+        $ensureTables = [
+            "CREATE TABLE IF NOT EXISTS \"term_fee_bills\" (\"id\" BIGSERIAL PRIMARY KEY, \"student_id\" BIGINT NOT NULL, \"academic_session_id\" BIGINT NOT NULL, \"program_fee\" DECIMAL(10,2) NOT NULL DEFAULT 0, \"exam_fee\" DECIMAL(10,2) NOT NULL DEFAULT 0, \"other_fees\" DECIMAL(10,2) NOT NULL DEFAULT 0, \"other_fees_label\" VARCHAR(255) NULL, \"total_billed\" DECIMAL(10,2) NOT NULL DEFAULT 0, \"notes\" TEXT NULL, \"created_at\" TIMESTAMP NULL, \"updated_at\" TIMESTAMP NULL)",
+            "CREATE TABLE IF NOT EXISTS \"student_fees\" (\"id\" BIGSERIAL PRIMARY KEY, \"student_id\" BIGINT NOT NULL, \"amount\" DECIMAL(10,2) NULL, \"exam_fee\" DECIMAL(10,2) NULL, \"notes\" TEXT NULL, \"created_at\" TIMESTAMP NULL, \"updated_at\" TIMESTAMP NULL)",
+            "CREATE TABLE IF NOT EXISTS \"program_fees\" (\"id\" BIGSERIAL PRIMARY KEY, \"program_id\" BIGINT NOT NULL, \"church_branch_id\" BIGINT NULL, \"amount\" DECIMAL(10,2) NOT NULL DEFAULT 0, \"exam_fee\" DECIMAL(10,2) NOT NULL DEFAULT 0, \"created_at\" TIMESTAMP NULL, \"updated_at\" TIMESTAMP NULL)",
+            "CREATE TABLE IF NOT EXISTS \"fee_reminders\" (\"id\" BIGSERIAL PRIMARY KEY, \"student_id\" BIGINT NOT NULL, \"academic_session_id\" BIGINT NULL, \"channel\" VARCHAR(50) NOT NULL, \"recipient\" VARCHAR(255) NOT NULL, \"recipient_name\" VARCHAR(255) NULL, \"message\" TEXT NOT NULL, \"amount_owed\" DECIMAL(10,2) NOT NULL DEFAULT 0, \"status\" VARCHAR(50) NOT NULL DEFAULT 'pending', \"error_message\" TEXT NULL, \"sent_by\" VARCHAR(255) NULL, \"sent_at\" TIMESTAMP NULL, \"created_at\" TIMESTAMP NULL, \"updated_at\" TIMESTAMP NULL)",
+        ];
+
+        foreach ($ensureTables as $stmt) {
+            try {
+                DB::connection($this->conn)->statement($stmt);
+            } catch (\Throwable $e) {
+                // Ignore — table might already exist
+            }
+        }
+        $this->info('Ensured all required tables exist.');
+
+        // ── 0b. Ensure missing COLUMNS exist ────────────────────────────────
         // The tenant DB is created by TenantSetupController which may not have
         // all columns from later migrations. Add them safely here.
         $ensureColumns = [
