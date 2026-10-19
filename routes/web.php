@@ -1252,6 +1252,45 @@ Route::get('/debug/session-state', function () {
     ], 200, [], JSON_PRETTY_PRINT);
 })->middleware('web');
 
+// ── Quick fix: repair staff_portal_users columns on a tenant DB ──────────
+Route::get('/debug/fix-staff-table', function (\Illuminate\Http\Request $request) {
+    $slug = $request->query('tenant', 'saning-academy');
+    $tenant = \App\Models\Tenant::on('pgsql')->where('slug', $slug)->first();
+    if (!$tenant) return response('Tenant not found');
+
+    \Illuminate\Support\Facades\DB::purge('tenant');
+    \Illuminate\Support\Facades\Config::set('database.connections.tenant', $tenant->dbConfig());
+    \Illuminate\Support\Facades\DB::setDefaultConnection('tenant');
+
+    $fixes = [
+        "DO \$\$ BEGIN IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='staff_portal_users' AND column_name='name') AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='staff_portal_users' AND column_name='full_name') THEN ALTER TABLE staff_portal_users RENAME COLUMN \"name\" TO \"full_name\"; END IF; END \$\$",
+        "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='staff_portal_users' AND column_name='full_name') THEN ALTER TABLE staff_portal_users ADD COLUMN \"full_name\" VARCHAR(255) NOT NULL DEFAULT ''; END IF; END \$\$",
+        "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='staff_portal_users' AND column_name='phone') THEN ALTER TABLE staff_portal_users ADD COLUMN \"phone\" VARCHAR(255) NULL; END IF; END \$\$",
+        "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='staff_portal_users' AND column_name='is_active') THEN ALTER TABLE staff_portal_users ADD COLUMN \"is_active\" BOOLEAN NOT NULL DEFAULT TRUE; END IF; END \$\$",
+    ];
+
+    $results = [];
+    foreach ($fixes as $sql) {
+        try {
+            \Illuminate\Support\Facades\DB::statement($sql);
+            $results[] = 'OK: ' . substr($sql, 0, 80) . '...';
+        } catch (\Throwable $e) {
+            $results[] = 'ERR: ' . $e->getMessage();
+        }
+    }
+
+    // Check current columns
+    $cols = \Illuminate\Support\Facades\DB::select("SELECT column_name FROM information_schema.columns WHERE table_name='staff_portal_users' ORDER BY ordinal_position");
+
+    \Illuminate\Support\Facades\DB::setDefaultConnection('pgsql');
+
+    return response()->json([
+        'tenant'  => $tenant->name,
+        'fixes'   => $results,
+        'columns' => array_column($cols, 'column_name'),
+    ], 200, [], JSON_PRETTY_PRINT);
+})->middleware('web');
+
 // ── Diagnostic: simulate full teacher login flow ──────────────────────
 Route::get('/debug/teacher-login-flow', function (\Illuminate\Http\Request $request) {
     $slug = $request->query('tenant', 'saning-academy');
