@@ -25,10 +25,31 @@ class User extends Authenticatable
             return 'tenant';
         }
 
-        // Check if tenant connection is configured (has a database set)
+        // Check if tenant connection is already configured (has a database set)
         $tenantDb = config('database.connections.tenant.database', '');
         if (!empty($tenantDb) && session()->has('tenant_slug')) {
             return 'tenant';
+        }
+
+        // Session has tenant_slug but tenant connection not configured yet.
+        // This happens when Auth::user() is called before TenantMiddleware runs
+        // (e.g. in the 'auth' middleware check on protected routes).
+        // Configure the connection on the fly so the user loads from the right DB.
+        if (session()->has('tenant_slug')) {
+            try {
+                $slug   = session('tenant_slug');
+                $tenant = \App\Models\Tenant::on('pgsql')->where('slug', $slug)->first();
+                if ($tenant) {
+                    \Illuminate\Support\Facades\DB::purge('tenant');
+                    \Illuminate\Support\Facades\Config::set(
+                        'database.connections.tenant',
+                        $tenant->dbConfig()
+                    );
+                    return 'tenant';
+                }
+            } catch (\Throwable $e) {
+                // Fall through to default
+            }
         }
 
         return $this->connection ?? config('database.default');
