@@ -1238,6 +1238,62 @@ Route::get('/debug-school-login/{slug}', function(string $slug, \Illuminate\Http
     return response()->json($out, 200, [], JSON_PRETTY_PRINT);
 })->name('debug.school.login');
 
+// ── Diagnostic: check teacher credentials against tenant DB ──────────────
+Route::get('/debug/teacher-check', function (\Illuminate\Http\Request $request) {
+    $slug = $request->query('tenant', 'saning-academy');
+    $email = $request->query('email', 'kwame.asante@saningacademy.test');
+    $password = $request->query('password', 'Teacher@2025');
+
+    $tenant = \App\Models\Tenant::on('pgsql')->where('slug', $slug)->first();
+    if (!$tenant) return response('Tenant not found: ' . $slug);
+
+    // Switch to tenant DB
+    \Illuminate\Support\Facades\DB::purge('tenant');
+    \Illuminate\Support\Facades\Config::set('database.connections.tenant', $tenant->dbConfig());
+    \Illuminate\Support\Facades\DB::setDefaultConnection('tenant');
+    session(['tenant_slug' => $tenant->slug, 'tenant_id' => $tenant->id]);
+
+    $defaultConn = \Illuminate\Support\Facades\DB::getDefaultConnection();
+    $userConn = \App\Models\User::resolveConnection()->getName();
+
+    // Query user from current DB
+    $user = \App\Models\User::where('email', $email)->first();
+
+    $results = [
+        'tenant'        => $tenant->name,
+        'default_conn'  => $defaultConn,
+        'user_model_conn' => $userConn,
+        'email'         => $email,
+        'user_found'    => $user ? 'YES' : 'NO',
+    ];
+
+    if ($user) {
+        $results['user_id']       = $user->id;
+        $results['user_role']     = $user->role;
+        $results['full_name']     = $user->full_name;
+        $results['password_hash_prefix'] = substr($user->password, 0, 7);
+        $results['password_match'] = \Illuminate\Support\Facades\Hash::check($password, $user->password) ? 'YES' : 'NO';
+
+        // Also try Auth::attempt
+        $authResult = \Illuminate\Support\Facades\Auth::attempt(['email' => $email, 'password' => $password]);
+        $results['auth_attempt']  = $authResult ? 'SUCCESS' : 'FAILED';
+    }
+
+    // Count users in tenant DB
+    try {
+        $results['total_users'] = \Illuminate\Support\Facades\DB::table('users')->count();
+        $results['lecturers'] = \Illuminate\Support\Facades\DB::table('users')->where('role', 'lecturer')->count();
+        $results['students'] = \Illuminate\Support\Facades\DB::table('users')->where('role', 'student')->count();
+    } catch (\Throwable $e) {
+        $results['count_error'] = $e->getMessage();
+    }
+
+    // Reset DB
+    \Illuminate\Support\Facades\DB::setDefaultConnection('pgsql');
+
+    return response()->json($results, 200, [], JSON_PRETTY_PRINT);
+})->middleware('web');
+
 // ═══════════════════════════════════════════════════════════════════════════
 // SCHOOL SLUG-BASED LOGIN (Option A — single Render URL, multiple schools)
 // /school/{slug}        → redirects to school public website portal
