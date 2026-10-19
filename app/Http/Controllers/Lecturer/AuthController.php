@@ -4,8 +4,13 @@ namespace App\Http\Controllers\Lecturer;
 
 use App\Http\Controllers\Controller;
 use App\Models\Setting;
+use App\Models\Tenant;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
@@ -27,6 +32,10 @@ class AuthController extends Controller
 
     /**
      * Handle lecturer login
+     *
+     * Uses manual user lookup + Auth::login() instead of Auth::attempt()
+     * to ensure the query hits the tenant DB, not the central DB.
+     * Same pattern as SchoolAccessController::login which works reliably.
      */
     public function login(Request $request)
     {
@@ -42,23 +51,45 @@ class AuthController extends Controller
             'password' => 'required|string|min:6',
         ]);
 
-        if (!Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {
+        // ── Ensure we're on the tenant DB ────────────────────────────────
+        // TenantMiddleware should have already switched, but as a fallback,
+        // resolve the tenant from session or ?tenant= query param and switch.
+        $tenantSlug = session('tenant_slug') ?? $request->query('tenant');
+        if ($tenantSlug && DB::getDefaultConnection() !== 'tenant') {
+            $tenant = Tenant::on('pgsql')->where('slug', $tenantSlug)->first();
+            if ($tenant) {
+                DB::purge('tenant');
+                Config::set('database.connections.tenant', $tenant->dbConfig());
+                DB::setDefaultConnection('tenant');
+                session(['tenant_slug' => $tenant->slug, 'tenant_id' => $tenant->id]);
+            }
+        }
+
+        // ── Manual user lookup on tenant DB ──────────────────────────────
+        $user = User::where('email', $request->input('email'))->first();
+
+        if (!$user || !Hash::check($request->input('password'), $user->password)) {
             throw ValidationException::withMessages([
                 'email' => 'These credentials do not match our records.',
             ]);
         }
 
-        $user = Auth::user();
-
         // Ensure user is a lecturer
         if ($user->role !== 'lecturer') {
-            Auth::logout();
             throw ValidationException::withMessages([
                 'email' => 'Access restricted to lecturers only.',
             ]);
         }
 
+        // Log in the user directly — no DB query needed by Auth::login()
+        Auth::login($user, $request->boolean('remember'));
+
         $request->session()->regenerate();
+
+        // Re-set tenant session after regenerate
+        if ($tenantSlug) {
+            session(['tenant_slug' => $tenantSlug, 'tenant_id' => session('tenant_id')]);
+        }
 
         return redirect()->route('lecturer.dashboard');
     }

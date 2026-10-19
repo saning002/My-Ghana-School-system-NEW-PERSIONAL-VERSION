@@ -8,11 +8,14 @@ use App\Models\Program;
 use App\Models\ExamScore;
 use App\Models\Setting;
 use App\Models\StudentNotification;
+use App\Models\Tenant;
 use App\Services\ReportCardService;
 use App\Services\FeeCalculationService;
 use App\Support\ReportCardPdfAssets;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\File;
@@ -43,6 +46,10 @@ class PortalController extends Controller
     /** Authenticate student by registration number + full name + password */
     public function login(Request $request)
     {
+        // Ensure tenant DB is active — handles the case where session was not
+        // set before the login POST (e.g. ?tenant= param on GET but lost on POST)
+        $this->ensureTenantDb($request);
+
         // Block login if portal is closed
         if (!Setting::portalIsOpen()) {
             return back()->with('portal_closed', true);
@@ -539,5 +546,19 @@ class PortalController extends Controller
             throw new HttpResponseException(redirect()->route('portal.login'));
         }
         return Student::with('user')->findOrFail($id);
+    }
+
+    /** Ensure the tenant DB is active before querying student records */
+    private function ensureTenantDb(Request $request): void
+    {
+        if (DB::getDefaultConnection() === 'tenant') return;
+        $slug = session('tenant_slug') ?? $request->query('tenant');
+        if (!$slug) return;
+        $tenant = Tenant::on('pgsql')->where('slug', $slug)->first();
+        if (!$tenant) return;
+        DB::purge('tenant');
+        Config::set('database.connections.tenant', $tenant->dbConfig());
+        DB::setDefaultConnection('tenant');
+        session(['tenant_slug' => $tenant->slug, 'tenant_id' => $tenant->id]);
     }
 }

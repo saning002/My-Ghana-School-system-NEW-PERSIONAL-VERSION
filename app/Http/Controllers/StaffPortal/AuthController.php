@@ -4,8 +4,11 @@ namespace App\Http\Controllers\StaffPortal;
 
 use App\Http\Controllers\Controller;
 use App\Models\StaffPortalUser;
+use App\Models\Tenant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
@@ -24,6 +27,9 @@ class AuthController extends Controller
             'email'    => 'required|email',
             'password' => 'required',
         ]);
+
+        // Ensure we're on the tenant DB
+        $this->ensureTenantDb($request);
 
         $user = StaffPortalUser::where('email', $request->email)
             ->when($request->filled('role'), fn($q) => $q->where('role', $request->role))
@@ -51,5 +57,18 @@ class AuthController extends Controller
     {
         session()->forget(['staff_portal_user_id','staff_portal_user_name','staff_portal_user_role']);
         return redirect()->route('staff-portal.login');
+    }
+
+    private function ensureTenantDb(Request $request): void
+    {
+        if (DB::getDefaultConnection() === 'tenant') return;
+        $slug = session('tenant_slug') ?? $request->query('tenant');
+        if (!$slug) return;
+        $tenant = Tenant::on('pgsql')->where('slug', $slug)->first();
+        if (!$tenant) return;
+        DB::purge('tenant');
+        Config::set('database.connections.tenant', $tenant->dbConfig());
+        DB::setDefaultConnection('tenant');
+        session(['tenant_slug' => $tenant->slug, 'tenant_id' => $tenant->id]);
     }
 }
