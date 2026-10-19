@@ -82,11 +82,14 @@ class AuthController extends Controller
         }
 
         // Log in the user directly — no DB query needed by Auth::login()
-        // IMPORTANT: regenerate FIRST, then login — so auth state is on the NEW session
-        $request->session()->regenerate();
+        // NOTE: Do NOT call session()->regenerate() here — it saves the new
+        // session to the TENANT DB (current default), but StartSession on the
+        // next request loads from the CENTRAL DB where the new session doesn't
+        // exist. This causes the auth state to be lost and the user gets
+        // redirected to /website/portal.
         Auth::login($user, $request->boolean('remember'));
 
-        // Set tenant session on the new session
+        // Set tenant session
         session(['tenant_slug' => $tenantSlug, 'tenant_id' => session('tenant_id')]);
 
         return redirect('/lecturer/dashboard' . ($tenantSlug ? '?tenant=' . $tenantSlug : ''));
