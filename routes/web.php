@@ -1301,22 +1301,11 @@ Route::get('/debug/teacher-check', function (\Illuminate\Http\Request $request) 
 // /school/{slug}/teacher→ lecturer login for this school
 // ═══════════════════════════════════════════════════════════════════════════
 Route::prefix('school')->name('school.')->group(function () {
-    // Main entry — redirects to school's public website
-    Route::get('/{slug}',         [\App\Http\Controllers\Owner\SchoolAccessController::class, 'showLogin'])->name('login');
-    Route::get('/{slug}/login',   [\App\Http\Controllers\Owner\SchoolAccessController::class, 'showLogin'])->name('login.page');
-    Route::post('/{slug}/login',  [\App\Http\Controllers\Owner\SchoolAccessController::class, 'login'])->name('login.submit');
-    Route::post('/logout',        [\App\Http\Controllers\Owner\SchoolAccessController::class, 'logout'])->name('logout');
-
-    // Direct portal logins (linked from the school's public website portal page)
-    Route::get('/{slug}/admin',   [\App\Http\Controllers\Owner\SchoolAccessController::class, 'showAdminLogin'])->name('admin.login');
-    Route::post('/{slug}/admin',  [\App\Http\Controllers\Owner\SchoolAccessController::class, 'login'])->name('admin.submit');
-    Route::get('/{slug}/teacher', [\App\Http\Controllers\Owner\SchoolAccessController::class, 'showLecturerLogin'])->name('lecturer.login');
-    Route::post('/{slug}/teacher',[\App\Http\Controllers\Owner\SchoolAccessController::class, 'login'])->name('lecturer.submit');
+    // ── Specific routes FIRST — before the {slug} catch-all ──────────────
 
     // Tenant-scoped portal redirects — set tenant session then redirect to portal login
-    // These URLs ensure TenantMiddleware switches to the tenant DB before the portal login page loads
     Route::get('/{slug}/student-portal',  [\App\Http\Controllers\Owner\SchoolAccessController::class, 'portalRedirect'])->defaults('portal', 'student')->name('student-portal');
-    Route::get('/{slug}/teachers-portal',   [\App\Http\Controllers\Owner\SchoolAccessController::class, 'portalRedirect'])->defaults('portal', 'teacher')->name('teachers-portal');
+    Route::get('/{slug}/teachers-portal', [\App\Http\Controllers\Owner\SchoolAccessController::class, 'portalRedirect'])->defaults('portal', 'teacher')->name('teachers-portal');
     Route::get('/{slug}/staff-portal/{role?}', function ($slug, $role = null) {
         $tenant = \App\Models\Tenant::on('pgsql')->where('slug', $slug)->orWhere('subdomain', $slug)->first();
         if (!$tenant) abort(404);
@@ -1327,6 +1316,19 @@ Route::prefix('school')->name('school.')->group(function () {
         }
         return redirect('/staff-portal/login' . $tenantParam);
     })->name('staff-portal');
+
+    // Direct portal logins (linked from the school's public website portal page)
+    Route::get('/{slug}/admin',    [\App\Http\Controllers\Owner\SchoolAccessController::class, 'showAdminLogin'])->name('admin.login');
+    Route::post('/{slug}/admin',   [\App\Http\Controllers\Owner\SchoolAccessController::class, 'login'])->name('admin.submit');
+    Route::get('/{slug}/teacher',  [\App\Http\Controllers\Owner\SchoolAccessController::class, 'showLecturerLogin'])->name('lecturer.login');
+    Route::post('/{slug}/teacher', [\App\Http\Controllers\Owner\SchoolAccessController::class, 'login'])->name('lecturer.submit');
+
+    Route::get('/{slug}/login',    [\App\Http\Controllers\Owner\SchoolAccessController::class, 'showLogin'])->name('login.page');
+    Route::post('/{slug}/login',   [\App\Http\Controllers\Owner\SchoolAccessController::class, 'login'])->name('login.submit');
+    Route::post('/logout',         [\App\Http\Controllers\Owner\SchoolAccessController::class, 'logout'])->name('logout');
+
+    // ── Catch-all LAST — /school/{slug} with no sub-path ─────────────────
+    Route::get('/{slug}',          [\App\Http\Controllers\Owner\SchoolAccessController::class, 'showLogin'])->name('login');
 });
 
 // ═══════════════════════════════════════════════════════════════════════════
