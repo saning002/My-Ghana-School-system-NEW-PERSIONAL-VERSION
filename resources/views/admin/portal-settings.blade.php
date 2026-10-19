@@ -282,6 +282,17 @@
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
+@php
+    // Build tenant-scoped portal URLs so each portal hits the tenant DB, not the central DB
+    $schoolSlug = $currentTenant->slug ?? session('tenant_slug') ?? '';
+    $studentUrl   = $schoolSlug ? url("/school/{$schoolSlug}/student-portal") : url('/student-portal/login');
+    $teacherUrl   = $schoolSlug ? url("/school/{$schoolSlug}/teachers-portal") : url('/teachers-portal/login');
+    $staffAcct    = $schoolSlug ? url("/school/{$schoolSlug}/staff-portal/accountant") : url('/accountant-portal/login');
+    $staffHead    = $schoolSlug ? url("/school/{$schoolSlug}/staff-portal/headmaster") : url('/headmaster-portal/login');
+    $staffHeadT   = $schoolSlug ? url("/school/{$schoolSlug}/staff-portal/headteacher") : url('/headteacher-portal/login');
+    $staffSec     = $schoolSlug ? url("/school/{$schoolSlug}/staff-portal/secretary") : url('/secretary-portal/login');
+@endphp
+
             {{-- Student Portal --}}
             <div class="card p-5">
                 <div class="flex items-center gap-2 mb-3">
@@ -291,8 +302,8 @@
                     <p class="text-xs font-bold text-gray-700 uppercase tracking-wider">Student Portal</p>
                 </div>
                 <div class="flex items-center gap-2">
-                    <code class="flex-1 bg-gray-50 px-3 py-2.5 rounded-xl text-xs font-mono text-gray-700 border border-gray-200 truncate">{{ url('/student-portal/login') }}</code>
-                    <button onclick="navigator.clipboard.writeText('{{ url('/student-portal/login') }}');this.innerHTML='<i class=\'fas fa-check\'></i>'"
+                    <code class="flex-1 bg-gray-50 px-3 py-2.5 rounded-xl text-xs font-mono text-gray-700 border border-gray-200 truncate">{{ $studentUrl }}</code>
+                    <button onclick="navigator.clipboard.writeText('{{ $studentUrl }}');this.innerHTML='<i class=\'fas fa-check\'></i>'"
                             class="px-3 py-2.5 rounded-xl text-xs font-semibold text-white flex-shrink-0" style="background:#3b82f6">
                         <i class="fas fa-copy"></i>
                     </button>
@@ -308,8 +319,8 @@
                     <p class="text-xs font-bold text-gray-700 uppercase tracking-wider">Teachers Portal</p>
                 </div>
                 <div class="flex items-center gap-2">
-                    <code class="flex-1 bg-gray-50 px-3 py-2.5 rounded-xl text-xs font-mono text-gray-700 border border-gray-200 truncate">{{ url('/teachers-portal/login') }}</code>
-                    <button onclick="navigator.clipboard.writeText('{{ url('/teachers-portal/login') }}');this.innerHTML='<i class=\'fas fa-check\'></i>'"
+                    <code class="flex-1 bg-gray-50 px-3 py-2.5 rounded-xl text-xs font-mono text-gray-700 border border-gray-200 truncate">{{ $teacherUrl }}</code>
+                    <button onclick="navigator.clipboard.writeText('{{ $teacherUrl }}');this.innerHTML='<i class=\'fas fa-check\'></i>'"
                             class="px-3 py-2.5 rounded-xl text-xs font-semibold text-white flex-shrink-0" style="background:#a855f7">
                         <i class="fas fa-copy"></i>
                     </button>
@@ -325,8 +336,8 @@
                     <p class="text-xs font-bold text-gray-700 uppercase tracking-wider">Accountant Portal</p>
                 </div>
                 <div class="flex items-center gap-2">
-                    <code class="flex-1 bg-gray-50 px-3 py-2.5 rounded-xl text-xs font-mono text-gray-700 border border-gray-200 truncate">{{ url('/accountant-portal/login') }}</code>
-                    <button onclick="navigator.clipboard.writeText('{{ url('/accountant-portal/login') }}');this.innerHTML='<i class=\'fas fa-check\'></i>'"
+                    <code class="flex-1 bg-gray-50 px-3 py-2.5 rounded-xl text-xs font-mono text-gray-700 border border-gray-200 truncate">{{ $staffAcct }}</code>
+                    <button onclick="navigator.clipboard.writeText('{{ $staffAcct }}');this.innerHTML='<i class=\'fas fa-check\'></i>'"
                             class="px-3 py-2.5 rounded-xl text-xs font-semibold text-white flex-shrink-0" style="background:#d97706">
                         <i class="fas fa-copy"></i>
                     </button>
@@ -346,8 +357,8 @@
                     <p class="text-xs font-bold text-gray-700 uppercase tracking-wider">Headmaster Portal</p>
                 </div>
                 <div class="flex items-center gap-2">
-                    <code class="flex-1 bg-gray-50 px-3 py-2.5 rounded-xl text-xs font-mono text-gray-700 border border-gray-200 truncate">{{ url('/headmaster-portal/login') }}</code>
-                    <button onclick="navigator.clipboard.writeText('{{ url('/headmaster-portal/login') }}');this.innerHTML='<i class=\'fas fa-check\'></i>'"
+                    <code class="flex-1 bg-gray-50 px-3 py-2.5 rounded-xl text-xs font-mono text-gray-700 border border-gray-200 truncate">{{ $staffHead }}</code>
+                    <button onclick="navigator.clipboard.writeText('{{ $staffHead }}');this.innerHTML='<i class=\'fas fa-check\'></i>'"
                             class="px-3 py-2.5 rounded-xl text-xs font-semibold text-white flex-shrink-0" style="background:#7c3aed">
                         <i class="fas fa-copy"></i>
                     </button>
@@ -363,8 +374,8 @@
                     <p class="text-xs font-bold text-gray-700 uppercase tracking-wider">Headteacher Portal</p>
                 </div>
                 <div class="flex items-center gap-2">
-                    <code class="flex-1 bg-gray-50 px-3 py-2.5 rounded-xl text-xs font-mono text-gray-700 border border-gray-200 truncate">{{ url('/headteacher-portal/login') }}</code>
-                    <button onclick="navigator.clipboard.writeText('{{ url('/headteacher-portal/login') }}');this.innerHTML='<i class=\'fas fa-check\'></i>'"
+                    <code class="flex-1 bg-gray-50 px-3 py-2.5 rounded-xl text-xs font-mono text-gray-700 border border-gray-200 truncate">{{ $staffHeadT }}</code>
+                    <button onclick="navigator.clipboard.writeText('{{ $staffHeadT }}');this.innerHTML='<i class=\'fas fa-check\'></i>'"
                             class="px-3 py-2.5 rounded-xl text-xs font-semibold text-white flex-shrink-0" style="background:#0891b2">
                         <i class="fas fa-copy"></i>
                     </button>
@@ -380,8 +391,8 @@
                     <p class="text-xs font-bold text-gray-700 uppercase tracking-wider">Secretary Portal</p>
                 </div>
                 <div class="flex items-center gap-2">
-                    <code class="flex-1 bg-gray-50 px-3 py-2.5 rounded-xl text-xs font-mono text-gray-700 border border-gray-200 truncate">{{ url('/secretary-portal/login') }}</code>
-                    <button onclick="navigator.clipboard.writeText('{{ url('/secretary-portal/login') }}');this.innerHTML='<i class=\'fas fa-check\'></i>'"
+                    <code class="flex-1 bg-gray-50 px-3 py-2.5 rounded-xl text-xs font-mono text-gray-700 border border-gray-200 truncate">{{ $staffSec }}</code>
+                    <button onclick="navigator.clipboard.writeText('{{ $staffSec }}');this.innerHTML='<i class=\'fas fa-check\'></i>'"
                             class="px-3 py-2.5 rounded-xl text-xs font-semibold text-white flex-shrink-0" style="background:#db2777">
                         <i class="fas fa-copy"></i>
                     </button>

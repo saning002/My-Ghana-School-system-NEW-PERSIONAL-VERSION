@@ -45,6 +45,33 @@ class SchoolAccessController extends Controller
         return view('owner.school-login', ['tenant' => $tenant, 'role' => 'lecturer']);
     }
 
+    /**
+     * Redirect to a portal login page after setting the tenant session.
+     * This ensures TenantMiddleware switches to the tenant DB for portal logins.
+     *
+     * Usage:
+     *   /school/{slug}/student-portal  → redirect to /student-portal/login
+     *   /school/{slug}/teachers-portal → redirect to /teachers-portal/login
+     *   /school/{slug}/staff-portal/{role?} → redirect to /staff-portal/login/{role}
+     */
+    public function portalRedirect(string $slug, string $portal)
+    {
+        $tenant = Tenant::where('slug', $slug)->orWhere('subdomain', $slug)->first();
+        if (!$tenant) abort(404, 'School not found.');
+        if ($tenant->isSuspended()) return view('tenant.suspended', compact('tenant'));
+        if ($tenant->isExpired())   return view('tenant.expired',    compact('tenant'));
+
+        // Set tenant in session so TenantMiddleware switches DB for all portal pages
+        session(['tenant_slug' => $tenant->slug, 'tenant_id' => $tenant->id]);
+
+        return match($portal) {
+            'student'    => redirect()->route('student-portal.login'),
+            'teacher'    => redirect()->route('teachers-portal.login'),
+            'staff'      => redirect()->route('staff-portal.login'),
+            default      => redirect()->route('student-portal.login'),
+        };
+    }
+
     public function showLogin(string $slug)
     {
         $tenant = Tenant::where('slug', $slug)

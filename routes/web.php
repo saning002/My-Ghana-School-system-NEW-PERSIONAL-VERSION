@@ -1256,6 +1256,20 @@ Route::prefix('school')->name('school.')->group(function () {
     Route::post('/{slug}/admin',  [\App\Http\Controllers\Owner\SchoolAccessController::class, 'login'])->name('admin.submit');
     Route::get('/{slug}/teacher', [\App\Http\Controllers\Owner\SchoolAccessController::class, 'showLecturerLogin'])->name('lecturer.login');
     Route::post('/{slug}/teacher',[\App\Http\Controllers\Owner\SchoolAccessController::class, 'login'])->name('lecturer.submit');
+
+    // Tenant-scoped portal redirects — set tenant session then redirect to portal login
+    // These URLs ensure TenantMiddleware switches to the tenant DB before the portal login page loads
+    Route::get('/{slug}/student-portal',  [\App\Http\Controllers\Owner\SchoolAccessController::class, 'portalRedirect'])->defaults('portal', 'student')->name('student-portal');
+    Route::get('/{slug}/teachers-portal',   [\App\Http\Controllers\Owner\SchoolAccessController::class, 'portalRedirect'])->defaults('portal', 'teacher')->name('teachers-portal');
+    Route::get('/{slug}/staff-portal/{role?}', function ($slug, $role = null) {
+        $tenant = \App\Models\Tenant::where('slug', $slug)->orWhere('subdomain', $slug)->first();
+        if (!$tenant) abort(404);
+        session(['tenant_slug' => $tenant->slug, 'tenant_id' => $tenant->id]);
+        if ($role && in_array($role, ['accountant', 'headmaster', 'headteacher', 'secretary'])) {
+            return redirect()->route('staff-portal.login.role', $role);
+        }
+        return redirect()->route('staff-portal.login');
+    })->name('staff-portal');
 });
 
 // ═══════════════════════════════════════════════════════════════════════════
