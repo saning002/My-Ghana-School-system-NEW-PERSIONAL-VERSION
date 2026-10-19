@@ -14,11 +14,16 @@ return Application::configure(basePath: dirname(__DIR__))
         // Trust all proxies — required for Render's load balancer to pass HTTPS correctly
         $middleware->trustProxies(at: '*');
 
-        // Redirect authenticated web users to admin dashboard
-        // But never redirect owner panel users — they use a separate guard
+        // Redirect authenticated web users to correct dashboard based on role
+        // Never redirect owner panel users — they use a separate guard
         $middleware->redirectUsersTo(function (\Illuminate\Http\Request $request) {
             if ($request->is('owner/*') || $request->is('owner')) {
                 return route('owner.dashboard');
+            }
+            // After login, send each role to their own dashboard
+            $user = $request->user();
+            if ($user && $user->role === 'lecturer') {
+                return route('lecturer.dashboard');
             }
             return route('admin.dashboard');
         });
