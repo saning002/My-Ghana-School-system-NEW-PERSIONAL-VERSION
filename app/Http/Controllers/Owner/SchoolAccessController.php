@@ -59,7 +59,7 @@ class SchoolAccessController extends Controller
         // Use tenant from app container — TenantMiddleware already resolved it
         // Do NOT query Tenant::where() here because the DB may already be
         // switched to the tenant connection where the tenants table doesn't exist
-        $tenant = app('tenant');
+        $tenant = app()->bound('tenant') ? app('tenant') : null;
         if (!$tenant) {
             $tenant = Tenant::on('pgsql')->where('slug', $slug)->orWhere('subdomain', $slug)->first();
         }

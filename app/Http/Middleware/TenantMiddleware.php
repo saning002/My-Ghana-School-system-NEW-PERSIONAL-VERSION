@@ -74,7 +74,9 @@ class TenantMiddleware
         $sessionSlug = session('tenant_slug');
         if ($sessionSlug) {
             // Force central DB for this query
-            return Tenant::on('pgsql')->where('slug', $sessionSlug)->first();
+            $found = Tenant::on('pgsql')->where('slug', $sessionSlug)->first();
+            if ($found) return $found;
+            // If session slug is stale/invalid, fall through to other methods
         }
 
         // 1b. URL path-based — extract slug from /school/{slug}/...
