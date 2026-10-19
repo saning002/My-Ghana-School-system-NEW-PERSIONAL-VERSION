@@ -1313,6 +1313,13 @@ Route::get('/debug/fix-staff-table', function (\Illuminate\Http\Request $request
         "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='students' AND column_name='qualifications') THEN ALTER TABLE students ADD COLUMN \"qualifications\" VARCHAR(255) NULL; END IF; END \$\$",
         "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='students' AND column_name='native_town') THEN ALTER TABLE students ADD COLUMN \"native_town\" VARCHAR(255) NULL; END IF; END \$\$",
         "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='students' AND column_name='profession') THEN ALTER TABLE students ADD COLUMN \"profession\" VARCHAR(255) NULL; END IF; END \$\$",
+        "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='students' AND column_name='enrollment_year') THEN ALTER TABLE students ADD COLUMN \"enrollment_year\" VARCHAR(255) NULL; END IF; END \$\$",
+        "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='students' AND column_name='study_mode') THEN ALTER TABLE students ADD COLUMN \"study_mode\" VARCHAR(50) NULL DEFAULT 'full_time'; END IF; END \$\$",
+        "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='students' AND column_name='is_approved') THEN ALTER TABLE students ADD COLUMN \"is_approved\" BOOLEAN NOT NULL DEFAULT FALSE; END IF; END \$\$",
+        "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='students' AND column_name='results_blocked') THEN ALTER TABLE students ADD COLUMN \"results_blocked\" BOOLEAN NOT NULL DEFAULT FALSE; END IF; END \$\$",
+        "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='students' AND column_name='admission_date') THEN ALTER TABLE students ADD COLUMN \"admission_date\" DATE NULL; END IF; END \$\$",
+        "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='students' AND column_name='year_of_admission') THEN ALTER TABLE students ADD COLUMN \"year_of_admission\" INTEGER NULL; END IF; END \$\$",
+        "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='students' AND column_name='portal_password') THEN ALTER TABLE students ADD COLUMN \"portal_password\" VARCHAR(255) NULL; END IF; END \$\$",
     ];
 
     $results = [];
