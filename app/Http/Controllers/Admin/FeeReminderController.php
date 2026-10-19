@@ -65,17 +65,19 @@ class FeeReminderController extends Controller
     public function send(Request $request)
     {
         $validated = $request->validate([
-            'session_id'  => 'required|exists:academic_sessions,id',
-            'mode'        => 'required|in:one,selected,all',
-            'student_ids' => 'nullable|array',
-            'student_ids.*' => 'exists:students,id',
-            'channels'    => 'required|array|min:1',
-            'channels.*'  => 'in:email,sms,whatsapp',
+            'session_id'     => 'required|exists:academic_sessions,id',
+            'mode'           => 'required|in:one,selected,all',
+            'student_ids'    => 'nullable|array',
+            'student_ids.*'  => 'exists:students,id',
+            'channels'       => 'required|array|min:1',
+            'channels.*'     => 'in:email,sms,whatsapp',
+            'custom_message' => 'nullable|string|max:2000',
         ]);
 
-        $sessionId  = (int) $validated['session_id'];
-        $channels   = $validated['channels'];
-        $sentBy     = auth()->user()?->full_name ?? 'Admin';
+        $sessionId     = (int) $validated['session_id'];
+        $channels      = $validated['channels'];
+        $sentBy        = auth()->user()?->full_name ?? 'Admin';
+        $customMessage = !empty($validated['custom_message']) ? trim($validated['custom_message']) : null;
 
         // Determine which students to send to
         if ($validated['mode'] === 'all') {
@@ -93,7 +95,7 @@ class FeeReminderController extends Controller
             return back()->with('error', 'No students selected or no students owe fees for this session.');
         }
 
-        $results = $this->reminderService->sendBulkReminders($studentIds, $sessionId, $channels, $sentBy);
+        $results = $this->reminderService->sendBulkReminders($studentIds, $sessionId, $channels, $sentBy, $customMessage ?? null);
 
         $message = "Reminders sent: {$results['sent']} successful, {$results['failed']} failed.";
         if (!empty($results['errors'])) {

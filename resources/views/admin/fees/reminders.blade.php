@@ -552,8 +552,14 @@
                         <div id="pvContent" style="display:none;">
                             <div style="font-size:.7rem;text-transform:uppercase;letter-spacing:.8px;color:#94a3b8;font-weight:700;margin-bottom:8px;">
                                 <i class="fas fa-mobile-alt me-1"></i> SMS &amp; WhatsApp Message
+                                <span style="float:right;text-transform:none;letter-spacing:0;font-weight:400;color:#3b82f6;cursor:pointer;" onclick="resetMsg()">
+                                    <i class="fas fa-undo me-1"></i>Reset
+                                </span>
                             </div>
-                            <div class="preview-bubble" id="pvMsg"></div>
+                            <textarea id="pvMsg"
+                                rows="10"
+                                style="width:100%;background:#f0f9ff;border:1px solid #bae6fd;border-radius:14px;padding:1.25rem;font-size:.83rem;line-height:1.8;color:#0c4a6e;font-family:inherit;resize:vertical;"
+                                placeholder="Message will appear here..."></textarea>
 
                             <div style="background:#f8fafc;border-radius:12px;padding:1rem;margin-top:1rem;">
                                 <div style="font-size:.7rem;text-transform:uppercase;letter-spacing:.8px;color:#94a3b8;font-weight:700;margin-bottom:8px;">
@@ -589,6 +595,8 @@
 </div>
 
 <input type="hidden" id="pvStudentId" value="">
+<input type="hidden" id="pvSessionId" value="{{ $selectedSession?->id }}">
+<input type="hidden" name="custom_message" id="customMsgInput" form="rmForm" value="">
 
 @push('scripts')
 <script>
@@ -654,6 +662,8 @@ function validateAll() {
 }
 
 // ── Preview ────────────────────────────────────────────────────────────────
+let originalMsg = '';
+
 function loadPreview(studentId, sessionId, name) {
     document.getElementById('pvStudentId').value = studentId;
     document.getElementById('pvName').textContent = name;
@@ -666,7 +676,9 @@ function loadPreview(studentId, sessionId, name) {
         .then(d => {
             document.getElementById('pvLoading').style.display = 'none';
             document.getElementById('pvContent').style.display = 'block';
-            document.getElementById('pvMsg').textContent = d.message;
+            // Editable textarea
+            originalMsg = d.message;
+            document.getElementById('pvMsg').value = d.message;
 
             const hasEmail = !!d.email;
             const hasPhone = !!d.phone;
@@ -682,8 +694,12 @@ function loadPreview(studentId, sessionId, name) {
         .catch(() => {
             document.getElementById('pvLoading').style.display = 'none';
             document.getElementById('pvContent').style.display = 'block';
-            document.getElementById('pvMsg').textContent = 'Could not load preview. Please try again.';
+            document.getElementById('pvMsg').value = 'Could not load preview. Please try again.';
         });
+}
+
+function resetMsg() {
+    document.getElementById('pvMsg').value = originalMsg;
 }
 
 // ── Quick send one student ─────────────────────────────────────────────────
@@ -694,7 +710,11 @@ function quickSend() {
     }
     const id = document.getElementById('pvStudentId').value;
     if (!id) { alert('No student selected for preview.'); return; }
-    // deselect all, select only this one
+
+    // Pass the (possibly edited) message
+    document.getElementById('customMsgInput').value = document.getElementById('pvMsg').value;
+
+    // Deselect all, select only this one
     document.querySelectorAll('.student-cb').forEach(cb => {
         cb.checked = false;
         const row = document.getElementById('row-' + cb.value);
@@ -703,7 +723,8 @@ function quickSend() {
     const cb = document.getElementById('cb-' + id);
     if (cb) { cb.checked = true; syncRow(id); recount(); }
     document.getElementById('sendMode').value = 'selected';
-    if (confirm('Send reminder to this student only?')) {
+
+    if (confirm('Send this message to the student now?')) {
         document.getElementById('rmForm').submit();
     }
 }

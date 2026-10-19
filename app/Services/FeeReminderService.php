@@ -84,9 +84,9 @@ class FeeReminderService
      * Checks credits before sending, deducts after success.
      * Returns array of results per channel.
      */
-    public function sendReminder(Student $student, int $sessionId, array $channels, string $sentBy = 'Admin'): array
+    public function sendReminder(Student $student, int $sessionId, array $channels, string $sentBy = 'Admin', ?string $customMessage = null): array
     {
-        $message = $this->buildMessage($student, $sessionId);
+        $message = $customMessage ?: $this->buildMessage($student, $sessionId);
         $summary = $this->feeService->getStudentTermSummary($student, $sessionId);
         $results = [];
 
@@ -159,7 +159,7 @@ class FeeReminderService
      * Send reminders to multiple students.
      * Returns summary of sent/failed counts.
      */
-    public function sendBulkReminders(array $studentIds, int $sessionId, array $channels, string $sentBy = 'Admin'): array
+    public function sendBulkReminders(array $studentIds, int $sessionId, array $channels, string $sentBy = 'Admin', ?string $customMessage = null): array
     {
         $sent   = 0;
         $failed = 0;
@@ -169,7 +169,7 @@ class FeeReminderService
             $student = Student::with(['user', 'program'])->find($studentId);
             if (!$student) continue;
 
-            $results = $this->sendReminder($student, $sessionId, $channels, $sentBy);
+            $results = $this->sendReminder($student, $sessionId, $channels, $sentBy, $customMessage);
 
             foreach ($results as $channel => $result) {
                 if ($result['status'] === 'sent') {
