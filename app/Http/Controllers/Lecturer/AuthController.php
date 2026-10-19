@@ -81,16 +81,22 @@ class AuthController extends Controller
             ]);
         }
 
-        // Log in the user directly — no DB query needed by Auth::login()
-        // NOTE: Do NOT call session()->regenerate() here — it saves the new
-        // session to the TENANT DB (current default), but StartSession on the
-        // next request loads from the CENTRAL DB where the new session doesn't
-        // exist. This causes the auth state to be lost and the user gets
-        // redirected to /website/portal.
+        // ── Reset to central DB BEFORE Auth::login() ────────────────────────
+        // Auth::login() internally calls session()->migrate(true) which
+        // regenerates and saves the session to the current default DB.
+        // If the DB is 'tenant' at that point, the new session is saved to
+        // the tenant DB, but the next request loads from the central DB
+        // where the new session doesn't exist → auth state lost.
+        // By resetting to 'pgsql' first, the session migration saves to
+        // the central DB where StartSession will find it on the next request.
+        $tenantId = session('tenant_id');
+        DB::setDefaultConnection('pgsql');
+
+        // Now Auth::login() will save the session to the central DB
         Auth::login($user, $request->boolean('remember'));
 
-        // Set tenant session
-        session(['tenant_slug' => $tenantSlug, 'tenant_id' => session('tenant_id')]);
+        // Restore tenant slug so TenantMiddleware switches DB on next request
+        session(['tenant_slug' => $tenantSlug, 'tenant_id' => $tenantId]);
 
         return redirect('/lecturer/dashboard' . ($tenantSlug ? '?tenant=' . $tenantSlug : ''));
     }
