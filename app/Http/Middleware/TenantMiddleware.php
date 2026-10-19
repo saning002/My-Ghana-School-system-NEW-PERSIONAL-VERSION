@@ -41,6 +41,13 @@ class TenantMiddleware
         $request->merge(['_tenant' => $tenant]);
         app()->instance('tenant', $tenant);
 
+        // Always persist tenant in session so subsequent requests
+        // (like login form POST) have the tenant context.
+        // This is critical: resolveTenant may find the tenant via ?tenant= query
+        // param or subdomain, but without setting the session here, the next
+        // request won't have the tenant context and will hit the central DB.
+        session(['tenant_slug' => $tenant->slug, 'tenant_id' => $tenant->id]);
+
         // Check status before switching DB
         if ($tenant->isSuspended()) {
             return response()->view('tenant.suspended', compact('tenant'), 403);
