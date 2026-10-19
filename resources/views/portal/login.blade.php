@@ -181,7 +181,7 @@
         </div>
         @endif
 
-        <form method="POST" action="{{ route('portal.login.submit') }}" style="display:flex;flex-direction:column;gap:14px;">
+        <form method="POST" action="{{ route('portal.login.submit') }}{{ request()->has('tenant') ? '?tenant=' . request()->query('tenant') : '' }}" style="display:flex;flex-direction:column;gap:14px;">
             @csrf
 
             {{-- Registration Number --}}

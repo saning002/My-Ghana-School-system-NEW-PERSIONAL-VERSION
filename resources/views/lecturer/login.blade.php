@@ -85,7 +85,7 @@
             </div>
             @endif
 
-            <form action="{{ route('lecturer.login.submit') }}" method="POST">
+            <form action="{{ route('lecturer.login.submit') }}{{ request()->has('tenant') ? '?tenant=' . request()->query('tenant') : '' }}" method="POST">
                 @csrf
 
                 {{-- Email Input --}}

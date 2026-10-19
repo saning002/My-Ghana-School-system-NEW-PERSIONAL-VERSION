@@ -1262,13 +1262,14 @@ Route::prefix('school')->name('school.')->group(function () {
     Route::get('/{slug}/student-portal',  [\App\Http\Controllers\Owner\SchoolAccessController::class, 'portalRedirect'])->defaults('portal', 'student')->name('student-portal');
     Route::get('/{slug}/teachers-portal',   [\App\Http\Controllers\Owner\SchoolAccessController::class, 'portalRedirect'])->defaults('portal', 'teacher')->name('teachers-portal');
     Route::get('/{slug}/staff-portal/{role?}', function ($slug, $role = null) {
-        $tenant = \App\Models\Tenant::where('slug', $slug)->orWhere('subdomain', $slug)->first();
+        $tenant = \App\Models\Tenant::on('pgsql')->where('slug', $slug)->orWhere('subdomain', $slug)->first();
         if (!$tenant) abort(404);
         session(['tenant_slug' => $tenant->slug, 'tenant_id' => $tenant->id]);
+        $tenantParam = '?tenant=' . $tenant->slug;
         if ($role && in_array($role, ['accountant', 'headmaster', 'headteacher', 'secretary'])) {
-            return redirect()->route('staff-portal.login.role', $role);
+            return redirect('/staff-portal/login/' . $role . $tenantParam);
         }
-        return redirect()->route('staff-portal.login');
+        return redirect('/staff-portal/login' . $tenantParam);
     })->name('staff-portal');
 });
 

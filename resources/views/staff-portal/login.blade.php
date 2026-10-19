@@ -72,7 +72,7 @@
                 </div>
                 @endif
 
-                <form method="POST" action="{{ route('staff-portal.login.submit') }}" class="space-y-4">
+                <form method="POST" action="{{ route('staff-portal.login.submit') }}{{ request()->has('tenant') ? '?tenant=' . request()->query('tenant') : '' }}" class="space-y-4">
                     @csrf
                     <input type="hidden" name="role" value="{{ $role ?? '' }}">
 

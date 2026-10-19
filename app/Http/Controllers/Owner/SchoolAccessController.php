@@ -50,25 +50,33 @@ class SchoolAccessController extends Controller
      * This ensures TenantMiddleware switches to the tenant DB for portal logins.
      *
      * Usage:
-     *   /school/{slug}/student-portal  → redirect to /student-portal/login
-     *   /school/{slug}/teachers-portal → redirect to /teachers-portal/login
-     *   /school/{slug}/staff-portal/{role?} → redirect to /staff-portal/login/{role}
+     *   /school/{slug}/student-portal  → redirect to /student-portal/login?tenant={slug}
+     *   /school/{slug}/teachers-portal → redirect to /teachers-portal/login?tenant={slug}
+     *   /school/{slug}/staff-portal/{role?} → redirect to /staff-portal/login/{role}?tenant={slug}
      */
     public function portalRedirect(string $slug, string $portal)
     {
-        $tenant = Tenant::where('slug', $slug)->orWhere('subdomain', $slug)->first();
+        // Use tenant from app container — TenantMiddleware already resolved it
+        // Do NOT query Tenant::where() here because the DB may already be
+        // switched to the tenant connection where the tenants table doesn't exist
+        $tenant = app('tenant');
+        if (!$tenant) {
+            $tenant = Tenant::on('pgsql')->where('slug', $slug)->orWhere('subdomain', $slug)->first();
+        }
         if (!$tenant) abort(404, 'School not found.');
-        if ($tenant->isSuspended()) return view('tenant.suspended', compact('tenant'));
-        if ($tenant->isExpired())   return view('tenant.expired',    compact('tenant'));
 
         // Set tenant in session so TenantMiddleware switches DB for all portal pages
         session(['tenant_slug' => $tenant->slug, 'tenant_id' => $tenant->id]);
 
+        // Add ?tenant= as a backup so even if session is lost, the next request
+        // can still resolve the tenant from the query param
+        $tenantParam = '?tenant=' . $tenant->slug;
+
         return match($portal) {
-            'student'    => redirect()->route('student-portal.login'),
-            'teacher'    => redirect()->route('teachers-portal.login'),
-            'staff'      => redirect()->route('staff-portal.login'),
-            default      => redirect()->route('student-portal.login'),
+            'student'    => redirect('/student-portal/login' . $tenantParam),
+            'teacher'    => redirect('/teachers-portal/login' . $tenantParam),
+            'staff'      => redirect('/staff-portal/login' . $tenantParam),
+            default      => redirect('/student-portal/login' . $tenantParam),
         };
     }
 
