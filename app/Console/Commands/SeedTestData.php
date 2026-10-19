@@ -86,6 +86,12 @@ class SeedTestData extends Command
             "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='academic_sessions' AND column_name='mode') THEN ALTER TABLE academic_sessions ADD COLUMN \"mode\" VARCHAR(255) NULL DEFAULT 'term'; END IF; END \$\$",
             "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='academic_periods' AND column_name='name') THEN ALTER TABLE academic_periods ADD COLUMN \"name\" VARCHAR(255) NULL; END IF; END \$\$",
             "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='academic_periods' AND column_name='sequence') THEN ALTER TABLE academic_periods ADD COLUMN \"sequence\" SMALLINT NOT NULL DEFAULT 1; END IF; END \$\$",
+            // payments — add receipt_number, academic_session_id, payer info (added by TenantSetupController columnAdditions)
+            "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='payments' AND column_name='receipt_number') THEN ALTER TABLE payments ADD COLUMN \"receipt_number\" VARCHAR(255) NULL; END IF; END \$\$",
+            "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='payments' AND column_name='academic_session_id') THEN ALTER TABLE payments ADD COLUMN \"academic_session_id\" BIGINT NULL; END IF; END \$\$",
+            "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='payments' AND column_name='payer_name') THEN ALTER TABLE payments ADD COLUMN \"payer_name\" VARCHAR(255) NULL; END IF; END \$\$",
+            "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='payments' AND column_name='payer_phone') THEN ALTER TABLE payments ADD COLUMN \"payer_phone\" VARCHAR(255) NULL; END IF; END \$\$",
+            "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='payments' AND column_name='receipt_path') THEN ALTER TABLE payments ADD COLUMN \"receipt_path\" VARCHAR(255) NULL; END IF; END \$\$",
         ];
 
         foreach ($ensureColumns as $stmt) {
