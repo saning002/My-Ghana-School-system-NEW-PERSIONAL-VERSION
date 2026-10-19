@@ -318,7 +318,7 @@ Route::prefix('lecturer')->name('lecturer.')->group(function () {
     Route::post('/login', [LecturerAuthController::class, 'login'])->name('login.submit');
     Route::post('/logout',[LecturerAuthController::class, 'logout'])->name('logout');
 
-    Route::middleware(['auth', 'role:lecturer', 'tenant'])->group(function () {
+    Route::middleware(['tenant', 'auth', 'role:lecturer'])->group(function () {
         Route::get('/dashboard', [LecturerDashboardController::class, 'index'])->name('dashboard');
 
         Route::get('/profile',  [LecturerProfileController::class, 'edit'])->name('profile.edit');
@@ -719,7 +719,7 @@ Route::prefix('staff-portal')->name('staff-portal.')->group(function () {
     Route::post('/logout',             [\App\Http\Controllers\StaffPortal\AuthController::class, 'logout'])->name('logout');
 
     // All authenticated staff portal routes — tenant middleware ensures school DB
-    Route::middleware(['staff.auth', 'tenant'])->group(function () {
+    Route::middleware(['tenant', 'staff.auth'])->group(function () {
         Route::get('/dashboard',            [\App\Http\Controllers\StaffPortal\DashboardController::class, 'index'])->name('dashboard');
         Route::get('/student-reports',      [\App\Http\Controllers\StaffPortal\SectionController::class, 'studentReports'])->name('student-reports');
         Route::get('/profile',              [\App\Http\Controllers\StaffPortal\ProfileController::class, 'edit'])->name('profile');
@@ -1086,7 +1086,7 @@ Route::prefix('portal')->name('portal.')->group(function () {
     Route::post('/login', [PortalController::class, 'login'])->name('login.submit');
     Route::post('/logout',[PortalController::class, 'logout'])->name('logout');
 
-    Route::middleware(['portal.auth', 'tenant'])->group(function () {
+    Route::middleware(['tenant', 'portal.auth'])->group(function () {
         Route::get('/dashboard',               [PortalController::class, 'dashboard'])->name('dashboard');
         Route::get('/photo/{student}',         [PortalController::class, 'photo'])->name('photo');
         Route::get('/background/{student}',    [PortalController::class, 'backgroundPhoto'])->name('background');

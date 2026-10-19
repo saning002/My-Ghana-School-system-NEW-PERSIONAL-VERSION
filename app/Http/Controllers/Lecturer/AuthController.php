@@ -91,7 +91,7 @@ class AuthController extends Controller
             session(['tenant_slug' => $tenantSlug, 'tenant_id' => session('tenant_id')]);
         }
 
-        return redirect()->route('lecturer.dashboard');
+        return redirect('/lecturer/dashboard' . ($tenantSlug ? '?tenant=' . $tenantSlug : ''));
     }
 
     /**
