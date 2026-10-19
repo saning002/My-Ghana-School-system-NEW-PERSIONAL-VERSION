@@ -77,6 +77,22 @@ class TenantMiddleware
             return Tenant::on('pgsql')->where('slug', $sessionSlug)->first();
         }
 
+        // 1b. URL path-based — extract slug from /school/{slug}/...
+        // This runs BEFORE the route handler, so session hasn't been set yet
+        $path = $request->path();
+        if (preg_match('#^school/([^/]+)#', $path, $m)) {
+            $urlSlug = $m[1];
+            $tenant = Tenant::on('pgsql')->where('slug', $urlSlug)
+                ->orWhere('subdomain', $urlSlug)
+                ->first();
+            if ($tenant) {
+                // Store in session so all subsequent requests (portal logins, etc.)
+                // have the tenant context without needing the slug in the URL
+                session(['tenant_slug' => $tenant->slug, 'tenant_id' => $tenant->id]);
+                return $tenant;
+            }
+        }
+
         // 2. Try subdomain — e.g. "accra-academy" from "accra-academy.yourdomain.com"
         $host      = $request->getHost();
         $appDomain = config('app.domain', parse_url(config('app.url'), PHP_URL_HOST));
