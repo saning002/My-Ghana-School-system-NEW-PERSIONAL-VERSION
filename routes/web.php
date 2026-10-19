@@ -1238,6 +1238,86 @@ Route::get('/debug-school-login/{slug}', function(string $slug, \Illuminate\Http
     return response()->json($out, 200, [], JSON_PRETTY_PRINT);
 })->name('debug.school.login');
 
+// ── Diagnostic: simulate full teacher login flow ──────────────────────
+Route::get('/debug/teacher-login-flow', function (\Illuminate\Http\Request $request) {
+    $slug = $request->query('tenant', 'saning-academy');
+    $email = $request->query('email', 'kwame.asante@saningacademy.test');
+    $password = $request->query('password', 'Teacher@2025');
+
+    $results = [];
+
+    // 1. Resolve tenant
+    $tenant = \App\Models\Tenant::on('pgsql')->where('slug', $slug)->first();
+    $results['1_tenant_found'] = $tenant ? "YES: {$tenant->name}" : 'NO';
+
+    if (!$tenant) return response()->json($results, 200, [], JSON_PRETTY_PRINT);
+
+    // 2. Switch to tenant DB
+    \Illuminate\Support\Facades\DB::purge('tenant');
+    \Illuminate\Support\Facades\Config::set('database.connections.tenant', $tenant->dbConfig());
+    \Illuminate\Support\Facades\DB::setDefaultConnection('tenant');
+    session(['tenant_slug' => $tenant->slug, 'tenant_id' => $tenant->id]);
+    $results['2_db_switched'] = \Illuminate\Support\Facades\DB::getDefaultConnection();
+
+    // 3. Find user
+    $user = \App\Models\User::where('email', $email)->first();
+    $results['3_user_found'] = $user ? "YES: id={$user->id}, role={$user->role}" : 'NO';
+
+    if (!$user) return response()->json($results, 200, [], JSON_PRETTY_PRINT);
+
+    // 4. Check password
+    $pwMatch = \Illuminate\Support\Facades\Hash::check($password, $user->password);
+    $results['4_password_match'] = $pwMatch ? 'YES' : 'NO';
+
+    // 5. Simulate login
+    $results['5_session_before_login'] = [
+        'tenant_slug' => session('tenant_slug'),
+        'tenant_id' => session('tenant_id'),
+        'session_id' => session()->getId(),
+    ];
+
+    // Regenerate FIRST, then login
+    session()->regenerate();
+    \Illuminate\Support\Facades\Auth::login($user);
+    session(['tenant_slug' => $tenant->slug, 'tenant_id' => $tenant->id]);
+
+    $results['6_session_after_login'] = [
+        'tenant_slug' => session('tenant_slug'),
+        'tenant_id' => session('tenant_id'),
+        'session_id' => session()->getId(),
+        'auth_check' => \Illuminate\Support\Facades\Auth::check() ? 'YES' : 'NO',
+        'auth_user_id' => \Illuminate\Support\Facades\Auth::id(),
+    ];
+
+    // 7. Simulate what auth middleware would do
+    $results['7_auth_guard_user'] = \Illuminate\Support\Facades\Auth::guard('web')->user()
+        ? "YES: id=" . \Illuminate\Support\Facades\Auth::guard('web')->user()->id
+        : 'NO (this would trigger redirect to login → website.portal)';
+
+    // 8. Check route names
+    try {
+        $results['8_route_login'] = route('login');
+    } catch (\Throwable $e) {
+        $results['8_route_login'] = 'ERROR: ' . $e->getMessage();
+    }
+    try {
+        $results['8_route_school_admin_login'] = route('school.admin.login', $slug);
+    } catch (\Throwable $e) {
+        $results['8_route_school_admin_login'] = 'ERROR: ' . $e->getMessage();
+    }
+    try {
+        $results['8_route_lecturer_dashboard'] = route('lecturer.dashboard');
+    } catch (\Throwable $e) {
+        $results['8_route_lecturer_dashboard'] = 'ERROR: ' . $e->getMessage();
+    }
+
+    // Reset
+    \Illuminate\Support\Facades\Auth::logout();
+    \Illuminate\Support\Facades\DB::setDefaultConnection('pgsql');
+
+    return response()->json($results, 200, [], JSON_PRETTY_PRINT);
+})->middleware('web');
+
 // ── Diagnostic: check teacher credentials against tenant DB ──────────────
 Route::get('/debug/teacher-check', function (\Illuminate\Http\Request $request) {
     $slug = $request->query('tenant', 'saning-academy');
