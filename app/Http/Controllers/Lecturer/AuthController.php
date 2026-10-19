@@ -92,6 +92,7 @@ class AuthController extends Controller
         session()->put($authKey, $user->id);
 
         // Restore tenant slug so TenantMiddleware switches DB on next request
+        $tenantId = session('tenant_id');
         session(['tenant_slug' => $tenantSlug, 'tenant_id' => $tenantId]);
 
         return redirect('/lecturer/dashboard' . ($tenantSlug ? '?tenant=' . $tenantSlug : ''));
