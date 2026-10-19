@@ -1289,6 +1289,9 @@ Route::prefix('owner')->name('owner.')->group(function () {
         Route::delete('/schools/{tenant}/setup/admins/{userId}',   [\App\Http\Controllers\Owner\TenantSetupController::class, 'deleteAdmin'])->name('schools.setup.delete-admin');
         Route::put('/schools/{tenant}/setup/admins/{userId}',      [\App\Http\Controllers\Owner\TenantSetupController::class, 'updateAdmin'])->name('schools.setup.update-admin');
 
+        // Test Data Seeder — owner-only, runs seed:test-data in-process
+        Route::get('/schools/{tenant}/seed-test-data',  [\App\Http\Controllers\Owner\TenantSetupController::class, 'seedTestData'])->name('schools.seed-test-data');
+
         // Plans
         Route::resource('plans', \App\Http\Controllers\Owner\PlanController::class);
 

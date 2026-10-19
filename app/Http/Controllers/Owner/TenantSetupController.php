@@ -537,4 +537,29 @@ class TenantSetupController extends Controller
             "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE tablename='students' AND indexname='students_student_id_unique') THEN ALTER TABLE students ADD CONSTRAINT students_student_id_unique UNIQUE (student_id); END IF; END \$\$",
         ];
     }
+
+    /**
+     * Web-triggered test data seeder — runs Artisan seed:test-data in-process
+     * so it works on Render free plan (no shell access needed).
+     */
+    public function seedTestData(Request $request, Tenant $tenant)
+    {
+        $slug = $tenant->slug;
+
+        // Capture Artisan output
+        $exitCode = Artisan::call('seed:test-data', ['slug' => $slug]);
+        $output   = Artisan::output();
+
+        AuditLog::record(
+            'tenant.seed_test_data',
+            "Test data seeded for {$tenant->name} (slug: {$slug})",
+            $tenant->id
+        );
+
+        return response()->view('owner.seed-result', [
+            'tenant'   => $tenant,
+            'output'   => $output,
+            'exitCode' => $exitCode,
+        ]);
+    }
 }

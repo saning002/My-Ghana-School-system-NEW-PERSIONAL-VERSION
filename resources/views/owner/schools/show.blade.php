@@ -303,6 +303,27 @@
                 </div>
             </div>
 
+            {{-- Step 3: Seed Test Data --}}
+            <div class="col-md-12">
+                <div class="owner-card">
+                    <div class="card-header d-flex align-items-center gap-2">
+                        <span class="badge bg-info">Step 3</span>
+                        <i class="fas fa-seedling text-success"></i>
+                        Seed Test Data (5 Students + 2 Teachers)
+                    </div>
+                    <div class="card-body">
+                        <p style="font-size:0.875rem;color:#64748b;">
+                            Creates 5 students with full records (exams, SBA scores, attendance, fees, payments) and 2 teachers with course assignments into <strong>{{ $tenant->name }}</strong>'s database. Safe to run multiple times — skips existing records.
+                        </p>
+                        <a href="{{ route('owner.schools.seed-test-data', $tenant) }}"
+                           class="btn btn-success w-100"
+                           onclick="return confirm('Seed test data into {{ $tenant->name }}\'s database? This will create 5 students, 2 teachers, exams, attendance, and fee records.')">
+                            <i class="fas fa-seedling me-2"></i> Seed Test Data Now
+                        </a>
+                    </div>
+                </div>
+            </div>
+
             {{-- Step 2: Create Admin --}}
             <div class="col-md-6">
                 <div class="owner-card h-100">
