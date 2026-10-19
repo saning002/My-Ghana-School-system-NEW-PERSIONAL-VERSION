@@ -81,19 +81,15 @@ class AuthController extends Controller
             ]);
         }
 
-        // ── Reset to central DB BEFORE Auth::login() ────────────────────────
+        // ── Log in WITHOUT Auth::login() ────────────────────────────────────
         // Auth::login() internally calls session()->migrate(true) which
-        // regenerates and saves the session to the current default DB.
-        // If the DB is 'tenant' at that point, the new session is saved to
-        // the tenant DB, but the next request loads from the central DB
-        // where the new session doesn't exist → auth state lost.
-        // By resetting to 'pgsql' first, the session migration saves to
-        // the central DB where StartSession will find it on the next request.
-        $tenantId = session('tenant_id');
-        DB::setDefaultConnection('pgsql');
-
-        // Now Auth::login() will save the session to the central DB
-        Auth::login($user, $request->boolean('remember'));
+        // regenerates the session ID. This causes the session to be saved
+        // with a new ID, and the cookie is updated. But something in the
+        // process causes the auth state to be lost on the next request.
+        // Instead, manually store the user ID in the session using the
+        // same key that Auth::user() looks for.
+        $authKey = Auth::getName();  // e.g. 'login_web_XXXXX'
+        session()->put($authKey, $user->id);
 
         // Restore tenant slug so TenantMiddleware switches DB on next request
         session(['tenant_slug' => $tenantSlug, 'tenant_id' => $tenantId]);
