@@ -28,6 +28,16 @@ return Application::configure(basePath: dirname(__DIR__))
             return route('admin.dashboard');
         });
 
+        // When an unauthenticated user tries to access a protected page,
+        // redirect to the school's login page (not the generic /login → /website/portal)
+        $middleware->redirectGuestsTo(function (\Illuminate\Http\Request $request) {
+            $slug = session('tenant_slug') ?? $request->query('tenant');
+            if ($slug) {
+                return route('school.admin.login', $slug);
+            }
+            return route('website.portal');
+        });
+
         $middleware->alias([
             'role'         => \App\Http\Middleware\EnsureUserHasRole::class,
             'portal.auth'  => \App\Http\Middleware\EnsurePortalAuth::class,

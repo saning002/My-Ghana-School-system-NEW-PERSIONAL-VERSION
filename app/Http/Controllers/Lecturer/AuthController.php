@@ -82,14 +82,12 @@ class AuthController extends Controller
         }
 
         // Log in the user directly — no DB query needed by Auth::login()
+        // IMPORTANT: regenerate FIRST, then login — so auth state is on the NEW session
+        $request->session()->regenerate();
         Auth::login($user, $request->boolean('remember'));
 
-        $request->session()->regenerate();
-
-        // Re-set tenant session after regenerate
-        if ($tenantSlug) {
-            session(['tenant_slug' => $tenantSlug, 'tenant_id' => session('tenant_id')]);
-        }
+        // Set tenant session on the new session
+        session(['tenant_slug' => $tenantSlug, 'tenant_id' => session('tenant_id')]);
 
         return redirect('/lecturer/dashboard' . ($tenantSlug ? '?tenant=' . $tenantSlug : ''));
     }
