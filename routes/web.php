@@ -1238,6 +1238,20 @@ Route::get('/debug-school-login/{slug}', function(string $slug, \Illuminate\Http
     return response()->json($out, 200, [], JSON_PRETTY_PRINT);
 })->name('debug.school.login');
 
+// ── Diagnostic: check session state after teacher login ──────────────────
+Route::get('/debug/session-state', function () {
+    return response()->json([
+        'session_id'    => session()->getId(),
+        'all_session'   => collect(session()->all())->except(['_token'])->toArray(),
+        'auth_check'    => auth()->check(),
+        'auth_user_id'  => auth()->id(),
+        'default_conn'  => \Illuminate\Support\Facades\DB::getDefaultConnection(),
+        'auth_key_name' => \Illuminate\Support\Facades\Auth::guard('web')->getName(),
+        'session_has_auth_key' => session()->has(\Illuminate\Support\Facades\Auth::guard('web')->getName()),
+        'session_auth_value'   => session(\Illuminate\Support\Facades\Auth::guard('web')->getName()),
+    ], 200, [], JSON_PRETTY_PRINT);
+})->middleware('web');
+
 // ── Diagnostic: simulate full teacher login flow ──────────────────────
 Route::get('/debug/teacher-login-flow', function (\Illuminate\Http\Request $request) {
     $slug = $request->query('tenant', 'saning-academy');
