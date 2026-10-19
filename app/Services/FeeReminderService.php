@@ -184,9 +184,52 @@ class FeeReminderService
         return compact('sent', 'failed', 'errors');
     }
 
-    // ─── SMS via Africa's Talking ───────────────────────────────────────────────
+    // ─── SMS via Africa's Talking or Arkesel ───────────────────────────────────
 
     private function sendSms(string $phone, string $message): array
+    {
+        // Arkesel takes priority if configured (Ghanaian provider, no business reg needed)
+        if (!empty(env('ARKESEL_API_KEY', ''))) {
+            return $this->sendSmsArkesel($phone, $message);
+        }
+        return $this->sendSmsAfricasTalking($phone, $message);
+    }
+
+    private function sendSmsArkesel(string $phone, string $message): array
+    {
+        $apiKey   = env('ARKESEL_API_KEY', '');
+        $senderId = env('ARKESEL_SENDER_ID', 'SchoolAlert');
+
+        if (empty($apiKey)) {
+            return ['status' => 'failed', 'error' => 'Arkesel API key not configured'];
+        }
+
+        $phone = $this->formatGhanaPhone($phone);
+
+        try {
+            $response = \Illuminate\Support\Facades\Http::withHeaders([
+                'api-key' => $apiKey,
+            ])->post('https://sms.arkesel.com/api/v2/sms/send', [
+                'sender'     => $senderId,
+                'message'    => $message,
+                'recipients' => [$phone],
+            ]);
+
+            $body = $response->json();
+
+            if ($response->successful() && ($body['status'] ?? '') === 'success') {
+                return ['status' => 'sent'];
+            }
+
+            return ['status' => 'failed', 'error' => $body['message'] ?? $response->body()];
+
+        } catch (\Throwable $e) {
+            Log::error('Arkesel SMS failed: ' . $e->getMessage());
+            return ['status' => 'failed', 'error' => $e->getMessage()];
+        }
+    }
+
+    private function sendSmsAfricasTalking(string $phone, string $message): array
     {
         $username = config('services.africastalking.username', env('AT_USERNAME', ''));
         $apiKey   = config('services.africastalking.api_key', env('AT_API_KEY', ''));
@@ -196,7 +239,6 @@ class FeeReminderService
             return ['status' => 'failed', 'error' => 'Africa\'s Talking credentials not configured'];
         }
 
-        // Ensure phone has country code (+233 for Ghana)
         $phone = $this->formatGhanaPhone($phone);
 
         try {
@@ -233,9 +275,58 @@ class FeeReminderService
         }
     }
 
-    // ─── WhatsApp via Twilio ────────────────────────────────────────────────────
+    // ─── WhatsApp via Arkesel or Twilio ────────────────────────────────────────
 
     private function sendWhatsApp(string $phone, string $message): array
+    {
+        // Arkesel takes priority if configured
+        if (!empty(env('ARKESEL_API_KEY', ''))) {
+            return $this->sendWhatsAppArkesel($phone, $message);
+        }
+        return $this->sendWhatsAppTwilio($phone, $message);
+    }
+
+    private function sendWhatsAppArkesel(string $phone, string $message): array
+    {
+        $apiKey = env('ARKESEL_API_KEY', '');
+        $from   = env('ARKESEL_WHATSAPP_FROM', '');  // Your Arkesel WhatsApp number
+
+        if (empty($apiKey)) {
+            return ['status' => 'failed', 'error' => 'Arkesel API key not configured'];
+        }
+
+        if (empty($from)) {
+            // Fall back to Twilio if no Arkesel WhatsApp number set
+            return $this->sendWhatsAppTwilio($phone, $message);
+        }
+
+        $phone = $this->formatGhanaPhone($phone);
+
+        try {
+            $response = \Illuminate\Support\Facades\Http::withHeaders([
+                'api-key'      => $apiKey,
+                'Content-Type' => 'application/json',
+            ])->post('https://sms.arkesel.com/api/v2/whatsapp/send', [
+                'sender'     => $from,
+                'message'    => $message,
+                'recipients' => [$phone],
+            ]);
+
+            $body = $response->json();
+
+            if ($response->successful() && ($body['status'] ?? '') === 'success') {
+                return ['status' => 'sent'];
+            }
+
+            return ['status' => 'failed', 'error' => $body['message'] ?? $response->body()];
+
+        } catch (\Throwable $e) {
+            Log::error('Arkesel WhatsApp failed: ' . $e->getMessage());
+            return ['status' => 'failed', 'error' => $e->getMessage()];
+        }
+    }
+
+    private function sendWhatsAppTwilio(string $phone, string $message): array
     {
         $sid   = config('services.twilio.sid', env('TWILIO_SID', ''));
         $token = config('services.twilio.token', env('TWILIO_TOKEN', ''));
