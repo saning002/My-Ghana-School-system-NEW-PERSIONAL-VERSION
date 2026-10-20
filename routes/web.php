@@ -1252,6 +1252,41 @@ Route::get('/debug/session-state', function () {
     ], 200, [], JSON_PRETTY_PRINT);
 })->middleware('web');
 
+// ── Diagnostic: check site_settings for a tenant ─────────────────────────
+Route::get('/debug/site-settings', function (\Illuminate\Http\Request $request) {
+    $slug = $request->query('tenant', 'saning-academy');
+    $tenant = \App\Models\Tenant::on('pgsql')->where('slug', $slug)->first();
+    if (!$tenant) return response('Tenant not found');
+
+    \Illuminate\Support\Facades\DB::purge('tenant');
+    \Illuminate\Support\Facades\Config::set('database.connections.tenant', $tenant->dbConfig());
+    \Illuminate\Support\Facades\DB::setDefaultConnection('tenant');
+    session(['tenant_slug' => $tenant->slug, 'tenant_id' => $tenant->id]);
+
+    try {
+        $row = \Illuminate\Support\Facades\DB::table('site_settings')->first();
+        $cols = \Illuminate\Support\Facades\DB::select(
+            "SELECT column_name FROM information_schema.columns WHERE table_name='site_settings' ORDER BY ordinal_position"
+        );
+        $result = [
+            'tenant'       => $tenant->name,
+            'row_exists'   => $row ? 'YES' : 'NO',
+            'site_name'    => $row->site_name ?? null,
+            'tagline'      => $row->tagline ?? null,
+            'hero_title'   => $row->hero_title ?? null,
+            'theme_colors' => $row->theme_colors ?? null,
+            'website_theme'=> $row->website_theme ?? null,
+            'columns'      => array_column($cols, 'column_name'),
+        ];
+    } catch (\Throwable $e) {
+        $result = ['error' => $e->getMessage()];
+    }
+
+    \Illuminate\Support\Facades\DB::setDefaultConnection('pgsql');
+
+    return response()->json($result, 200, [], JSON_PRETTY_PRINT);
+})->middleware('web');
+
 // ── Quick fix: repair staff_portal_users columns on a tenant DB ──────────
 Route::get('/debug/fix-staff-table', function (\Illuminate\Http\Request $request) {
     $slug = $request->query('tenant', 'saning-academy');
