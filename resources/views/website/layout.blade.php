@@ -1,6 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+@php
+    // ── Slug-aware URL helper ─────────────────────────────────────────────
+    // If the current URL contains /school/{slug}/website, use slug-based
+    // routes so the URL stays as /school/{slug}/website/* during navigation.
+    // Otherwise fall back to the session-based /website/* routes.
+    $urlSlug = null;
+    $path = request()->path(); // e.g. "school/saning-academy/website/about"
+    if (preg_match('#^school/([^/]+)/website#', $path, $m)) {
+        $urlSlug = $m[1];
+    }
+    // Helper closure: generate URL using slug if available
+    $wu = function(string $page, string $extra = '') use ($urlSlug): string {
+        if ($urlSlug) {
+            $base = url('/school/' . $urlSlug . '/website');
+            return $page === '' ? $base : $base . '/' . $page . $extra;
+        }
+        $map = [
+            ''          => route('website.home'),
+            'home'      => route('website.home'),
+            'about'     => route('website.about'),
+            'academics' => route('website.academics'),
+            'admissions'=> route('website.admissions'),
+            'gallery'   => route('website.gallery'),
+            'events'    => route('website.events'),
+            'blog'      => route('website.blog'),
+            'staff'     => route('website.staff'),
+            'contact'   => route('website.contact'),
+            'portal'    => route('website.portal'),
+            'apply'     => route('website.apply'),
+        ];
+        return $map[$page] ?? route('website.home');
+    };
+@endphp
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>@hasSection('page_title'){{ $site->site_name ?? 'School' }} — @yield('page_title')@else{{ $site->site_name ?? 'School' }}@endif</title>
@@ -12,9 +45,7 @@
   @php
     $theme = ['primary'=>'#e9a422','secondary'=>'#0a1f44','accent'=>'#0891b2','text'=>'#3a3830','bg'=>'#ffffff','navBg'=>'#0a1f44'];
     try {
-        if (\Illuminate\Support\Facades\Schema::hasTable('site_settings')) {
-            $theme = ($site ?? \App\Models\Website\SiteSetting::instance())->websiteTheme;
-        }
+        $theme = ($site ?? \App\Models\Website\SiteSetting::instance())->websiteTheme;
     } catch (\Throwable $__e) {}
   @endphp
   <style>
@@ -206,7 +237,7 @@
 {{-- ── NAVBAR ─────────────────────────────────────────────────────── --}}
 <nav class="nav nav--top" id="mainNav" role="navigation" aria-label="Main navigation">
   <div class="nav-inner">
-    <a href="{{ route('website.home') }}" class="nav-brand" aria-label="{{ $site->site_name ?? 'School' }} home">
+    <a href="{{ $wu('') }}" class="nav-brand" aria-label="{{ $site->site_name ?? 'School' }} home">
       @if(isset($site) && $site->logo_url)
         <img src="{{ $site->logo_url }}" alt="{{ $site->site_name }}" class="nav-logo">
       @else
@@ -224,17 +255,17 @@
     </a>
 
     <div class="nav-links">
-      <a href="{{ route('website.home') }}"       @class(['active' => request()->routeIs('website.home')])>Home</a>
-      <a href="{{ route('website.about') }}"      @class(['active' => request()->routeIs('website.about')])>About</a>
-      <a href="{{ route('website.academics') }}"  @class(['active' => request()->routeIs('website.academics')])>Academics</a>
-      <a href="{{ route('website.admissions') }}" @class(['active' => request()->routeIs('website.admissions')])>Admissions</a>
-      <a href="{{ route('website.gallery') }}"    @class(['active' => request()->routeIs('website.gallery')])>Gallery</a>
-      <a href="{{ route('website.events') }}"     @class(['active' => request()->routeIs('website.events')])>Events</a>
-      <a href="{{ route('website.contact') }}"    @class(['active' => request()->routeIs('website.contact')])>Contact</a>
+      <a href="{{ $wu('home') }}"       @class(['active' => request()->routeIs('website.home','school.website.home')])>Home</a>
+      <a href="{{ $wu('about') }}"      @class(['active' => request()->routeIs('website.about','school.website.about')])>About</a>
+      <a href="{{ $wu('academics') }}"  @class(['active' => request()->routeIs('website.academics','school.website.academics')])>Academics</a>
+      <a href="{{ $wu('admissions') }}" @class(['active' => request()->routeIs('website.admissions','school.website.admissions')])>Admissions</a>
+      <a href="{{ $wu('gallery') }}"    @class(['active' => request()->routeIs('website.gallery','school.website.gallery')])>Gallery</a>
+      <a href="{{ $wu('events') }}"     @class(['active' => request()->routeIs('website.events','school.website.events')])>Events</a>
+      <a href="{{ $wu('contact') }}"    @class(['active' => request()->routeIs('website.contact','school.website.contact')])>Contact</a>
     </div>
     <div class="nav-actions">
-      <a href="{{ route('website.portal') }}" class="nav-cta-ghost"><i class="fas fa-shield-halved"></i> {{ $site->nav_portal_text ?? 'Portals' }}</a>
-      <a href="{{ route('website.apply') }}"  class="nav-cta-primary">{{ $site->nav_enroll_text ?? 'Enroll Now' }}</a>
+      <a href="{{ $wu('portal') }}" class="nav-cta-ghost"><i class="fas fa-shield-halved"></i> {{ $site->nav_portal_text ?? 'Portals' }}</a>
+      <a href="{{ $wu('apply') }}"  class="nav-cta-primary">{{ $site->nav_enroll_text ?? 'Enroll Now' }}</a>
     </div>
     <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
       <span></span><span></span><span></span>
@@ -244,17 +275,17 @@
 
 {{-- Mobile nav --}}
 <div class="mobile-nav" id="mobileNav" role="dialog" aria-label="Mobile navigation">
-  <a href="{{ route('website.home') }}"><i class="fas fa-home"></i> Home</a>
-  <a href="{{ route('website.about') }}"><i class="fas fa-school"></i> About Us</a>
-  <a href="{{ route('website.academics') }}"><i class="fas fa-graduation-cap"></i> Academics</a>
-  <a href="{{ route('website.admissions') }}"><i class="fas fa-file-alt"></i> Admissions</a>
-  <a href="{{ route('website.gallery') }}"><i class="fas fa-images"></i> Gallery</a>
-  <a href="{{ route('website.events') }}"><i class="fas fa-calendar-alt"></i> Events</a>
-  <a href="{{ route('website.contact') }}"><i class="fas fa-envelope"></i> Contact</a>
+  <a href="{{ $wu('home') }}"><i class="fas fa-home"></i> Home</a>
+  <a href="{{ $wu('about') }}"><i class="fas fa-school"></i> About Us</a>
+  <a href="{{ $wu('academics') }}"><i class="fas fa-graduation-cap"></i> Academics</a>
+  <a href="{{ $wu('admissions') }}"><i class="fas fa-file-alt"></i> Admissions</a>
+  <a href="{{ $wu('gallery') }}"><i class="fas fa-images"></i> Gallery</a>
+  <a href="{{ $wu('events') }}"><i class="fas fa-calendar-alt"></i> Events</a>
+  <a href="{{ $wu('contact') }}"><i class="fas fa-envelope"></i> Contact</a>
   <div class="mobile-nav-divider"></div>
   <div class="mobile-nav-actions">
-    <a href="{{ route('website.portal') }}" style="background:rgba(255,255,255,.07);color:rgba(255,255,255,.85);"><i class="fas fa-shield-halved" style="color:var(--gold);"></i> View Portals</a>
-    <a href="{{ route('website.apply') }}"  style="background:var(--gold);color:var(--navy);"><i class="fas fa-star"></i> Enroll Now</a>
+    <a href="{{ $wu('portal') }}" style="background:rgba(255,255,255,.07);color:rgba(255,255,255,.85);"><i class="fas fa-shield-halved" style="color:var(--gold);"></i> View Portals</a>
+    <a href="{{ $wu('apply') }}"  style="background:var(--gold);color:var(--navy);"><i class="fas fa-star"></i> Enroll Now</a>
   </div>
 </div>
 
