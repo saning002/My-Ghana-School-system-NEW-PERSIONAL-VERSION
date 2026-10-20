@@ -1118,6 +1118,44 @@ Route::middleware('tenant')->name('website.')->group(function () {
     Route::get('/website/portal',      [WebsiteController::class, 'portal'])->name('portal');
 });
 
+// ── Slug-based website URLs — permanent shareable URLs for each school ────
+// These set the tenant session then redirect to the /website/* routes above.
+// /school/{slug}/website → school's public home page (bookmarkable, shareable)
+Route::prefix('school')->name('school.website.')->group(function () {
+    Route::get('/{slug}/website',           function ($slug) {
+        $tenant = \App\Models\Tenant::on('pgsql')->where('slug', $slug)->first();
+        if (!$tenant) abort(404);
+        if ($tenant->isSuspended()) return view('tenant.suspended', compact('tenant'));
+        if ($tenant->isExpired())   return view('tenant.expired',   compact('tenant'));
+        session(['tenant_slug' => $tenant->slug, 'tenant_id' => $tenant->id]);
+        return redirect()->route('website.home');
+    })->name('home');
+    Route::get('/{slug}/website/about',     function ($slug) {
+        $t = \App\Models\Tenant::on('pgsql')->where('slug', $slug)->first();
+        if (!$t) abort(404);
+        session(['tenant_slug' => $t->slug, 'tenant_id' => $t->id]);
+        return redirect()->route('website.about');
+    })->name('about');
+    Route::get('/{slug}/website/admissions', function ($slug) {
+        $t = \App\Models\Tenant::on('pgsql')->where('slug', $slug)->first();
+        if (!$t) abort(404);
+        session(['tenant_slug' => $t->slug, 'tenant_id' => $t->id]);
+        return redirect()->route('website.admissions');
+    })->name('admissions');
+    Route::get('/{slug}/website/contact',   function ($slug) {
+        $t = \App\Models\Tenant::on('pgsql')->where('slug', $slug)->first();
+        if (!$t) abort(404);
+        session(['tenant_slug' => $t->slug, 'tenant_id' => $t->id]);
+        return redirect()->route('website.contact');
+    })->name('contact');
+    Route::get('/{slug}/website/portal',    function ($slug) {
+        $t = \App\Models\Tenant::on('pgsql')->where('slug', $slug)->first();
+        if (!$t) abort(404);
+        session(['tenant_slug' => $t->slug, 'tenant_id' => $t->id]);
+        return redirect()->route('website.portal');
+    })->name('portal');
+});
+
 // ── Replay pending Paystack transactions (owner only) ─────────────────────
 Route::get('/owner-debug/replay-pending', function() {
     // First fix the constraint
