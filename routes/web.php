@@ -1329,18 +1329,23 @@ Route::get('/debug/site-settings', function (\Illuminate\Http\Request $request) 
 
     try {
         $row = \Illuminate\Support\Facades\DB::table('site_settings')->first();
-        $cols = \Illuminate\Support\Facades\DB::select(
-            "SELECT column_name FROM information_schema.columns WHERE table_name='site_settings' ORDER BY ordinal_position"
-        );
         $result = [
-            'tenant'       => $tenant->name,
-            'row_exists'   => $row ? 'YES' : 'NO',
-            'site_name'    => $row->site_name ?? null,
-            'tagline'      => $row->tagline ?? null,
-            'hero_title'   => $row->hero_title ?? null,
-            'theme_colors' => $row->theme_colors ?? null,
-            'website_theme'=> $row->website_theme ?? null,
-            'columns'      => array_column($cols, 'column_name'),
+            'tenant'          => $tenant->name,
+            'row_exists'      => $row ? 'YES' : 'NO',
+            'site_name'       => $row->site_name ?? null,
+            'tagline'         => $row->tagline ?? null,
+            'hero_title'      => $row->hero_title ?? null,
+            'hero_bg_type'    => $row->hero_bg_type ?? null,
+            'hero_bg_image'   => $row->hero_bg_image ?? null,
+            'hero_layout'     => $row->hero_layout ?? null,
+            'theme_colors'    => $row->theme_colors ?? null,
+            'website_theme'   => $row->website_theme ?? null,
+            // Compute what the hero image URL would be
+            'hero_image_url_computed' => $row->hero_bg_image
+                ? (filter_var($row->hero_bg_image, FILTER_VALIDATE_URL)
+                    ? $row->hero_bg_image
+                    : \Illuminate\Support\Facades\Storage::disk('public')->url($row->hero_bg_image))
+                : 'NO IMAGE SET',
         ];
     } catch (\Throwable $e) {
         $result = ['error' => $e->getMessage()];
