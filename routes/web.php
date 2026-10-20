@@ -1119,41 +1119,40 @@ Route::middleware('tenant')->name('website.')->group(function () {
 });
 
 // ── Slug-based website URLs — permanent shareable URLs for each school ────
-// These set the tenant session then redirect to the /website/* routes above.
-// /school/{slug}/website → school's public home page (bookmarkable, shareable)
-Route::prefix('school')->name('school.website.')->group(function () {
-    Route::get('/{slug}/website',           function ($slug) {
+// These set the tenant session and serve the website AT the slug URL
+// without redirecting away, so the URL stays as /school/{slug}/website
+Route::prefix('school')->name('school.website.')->middleware('web')->group(function () {
+
+    // Helper — resolve tenant from slug, set session, configure DB
+    $boot = function ($slug) {
         $tenant = \App\Models\Tenant::on('pgsql')->where('slug', $slug)->first();
         if (!$tenant) abort(404);
-        if ($tenant->isSuspended()) return view('tenant.suspended', compact('tenant'));
-        if ($tenant->isExpired())   return view('tenant.expired',   compact('tenant'));
+        if ($tenant->isSuspended()) abort(403, 'School suspended');
+        if ($tenant->isExpired())   abort(403, 'School subscription expired');
         session(['tenant_slug' => $tenant->slug, 'tenant_id' => $tenant->id]);
-        return redirect()->route('website.home');
-    })->name('home');
-    Route::get('/{slug}/website/about',     function ($slug) {
-        $t = \App\Models\Tenant::on('pgsql')->where('slug', $slug)->first();
-        if (!$t) abort(404);
-        session(['tenant_slug' => $t->slug, 'tenant_id' => $t->id]);
-        return redirect()->route('website.about');
-    })->name('about');
-    Route::get('/{slug}/website/admissions', function ($slug) {
-        $t = \App\Models\Tenant::on('pgsql')->where('slug', $slug)->first();
-        if (!$t) abort(404);
-        session(['tenant_slug' => $t->slug, 'tenant_id' => $t->id]);
-        return redirect()->route('website.admissions');
-    })->name('admissions');
-    Route::get('/{slug}/website/contact',   function ($slug) {
-        $t = \App\Models\Tenant::on('pgsql')->where('slug', $slug)->first();
-        if (!$t) abort(404);
-        session(['tenant_slug' => $t->slug, 'tenant_id' => $t->id]);
-        return redirect()->route('website.contact');
-    })->name('contact');
-    Route::get('/{slug}/website/portal',    function ($slug) {
-        $t = \App\Models\Tenant::on('pgsql')->where('slug', $slug)->first();
-        if (!$t) abort(404);
-        session(['tenant_slug' => $t->slug, 'tenant_id' => $t->id]);
-        return redirect()->route('website.portal');
-    })->name('portal');
+        \Illuminate\Support\Facades\DB::purge('tenant');
+        \Illuminate\Support\Facades\Config::set('database.connections.tenant', $tenant->dbConfig());
+        \Illuminate\Support\Facades\DB::setDefaultConnection('tenant');
+        app()->instance('tenant', $tenant);
+        app()->instance('_tenant_conn_configured', true);
+        view()->share('currentTenant', $tenant);
+        return $tenant;
+    };
+
+    Route::get('/{slug}/website',              function ($slug) use ($boot) { $boot($slug); return app(\App\Http\Controllers\WebsiteController::class)->home(); })->name('home');
+    Route::get('/{slug}/website/about',        function ($slug) use ($boot) { $boot($slug); return app(\App\Http\Controllers\WebsiteController::class)->about(); })->name('about');
+    Route::get('/{slug}/website/academics',    function ($slug) use ($boot) { $boot($slug); return app(\App\Http\Controllers\WebsiteController::class)->academics(); })->name('academics');
+    Route::get('/{slug}/website/admissions',   function ($slug) use ($boot) { $boot($slug); return app(\App\Http\Controllers\WebsiteController::class)->admissions(); })->name('admissions');
+    Route::get('/{slug}/website/gallery',      function ($slug) use ($boot) { $boot($slug); return app(\App\Http\Controllers\WebsiteController::class)->gallery(); })->name('gallery');
+    Route::get('/{slug}/website/events',       function ($slug) use ($boot) { $boot($slug); return app(\App\Http\Controllers\WebsiteController::class)->events(); })->name('events');
+    Route::get('/{slug}/website/blog',         function ($slug) use ($boot) { $boot($slug); return app(\App\Http\Controllers\WebsiteController::class)->blog(); })->name('blog');
+    Route::get('/{slug}/website/staff',        function ($slug) use ($boot) { $boot($slug); return app(\App\Http\Controllers\WebsiteController::class)->staff(); })->name('staff');
+    Route::get('/{slug}/website/contact',      function ($slug) use ($boot) { $boot($slug); return app(\App\Http\Controllers\WebsiteController::class)->contact(); })->name('contact');
+    Route::post('/{slug}/website/contact',     function ($slug, \Illuminate\Http\Request $r) use ($boot) { $boot($slug); return app(\App\Http\Controllers\WebsiteController::class)->contactSubmit($r); })->name('contact.submit');
+    Route::get('/{slug}/website/apply',        function ($slug) use ($boot) { $boot($slug); return app(\App\Http\Controllers\WebsiteController::class)->applyForm(); })->name('apply');
+    Route::post('/{slug}/website/apply',       function ($slug, \Illuminate\Http\Request $r) use ($boot) { $boot($slug); return app(\App\Http\Controllers\WebsiteController::class)->applySubmit($r); })->name('apply.submit');
+    Route::get('/{slug}/website/portal',       function ($slug) use ($boot) { $boot($slug); return app(\App\Http\Controllers\WebsiteController::class)->portal(); })->name('portal');
+    Route::get('/{slug}/website/blog/{post}',  function ($slug, $post) use ($boot) { $boot($slug); return app(\App\Http\Controllers\WebsiteController::class)->blogDetail($post); })->name('blog.detail');
 });
 
 // ── Replay pending Paystack transactions (owner only) ─────────────────────
