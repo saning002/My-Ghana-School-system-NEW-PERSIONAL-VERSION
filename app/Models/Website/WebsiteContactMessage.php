@@ -2,10 +2,13 @@
 
 namespace App\Models\Website;
 
+use App\Models\Concerns\TenantAwareConnection;
 use Illuminate\Database\Eloquent\Model;
 
 class WebsiteContactMessage extends Model
 {
+    use TenantAwareConnection;
+
     protected $table = 'website_contact_messages';
     protected $fillable = ['name','email','phone','subject','message','is_read'];
     protected $casts = ['is_read' => 'boolean'];

@@ -2,11 +2,14 @@
 
 namespace App\Models\Website;
 
+use App\Models\Concerns\TenantAwareConnection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
 class WebsiteGalleryImage extends Model
 {
+    use TenantAwareConnection;
+
     protected $table = 'website_gallery_images';
     protected $fillable = ['title','image_path','caption','category_id'];
 

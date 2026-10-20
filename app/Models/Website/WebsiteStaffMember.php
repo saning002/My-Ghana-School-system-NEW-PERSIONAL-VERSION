@@ -2,11 +2,14 @@
 
 namespace App\Models\Website;
 
+use App\Models\Concerns\TenantAwareConnection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
 class WebsiteStaffMember extends Model
 {
+    use TenantAwareConnection;
+
     protected $table = 'website_staff_members';
     protected $fillable = ['name','position','bio','photo_path','email','order'];
 

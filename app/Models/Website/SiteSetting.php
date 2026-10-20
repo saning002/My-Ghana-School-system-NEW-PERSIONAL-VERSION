@@ -2,11 +2,14 @@
 
 namespace App\Models\Website;
 
+use App\Models\Concerns\TenantAwareConnection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
 class SiteSetting extends Model
 {
+    use TenantAwareConnection;
+
     protected $table = 'site_settings';
 
     protected $fillable = [

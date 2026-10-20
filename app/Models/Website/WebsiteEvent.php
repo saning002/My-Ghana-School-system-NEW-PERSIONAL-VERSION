@@ -2,11 +2,14 @@
 
 namespace App\Models\Website;
 
+use App\Models\Concerns\TenantAwareConnection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
 class WebsiteEvent extends Model
 {
+    use TenantAwareConnection;
+
     protected $table = 'website_events';
     protected $fillable = ['title','description','date','time','location','image_path','is_published'];
     protected $casts = ['date' => 'date', 'is_published' => 'boolean'];

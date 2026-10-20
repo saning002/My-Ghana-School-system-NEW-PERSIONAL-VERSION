@@ -2,10 +2,13 @@
 
 namespace App\Models\Website;
 
+use App\Models\Concerns\TenantAwareConnection;
 use Illuminate\Database\Eloquent\Model;
 
 class WebsiteAdmissionApplication extends Model
 {
+    use TenantAwareConnection;
+
     protected $table = 'website_admission_applications';
 
     protected $fillable = [

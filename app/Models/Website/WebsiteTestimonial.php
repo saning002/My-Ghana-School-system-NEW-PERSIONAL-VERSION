@@ -2,11 +2,14 @@
 
 namespace App\Models\Website;
 
+use App\Models\Concerns\TenantAwareConnection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
 class WebsiteTestimonial extends Model
 {
+    use TenantAwareConnection;
+
     protected $table = 'website_testimonials';
     protected $fillable = ['parent_name','child_name','message','rating','photo_path','is_active'];
     protected $casts = ['is_active' => 'boolean'];

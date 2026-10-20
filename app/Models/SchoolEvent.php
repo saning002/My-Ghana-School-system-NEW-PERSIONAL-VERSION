@@ -1,6 +1,7 @@
-<?php
+﻿<?php
 
 namespace App\Models;
+use App\Models\Concerns\TenantAwareConnection;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -9,6 +10,7 @@ use Carbon\Carbon;
 class SchoolEvent extends Model
 {
     use HasFactory;
+    use TenantAwareConnection;
 
     protected $fillable = [
         'title', 'description', 'start_date', 'end_date',

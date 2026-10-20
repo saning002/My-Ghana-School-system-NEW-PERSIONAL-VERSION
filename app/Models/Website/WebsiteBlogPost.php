@@ -2,12 +2,16 @@
 
 namespace App\Models\Website;
 
+use App\Models\Concerns\TenantAwareConnection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class WebsiteBlogPost extends Model
 {
+    use TenantAwareConnection;
+    use TenantAwareConnection;
+
     protected $table = 'website_blog_posts';
     protected $fillable = ['title','slug','excerpt','content','featured_image_path','published'];
     protected $casts = ['published' => 'boolean'];

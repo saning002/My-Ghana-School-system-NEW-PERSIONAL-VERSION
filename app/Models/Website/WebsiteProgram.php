@@ -2,10 +2,13 @@
 
 namespace App\Models\Website;
 
+use App\Models\Concerns\TenantAwareConnection;
 use Illuminate\Database\Eloquent\Model;
 
 class WebsiteProgram extends Model
 {
+    use TenantAwareConnection;
+
     protected $table = 'website_programs';
     protected $fillable = ['name','level','age_range','description','curriculum','schedule','icon','color','order','is_active','image_path','features','highlights'];
     protected $casts = ['is_active' => 'boolean', 'features' => 'array'];
