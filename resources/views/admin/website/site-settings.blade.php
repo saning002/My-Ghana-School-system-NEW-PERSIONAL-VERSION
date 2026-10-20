@@ -896,7 +896,7 @@
                     </div>
                     <div>
                         <label class="ws-label">Support URL</label>
-                        <input type="text" name="footer_support_url" value="{{ old('footer_support_url',$s->footer_support_url) }}" placeholder="{{ route('website.contact') }}" class="ws-input">
+                        <input type="text" name="footer_support_url" value="{{ old('footer_support_url',$s->footer_support_url) }}" placeholder="{{ wu('contact') }}" class="ws-input">
                     </div>
                 </div>
             </div>
@@ -909,7 +909,7 @@
     <button type="submit" class="btn-gold px-8 py-3 rounded-xl text-sm font-bold shadow-sm">
         <i class="fas fa-save mr-2"></i>Save All Website Settings
     </button>
-    <a href="{{ route('website.home') }}" target="_blank" class="px-6 py-3 rounded-xl text-sm font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors">
+    <a href="{{ wu('home') }}" target="_blank" class="px-6 py-3 rounded-xl text-sm font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors">
         <i class="fas fa-external-link-alt mr-2"></i>View Website
     </a>
 </div>

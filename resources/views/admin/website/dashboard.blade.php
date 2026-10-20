@@ -39,7 +39,8 @@
         ['Site Settings',      'fa-cog',               'admin.website.site-settings',    '#374151'],
         ['View Website',       'fa-external-link-alt', 'website.home',                   '#16a34a'],
       ] as [$label,$icon,$route,$color])
-      <a href="{{ route($route) }}" @if($route==='website.home') target="_blank" @endif
+      @php $href = ($route === 'website.home') ? wu('home') : route($route); @endphp
+      <a href="{{ $href }}" @if($route==='website.home') target="_blank" @endif
          class="flex items-center gap-3 p-3 rounded-xl border border-gray-100 hover:shadow-sm transition-all text-sm font-semibold text-gray-700 hover:border-gray-300">
         <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background:{{ $color }}15">
           <i class="fas {{ $icon }} text-sm" style="color:{{ $color }}"></i>

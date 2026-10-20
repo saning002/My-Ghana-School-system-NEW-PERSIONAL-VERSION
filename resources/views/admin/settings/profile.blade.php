@@ -54,7 +54,7 @@
             <h1 class="text-xl font-bold text-gray-900 leading-tight">System Settings</h1>
             <p class="text-sm text-gray-500 mt-0.5">Control every aspect of how the system looks and behaves</p>
         </div>
-        <a href="{{ route('website.home') }}" target="_blank"
+        <a href="{{ wu('home') }}" target="_blank"
            class="ml-auto flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-gray-600 bg-white border border-gray-200 hover:border-gray-400 transition-all shadow-sm">
             <i class="fas fa-external-link-alt text-xs"></i> View Website
         </a>

@@ -22,7 +22,7 @@
         <h2 class="text-sm font-extrabold text-slate-800">Academic Programs</h2>
         <p class="text-xs text-slate-500 mt-0.5">
             {{ $programs->count() }} program(s) configured ·
-            <a href="{{ route('website.academics') }}" target="_blank" class="text-indigo-600 font-semibold hover:underline">
+            <a href="{{ wu('academics') }}" target="_blank" class="text-indigo-600 font-semibold hover:underline">
                 <i class="fas fa-external-link-alt text-[9px] mr-0.5"></i>View on website
             </a>
         </p>

@@ -126,7 +126,7 @@ class WebsiteController extends Controller
 
         WebsiteAdmissionApplication::create($data);
 
-        return redirect()->route('website.apply')
+        return redirect(wu('apply'))
             ->with('success', 'Your application has been submitted successfully! We will contact you within 2–3 business days.');
     }
 
@@ -212,7 +212,7 @@ class WebsiteController extends Controller
 
         WebsiteContactMessage::create($data);
 
-        return redirect()->route('website.contact')
+        return redirect(wu('contact'))
             ->with('success', 'Thank you! Your message has been received. We\'ll get back to you shortly.');
     }
 
