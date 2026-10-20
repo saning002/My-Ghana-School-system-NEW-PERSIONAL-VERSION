@@ -286,7 +286,7 @@
                     </div>
                     <div class="card-body">
                         <p style="font-size:0.875rem;color:#64748b;">
-                            Connects to <strong>{{ $tenant->name }}</strong>'s database and runs all Laravel migrations to set up the school's tables. Also seeds default settings.
+                            Connects to <strong>{{ $tenant->name }}</strong>'s database and creates all tables + adds any missing columns. <strong>Run this any time a student/staff creation fails with a "column does not exist" error.</strong>
                         </p>
                         <div style="background:#f8fafc;border-radius:8px;padding:0.75rem 1rem;margin-bottom:1rem;font-size:0.8rem;">
                             <div style="color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;font-size:0.7rem;margin-bottom:0.25rem;">Target Database</div>
@@ -296,7 +296,7 @@
                               onsubmit="return confirm('Run migrations on {{ $tenant->name }}\'s database? This is safe to run multiple times.')">
                             @csrf
                             <button type="submit" class="btn btn-owner-primary w-100">
-                                <i class="fas fa-database me-2"></i> Run Migrations & Seed Settings
+                                <i class="fas fa-database me-2"></i> Run Migrations &amp; Sync All Columns
                             </button>
                         </form>
                     </div>
