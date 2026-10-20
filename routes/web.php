@@ -1252,6 +1252,33 @@ Route::get('/debug/session-state', function () {
     ], 200, [], JSON_PRETTY_PRINT);
 })->middleware('web');
 
+// ── Diagnostic: check what DB website is reading from ──────────────────
+Route::get('/debug/website-db', function (\Illuminate\Http\Request $request) {
+    return response()->json([
+        'session_tenant_slug' => session('tenant_slug'),
+        'session_tenant_id'   => session('tenant_id'),
+        'default_conn'        => \Illuminate\Support\Facades\DB::getDefaultConnection(),
+        'tenant_db_configured'=> config('database.connections.tenant.database', 'NOT SET'),
+        'app_bound_tenant'    => app()->bound('_tenant_conn_configured') ? 'YES' : 'NO',
+        'site_name_read'      => \App\Models\Website\SiteSetting::instance()->site_name ?? 'null',
+        'site_name_conn'      => \App\Models\Website\SiteSetting::instance()->getConnectionName(),
+    ], 200, [], JSON_PRETTY_PRINT);
+})->middleware(['web', 'tenant']);
+
+// ── Diagnostic: check site_settings in CENTRAL DB ────────────────────────
+Route::get('/debug/central-site-settings', function () {
+    try {
+        $row = \Illuminate\Support\Facades\DB::connection('pgsql')->table('site_settings')->first();
+        return response()->json([
+            'db'        => 'pgsql (central)',
+            'row_exists'=> $row ? 'YES' : 'NO',
+            'site_name' => $row->site_name ?? null,
+        ], 200, [], JSON_PRETTY_PRINT);
+    } catch (\Throwable $e) {
+        return response()->json(['error' => $e->getMessage()]);
+    }
+})->middleware('web');
+
 // ── Diagnostic: check site_settings for a tenant ─────────────────────────
 Route::get('/debug/site-settings', function (\Illuminate\Http\Request $request) {
     $slug = $request->query('tenant', 'saning-academy');
