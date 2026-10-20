@@ -1,4 +1,4 @@
-@extends('website.layout')
+﻿@extends('website.layout')
 @section('page_title', $post->title)
 @section('meta_description', $post->auto_excerpt)
 
@@ -39,8 +39,8 @@
   <div class="page-hero-inner">
     <h1 style="font-size:clamp(1.55rem,3vw,2.2rem);max-width:680px;margin:0 auto 14px;">{{ $post->title }}</h1>
     <div class="breadcrumb">
-      <a href="{{ route('website.home') }}">Home</a><i class="fas fa-chevron-right"></i>
-      <a href="{{ route('website.blog') }}">Blog</a><i class="fas fa-chevron-right"></i>
+      <a href="{{ wu('home') }}">Home</a><i class="fas fa-chevron-right"></i>
+      <a href="{{ wu('blog') }}">Blog</a><i class="fas fa-chevron-right"></i>
       <span>Article</span>
     </div>
   </div>
@@ -57,11 +57,11 @@
         @if($post->featured_image_url)
           <div class="article-featured"><img src="{{ $post->featured_image_url }}" alt="{{ $post->title }}"></div>
         @else
-          <div class="article-featured">📰</div>
+          <div class="article-featured">ðŸ“°</div>
         @endif
         <div class="article-body">{!! nl2br(e($post->content)) !!}</div>
         <div class="article-footer">
-          <a href="{{ route('website.blog') }}" class="btn btn-ghost btn-sm"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+          <a href="{{ wu('blog') }}" class="btn btn-ghost btn-sm"><i class="fas fa-arrow-left"></i> Back to Blog</a>
           <div>
             <p style="font-size:.72rem;color:var(--gray-400);margin-bottom:7px;text-transform:uppercase;letter-spacing:.08em;font-weight:700;">Share</p>
             <div class="share-row">
@@ -79,9 +79,9 @@
           <h4><i class="fas fa-clock" style="color:var(--gold);margin-right:7px;"></i>Recent Posts</h4>
           @foreach($recentPosts as $rp)
           <div class="rp-item">
-            <div class="rp-thumb">@if($rp->featured_image_url)<img src="{{ $rp->featured_image_url }}" alt="">@else📰@endif</div>
+            <div class="rp-thumb">@if($rp->featured_image_url)<img src="{{ $rp->featured_image_url }}" alt="">@elseðŸ“°@endif</div>
             <div>
-              <a href="{{ route('website.blog.detail', $rp->slug) }}" class="rp-title">{{ $rp->title }}</a>
+          <a href="{{ wu('blog', '/' . $rp->slug) }}" class="rp-title">{{ $rp->title }}</a>
               <div class="rp-date">{{ $rp->created_at->format('M j, Y') }}</div>
             </div>
           </div>
@@ -91,12 +91,12 @@
         <div class="sb-cta">
           <h4><i class="fas fa-star" style="color:var(--gold);margin-right:7px;"></i>Ready to Enroll?</h4>
           <p>Open slots available for this school year. Apply online today!</p>
-          <a href="{{ route('website.apply') }}" class="btn btn-primary" style="width:100%;justify-content:center;font-size:.85rem;"><i class="fas fa-file-alt"></i> Apply Now</a>
+          <a href="{{ wu('apply') }}" class="btn btn-primary" style="width:100%;justify-content:center;font-size:.85rem;"><i class="fas fa-file-alt"></i> Apply Now</a>
         </div>
         <div class="sb-block">
           <h4><i class="fas fa-phone" style="color:var(--gold);margin-right:7px;"></i>Get in Touch</h4>
           <p style="font-size:.86rem;color:var(--gray-500);margin-bottom:14px;line-height:1.65;">Have questions? Our team is happy to help.</p>
-          <a href="{{ route('website.contact') }}" class="btn btn-navy" style="width:100%;justify-content:center;font-size:.85rem;"><i class="fas fa-envelope"></i> Contact Us</a>
+          <a href="{{ wu('contact') }}" class="btn btn-navy" style="width:100%;justify-content:center;font-size:.85rem;"><i class="fas fa-envelope"></i> Contact Us</a>
         </div>
       </aside>
     </div>

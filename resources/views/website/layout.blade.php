@@ -1,8 +1,8 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 @php
-    // ── Slug-aware URL helper ─────────────────────────────────────────────
+    // â”€â”€ Slug-aware URL helper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     // If the current URL contains /school/{slug}/website, use slug-based
     // routes so the URL stays as /school/{slug}/website/* during navigation.
     // Otherwise fall back to the session-based /website/* routes.
@@ -18,25 +18,25 @@
             return $page === '' ? $base : $base . '/' . $page . $extra;
         }
         $map = [
-            ''          => route('website.home'),
-            'home'      => route('website.home'),
-            'about'     => route('website.about'),
-            'academics' => route('website.academics'),
-            'admissions'=> route('website.admissions'),
-            'gallery'   => route('website.gallery'),
-            'events'    => route('website.events'),
-            'blog'      => route('website.blog'),
-            'staff'     => route('website.staff'),
-            'contact'   => route('website.contact'),
-            'portal'    => route('website.portal'),
-            'apply'     => route('website.apply'),
+            ''          => wu('home'),
+            'home'      => wu('home'),
+            'about'     => wu('about'),
+            'academics' => wu('academics'),
+            'admissions'=> wu('admissions'),
+            'gallery'   => wu('gallery'),
+            'events'    => wu('events'),
+            'blog'      => wu('blog'),
+            'staff'     => wu('staff'),
+            'contact'   => wu('contact'),
+            'portal'    => wu('portal'),
+            'apply'     => wu('apply'),
         ];
-        return $map[$page] ?? route('website.home');
+        return $map[$page] ?? wu('home');
     };
 @endphp
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>@hasSection('page_title'){{ $site->site_name ?? 'School' }} — @yield('page_title')@else{{ $site->site_name ?? 'School' }}@endif</title>
+  <title>@hasSection('page_title'){{ $site->site_name ?? 'School' }} â€” @yield('page_title')@else{{ $site->site_name ?? 'School' }}@endif</title>
   <meta name="description" content="@yield('meta_description', $site->tagline ?? 'Welcome to our school.')" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -60,7 +60,7 @@
       --gray-700:   {{ $theme['text'] }};
       --white:      {{ $theme['bg'] }};
       --nav-bg:     {{ $theme['navBg'] }};
-      /* ── Static design tokens ─── */
+      /* â”€â”€ Static design tokens â”€â”€â”€ */
       --off-white:  #f8f7f4;
       --gray-100:   #f1f0ed;
       --gray-200:   #e4e2dd;
@@ -78,7 +78,7 @@
       --ease: cubic-bezier(.4,0,.2,1);
       --trans: all .28s var(--ease);
     }
-    /* ── Reset ─────────────────────────────────────────────────────── */
+    /* â”€â”€ Reset â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; font-size: 16px; -webkit-text-size-adjust: 100%; }
     body { font-family: 'Plus Jakarta Sans', sans-serif; color: var(--gray-700); background: var(--white); line-height: 1.7; overflow-x: hidden; }
@@ -87,7 +87,7 @@
     img { max-width: 100%; display: block; }
     ul { list-style: none; }
     button { font-family: inherit; cursor: pointer; }
-    /* ── Utilities ─────────────────────────────────────────────────── */
+    /* â”€â”€ Utilities â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     .container { max-width: 1180px; margin: 0 auto; padding: 0 28px; }
     .section    { padding: 100px 0; }
     .section-sm { padding: 64px 0; }
@@ -111,7 +111,7 @@
     /* Cards */
     .card { background: var(--white); border-radius: var(--r-lg); box-shadow: var(--shadow-sm); transition: var(--trans); border: 1px solid var(--gray-200); }
     .card-hover:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); border-color: transparent; }
-    /* ── Navbar ─────────────────────────────────────────────────────── */
+    /* â”€â”€ Navbar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; transition: var(--trans); }
     .nav--top .nav-inner { background: transparent; border-bottom-color: transparent; }
     .nav--scrolled .nav-inner { background: color-mix(in srgb, var(--nav-bg) 96%, transparent); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); box-shadow: 0 4px 28px rgba(0,0,0,.22); }
@@ -143,7 +143,7 @@
     .mobile-nav-divider { height: 1px; background: rgba(255,255,255,.08); margin: 10px 0; }
     .mobile-nav-actions { display: flex; flex-direction: column; gap: 10px; padding: 10px 0; }
     .mobile-nav-actions a { border-radius: 14px; padding: 14px 16px; text-align: center; font-weight: 700; }
-    /* ── Page hero banner ───────────────────────────────────────────── */
+    /* â”€â”€ Page hero banner â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     .page-hero { padding: 148px 0 72px; text-align: center; background: linear-gradient(155deg, var(--navy) 0%, #162d60 60%, #1a1a50 100%); position: relative; overflow: hidden; }
     .page-hero::before { content: ''; position: absolute; inset: 0; background: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.025'%3E%3Ccircle cx='40' cy='40' r='1.5'/%3E%3C/g%3E%3C/svg%3E"); }
     .page-hero-inner { position: relative; z-index: 2; }
@@ -155,7 +155,7 @@
     .breadcrumb a:hover { color: var(--gold); }
     .breadcrumb i { font-size: .6rem; }
 
-    /* ── Flash messages ─────────────────────────────────────────────── */
+    /* â”€â”€ Flash messages â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     .flash-wrap { position: fixed; top: 84px; right: 24px; z-index: 2000; width: 360px; }
     .flash { display: flex; align-items: flex-start; gap: 12px; padding: 15px 18px; border-radius: var(--r); margin-bottom: 10px; box-shadow: var(--shadow-lg); animation: slideIn .35s var(--ease); }
     .flash.success { background: #f0fdf4; border-left: 4px solid var(--green); color: #14532d; }
@@ -163,7 +163,7 @@
     .flash-close   { margin-left: auto; background: none; border: none; font-size: .95rem; opacity: .5; cursor: pointer; color: inherit; }
     @keyframes slideIn { from { transform: translateX(110%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-    /* ── Footer ─────────────────────────────────────────────────────── */
+    /* â”€â”€ Footer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     .footer { background: #050d1e; color: rgba(255,255,255,.6); padding: 80px 0 0; }
     .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1.4fr; gap: 48px; padding-bottom: 56px; border-bottom: 1px solid rgba(255,255,255,.07); }
     .footer-logo-row { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
@@ -186,19 +186,19 @@
     .footer-bottom-links a { font-size: .8rem; color: rgba(255,255,255,.3); transition: var(--trans); }
     .footer-bottom-links a:hover { color: var(--gold); }
 
-    /* ── Scroll-to-top ──────────────────────────────────────────────── */
+    /* â”€â”€ Scroll-to-top â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     .scroll-top { position: fixed; bottom: 28px; right: 28px; z-index: 990; width: 44px; height: 44px; border-radius: 50%; background: var(--gold); color: var(--navy); display: flex; align-items: center; justify-content: center; border: none; font-size: 1rem; box-shadow: 0 4px 18px rgba(233,164,34,.4); cursor: pointer; transition: var(--trans); opacity: 0; transform: translateY(12px) scale(.9); pointer-events: none; }
     .scroll-top.show { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
     .scroll-top:hover { transform: translateY(-3px) scale(1.05); }
 
-    /* ── Animations ─────────────────────────────────────────────────── */
+    /* â”€â”€ Animations â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     .reveal { opacity: 0; transform: translateY(28px); transition: opacity .65s var(--ease), transform .65s var(--ease); }
     .reveal.in { opacity: 1; transform: translateY(0); }
     .reveal-delay-1 { transition-delay: .1s; }
     .reveal-delay-2 { transition-delay: .2s; }
     .reveal-delay-3 { transition-delay: .3s; }
 
-    /* ── Responsive ─────────────────────────────────────────────────── */
+    /* â”€â”€ Responsive â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     @media (max-width: 1024px) { .footer-grid { grid-template-columns: 1fr 1fr; gap: 36px; } }
     @media (max-width: 768px) {
       .nav-links, .nav-actions { display: none; }
@@ -234,7 +234,7 @@
 </head>
 <body>
 
-{{-- ── NAVBAR ─────────────────────────────────────────────────────── --}}
+{{-- â”€â”€ NAVBAR â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
 <nav class="nav nav--top" id="mainNav" role="navigation" aria-label="Main navigation">
   <div class="nav-inner">
     <a href="{{ $wu('') }}" class="nav-brand" aria-label="{{ $site->site_name ?? 'School' }} home">
@@ -311,7 +311,7 @@
 
 <main id="main">@yield('content')</main>
 
-{{-- ── FOOTER ─────────────────────────────────────────────────────── --}}
+{{-- â”€â”€ FOOTER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
 <footer class="footer">
   <div class="container">
     <div class="footer-grid">
@@ -335,13 +335,13 @@
       <div class="footer-col">
         <h5>{{ $site->footer_nav_title ?? 'Navigation' }}</h5>
         <ul>
-          <li><a href="{{ route('website.home') }}"><i class="fas fa-chevron-right"></i>Home</a></li>
-          <li><a href="{{ route('website.about') }}"><i class="fas fa-chevron-right"></i>About Us</a></li>
-          <li><a href="{{ route('website.academics') }}"><i class="fas fa-chevron-right"></i>Academics</a></li>
-          <li><a href="{{ route('website.admissions') }}"><i class="fas fa-chevron-right"></i>Admissions</a></li>
-          <li><a href="{{ route('website.events') }}"><i class="fas fa-chevron-right"></i>Events &amp; News</a></li>
-          <li><a href="{{ route('website.gallery') }}"><i class="fas fa-chevron-right"></i>Gallery</a></li>
-          <li><a href="{{ route('website.contact') }}"><i class="fas fa-chevron-right"></i>Contact</a></li>
+          <li><a href="{{ wu('home') }}"><i class="fas fa-chevron-right"></i>Home</a></li>
+          <li><a href="{{ wu('about') }}"><i class="fas fa-chevron-right"></i>About Us</a></li>
+          <li><a href="{{ wu('academics') }}"><i class="fas fa-chevron-right"></i>Academics</a></li>
+          <li><a href="{{ wu('admissions') }}"><i class="fas fa-chevron-right"></i>Admissions</a></li>
+          <li><a href="{{ wu('events') }}"><i class="fas fa-chevron-right"></i>Events &amp; News</a></li>
+          <li><a href="{{ wu('gallery') }}"><i class="fas fa-chevron-right"></i>Gallery</a></li>
+          <li><a href="{{ wu('contact') }}"><i class="fas fa-chevron-right"></i>Contact</a></li>
         </ul>
       </div>
       <div class="footer-col">
@@ -349,16 +349,16 @@
         <ul>
           @php
           $footerPrograms = $site->footer_programs ?? [
-            ['name'=>'Day Care (Ages 1–2)',      'href'=>route('website.academics')],
-            ['name'=>'Nursery (Ages 2–3)',        'href'=>route('website.academics')],
-            ['name'=>'Preschool (Ages 3–4)',      'href'=>route('website.academics')],
-            ['name'=>'Kindergarten (Ages 4–5)',   'href'=>route('website.academics')],
+            ['name'=>'Day Care (Ages 1â€“2)',      'href'=>wu('academics')],
+            ['name'=>'Nursery (Ages 2â€“3)',        'href'=>wu('academics')],
+            ['name'=>'Preschool (Ages 3â€“4)',      'href'=>wu('academics')],
+            ['name'=>'Kindergarten (Ages 4â€“5)',   'href'=>wu('academics')],
           ];
           @endphp
           @foreach($footerPrograms as $fp)
-          <li><a href="{{ $fp['href'] ?? route('website.academics') }}"><i class="fas fa-chevron-right"></i>{{ $fp['name'] }}</a></li>
+          <li><a href="{{ $fp['href'] ?? wu('academics') }}"><i class="fas fa-chevron-right"></i>{{ $fp['name'] }}</a></li>
           @endforeach
-          <li><a href="{{ route('website.apply') }}" style="color:var(--gold);"><i class="fas fa-chevron-right"></i>{{ $site->footer_apply_text ?? 'Apply Online' }}</a></li>
+          <li><a href="{{ wu('apply') }}" style="color:var(--gold);"><i class="fas fa-chevron-right"></i>{{ $site->footer_apply_text ?? 'Apply Online' }}</a></li>
         </ul>
       </div>
       <div class="footer-col">
@@ -374,8 +374,8 @@
           @php $fEmail = $site->footer_email ?: $site->contact_email; @endphp
           <div class="footer-contact-item"><i class="fas fa-envelope"></i><span><a href="mailto:{{ $fEmail }}" style="color:rgba(255,255,255,.5);">{{ $fEmail }}</a></span></div>
         @endif
-        <div class="footer-contact-item"><i class="fas fa-clock"></i><span>{{ $site->footer_office_hours ?? $site->office_hours ?? 'Mon–Fri: 7:00 AM – 5:00 PM' }}</span></div>
-        <a href="{{ route('website.portal') }}" style="display:inline-flex;align-items:center;gap:6px;margin-top:16px;font-size:.82rem;font-weight:700;color:var(--gold);"><i class="fas fa-shield-halved"></i> {{ $site->footer_portal_text ?? 'Staff Portals' }}</a>
+        <div class="footer-contact-item"><i class="fas fa-clock"></i><span>{{ $site->footer_office_hours ?? $site->office_hours ?? 'Monâ€“Fri: 7:00 AM â€“ 5:00 PM' }}</span></div>
+        <a href="{{ wu('portal') }}" style="display:inline-flex;align-items:center;gap:6px;margin-top:16px;font-size:.82rem;font-weight:700;color:var(--gold);"><i class="fas fa-shield-halved"></i> {{ $site->footer_portal_text ?? 'Staff Portals' }}</a>
       </div>
     </div>
     <div class="footer-bottom">
@@ -383,7 +383,7 @@
       <div class="footer-bottom-links">
         <a href="{{ $site->footer_privacy_url ?: '#' }}">{{ $site->footer_privacy_text ?? 'Privacy Policy' }}</a>
         <a href="{{ $site->footer_terms_url ?: '#' }}">{{ $site->footer_terms_text ?? 'Terms of Use' }}</a>
-        <a href="{{ $site->footer_support_url ?: route('website.contact') }}">{{ $site->footer_support_text ?? 'Support' }}</a>
+        <a href="{{ $site->footer_support_url ?: wu('contact') }}">{{ $site->footer_support_text ?? 'Support' }}</a>
       </div>
     </div>
   </div>

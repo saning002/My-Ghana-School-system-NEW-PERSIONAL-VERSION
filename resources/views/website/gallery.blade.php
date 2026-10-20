@@ -1,6 +1,6 @@
-@extends('website.layout')
+﻿@extends('website.layout')
 @section('page_title','Gallery')
-@section('meta_description','Photo gallery of '.($site->site_name ?? 'our school').' — see life at our school.')
+@section('meta_description','Photo gallery of '.($site->site_name ?? 'our school').' â€” see life at our school.')
 
 @section('extra_css')
 .filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:36px;}
@@ -38,7 +38,7 @@
     <h1>Photo <em>Gallery</em></h1>
     <p>A glimpse into life at {{ $site->site_name ?? 'our school' }}.</p>
     <div class="breadcrumb">
-      <a href="{{ route('website.home') }}">Home</a>
+      <a href="{{ wu('home') }}">Home</a>
       <i class="fas fa-chevron-right"></i><span>Gallery</span>
     </div>
   </div>
@@ -48,9 +48,9 @@
   <div class="container">
     @if($categories->count())
     <div class="filter-bar reveal">
-      <a href="{{ route('website.gallery') }}" class="filter-btn @if(!request('category')) active @endif">All Photos</a>
+      <a href="{{ wu('gallery') }}" class="filter-btn @if(!request('category')) active @endif">All Photos</a>
       @foreach($categories as $cat)
-      <a href="{{ route('website.gallery',['category'=>$cat->slug]) }}" class="filter-btn @if(request('category')===$cat->slug) active @endif">
+      <a href="{{ wu('gallery', '?category=' . $cat->slug) }}" class="filter-btn @if(request('category')===$cat->slug) active @endif">
         {{ $cat->name }} <span style="opacity:.55;">({{ $cat->images_count }})</span>
       </a>
       @endforeach

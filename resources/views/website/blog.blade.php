@@ -1,4 +1,4 @@
-@extends('website.layout')
+﻿@extends('website.layout')
 @section('page_title','Blog')
 @section('meta_description','News and insights from '.($site->site_name ?? 'our school').'.')
 
@@ -25,7 +25,7 @@
     <h1>School <em>Blog</em></h1>
     <p>News, updates and insights from our school community.</p>
     <div class="breadcrumb">
-      <a href="{{ route('website.home') }}">Home</a>
+      <a href="{{ wu('home') }}">Home</a>
       <i class="fas fa-chevron-right"></i><span>Blog</span>
     </div>
   </div>
@@ -38,13 +38,13 @@
       @foreach($posts as $post)
       <div class="blog-card reveal" style="transition-delay:{{ min($loop->index * 0.08, 0.4) }}s;">
         <div class="blog-thumb">
-          @if($post->featured_image_url)<img src="{{ $post->featured_image_url }}" alt="{{ $post->title }}">@else📰@endif
+          @if($post->featured_image_url)<img src="{{ $post->featured_image_url }}" alt="{{ $post->title }}">@elseðŸ“°@endif
         </div>
         <div class="blog-body">
           <div class="blog-date"><i class="fas fa-calendar-alt"></i> {{ $post->created_at->format('M j, Y') }}</div>
           <h3>{{ $post->title }}</h3>
           <p>{{ $post->auto_excerpt }}</p>
-          <a href="{{ route('website.blog.detail', $post->slug) }}" class="blog-link">Read More <i class="fas fa-arrow-right"></i></a>
+          <a href="{{ wu('blog', '/' . $post->slug) }}" class="blog-link">Read More <i class="fas fa-arrow-right"></i></a>
         </div>
       </div>
       @endforeach

@@ -1,6 +1,6 @@
-@extends('website.layout')
+﻿@extends('website.layout')
 @section('page_title','Academics')
-@section('meta_description','Our academic programs at '.($site->site_name ?? 'our school').' — comprehensive programs designed for excellence.')
+@section('meta_description','Our academic programs at '.($site->site_name ?? 'our school').' â€” comprehensive programs designed for excellence.')
 @section('extra_css')
 .prog-list{display:flex;flex-direction:column;gap:32px;max-width:960px;margin:0 auto;}
 .prog-row{display:grid;grid-template-columns:220px 1fr;border-radius:var(--r-xl);overflow:hidden;background:var(--white);box-shadow:var(--shadow-sm);border:1px solid var(--gray-200);transition:var(--trans);}
@@ -18,7 +18,7 @@
 .prog-detail-text{font-size:.9rem;color:var(--gray-600);line-height:1.75;margin-bottom:16px;}
 .prog-features{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;}
 .prog-feature-tag{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;background:#f0f4ff;color:#3b4f8a;border-radius:100px;font-size:.75rem;font-weight:600;}
-.prog-feature-tag::before{content:'✓';color:#2e7d32;font-weight:700;}
+.prog-feature-tag::before{content:'âœ“';color:#2e7d32;font-weight:700;}
 .prog-empty{text-align:center;padding:80px 0;color:var(--gray-400);}
 .prog-empty i{font-size:3rem;display:block;margin-bottom:16px;}
 .admin-note{background:#fef9c3;border:1px solid #fde68a;border-radius:12px;padding:16px 20px;margin-bottom:32px;display:flex;align-items:center;gap:12px;font-size:.9rem;color:#78520a;}
@@ -42,7 +42,7 @@
     <h1>{!! $site->academics_hero_title ?? 'Our <em>Academic Programs</em>' !!}</h1>
     <p>{{ $site->academics_hero_subtitle ?? 'Carefully designed programs rooted in academic excellence and Kingdom values.' }}</p>
     <div class="breadcrumb">
-      <a href="{{ route('website.home') }}">Home</a>
+      <a href="{{ wu('home') }}">Home</a>
       <i class="fas fa-chevron-right"></i><span>Academics</span>
     </div>
   </div>
@@ -65,16 +65,16 @@
         {{-- Sidebar --}}
         <div class="prog-sidebar">
           @if(!empty($prog->image_path))
-            <img src="{{ filter_var($prog->image_path, FILTER_VALIDATE_URL) ? $prog->image_path : Storage::url($prog->image_path) }}"
+            <img src="{{ filter_var($prog->image_path, FILTER_VALIDATE_URL) ? $prog->image_path : img_url() }}"
                  alt="{{ $prog->name }}" class="prog-img">
           @else
-            <div class="prog-emoji">{{ $prog->icon ?? '🎓' }}</div>
+            <div class="prog-emoji">{{ $prog->icon ?? 'ðŸŽ“' }}</div>
           @endif
           <div class="prog-sidebar-name">{{ $prog->name }}</div>
           @if(!empty($prog->age_range) && $prog->age_range !== 'All Ages')
           <div class="prog-sidebar-age"><i class="fas fa-child"></i> {{ $prog->age_range }}</div>
           @endif
-          <a href="{{ route('website.apply') }}" class="btn btn-primary">{{ $site->academics_apply_btn ?? 'Apply Now' }}</a>
+          <a href="{{ wu('apply') }}" class="btn btn-primary">{{ $site->academics_apply_btn ?? 'Apply Now' }}</a>
         </div>
 
         {{-- Content --}}
@@ -118,7 +118,7 @@
       <p style="font-size:1.05rem;margin-bottom:20px;">
         {{ $site->academics_empty_text ?? 'Our programs are being updated. Check back soon!' }}
       </p>
-      <a href="{{ route('website.contact') }}" class="btn btn-navy">
+      <a href="{{ wu('contact') }}" class="btn btn-navy">
         {{ $site->academics_contact_btn ?? 'Contact Us' }}
       </a>
     </div>
@@ -131,9 +131,9 @@
         {{ $site->academics_cta_text ?? 'Ready to enroll your child? Spaces fill up fast.' }}
       </p>
       <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
-        <a href="{{ route('website.apply') }}" class="btn btn-primary">{{ $site->academics_cta_btn1_text ?? 'Apply Now' }}</a>
-        <a href="{{ route('website.admissions') }}" class="btn btn-outline">{{ $site->academics_cta_btn2_text ?? 'Admissions Info' }}</a>
-        <a href="{{ route('website.contact') }}" class="btn btn-navy">{{ $site->academics_cta_btn3_text ?? 'Contact Us' }}</a>
+        <a href="{{ wu('apply') }}" class="btn btn-primary">{{ $site->academics_cta_btn1_text ?? 'Apply Now' }}</a>
+        <a href="{{ wu('admissions') }}" class="btn btn-outline">{{ $site->academics_cta_btn2_text ?? 'Admissions Info' }}</a>
+        <a href="{{ wu('contact') }}" class="btn btn-navy">{{ $site->academics_cta_btn3_text ?? 'Contact Us' }}</a>
       </div>
     </div>
     @endif

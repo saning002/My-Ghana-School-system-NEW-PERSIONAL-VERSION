@@ -1,4 +1,4 @@
-@extends('website.layout')
+﻿@extends('website.layout')
 @section('page_title','Our Team')
 @section('meta_description','Meet the educators and staff of '.($site->site_name ?? 'our school').'.')
 
@@ -25,7 +25,7 @@
     <h1>Our <em>Dedicated Team</em></h1>
     <p>Passionate educators and professionals committed to every child's success.</p>
     <div class="breadcrumb">
-      <a href="{{ route('website.home') }}">Home</a>
+      <a href="{{ wu('home') }}">Home</a>
       <i class="fas fa-chevron-right"></i><span>Our Team</span>
     </div>
   </div>

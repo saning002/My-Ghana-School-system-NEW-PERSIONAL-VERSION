@@ -1,4 +1,4 @@
-@extends('website.layout')
+﻿@extends('website.layout')
 @section('page_title','Events')
 @section('meta_description','Events and news from '.($site->site_name ?? 'our school').'.')
 
@@ -38,7 +38,7 @@
     <h1>Events &amp; <em>News</em></h1>
     <p>Stay up to date with everything happening at {{ $site->site_name ?? 'our school' }}.</p>
     <div class="breadcrumb">
-      <a href="{{ route('website.home') }}">Home</a>
+      <a href="{{ wu('home') }}">Home</a>
       <i class="fas fa-chevron-right"></i><span>Events</span>
     </div>
   </div>
@@ -52,7 +52,7 @@
       @foreach($upcoming as $event)
       <div class="event-card reveal" style="transition-delay:{{ $loop->index * 0.08 }}s;">
         <div class="event-thumb">
-          @if($event->image_url)<img src="{{ $event->image_url }}" alt="{{ $event->title }}">@else🎉@endif
+          @if($event->image_url)<img src="{{ $event->image_url }}" alt="{{ $event->title }}">@elseðŸŽ‰@endif
           <div class="event-thumb-date">
             <div class="day">{{ $event->date->format('d') }}</div>
             <div class="mon">{{ $event->date->format('M') }}</div>
@@ -77,7 +77,7 @@
       @foreach($past as $event)
       <div class="event-card past-card reveal" style="transition-delay:{{ $loop->index * 0.06 }}s;">
         <div class="event-thumb">
-          @if($event->image_url)<img src="{{ $event->image_url }}" alt="{{ $event->title }}">@else📅@endif
+          @if($event->image_url)<img src="{{ $event->image_url }}" alt="{{ $event->title }}">@elseðŸ“…@endif
           <div class="event-thumb-date">
             <div class="day">{{ $event->date->format('d') }}</div>
             <div class="mon">{{ $event->date->format('M') }}</div>

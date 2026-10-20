@@ -1,6 +1,6 @@
-@extends('website.layout')
+﻿@extends('website.layout')
 @section('page_title','Admissions')
-@section('meta_description','How to apply to '.($site->site_name ?? 'our school').' — requirements, process and enrollment information.')
+@section('meta_description','How to apply to '.($site->site_name ?? 'our school').' â€” requirements, process and enrollment information.')
 
 @section('extra_css')
 .steps-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:72px;position:relative;}
@@ -34,7 +34,7 @@
     <h1><em>Admissions</em> &amp; Enrollment</h1>
     <p>Begin your child's journey with us. We welcome applications year-round.</p>
     <div class="breadcrumb">
-      <a href="{{ route('website.home') }}">Home</a>
+      <a href="{{ wu('home') }}">Home</a>
       <i class="fas fa-chevron-right"></i><span>Admissions</span>
     </div>
   </div>
@@ -88,12 +88,12 @@
           <div style="color:var(--gray-600);line-height:1.9;font-size:.93rem;">{!! nl2br(e($site->admissions_info)) !!}</div>
         @else
           <h3>School Information</h3>
-          <div class="info-row"><i class="fas fa-clock"></i><span>Monday – Friday: 7:00 AM – 5:00 PM</span></div>
+          <div class="info-row"><i class="fas fa-clock"></i><span>Monday â€“ Friday: 7:00 AM â€“ 5:00 PM</span></div>
           <div class="info-row"><i class="fas fa-calendar"></i><span>Applications open year-round</span></div>
           <div class="info-row"><i class="fas fa-info-circle"></i><span>Limited spots available per term</span></div>
           <div class="info-row"><i class="fas fa-phone"></i><span>{{ $site->contact_phone ?? 'Contact us for more info' }}</span></div>
         @endif
-        <a href="{{ route('website.apply') }}" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:24px;">
+        <a href="{{ wu('apply') }}" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:24px;">
           <i class="fas fa-file-alt"></i> Apply Online Now
         </a>
       </div>
