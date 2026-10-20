@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Concerns\TenantAwareConnection;
 
 class CourseAssignment extends Model
 {
     use HasFactory;
+    use TenantAwareConnection;
 
     protected $fillable = ['course_id', 'lecturer_id', 'program_id', 'year'];
 

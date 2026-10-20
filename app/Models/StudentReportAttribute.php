@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Concerns\TenantAwareConnection;
 
 class StudentReportAttribute extends Model
 {
+    use TenantAwareConnection;
     protected $fillable = [
         'student_report_id', 'student_id', 'program_id',
         'attribute_definition_id', 'attempt', 'rating',

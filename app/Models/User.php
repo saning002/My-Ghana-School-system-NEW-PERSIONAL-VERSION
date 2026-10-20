@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\TenantAwareConnection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -9,7 +10,7 @@ use Illuminate\Support\Facades\Config;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, TenantAwareConnection;
 
     /**
      * Dynamically resolve the DB connection.
@@ -17,53 +18,6 @@ class User extends Authenticatable
      * This ensures Auth::user() always loads from the correct school DB.
      * No extra DB queries — just checks the current config state.
      */
-    public function getConnectionName()
-    {
-        // If TenantMiddleware already switched to tenant DB, use it
-        $default = \Illuminate\Support\Facades\DB::getDefaultConnection();
-        if ($default === 'tenant') {
-            return 'tenant';
-        }
-
-        // Check if tenant connection is already configured (has a database set)
-        $tenantDb = config('database.connections.tenant.database', '');
-        if (!empty($tenantDb) && session()->has('tenant_slug')) {
-            return 'tenant';
-        }
-
-        // Session has tenant_slug but tenant connection not configured yet.
-        // This happens when Auth::user() is called before TenantMiddleware runs.
-        // Configure the connection on the fly — but only ONCE per request
-        // by caching the result in the app container to avoid repeated DB queries.
-        if (session()->has('tenant_slug')) {
-            try {
-                // Use app container as a per-request cache
-                if (!app()->bound('_tenant_conn_configured')) {
-                    $slug   = session('tenant_slug');
-                    $tenant = \App\Models\Tenant::on('pgsql')->where('slug', $slug)->first();
-                    if ($tenant) {
-                        \Illuminate\Support\Facades\DB::purge('tenant');
-                        \Illuminate\Support\Facades\Config::set(
-                            'database.connections.tenant',
-                            $tenant->dbConfig()
-                        );
-                        app()->instance('_tenant_conn_configured', true);
-                        app()->instance('tenant', $tenant);
-                    }
-                }
-                // Check again after potentially configuring it
-                $tenantDb = config('database.connections.tenant.database', '');
-                if (!empty($tenantDb)) {
-                    return 'tenant';
-                }
-            } catch (\Throwable $e) {
-                // Fall through to default
-            }
-        }
-
-        return $this->connection ?? config('database.default');
-    }
-
     protected $fillable = [
         'full_name',
         'surname',

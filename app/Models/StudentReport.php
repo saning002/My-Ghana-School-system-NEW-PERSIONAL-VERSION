@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Concerns\TenantAwareConnection;
 
 class StudentReport extends Model
 {
+    use TenantAwareConnection;
     protected $fillable = [
         'student_id', 'program_id', 'created_by', 'attempt',
         'conduct', 'attitude', 'interest',

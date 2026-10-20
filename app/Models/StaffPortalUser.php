@@ -5,10 +5,12 @@ namespace App\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Concerns\TenantAwareConnection;
 
 class StaffPortalUser extends Authenticatable
 {
     use HasFactory, Notifiable;
+    use TenantAwareConnection;
 
     protected $table = 'staff_portal_users';
 

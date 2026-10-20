@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Concerns\TenantAwareConnection;
 
 class StudentFee extends Model
 {
     use HasFactory;
+    use TenantAwareConnection;
 
     protected $fillable = ['student_id', 'amount', 'exam_fee', 'notes'];
 

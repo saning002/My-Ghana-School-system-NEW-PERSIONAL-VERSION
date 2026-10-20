@@ -5,10 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Setting;
+use App\Models\Concerns\TenantAwareConnection;
 
 class ExamScore extends Model
 {
     use HasFactory;
+    use TenantAwareConnection;
 
     protected $fillable = [
         'student_id', 'course_id', 'program_id', 'attempt',

@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Concerns\TenantAwareConnection;
 
 class StudentNotification extends Model
 {
+    use TenantAwareConnection;
     protected $table = 'student_notifications';
 
     protected $fillable = [

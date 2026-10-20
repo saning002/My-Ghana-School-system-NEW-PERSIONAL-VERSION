@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Concerns\TenantAwareConnection;
 
 class AcademicPeriod extends Model
 {
     use HasFactory;
+    use TenantAwareConnection;
 
     protected $fillable = [
         'academic_session_id',

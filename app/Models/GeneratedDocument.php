@@ -4,9 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use App\Models\Concerns\TenantAwareConnection;
 
 class GeneratedDocument extends Model
 {
+    use TenantAwareConnection;
     protected $fillable = [
         'uuid', 'document_type', 'title',
         'student_id', 'academic_period_id',

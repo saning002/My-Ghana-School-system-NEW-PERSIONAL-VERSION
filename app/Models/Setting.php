@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Concerns\TenantAwareConnection;
 
 class Setting extends Model
 {
+    use TenantAwareConnection;
     protected $fillable = ['key', 'value'];
 
     /**

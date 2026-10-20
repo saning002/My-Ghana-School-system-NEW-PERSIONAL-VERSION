@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Concerns\TenantAwareConnection;
 
 class SchemeOfLearning extends Model
 {
+    use TenantAwareConnection;
     protected $table = 'scheme_of_learning';
 
     protected $fillable = [

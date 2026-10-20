@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Concerns\TenantAwareConnection;
 
 class DailyFeeRecord extends Model
 {
     use HasFactory;
+    use TenantAwareConnection;
 
     protected $fillable = [
         'student_id', 'date', 'amount', 'notes', 'recorded_by',
