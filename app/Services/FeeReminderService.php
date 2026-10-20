@@ -217,11 +217,28 @@ class FeeReminderService
 
             $body = $response->json();
 
+            Log::info('Arkesel SMS response', [
+                'to'     => $phone,
+                'sender' => $senderId,
+                'status' => $response->status(),
+                'body'   => $body,
+            ]);
+
+            // Arkesel v2 success: status='success' and data array has recipients
             if ($response->successful() && ($body['status'] ?? '') === 'success') {
-                return ['status' => 'sent'];
+                // Check individual recipient status in data array
+                $recipients = $body['data'] ?? [];
+                if (!empty($recipients)) {
+                    $recipientStatus = $recipients[0]['status'] ?? 'unknown';
+                    if (strtolower($recipientStatus) === 'failed') {
+                        return ['status' => 'failed', 'error' => 'Arkesel delivery failed: ' . ($recipients[0]['reason'] ?? 'unknown reason')];
+                    }
+                }
+                return ['status' => 'sent', 'to' => $phone];
             }
 
-            return ['status' => 'failed', 'error' => $body['message'] ?? $response->body()];
+            $errorMsg = $body['message'] ?? ($body['error'] ?? $response->body());
+            return ['status' => 'failed', 'error' => 'Arkesel: ' . $errorMsg];
 
         } catch (\Throwable $e) {
             Log::error('Arkesel SMS failed: ' . $e->getMessage());
