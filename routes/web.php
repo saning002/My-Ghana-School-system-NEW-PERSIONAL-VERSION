@@ -1463,6 +1463,63 @@ Route::get('/setup-new-school', function (\Illuminate\Http\Request $request) {
     return response()->json($results, 200, [], JSON_PRETTY_PRINT);
 })->middleware('web');
 
+// ── Direct site-settings write test ──────────────────────────────────────
+Route::get('/debug/test-save-settings', function (\Illuminate\Http\Request $request) {
+    $slug = $request->query('tenant', 'saning-academy');
+    $tenant = \App\Models\Tenant::on('pgsql')->where('slug', $slug)->first();
+    if (!$tenant) return response()->json(['error' => 'Tenant not found']);
+
+    \Illuminate\Support\Facades\DB::purge('tenant');
+    \Illuminate\Support\Facades\Config::set('database.connections.tenant', $tenant->dbConfig());
+    \Illuminate\Support\Facades\DB::setDefaultConnection('tenant');
+    session(['tenant_slug' => $tenant->slug, 'tenant_id' => $tenant->id]);
+    app()->instance('_tenant_conn_configured', true);
+
+    $results = [];
+
+    // 1. Check current connection
+    $results['connection'] = \Illuminate\Support\Facades\DB::getDefaultConnection();
+    $results['SiteSetting_connection'] = \App\Models\Website\SiteSetting::resolveConnection()->getName();
+
+    // 2. Read current values
+    $setting = \App\Models\Website\SiteSetting::instance();
+    $results['before_save'] = [
+        'site_name'     => $setting->site_name,
+        'website_theme' => $setting->website_theme,
+        'hero_bg_type'  => $setting->hero_bg_type,
+        'hero_bg_image' => $setting->hero_bg_image,
+    ];
+
+    // 3. Write test values directly
+    $testTheme = ['primary'=>'#ff0000','secondary'=>'#00ff00','accent'=>'#0000ff','text'=>'#000000','bg'=>'#ffffff','navBg'=>'#ff0000'];
+    $setting->update([
+        'website_theme' => $testTheme,
+        'hero_bg_type'  => 'image',
+        'hero_bg_image' => 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1600',
+    ]);
+    $results['write_status'] = 'Written';
+
+    // 4. Re-read to confirm
+    $fresh = \App\Models\Website\SiteSetting::find($setting->id);
+    $results['after_save'] = [
+        'website_theme' => $fresh->website_theme,
+        'hero_bg_type'  => $fresh->hero_bg_type,
+        'hero_bg_image' => $fresh->hero_bg_image,
+    ];
+
+    // 5. Check what Schema sees for site_settings columns
+    $cols = \Illuminate\Support\Facades\DB::connection('tenant')
+        ->getSchemaBuilder()
+        ->getColumnListing('site_settings');
+    $results['has_website_theme_col'] = in_array('website_theme', $cols) ? 'YES' : 'NO';
+    $results['has_hero_bg_image_col'] = in_array('hero_bg_image', $cols) ? 'YES' : 'NO';
+    $results['total_columns'] = count($cols);
+
+    \Illuminate\Support\Facades\DB::setDefaultConnection('pgsql');
+
+    return response()->json($results, 200, [], JSON_PRETTY_PRINT);
+})->middleware('web');
+
 // ── Go-Live Health Check ──────────────────────────────────────────────────
 Route::get('/health-check', [\App\Http\Controllers\HealthCheckController::class, 'check'])->middleware('web');
 
