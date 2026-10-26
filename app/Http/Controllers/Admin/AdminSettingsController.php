@@ -133,7 +133,7 @@ class AdminSettingsController extends Controller
 
         // Sync name + tagline to the website SiteSetting as well
         try {
-            if (\Illuminate\Support\Facades\Schema::hasTable('site_settings')) {
+            if (\Illuminate\Support\Facades\DB::connection('tenant')->getSchemaBuilder()->hasTable('site_settings')) {
                 $siteSetting = \App\Models\Website\SiteSetting::instance();
                 $siteSetting->update([
                     'site_name' => $request->school_name,

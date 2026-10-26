@@ -400,7 +400,7 @@ Route::prefix('lecturer')->name('lecturer.')->group(function () {
 // ═══════════════════════════════════════════════════════════════════════════
 // ADMIN PANEL
 // ═══════════════════════════════════════════════════════════════════════════
-Route::middleware(['role:admin', 'tenant'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['tenant', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 

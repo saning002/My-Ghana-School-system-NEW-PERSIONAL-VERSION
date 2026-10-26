@@ -275,7 +275,9 @@ class WebsiteContentController extends Controller
         // Only update columns that actually exist in the DB to prevent 500
         // errors when new migrations haven't run on production yet.
         try {
-            $existingColumns = \Illuminate\Support\Facades\Schema::getColumnListing('site_settings');
+            $existingColumns = \Illuminate\Support\Facades\DB::connection('tenant')
+                ->getSchemaBuilder()
+                ->getColumnListing('site_settings');
             $safeData = array_filter($data, fn($v, $k) => in_array($k, $existingColumns), ARRAY_FILTER_USE_BOTH);
 
             // website_theme and theme_colors are JSON columns — save them directly

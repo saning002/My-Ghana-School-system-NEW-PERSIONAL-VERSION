@@ -56,31 +56,14 @@ class AppServiceProvider extends ServiceProvider
         ];
 
         try {
-            if (Schema::hasTable('settings')) {
+            // NOTE: AppServiceProvider runs before TenantMiddleware and before
+            // the session is available. We deliberately do NOT read from the
+            // settings table here — TenantMiddleware overrides these View::share
+            // variables with the correct tenant DB values after switching DBs.
+            // Reading here would use the central DB and show wrong school data.
+            // Keep this block empty / with defaults only.
+            if (false) { // disabled — TenantMiddleware handles this per-request
                 $schoolName = Setting::get('school_name', $schoolName);
-                $schoolSubtitle = Setting::get('school_subtitle', $schoolSubtitle);
-
-                $storedLogo = Setting::get('site_logo_url');
-                if ($storedLogo) {
-                    $logoUrl = filter_var($storedLogo, FILTER_VALIDATE_URL)
-                        ? $storedLogo
-                        : Storage::disk('public')->url($storedLogo);
-                }
-
-            $sidebarLabels = [
-                'students'   => Setting::get('sidebar_students_label', $sidebarLabels['students']),
-                'lecturers'  => Setting::get('sidebar_lecturers_label', $sidebarLabels['lecturers']),
-                'teachers'   => Setting::get('sidebar_teachers_label', $sidebarLabels['teachers']),
-                'programs'   => Setting::get('sidebar_programs_label', $sidebarLabels['programs']),
-                'courses'    => Setting::get('sidebar_courses_label', $sidebarLabels['courses']),
-                'attendance' => Setting::get('sidebar_attendance_label', $sidebarLabels['attendance']),
-                'exams'      => Setting::get('sidebar_exams_label', $sidebarLabels['exams']),
-                'fees'       => Setting::get('sidebar_fees_label', $sidebarLabels['fees']),
-                'reports'    => Setting::get('sidebar_reports_label', $sidebarLabels['reports']),
-                'portals'    => Setting::get('sidebar_portals_label', $sidebarLabels['portals']),
-                'settings'   => Setting::get('sidebar_settings_label', $sidebarLabels['settings']),
-                'guide'      => Setting::get('sidebar_guide_label', $sidebarLabels['guide']),
-            ];
             }
         } catch (\Throwable $e) {
             // Ignore boot-time settings errors and continue with defaults.
