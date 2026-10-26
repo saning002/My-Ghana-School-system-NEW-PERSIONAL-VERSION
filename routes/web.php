@@ -1302,6 +1302,167 @@ Route::get('/debug/website-db', function (\Illuminate\Http\Request $request) {
     ], 200, [], JSON_PRETTY_PRINT);
 })->middleware(['web', 'tenant']);
 
+// ── Add new school ────────────────────────────────────────────────────────
+Route::get('/setup-new-school', function (\Illuminate\Http\Request $request) {
+    $name = $request->query('name', 'New School');
+    $slug = $request->query('slug', \Illuminate\Support\Str::slug($name));
+
+    // DB credentials
+    $dbHost = $request->query('db_host', '');
+    $dbPort = $request->query('db_port', '5432');
+    $dbName = $request->query('db_name', 'neondb');
+    $dbUser = $request->query('db_user', '');
+    $dbPass = $request->query('db_pass', '');
+
+    // Admin credentials
+    $adminName  = $request->query('admin_name', 'Admin');
+    $adminEmail = $request->query('admin_email', '');
+    $adminPass  = $request->query('admin_pass', 'password');
+
+    if (empty($dbHost) || empty($dbUser)) {
+        return response()->json(['error' => 'db_host and db_user are required'], 400, [], JSON_PRETTY_PRINT);
+    }
+
+    $results = [];
+
+    // 1. Create tenant record
+    try {
+        $existing = \App\Models\Tenant::where('slug', $slug)->first();
+        if ($existing) {
+            $results['tenant'] = "ALREADY EXISTS: {$existing->name} (id: {$existing->id})";
+            $tenant = $existing;
+        } else {
+            $tenant = \App\Models\Tenant::create([
+                'name'         => $name,
+                'slug'         => $slug,
+                'subdomain'    => $slug,
+                'admin_name'   => $adminName,
+                'admin_email'  => $adminEmail,
+                'admin_phone'  => '',
+                'db_host'      => $dbHost,
+                'db_port'      => $dbPort,
+                'db_name'      => $dbName,
+                'db_username'  => $dbUser,
+                'db_password'  => $dbPass,
+                'plan_id'      => 1,
+                'status'       => 'active',
+                'subscription_ends_at' => now()->addYears(2),
+            ]);
+            $results['tenant'] = "CREATED: {$name} (id: {$tenant->id}, slug: {$slug})";
+        }
+    } catch (\Throwable $e) {
+        return response()->json(['error' => 'Failed to create tenant: ' . $e->getMessage()], 500, [], JSON_PRETTY_PRINT);
+    }
+
+    // 2. Run migrations on the new tenant DB
+    try {
+        \Illuminate\Support\Facades\DB::purge('tenant');
+        \Illuminate\Support\Facades\Config::set('database.connections.tenant', $tenant->dbConfig());
+        \Illuminate\Support\Facades\DB::setDefaultConnection('tenant');
+        \Illuminate\Support\Facades\DB::connection('tenant')->getPdo();
+        $results['db_connect'] = 'Connected to ' . $dbName;
+
+        // Run table definitions + column additions
+        $setup = app(\App\Http\Controllers\Owner\TenantSetupController::class);
+        $reflection = new \ReflectionClass($setup);
+
+        // tableDefinitions
+        $method = $reflection->getMethod('tableDefinitions');
+        $method->setAccessible(true);
+        $tables = $method->invoke($setup);
+        $created = 0;
+        foreach ($tables as $tableName => $sql) {
+            try {
+                \Illuminate\Support\Facades\DB::connection('tenant')->statement($sql);
+                $created++;
+            } catch (\Throwable $e) {
+                $results["table_err_{$tableName}"] = $e->getMessage();
+            }
+        }
+        $results['tables'] = "{$created} tables created/verified";
+
+        // columnAdditions
+        $method = $reflection->getMethod('columnAdditions');
+        $method->setAccessible(true);
+        $columns = $method->invoke($setup);
+        $colCount = 0;
+        foreach ($columns as $sql) {
+            try {
+                \Illuminate\Support\Facades\DB::connection('tenant')->statement($sql);
+                $colCount++;
+            } catch (\Throwable $e) {}
+        }
+        $results['columns'] = "{$colCount} column additions applied";
+
+        // Constraints
+        $method = $reflection->getMethod('constraintStatements');
+        $method->setAccessible(true);
+        $constraints = $method->invoke($setup);
+        foreach ($constraints as $sql) {
+            try { \Illuminate\Support\Facades\DB::connection('tenant')->statement($sql); } catch (\Throwable $e) {}
+        }
+        $results['constraints'] = 'Applied';
+
+        // Seed settings
+        try {
+            \Illuminate\Support\Facades\DB::connection('tenant')->table('settings')->insertOrIgnore([
+                ['key' => 'school_name', 'value' => $name, 'created_at' => now(), 'updated_at' => now()],
+            ]);
+            $results['settings'] = 'Seeded';
+        } catch (\Throwable $e) {
+            $results['settings'] = 'Already exists';
+        }
+
+        // Create site_settings row
+        try {
+            \Illuminate\Support\Facades\DB::connection('tenant')->table('site_settings')->insertOrIgnore([
+                'site_name' => $name,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+            $results['site_settings'] = 'Created';
+        } catch (\Throwable $e) {
+            $results['site_settings'] = 'Already exists';
+        }
+
+        // Create admin user
+        if (!empty($adminEmail)) {
+            $existingAdmin = \Illuminate\Support\Facades\DB::connection('tenant')->table('users')
+                ->where('email', $adminEmail)->first();
+            if ($existingAdmin) {
+                $results['admin'] = "ALREADY EXISTS: {$adminEmail}";
+            } else {
+                \Illuminate\Support\Facades\DB::connection('tenant')->table('users')->insert([
+                    'full_name'     => $adminName,
+                    'email'         => $adminEmail,
+                    'password'      => \Illuminate\Support\Facades\Hash::make($adminPass),
+                    'role'          => 'admin',
+                    'is_super_admin' => true,
+                    'created_at'    => now(),
+                    'updated_at'    => now(),
+                ]);
+                $results['admin'] = "CREATED: {$adminEmail} / {$adminPass}";
+            }
+        }
+
+        // Count tables
+        $tableCount = \Illuminate\Support\Facades\DB::connection('tenant')
+            ->select("SELECT count(*) as c FROM information_schema.tables WHERE table_schema='public'")[0]->c ?? 0;
+        $results['table_count'] = "{$tableCount} tables in tenant DB";
+
+    } catch (\Throwable $e) {
+        $results['db_error'] = $e->getMessage();
+    }
+
+    // Reset to central DB
+    \Illuminate\Support\Facades\DB::setDefaultConnection('pgsql');
+
+    $results['login_url'] = url("/school/{$slug}/admin");
+    $results['website_url'] = url("/school/{$slug}/website");
+
+    return response()->json($results, 200, [], JSON_PRETTY_PRINT);
+})->middleware('web');
+
 // ── Go-Live Health Check ──────────────────────────────────────────────────
 Route::get('/health-check', [\App\Http\Controllers\HealthCheckController::class, 'check'])->middleware('web');
 
