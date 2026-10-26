@@ -1427,6 +1427,11 @@ Route::get('/debug/fix-staff-table', function (\Illuminate\Http\Request $request
         "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='students' AND column_name='admission_date') THEN ALTER TABLE students ADD COLUMN \"admission_date\" DATE NULL; END IF; END \$\$",
         "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='students' AND column_name='year_of_admission') THEN ALTER TABLE students ADD COLUMN \"year_of_admission\" INTEGER NULL; END IF; END \$\$",
         "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='students' AND column_name='portal_password') THEN ALTER TABLE students ADD COLUMN \"portal_password\" VARCHAR(255) NULL; END IF; END \$\$",
+        // student_notifications — audience, type, recipient_type, lecturer_id
+        "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='student_notifications' AND column_name='audience') THEN ALTER TABLE student_notifications ADD COLUMN \"audience\" VARCHAR(20) NOT NULL DEFAULT 'all'; END IF; END \$\$",
+        "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='student_notifications' AND column_name='type') THEN ALTER TABLE student_notifications ADD COLUMN \"type\" VARCHAR(20) NOT NULL DEFAULT 'general'; END IF; END \$\$",
+        "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='student_notifications' AND column_name='recipient_type') THEN ALTER TABLE student_notifications ADD COLUMN \"recipient_type\" VARCHAR(20) NOT NULL DEFAULT 'student'; END IF; END \$\$",
+        "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='student_notifications' AND column_name='lecturer_id') THEN ALTER TABLE student_notifications ADD COLUMN \"lecturer_id\" BIGINT NULL; END IF; END \$\$",
     ];
 
     $results = [];
