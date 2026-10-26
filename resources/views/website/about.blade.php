@@ -40,7 +40,7 @@
 /* CTA */
 .about-cta{background:linear-gradient(135deg,var(--gold),var(--gold-dark));padding:80px 0;text-align:center;}
 .about-cta h2{font-size:clamp(1.8rem,3.5vw,2.5rem);font-weight:800;color:var(--navy);margin-bottom:12px;}
-.about-cta p{color:rgba(10,31,68,.6);margin-bottom:32px;}
+.about-cta p{color:var(--navy);opacity:.6;margin-bottom:32px;}
 @media(max-width:900px){.story-layout{grid-template-columns:1fr;gap:40px;}}
 @media(max-width:640px){
   .mv-grid{grid-template-columns:1fr;}

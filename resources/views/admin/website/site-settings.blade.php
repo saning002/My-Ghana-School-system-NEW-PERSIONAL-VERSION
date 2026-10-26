@@ -292,15 +292,43 @@
                     @if($s->hero_bg_image)
                     <div>
                         <label class="ws-label">Current Image</label>
-                        <img src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($s->hero_bg_image) }}"
-                             class="mt-1 h-32 w-full object-cover rounded-xl border border-gray-200">
+                        <img src="{{ img_url($s->hero_bg_image) }}"
+                             class="mt-1 h-32 w-full object-cover rounded-xl border border-gray-200"
+                             onerror="this.style.display='none'">
                     </div>
                     @endif
+
+                    {{-- Option A: paste a URL (works without Cloudinary, survives redeploys) --}}
                     <div>
-                        <label class="ws-label">Upload New Background Image <span class="normal-case font-normal text-gray-400">(JPG, PNG, WebP — max 8MB)</span></label>
+                        <label class="ws-label">Image URL <span class="normal-case font-normal text-gray-400">(recommended — paste any public image URL)</span></label>
+                        <input type="url" name="hero_bg_image_url"
+                               value="{{ old('hero_bg_image_url', filter_var($s->hero_bg_image ?? '', FILTER_VALIDATE_URL) ? $s->hero_bg_image : '') }}"
+                               placeholder="https://example.com/your-school-hero.jpg"
+                               class="ws-input mt-1">
+                        <p class="text-[10px] text-gray-400 mt-1">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            Paste a URL from Google Drive (shared), Dropbox, Imgur, Unsplash, or any public image link.
+                            This method works without Cloudinary and survives server restarts.
+                        </p>
+                    </div>
+
+                    <div class="flex items-center gap-2 text-xs text-gray-400 my-1">
+                        <div class="flex-1 h-px bg-gray-200"></div><span>OR upload a file</span><div class="flex-1 h-px bg-gray-200"></div>
+                    </div>
+
+                    {{-- Option B: file upload (requires Cloudinary or persistent disk) --}}
+                    <div>
+                        <label class="ws-label">Upload Image File <span class="normal-case font-normal text-gray-400">(JPG, PNG, WebP — max 8MB — requires Cloudinary)</span></label>
                         <input type="file" name="hero_bg_image" accept="image/jpeg,image/png,image/jpg,image/webp"
                                class="mt-1 text-sm text-gray-600 block">
+                        @if(!config('cloudinary.cloud_name'))
+                        <p class="text-[10px] text-orange-500 mt-1">
+                            <i class="fas fa-exclamation-triangle mr-1"></i>
+                            Cloudinary not configured — uploaded files will be lost on next server restart. Use a URL instead.
+                        </p>
+                        @endif
                     </div>
+
                     <div>
                         <label class="ws-label">Dark Overlay Opacity: <span id="overlayValue">{{ old('hero_overlay_opacity', $s->hero_overlay_opacity ?? 40) }}%</span></label>
                         <input type="range" name="hero_overlay_opacity" min="0" max="90"

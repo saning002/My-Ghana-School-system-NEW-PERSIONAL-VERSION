@@ -4,34 +4,45 @@
 
 @section('extra_css')
 @php
-use Illuminate\Support\Facades\Storage;
 $heroBgType = $site->hero_bg_type   ?? 'default';
 $heroLayout = $site->hero_layout    ?? 'split';
 $rawOpacity = (int)($site->hero_overlay_opacity ?? 0);
+// Get theme colours so hero gradient defaults follow the school theme
+$wt = $site->websiteTheme;
+$themePrimary   = $wt['primary']   ?? '#e9a422';
+$themeSecondary = $wt['secondary'] ?? '#0a1f44';
+$themeNavBg     = $wt['navBg']     ?? '#0a1f44';
+
 if (in_array($heroBgType, ['image','video'])) {
     $overlayOp = $rawOpacity / 100;
 } else {
     $overlayOp = 0;
 }
 if ($heroBgType === 'solid') {
-    $heroBg = 'background:' . ($site->hero_bg_solid_color ?? '#0a1f44') . ';';
+    $heroBg = 'background:' . ($site->hero_bg_solid_color ?? $themeSecondary) . ';';
 } elseif ($heroBgType === 'gradient') {
     $via = $site->hero_gradient_via ? ',' . $site->hero_gradient_via : '';
+    $from = $site->hero_gradient_from ?? $themeSecondary;
+    $to   = $site->hero_gradient_to   ?? $themeNavBg;
     $heroBg = 'background:linear-gradient(' . ($site->hero_gradient_angle ?? 150) . 'deg,'
-            . ($site->hero_gradient_from ?? '#050d22') . $via . ','
-            . ($site->hero_gradient_to   ?? '#122859') . ');';
+            . $from . $via . ',' . $to . ');';
 } elseif ($heroBgType === 'glassmorphism') {
+    $from = $site->hero_gradient_from ?? $themeSecondary;
+    $to   = $site->hero_gradient_to   ?? $themeNavBg;
     $heroBg = 'background:linear-gradient(' . ($site->hero_gradient_angle ?? 135) . 'deg,'
-            . ($site->hero_gradient_from ?? '#050d22') . '80,'
-            . ($site->hero_gradient_to   ?? '#122859') . 'c0);'
+            . $from . '80,' . $to . 'c0);'
             . 'backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);';
 } elseif ($heroBgType === 'image' && $site->hero_bg_image) {
-    $heroBg = 'background:url(' . img_url() . ') center/cover no-repeat;';
+    $imgUrl = img_url($site->hero_bg_image);
+    $heroBg = $imgUrl
+        ? 'background:url(' . $imgUrl . ') center/cover no-repeat;'
+        : 'background:linear-gradient(150deg,' . $themeSecondary . ' 0%,' . $themeNavBg . ' 100%);';
 } elseif ($heroBgType === 'video') {
-    $heroBg = 'background:#050d22;'; // dark fallback shown while video loads
-    $overlayOp = $rawOpacity > 0 ? $rawOpacity / 100 : 0.45; // always overlay on video
+    $heroBg = 'background:' . $themeSecondary . ';'; // dark fallback shown while video loads
+    $overlayOp = $rawOpacity > 0 ? $rawOpacity / 100 : 0.45;
 } else {
-    $heroBg = 'background:linear-gradient(150deg,#050d22 0%,#0a1f44 45%,#122859 100%);';
+    // Default — use the school's theme secondary/navBg colours
+    $heroBg = 'background:linear-gradient(150deg,' . $themeSecondary . ' 0%,' . $themeNavBg . ' 45%,' . $themeNavBg . ' 100%);';
 }
 if ($heroLayout === 'centered') {
     $innerCss = 'max-width:800px;text-align:center;';
@@ -65,9 +76,9 @@ iframe.hero-video{width:100vw;height:56.25vw;min-height:100vh;min-width:177.78vh
 .hero-glow-1{width:560px;height:560px;background:rgba(233,164,34,.12);top:-100px;right:-60px;}
 .hero-glow-2{width:400px;height:400px;background:rgba(30,77,183,.16);bottom:-80px;left:-60px;}
 .hero-inner{position:relative;z-index:10;margin:0 auto;padding:120px 28px 80px;display:grid;grid-template-columns:{{ $gridCols }};gap:72px;align-items:center;{{ $innerCss }}}
-.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(233,164,34,.12);border:1px solid rgba(233,164,34,.3);color:#e9a422;padding:6px 16px;border-radius:100px;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:22px;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(var(--gold-rgb,233,164,34),.12);border:1px solid rgba(var(--gold-rgb,233,164,34),.3);color:var(--gold);padding:6px 16px;border-radius:100px;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:22px;}
 .hero h1{font-size:clamp(2.4rem,5vw,3.8rem);font-weight:800;color:#fff;line-height:1.1;margin-bottom:22px;letter-spacing:-.02em;}
-.hero h1 em{font-style:normal;color:#e9a422;}
+.hero h1 em{font-style:normal;color:var(--gold);}
 .hero-desc{font-size:1.08rem;color:rgba(255,255,255,.65);line-height:1.82;margin-bottom:36px;max-width:460px;{{ $descExtra }}}
 .hero-ctas{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:52px;{{ $ctasCss }}}
 .hero-stats{display:flex;gap:32px;flex-wrap:wrap;padding-top:32px;border-top:1px solid rgba(255,255,255,.1);{{ $statsCss }}}
@@ -120,7 +131,7 @@ iframe.hero-video{width:100vw;height:56.25vw;min-height:100vh;min-width:177.78vh
 .prog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(256px,1fr));gap:24px;}
 .prog-card{border-radius:var(--r-xl);overflow:hidden;box-shadow:var(--shadow-sm);border:1px solid var(--gray-200);background:var(--white);transition:var(--trans);}
 .prog-card:hover{transform:translateY(-5px);box-shadow:var(--shadow-lg);border-color:transparent;}
-.prog-head{padding:28px 26px 22px;background:linear-gradient(140deg,var(--navy) 0%,#162d60 100%);position:relative;overflow:hidden;}
+.prog-head{padding:28px 26px 22px;background:linear-gradient(140deg,var(--navy) 0%,var(--navy-mid) 100%);position:relative;overflow:hidden;}
 .prog-head::after{content:'';position:absolute;bottom:-30px;right:-30px;width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,.04);}
 .prog-num{font-size:3rem;font-weight:800;color:rgba(233,164,34,.2);line-height:1;margin-bottom:4px;}
 .prog-head h3{font-size:1.15rem;font-weight:800;color:#fff;margin-bottom:4px;}
@@ -129,7 +140,7 @@ iframe.hero-video{width:100vw;height:56.25vw;min-height:100vh;min-width:177.78vh
 .prog-body p{font-size:.9rem;color:var(--gray-500);line-height:1.75;margin-bottom:16px;}
 
 /* â”€â”€ Testimonials â”€â”€ */
-.testi-section{background:linear-gradient(160deg,#060f28 0%,#0a1f44 100%);}
+.testi-section{background:linear-gradient(160deg,var(--navy) 0%,var(--nav-bg) 100%);}
 .testi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:20px;}
 .testi-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:26px;transition:var(--trans);}
 .testi-card:hover{background:rgba(255,255,255,.08);}
@@ -161,7 +172,7 @@ iframe.hero-video{width:100vw;height:56.25vw;min-height:100vh;min-width:177.78vh
 .cta-banner::after{content:'';position:absolute;bottom:-80px;right:-40px;width:360px;height:360px;border-radius:50%;background:rgba(255,255,255,.06);}
 .cta-banner-inner{position:relative;z-index:2;}
 .cta-banner h2{font-size:clamp(1.8rem,3.5vw,2.8rem);font-weight:800;color:var(--navy);margin-bottom:14px;}
-.cta-banner p{font-size:1.05rem;color:rgba(10,31,68,.65);margin-bottom:36px;}
+.cta-banner p{font-size:1.05rem;color:var(--gray-700);opacity:.65;margin-bottom:36px;}
 .cta-banner-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
 
 @media(max-width:1024px){.why-grid{grid-template-columns:1fr 1fr;}}

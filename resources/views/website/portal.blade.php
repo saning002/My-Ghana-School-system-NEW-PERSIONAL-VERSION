@@ -3,7 +3,7 @@
 @section('meta_description','Access the '.($site->site_name ?? 'School').' admin, teacher and student portals.')
 
 @section('extra_css')
-.portal-hero{min-height:100vh;background:linear-gradient(150deg,#040c1f 0%,#0a1f44 50%,#111845 100%);display:flex;align-items:center;position:relative;overflow:hidden;padding-top:72px;}
+.portal-hero{min-height:100vh;background:linear-gradient(150deg,var(--nav-bg) 0%,var(--navy) 50%,var(--navy-mid) 100%);display:flex;align-items:center;position:relative;overflow:hidden;padding-top:72px;}
 .portal-noise{position:absolute;inset:0;opacity:.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
 .portal-glow-a{position:absolute;width:600px;height:600px;background:radial-gradient(circle,rgba(233,164,34,.09),transparent 70%);top:-120px;right:-100px;pointer-events:none;}
 .portal-glow-b{position:absolute;width:500px;height:500px;background:radial-gradient(circle,rgba(30,77,183,.1),transparent 70%);bottom:-100px;left:-80px;pointer-events:none;}
@@ -25,8 +25,8 @@
 .ps-item span{font-size:.7rem;color:rgba(255,255,255,.38);text-transform:uppercase;letter-spacing:.08em;margin-top:3px;display:block;}
 /* Card */
 .portal-card{background:rgba(255,255,255,.97);border-radius:24px;overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,.4);}
-.portal-card-head{background:linear-gradient(150deg,var(--navy),#162d60);padding:30px 32px 26px;text-align:center;}
-.portal-shield{width:60px;height:60px;border-radius:18px;background:linear-gradient(135deg,var(--gold),var(--gold-dark));margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;color:var(--navy);box-shadow:0 8px 24px rgba(233,164,34,.4);}
+.portal-card-head{background:linear-gradient(150deg,var(--navy),var(--navy-mid));padding:30px 32px 26px;text-align:center;}
+.portal-shield{width:60px;height:60px;border-radius:18px;background:linear-gradient(135deg,var(--gold),var(--gold-dark));margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;color:var(--navy);box-shadow:0 8px 24px rgba(0,0,0,.25);}
 .portal-card-head h2{font-size:1.25rem;font-weight:800;color:var(--white);margin-bottom:4px;}
 .portal-card-head p{font-size:.82rem;color:rgba(255,255,255,.5);}
 .portal-card-body{padding:28px 30px;}
@@ -35,7 +35,7 @@
 .access-btn::after{content:'\f054';font-family:'Font Awesome 6 Free';font-weight:900;position:absolute;right:18px;top:50%;transform:translateY(-50%);font-size:.72rem;opacity:.45;transition:var(--trans);}
 .access-btn:hover{transform:translateY(-2px);}
 .access-btn:hover::after{right:14px;opacity:.85;}
-.ab-admin  {background:linear-gradient(135deg,var(--navy),#162d60);color:var(--white);box-shadow:0 4px 18px rgba(10,31,68,.28);}
+.ab-admin  {background:linear-gradient(135deg,var(--navy),var(--navy-mid));color:var(--white);box-shadow:0 4px 18px rgba(0,0,0,.28);}
 .ab-teacher{background:linear-gradient(135deg,#6d28d9,#4c1d95);color:var(--white);box-shadow:0 4px 18px rgba(109,40,217,.28);}
 .ab-student{background:linear-gradient(135deg,#0369a1,#0c4a6e);color:var(--white);box-shadow:0 4px 18px rgba(3,105,161,.28);}
 .ab-icon{width:40px;height:40px;border-radius:11px;background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}

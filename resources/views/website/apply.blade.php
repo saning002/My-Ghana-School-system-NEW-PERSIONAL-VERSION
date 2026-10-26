@@ -14,7 +14,7 @@
 .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(233,164,34,.12);}
 .field-err{font-size:.75rem;color:var(--red);margin-top:4px;}
 .apply-sidebar{position:sticky;top:88px;}
-.sidebar-box{background:linear-gradient(160deg,var(--navy) 0%,#162d60 100%);border-radius:var(--r-xl);padding:30px;color:var(--white);margin-bottom:16px;}
+.sidebar-box{background:linear-gradient(160deg,var(--navy) 0%,var(--navy-mid) 100%);border-radius:var(--r-xl);padding:30px;color:var(--white);margin-bottom:16px;}
 .sidebar-box h3{font-size:1rem;font-weight:800;color:var(--white);margin-bottom:18px;}
 .sb-item{display:flex;gap:11px;margin-bottom:14px;align-items:flex-start;}
 .sb-item i{color:var(--gold);width:16px;margin-top:2px;flex-shrink:0;}

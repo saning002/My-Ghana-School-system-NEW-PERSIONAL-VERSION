@@ -73,6 +73,7 @@ class WebsiteContentController extends Controller
             'hero_overlay_opacity' => 'nullable|integer|between:0,100',
             'hero_layout'          => 'nullable|in:split,centered,fullscreen,minimal',
             'hero_bg_image'        => 'nullable|image|mimes:jpeg,png,jpg,webp|max:8192',
+            'hero_bg_image_url'    => 'nullable|url|max:1000',
             // Navbar
             'nav_brand_sub'        => 'nullable|string|max:100',
             'nav_enroll_text'      => 'nullable|string|max:60',
@@ -190,8 +191,17 @@ class WebsiteContentController extends Controller
             $data['logo_path'] = \App\Http\Controllers\Admin\StudentController::storePhotoFile($request->file('logo'), 'website/logos');
         }
 
-        // Hero bg image upload
-        if ($request->hasFile('hero_bg_image')) {
+        // Hero bg image — URL takes priority over file upload
+        if ($request->filled('hero_bg_image_url')) {
+            $url = trim($request->input('hero_bg_image_url'));
+            if (filter_var($url, FILTER_VALIDATE_URL)) {
+                // Delete old file if it was a local upload
+                if ($setting->hero_bg_image && !filter_var($setting->hero_bg_image, FILTER_VALIDATE_URL)) {
+                    Storage::disk('public')->delete($setting->hero_bg_image);
+                }
+                $data['hero_bg_image'] = $url;
+            }
+        } elseif ($request->hasFile('hero_bg_image')) {
             if ($setting->hero_bg_image) (str_contains($setting->hero_bg_image, 'cloudinary.com') ? \App\Services\CloudinaryService::delete($setting->hero_bg_image) : Storage::disk('public')->delete($setting->hero_bg_image));
             $data['hero_bg_image'] = \App\Http\Controllers\Admin\StudentController::storePhotoFile($request->file('hero_bg_image'), 'website/hero');
         }

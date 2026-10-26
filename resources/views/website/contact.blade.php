@@ -4,7 +4,7 @@
 
 @section('extra_css')
 .contact-layout{display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:start;}
-.contact-info-panel{background:linear-gradient(160deg,var(--navy) 0%,#162d60 100%);border-radius:var(--r-xl);padding:40px;color:var(--white);position:sticky;top:88px;}
+.contact-info-panel{background:linear-gradient(160deg,var(--navy) 0%,var(--navy-mid) 100%);border-radius:var(--r-xl);padding:40px;color:var(--white);position:sticky;top:88px;}
 .contact-info-panel h3{font-size:1.2rem;font-weight:800;color:var(--white);margin-bottom:28px;}
 .ci-item{display:flex;gap:16px;margin-bottom:22px;align-items:flex-start;}
 .ci-icon{width:42px;height:42px;border-radius:12px;background:rgba(233,164,34,.15);border:1px solid rgba(233,164,34,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
