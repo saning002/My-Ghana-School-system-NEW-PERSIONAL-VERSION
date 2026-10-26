@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\Tenant;
+use App\Models\Setting;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
@@ -63,6 +64,50 @@ class TenantMiddleware
 
         // Share tenant with all Blade views
         view()->share('currentTenant', $tenant);
+
+        // ── Read school settings from the NOW-CORRECT tenant DB ──────────
+        // The AppServiceProvider::boot() ran before the session was available
+        // and read from the central DB. Override those shared variables here
+        // so the admin panel shows the correct school's name, logo, etc.
+        try {
+            $schoolName     = Setting::get('school_name', config('app.name'));
+            $schoolSubtitle = Setting::get('school_subtitle', '');
+            $storedLogo     = Setting::get('site_logo_url');
+
+            $logoUrl = null;
+            if ($storedLogo) {
+                $logoUrl = filter_var($storedLogo, FILTER_VALIDATE_URL)
+                    ? $storedLogo
+                    : \Illuminate\Support\Facades\Storage::disk('public')->url($storedLogo);
+            }
+
+            $sidebarLabels = [
+                'students'   => Setting::get('sidebar_students_label', 'Students'),
+                'lecturers'  => Setting::get('sidebar_lecturers_label', 'Teachers'),
+                'teachers'   => Setting::get('sidebar_teachers_label', 'Teachers'),
+                'programs'   => Setting::get('sidebar_programs_label', 'Programs'),
+                'courses'    => Setting::get('sidebar_courses_label', 'Courses'),
+                'attendance' => Setting::get('sidebar_attendance_label', 'Attendance'),
+                'exams'      => Setting::get('sidebar_exams_label', 'Exams & Results'),
+                'fees'       => Setting::get('sidebar_fees_label', 'Fees & Payments'),
+                'reports'    => Setting::get('sidebar_reports_label', 'Reports'),
+                'portals'    => Setting::get('sidebar_portals_label', 'Student Portal'),
+                'settings'   => Setting::get('sidebar_settings_label', 'Settings'),
+                'guide'      => Setting::get('sidebar_guide_label', 'Admin Guide'),
+            ];
+
+            $programLabel = $sidebarLabels['programs'] ?? 'Programs';
+            $programLabelSingular = \Illuminate\Support\Str::singular($programLabel);
+
+            view()->share('schoolName', $schoolName);
+            view()->share('schoolSubtitle', $schoolSubtitle);
+            view()->share('siteLogoUrl', $logoUrl);
+            view()->share('sidebarLabels', $sidebarLabels);
+            view()->share('programLabel', $programLabel);
+            view()->share('programLabelSingular', $programLabelSingular);
+        } catch (\Throwable $e) {
+            // Keep the defaults from AppServiceProvider if tenant DB fails
+        }
 
         $response = $next($request);
 
