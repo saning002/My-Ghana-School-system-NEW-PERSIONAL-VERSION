@@ -240,12 +240,14 @@ class WebsiteContentController extends Controller
             }
         }
         if (!empty($themeData)) {
-            $existing = $setting->theme_colors ?? [];
-            $data['theme_colors'] = array_merge(
+            $existing = $setting->getOriginal('theme_colors') ?? '{}';
+            $existingArr = is_array($existing) ? $existing : (json_decode($existing, true) ?? []);
+            $merged = array_merge(
                 \App\Models\Website\SiteSetting::defaultTheme(),
-                is_array($existing) ? $existing : [],
+                $existingArr,
                 $themeData
             );
+            $safeData['theme_colors'] = json_encode($merged);
         }
 
         // Website-only theme colours (stored in website_theme JSON)
@@ -260,12 +262,15 @@ class WebsiteContentController extends Controller
             }
         }
         if (!empty($websiteThemeData)) {
-            $existing = $setting->website_theme ?? [];
-            $data['website_theme'] = array_merge(
+            $existing = $setting->getOriginal('website_theme') ?? '{}';
+            $existingArr = is_array($existing) ? $existing : (json_decode($existing, true) ?? []);
+            $merged = array_merge(
                 \App\Models\Website\SiteSetting::defaultWebsiteTheme(),
-                is_array($existing) ? $existing : [],
+                $existingArr,
                 $websiteThemeData
             );
+            // Force raw JSON to bypass Eloquent's array dirty-check bug
+            $safeData['website_theme'] = json_encode($merged);
         }
 
         // IMPORTANT: Remove uploaded-file keys — they are UploadedFile objects,
@@ -290,7 +295,13 @@ class WebsiteContentController extends Controller
                 $safeData['theme_colors'] = $data['theme_colors'];
             }
 
-            $setting->update($safeData);
+            // Use a direct DB update to bypass Eloquent's array dirty-check.
+            // Eloquent skips JSON/array columns if it thinks they haven't changed.
+            // DB::table()->update() always writes what we give it.
+            \Illuminate\Support\Facades\DB::connection('tenant')
+                ->table('site_settings')
+                ->where('id', $setting->id)
+                ->update(array_merge($safeData, ['updated_at' => now()]));
         } catch (\Throwable $e) {
             \Log::error('SiteSettings save failed: ' . $e->getMessage());
             return back()->withErrors(['error' => 'Settings could not be saved: ' . $e->getMessage()])->withInput();
