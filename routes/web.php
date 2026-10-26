@@ -1302,6 +1302,9 @@ Route::get('/debug/website-db', function (\Illuminate\Http\Request $request) {
     ], 200, [], JSON_PRETTY_PRINT);
 })->middleware(['web', 'tenant']);
 
+// ── Go-Live Health Check ──────────────────────────────────────────────────
+Route::get('/health-check', [\App\Http\Controllers\HealthCheckController::class, 'check'])->middleware('web');
+
 // ── Diagnostic: check site_settings in CENTRAL DB ────────────────────────
 Route::get('/debug/central-site-settings', function () {
     try {
