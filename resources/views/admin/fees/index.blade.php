@@ -330,11 +330,6 @@
     </div>
 </div>
 @endif
-                @endif
-            </div>
-        </div>
-    </form>
-</div>
 
 {{-- ══ NOTE: If daily fees mode is active, program fees below are ignored ════ --}}
 @if($feeMode === 'daily_fees')
