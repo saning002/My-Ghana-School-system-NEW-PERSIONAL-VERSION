@@ -159,6 +159,9 @@ class DashboardController extends Controller
             \Log::warning('Recent attendances query failed: ' . $e->getMessage());
         }
 
+        // ── Recent Activities — unified feed from all system actions ──────
+        $recentActivities = $this->buildRecentActivities($isBranchAdmin ? $branchId : null);
+
         $storageHealth = $this->buildStorageHealth();
 
         return view('admin.dashboard', compact(
@@ -167,6 +170,7 @@ class DashboardController extends Controller
             'fees',
             'recentStudents',
             'recentAttendances',
+            'recentActivities',
             'storageHealth',
             'statusDistribution',
             'programEnrollment',
@@ -210,5 +214,167 @@ class DashboardController extends Controller
             'uploads_path' => $uploadsPath,
             'uploads_writable' => File::isWritable($uploadsPath),
         ];
+    }
+
+    /**
+     * Build a unified recent activities feed from all system tables.
+     * Pulls from students, payments, exam_scores, attendances,
+     * notifications, and teacher_work_logs — merged by time.
+     */
+    private function buildRecentActivities(?int $branchId): \Illuminate\Support\Collection
+    {
+        $activities = collect();
+        $branchWhere = $branchId ? "AND s.church_branch_id = {$branchId}" : '';
+
+        // 1. New student registrations
+        try {
+            $rows = \DB::select("
+                SELECT s.id, s.student_id, u.full_name, s.status, s.created_at,
+                       p.name as program_name
+                FROM students s
+                LEFT JOIN users u ON u.id = s.user_id
+                LEFT JOIN programs p ON p.id = s.program_id
+                WHERE 1=1 {$branchWhere}
+                ORDER BY s.created_at DESC LIMIT 5
+            ");
+            foreach ($rows as $r) {
+                $activities->push([
+                    'type'    => 'student',
+                    'icon'    => 'fa-user-graduate',
+                    'color'   => '#3b82f6',
+                    'bg'      => '#eff6ff',
+                    'title'   => $r->full_name ?? 'New Student',
+                    'detail'  => $r->student_id . ' · ' . ($r->program_name ?? '—'),
+                    'badge'   => ucfirst($r->status),
+                    'time'    => \Carbon\Carbon::parse($r->created_at),
+                ]);
+            }
+        } catch (\Throwable $e) {}
+
+        // 2. Fee payments
+        try {
+            $rows = \DB::select("
+                SELECT p.id, p.amount_paid, p.payment_method, p.receipt_number,
+                       p.created_at, u.full_name, s.student_id
+                FROM payments p
+                LEFT JOIN students s ON s.id = p.student_id
+                LEFT JOIN users u ON u.id = s.user_id
+                WHERE 1=1 {$branchWhere}
+                ORDER BY p.created_at DESC LIMIT 5
+            ");
+            foreach ($rows as $r) {
+                $activities->push([
+                    'type'    => 'payment',
+                    'icon'    => 'fa-money-bill-wave',
+                    'color'   => '#16a34a',
+                    'bg'      => '#f0fdf4',
+                    'title'   => 'GHS ' . number_format($r->amount_paid, 2) . ' paid',
+                    'detail'  => ($r->full_name ?? 'Student') . ' · ' . ucfirst(str_replace('_', ' ', $r->payment_method ?? 'cash')),
+                    'badge'   => $r->receipt_number ?? '',
+                    'time'    => \Carbon\Carbon::parse($r->created_at),
+                ]);
+            }
+        } catch (\Throwable $e) {}
+
+        // 3. Exam scores entered
+        try {
+            $rows = \DB::select("
+                SELECT e.id, e.exam_score, e.sba_score, e.created_at,
+                       u.full_name, s.student_id, c.name as course_name
+                FROM exam_scores e
+                LEFT JOIN students s ON s.id = e.student_id
+                LEFT JOIN users u ON u.id = s.user_id
+                LEFT JOIN courses c ON c.id = e.course_id
+                WHERE 1=1 {$branchWhere}
+                ORDER BY e.created_at DESC LIMIT 5
+            ");
+            foreach ($rows as $r) {
+                $total = ($r->sba_score ?? 0) + ($r->exam_score ?? 0);
+                $activities->push([
+                    'type'    => 'exam',
+                    'icon'    => 'fa-clipboard-check',
+                    'color'   => '#a855f7',
+                    'bg'      => '#faf5ff',
+                    'title'   => 'Score entered: ' . ($r->full_name ?? 'Student'),
+                    'detail'  => ($r->course_name ?? '—') . ' · Total: ' . number_format($total, 1),
+                    'badge'   => '',
+                    'time'    => \Carbon\Carbon::parse($r->created_at),
+                ]);
+            }
+        } catch (\Throwable $e) {}
+
+        // 4. Attendance marked
+        try {
+            $rows = \DB::select("
+                SELECT a.id, a.status, a.date, a.created_at,
+                       u.full_name, c.code as course_code
+                FROM attendances a
+                LEFT JOIN students s ON s.id = a.student_id
+                LEFT JOIN users u ON u.id = s.user_id
+                LEFT JOIN courses c ON c.id = a.course_id
+                WHERE 1=1 {$branchWhere}
+                ORDER BY a.created_at DESC LIMIT 5
+            ");
+            foreach ($rows as $r) {
+                $activities->push([
+                    'type'    => 'attendance',
+                    'icon'    => $r->status === 'present' ? 'fa-check-circle' : 'fa-times-circle',
+                    'color'   => $r->status === 'present' ? '#16a34a' : '#ef4444',
+                    'bg'      => $r->status === 'present' ? '#f0fdf4' : '#fef2f2',
+                    'title'   => ($r->full_name ?? 'Student') . ' marked ' . $r->status,
+                    'detail'  => ($r->course_code ?? '—') . ' · ' . \Carbon\Carbon::parse($r->date)->format('d M'),
+                    'badge'   => ucfirst($r->status),
+                    'time'    => \Carbon\Carbon::parse($r->created_at),
+                ]);
+            }
+        } catch (\Throwable $e) {}
+
+        // 5. Notifications sent
+        try {
+            $rows = \DB::select("
+                SELECT id, title, recipient_type, created_at
+                FROM student_notifications
+                ORDER BY created_at DESC LIMIT 3
+            ");
+            foreach ($rows as $r) {
+                $activities->push([
+                    'type'    => 'notification',
+                    'icon'    => 'fa-bell',
+                    'color'   => '#f59e0b',
+                    'bg'      => '#fffbeb',
+                    'title'   => 'Notification: ' . \Illuminate\Support\Str::limit($r->title, 40),
+                    'detail'  => 'Sent to ' . ucfirst($r->recipient_type ?? 'students'),
+                    'badge'   => '',
+                    'time'    => \Carbon\Carbon::parse($r->created_at),
+                ]);
+            }
+        } catch (\Throwable $e) {}
+
+        // 6. Teacher work logs
+        try {
+            $rows = \DB::select("
+                SELECT w.id, w.topic_covered, w.date, w.created_at,
+                       u.full_name, c.code as course_code
+                FROM teacher_work_logs w
+                LEFT JOIN users u ON u.id = w.lecturer_id
+                LEFT JOIN courses c ON c.id = w.course_id
+                ORDER BY w.created_at DESC LIMIT 3
+            ");
+            foreach ($rows as $r) {
+                $activities->push([
+                    'type'    => 'worklog',
+                    'icon'    => 'fa-book',
+                    'color'   => '#0891b2',
+                    'bg'      => '#ecfeff',
+                    'title'   => ($r->full_name ?? 'Teacher') . ' logged work',
+                    'detail'  => ($r->course_code ?? '—') . ' · ' . \Illuminate\Support\Str::limit($r->topic_covered, 30),
+                    'badge'   => '',
+                    'time'    => \Carbon\Carbon::parse($r->created_at),
+                ]);
+            }
+        } catch (\Throwable $e) {}
+
+        // Sort by time descending and take top 12
+        return $activities->sortByDesc('time')->take(12)->values();
     }
 }

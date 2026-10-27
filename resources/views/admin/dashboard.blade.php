@@ -171,63 +171,40 @@
     </div>
 </div>
 
-{{-- Recent Students + Attendance --}}
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <div class="card overflow-hidden">
-        <div class="flex items-center justify-between px-6 py-5 border-b border-slate-100">
-            <h3 class="text-[15px] font-extrabold text-slate-800 tracking-tight">Recent Students</h3>
-            <a href="{{ route('admin.students.index') }}" class="text-xs font-bold transition-colors hover:text-yellow-600" style="color:#D4A017">View all →</a>
-        </div>
-        <div class="divide-y divide-slate-50">
-            @forelse($recentStudents as $s)
-            <a href="{{ route('admin.students.show',$s) }}" class="flex items-center gap-4 px-6 py-4 hover:bg-slate-50/80 transition-all duration-200">
-                <div class="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center font-bold text-sm flex-shrink-0 shadow-[0_2px_10px_rgba(212,160,23,0.2)]">
-                    @if($s->photo)
-                        <img src="{{ filter_var($s->photo, FILTER_VALIDATE_URL) ? $s->photo : route('admin.students.photo', $s) }}" class="w-full h-full object-cover" alt="{{ $s->user?->full_name ?? '—' }}">
-                    @else
-                        <div class="w-full h-full flex items-center justify-center bg-yellow-600 text-white font-bold text-sm">
-                            {{ strtoupper(substr($s->user?->full_name??'?',0,1)) }}
-                        </div>
-                    @endif
-                </div>
-                <div class="flex-1 min-w-0">
-                    <p class="text-[14px] font-bold text-slate-800 truncate tracking-tight">{{ $s->user?->full_name ?? '—' }}</p>
-                    <p class="text-[12px] text-slate-500 truncate mt-0.5 font-medium">{{ $s->program?->name??'—' }}</p>
-                </div>
-                <span class="text-[11px] px-2.5 py-1 rounded-full font-bold uppercase tracking-wider flex-shrink-0
-                    {{ $s->status==='active'?'bg-green-50 text-green-700 ring-1 ring-green-600/20':($s->status==='graduated'?'bg-blue-50 text-blue-700 ring-1 ring-blue-600/20':($s->status==='manifestation'?'bg-yellow-50 text-yellow-700 ring-1 ring-yellow-600/20':'bg-red-50 text-red-700 ring-1 ring-red-600/20')) }}">
-                    {{ ucfirst($s->status) }}
-                </span>
-            </a>
-            @empty
-            <div class="px-6 py-10 text-center text-slate-400 text-sm font-medium">No students yet.</div>
-            @endforelse
-        </div>
-    </div>
-
-    <div class="card overflow-hidden">
-        <div class="flex items-center justify-between px-6 py-5 border-b border-slate-100">
-            <h3 class="text-[15px] font-extrabold text-slate-800 tracking-tight">Recent Attendance</h3>
-            <a href="{{ route('admin.attendance.index') }}" class="text-xs font-bold transition-colors hover:text-yellow-600" style="color:#D4A017">View all →</a>
-        </div>
-        <div class="divide-y divide-slate-50">
-            @forelse($recentAttendances as $att)
-            <div class="flex items-center gap-4 px-6 py-4 hover:bg-slate-50/80 transition-all duration-200">
-                <div class="w-10 h-10 rounded-2xl {{ $att->status==='present'?'bg-green-50 text-green-600':'bg-red-50 text-red-500' }} flex items-center justify-center flex-shrink-0 shadow-sm">
-                    <i class="fas {{ $att->status==='present'?'fa-check':'fa-times' }} text-sm"></i>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <p class="text-[14px] font-bold text-slate-800 truncate tracking-tight">{{ $att->student?->user?->full_name??'—' }}</p>
-                    <p class="text-[12px] text-slate-500 mt-0.5 font-medium">{{ $att->course?->code??'—' }} · {{ \Carbon\Carbon::parse($att->date)->format('M d') }}</p>
-                </div>
-                <span class="text-[11px] px-2.5 py-1 rounded-full font-bold uppercase tracking-wider flex-shrink-0 {{ $att->status==='present'?'bg-green-50 text-green-700 ring-1 ring-green-600/20':'bg-red-50 text-red-700 ring-1 ring-red-600/20' }}">
-                    {{ ucfirst($att->status) }}
-                </span>
+{{-- Recent Activities — unified feed from all system actions --}}
+<div class="card overflow-hidden">
+    <div class="flex items-center justify-between px-6 py-5 border-b border-slate-100">
+        <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center">
+                <i class="fas fa-bolt text-indigo-500 text-sm"></i>
             </div>
-            @empty
-            <div class="px-6 py-10 text-center text-slate-400 text-sm font-medium">No records yet.</div>
-            @endforelse
+            <h3 class="text-[15px] font-extrabold text-slate-800 tracking-tight">Recent Activities</h3>
         </div>
+        <span class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Last {{ $recentActivities->count() }} actions</span>
+    </div>
+    <div class="divide-y divide-slate-50 max-h-[480px] overflow-y-auto">
+        @forelse($recentActivities as $a)
+        <div class="flex items-center gap-4 px-6 py-3.5 hover:bg-slate-50/80 transition-all duration-200">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:{{ $a['bg'] }}">
+                <i class="fas {{ $a['icon'] }} text-sm" style="color:{{ $a['color'] }}"></i>
+            </div>
+            <div class="flex-1 min-w-0">
+                <p class="text-[13px] font-bold text-slate-800 truncate tracking-tight">{{ $a['title'] }}</p>
+                <p class="text-[11px] text-slate-500 truncate mt-0.5 font-medium">{{ $a['detail'] }}</p>
+            </div>
+            <div class="flex flex-col items-end gap-1 flex-shrink-0">
+                @if($a['badge'])
+                <span class="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider" style="background:{{ $a['bg'] }};color:{{ $a['color'] }}">{{ $a['badge'] }}</span>
+                @endif
+                <span class="text-[10px] text-slate-400 font-medium">{{ $a['time']->diffForHumans() }}</span>
+            </div>
+        </div>
+        @empty
+        <div class="px-6 py-10 text-center text-slate-400 text-sm font-medium">
+            <i class="fas fa-bolt text-2xl text-slate-200 block mb-2"></i>
+            No recent activity yet.
+        </div>
+        @endforelse
     </div>
 </div>
 
