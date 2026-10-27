@@ -21,9 +21,21 @@ class StudentFeeExemption extends Model
         'valid_until' => 'date',
     ];
 
+    public static array $types = [
+        'scholarship' => 'Scholarship',
+        'waiver'      => 'Fee Waiver',
+        'partial'     => 'Partial Exemption',
+        'other'       => 'Other',
+    ];
+
     public function student()
     {
         return $this->belongsTo(Student::class);
+    }
+
+    public function granter()
+    {
+        return $this->belongsTo(User::class, 'granted_by');
     }
 
     public function isActive(): bool
@@ -32,5 +44,10 @@ class StudentFeeExemption extends Model
         if ($this->valid_from && $now->lt($this->valid_from)) return false;
         if ($this->valid_until && $now->gt($this->valid_until)) return false;
         return true;
+    }
+
+    public function isFull(): bool
+    {
+        return $this->daily_override === null;
     }
 }
