@@ -1302,6 +1302,39 @@ Route::get('/debug/website-db', function (\Illuminate\Http\Request $request) {
     ], 200, [], JSON_PRETTY_PRINT);
 })->middleware(['web', 'tenant']);
 
+// ── Diagnostic: check messaging credit payments and paystack txns ────────
+Route::get('/debug/messaging-payments', function () {
+    $results = [];
+    try {
+        $txns = \Illuminate\Support\Facades\DB::connection('pgsql')
+            ->table('paystack_transactions')
+            ->orderByDesc('created_at')->limit(10)->get();
+        $results['recent_transactions'] = $txns->map(fn($t) => [
+            'reference' => $t->reference, 'type' => $t->type, 'amount' => $t->amount,
+            'status' => $t->status, 'tenant_id' => $t->tenant_id,
+            'description' => $t->description, 'created' => $t->created_at,
+        ])->toArray();
+    } catch (\Throwable $e) { $results['tx_error'] = $e->getMessage(); }
+    try {
+        $payments = \Illuminate\Support\Facades\DB::connection('pgsql')
+            ->table('messaging_credit_payments')
+            ->orderByDesc('created_at')->limit(10)->get();
+        $results['messaging_payments'] = $payments->map(fn($p) => [
+            'id' => $p->id, 'tenant_id' => $p->tenant_id, 'amount' => $p->amount,
+            'sms' => $p->sms_credits_added ?? null, 'wa' => $p->whatsapp_credits_added ?? null,
+            'method' => $p->payment_method, 'status' => $p->status,
+            'reference' => $p->paystack_reference ?? null, 'created' => $p->created_at,
+        ])->toArray();
+    } catch (\Throwable $e) { $results['pay_error'] = $e->getMessage(); }
+    try {
+        $results['tx_status_counts'] = \Illuminate\Support\Facades\DB::connection('pgsql')
+            ->table('paystack_transactions')
+            ->select('status', \Illuminate\Support\Facades\DB::raw('count(*) as cnt'))
+            ->groupBy('status')->pluck('cnt', 'status')->toArray();
+    } catch (\Throwable $e) { $results['status_error'] = $e->getMessage(); }
+    return response()->json($results, 200, [], JSON_PRETTY_PRINT);
+})->middleware('web');
+
 // ── Add new school ────────────────────────────────────────────────────────
 Route::get('/setup-new-school', function (\Illuminate\Http\Request $request) {
     $name = $request->query('name', 'New School');
