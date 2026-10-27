@@ -64,8 +64,6 @@ class SiteSetting extends Model
 
     protected $casts = [
         'stats'                    => 'array',
-        'theme_colors'             => 'array',
-        'website_theme'            => 'array',
         'hero_minis'               => 'array',
         'why_features'             => 'array',
         'about_timeline'           => 'array',
@@ -196,7 +194,15 @@ class SiteSetting extends Model
     /** Resolved admin theme — falls back to defaults for any missing key. */
     public function getThemeAttribute(): array
     {
-        $saved = $this->theme_colors ?? [];
+        $raw = $this->attributes['theme_colors'] ?? null;
+        $saved = null;
+        if (is_array($raw)) {
+            $saved = $raw;
+        } elseif (is_string($raw) && !empty($raw)) {
+            $decoded = json_decode($raw, true);
+            if (is_string($decoded)) $decoded = json_decode($decoded, true);
+            if (is_array($decoded)) $saved = $decoded;
+        }
         return array_merge(self::defaultTheme(), is_array($saved) ? $saved : []);
     }
 
