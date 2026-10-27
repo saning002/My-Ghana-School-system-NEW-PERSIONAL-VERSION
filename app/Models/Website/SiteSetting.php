@@ -207,15 +207,40 @@ class SiteSetting extends Model
      */
     public function getWebsiteThemeAttribute(): array
     {
-        // Use dedicated website_theme column if it has data
-        $saved = $this->website_theme ?? [];
-        if (!empty($saved) && is_array($saved)) {
+        // website_theme may be stored as a JSON string (not auto-decoded array)
+        // because we use DB::table()->update() with json_encode() to bypass
+        // Eloquent's dirty-check. Handle both string and array formats.
+        $raw = $this->attributes['website_theme'] ?? null;
+
+        $saved = null;
+        if (is_array($raw)) {
+            $saved = $raw;
+        } elseif (is_string($raw) && !empty($raw)) {
+            $decoded = json_decode($raw, true);
+            // Handle double-encoded: decoded may still be a string
+            if (is_string($decoded)) {
+                $decoded = json_decode($decoded, true);
+            }
+            if (is_array($decoded) && !empty($decoded)) {
+                $saved = $decoded;
+            }
+        }
+
+        if (!empty($saved)) {
             return array_merge(self::defaultWebsiteTheme(), $saved);
         }
 
-        // Fall back to the website-relevant keys from theme_colors (legacy)
-        $legacy = $this->theme_colors ?? [];
-        if (!empty($legacy) && is_array($legacy)) {
+        // Fall back to theme_colors (legacy)
+        $legacyRaw = $this->attributes['theme_colors'] ?? null;
+        $legacy = null;
+        if (is_array($legacyRaw)) {
+            $legacy = $legacyRaw;
+        } elseif (is_string($legacyRaw) && !empty($legacyRaw)) {
+            $decoded = json_decode($legacyRaw, true);
+            if (is_array($decoded)) $legacy = $decoded;
+        }
+
+        if (!empty($legacy)) {
             $websiteKeys = ['primary','secondary','accent','text','bg','navBg'];
             $legacyWebsite = array_intersect_key($legacy, array_flip($websiteKeys));
             if (!empty($legacyWebsite)) {

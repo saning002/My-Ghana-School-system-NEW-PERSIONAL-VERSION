@@ -241,13 +241,13 @@ class WebsiteContentController extends Controller
         }
         if (!empty($themeData)) {
             $existing = $setting->getOriginal('theme_colors') ?? '{}';
-            $existingArr = is_array($existing) ? $existing : (json_decode($existing, true) ?? []);
+            $existingArr = is_array($existing) ? $existing : (json_decode($existing ?: '{}', true) ?? []);
             $merged = array_merge(
                 \App\Models\Website\SiteSetting::defaultTheme(),
                 $existingArr,
                 $themeData
             );
-            $safeData['theme_colors'] = json_encode($merged);
+            $data['theme_colors'] = json_encode($merged);
         }
 
         // Website-only theme colours (stored in website_theme JSON)
@@ -263,45 +263,44 @@ class WebsiteContentController extends Controller
         }
         if (!empty($websiteThemeData)) {
             $existing = $setting->getOriginal('website_theme') ?? '{}';
-            $existingArr = is_array($existing) ? $existing : (json_decode($existing, true) ?? []);
+            $existingArr = is_array($existing) ? $existing : (json_decode($existing ?: '{}', true) ?? []);
             $merged = array_merge(
                 \App\Models\Website\SiteSetting::defaultWebsiteTheme(),
                 $existingArr,
                 $websiteThemeData
             );
-            // Force raw JSON to bypass Eloquent's array dirty-check bug
-            $safeData['website_theme'] = json_encode($merged);
+            $data['website_theme'] = json_encode($merged);
         }
 
         // IMPORTANT: Remove uploaded-file keys — they are UploadedFile objects,
         // not strings. Keeping them in $data causes a DB column type error.
         unset($data['logo'], $data['hero_bg_image']);
 
-        // Only update columns that actually exist in the DB to prevent 500
-        // errors when new migrations haven't run on production yet.
+        // Save directly to the tenant DB using DB::table() to bypass Eloquent's
+        // dirty-check which silently skips JSON/array columns it thinks are unchanged.
         try {
             $existingColumns = \Illuminate\Support\Facades\DB::connection('tenant')
                 ->getSchemaBuilder()
                 ->getColumnListing('site_settings');
-            $safeData = array_filter($data, fn($v, $k) => in_array($k, $existingColumns), ARRAY_FILTER_USE_BOTH);
 
-            // website_theme and theme_colors are JSON columns — save them directly
-            // even if the column check misses them (e.g. fresh migration not yet run).
-            // We use updateOrInsert-safe approach: update existing row directly.
-            if (isset($data['website_theme'])) {
-                $safeData['website_theme'] = $data['website_theme'];
-            }
-            if (isset($data['theme_colors'])) {
-                $safeData['theme_colors'] = $data['theme_colors'];
+            // Filter to only columns that exist, but always keep JSON columns
+            $jsonAlwaysInclude = ['website_theme', 'theme_colors'];
+            $safeData = array_filter($data, function($v, $k) use ($existingColumns, $jsonAlwaysInclude) {
+                return in_array($k, $existingColumns) || in_array($k, $jsonAlwaysInclude);
+            }, ARRAY_FILTER_USE_BOTH);
+
+            // Remove null values for JSON columns so we don't wipe them
+            foreach ($jsonAlwaysInclude as $jk) {
+                if (array_key_exists($jk, $safeData) && is_null($safeData[$jk])) {
+                    unset($safeData[$jk]);
+                }
             }
 
-            // Use a direct DB update to bypass Eloquent's array dirty-check.
-            // Eloquent skips JSON/array columns if it thinks they haven't changed.
-            // DB::table()->update() always writes what we give it.
             \Illuminate\Support\Facades\DB::connection('tenant')
                 ->table('site_settings')
                 ->where('id', $setting->id)
                 ->update(array_merge($safeData, ['updated_at' => now()]));
+
         } catch (\Throwable $e) {
             \Log::error('SiteSettings save failed: ' . $e->getMessage());
             return back()->withErrors(['error' => 'Settings could not be saved: ' . $e->getMessage()])->withInput();
