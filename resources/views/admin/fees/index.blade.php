@@ -500,6 +500,13 @@
                             class="w-20 px-2 py-1.5 border border-yellow-300 rounded-lg text-xs text-right focus:outline-none focus:ring-2 bg-white font-semibold"
                             placeholder="0.00">
                     </div>
+                    <div class="flex items-center gap-1.5 {{ $isWith ? '' : 'opacity-40' }}">
+                        <span class="text-[10px] font-bold {{ $isWith ? 'text-blue-600' : 'text-gray-400' }} uppercase">Feed:</span>
+                        <input type="number" name="feeding_fee" step="0.01" min="0"
+                            value="{{ $program->branchFee?->feeding_fee ?? 0 }}"
+                            class="w-20 px-2 py-1.5 border {{ $isWith ? 'border-blue-300' : 'border-gray-200' }} rounded-lg text-xs text-right focus:outline-none focus:ring-2 bg-white font-semibold"
+                            placeholder="0.00" {{ $isWith ? '' : 'disabled' }}>
+                    </div>
                     <button type="submit" class="premium-btn px-3 py-1.5 rounded-lg text-xs bg-yellow-600 text-white hover:bg-yellow-700">Save</button>
                 </div>
             </form>

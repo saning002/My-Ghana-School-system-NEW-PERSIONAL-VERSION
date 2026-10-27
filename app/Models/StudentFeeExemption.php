@@ -1,16 +1,15 @@
 ﻿<?php
 
 namespace App\Models;
-use App\Models\Concerns\TenantAwareConnection;
 
+use App\Models\Concerns\TenantAwareConnection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Carbon\Carbon;
 
 class StudentFeeExemption extends Model
 {
-    use HasFactory;
-    use TenantAwareConnection;
+    use HasFactory, TenantAwareConnection;
 
     protected $fillable = [
         'student_id', 'exemption_type', 'daily_override',
@@ -18,37 +17,20 @@ class StudentFeeExemption extends Model
     ];
 
     protected $casts = [
-        'valid_from'     => 'date',
-        'valid_until'    => 'date',
-        'daily_override' => 'decimal:2',
+        'valid_from'  => 'date',
+        'valid_until' => 'date',
     ];
 
-    public static array $types = [
-        'scholarship' => 'Scholarship',
-        'waiver'      => 'Fee Waiver',
-        'partial'     => 'Partial Exemption',
-        'other'       => 'Other',
-    ];
+    public function student()
+    {
+        return $this->belongsTo(Student::class);
+    }
 
-    /**
-     * Is this exemption active today?
-     */
     public function isActive(): bool
     {
-        $today = Carbon::today();
-        if ($this->valid_from && $today->lt($this->valid_from)) return false;
-        if ($this->valid_until && $today->gt($this->valid_until)) return false;
+        $now = Carbon::now();
+        if ($this->valid_from && $now->lt($this->valid_from)) return false;
+        if ($this->valid_until && $now->gt($this->valid_until)) return false;
         return true;
     }
-
-    /**
-     * Is this a full exemption (pays nothing)?
-     */
-    public function isFull(): bool
-    {
-        return $this->daily_override === null;
-    }
-
-    public function student()  { return $this->belongsTo(Student::class); }
-    public function granter()  { return $this->belongsTo(User::class, 'granted_by'); }
 }
