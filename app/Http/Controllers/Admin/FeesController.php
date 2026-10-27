@@ -53,12 +53,17 @@ class FeesController extends Controller
     public function saveFeeMode(\Illuminate\Http\Request $request)
     {
         $request->validate([
-            'fee_mode'       => 'required|in:program_fees,daily_fees',
+            'fee_mode'       => 'required|in:program_fees,program_fees_with_feeding,daily_fees',
             'daily_fee_rate' => 'nullable|numeric|min:0|max:9999',
         ]);
         \App\Models\Setting::set('fee_mode',       $request->fee_mode);
         \App\Models\Setting::set('daily_fee_rate', $request->daily_fee_rate ?? 5);
-        return back()->with('success', 'Fee mode updated to: ' . ($request->fee_mode === 'daily_fees' ? 'Daily Fees' : 'Program Fees'));
+        $modeLabel = match($request->fee_mode) {
+            'daily_fees'                  => 'Daily Fees',
+            'program_fees_with_feeding'   => 'Program + Feeding Fees',
+            default                       => 'Program Fees',
+        };
+        return back()->with('success', 'Fee mode updated to: ' . $modeLabel);
     }
 
     public function template(Request $request)
@@ -108,8 +113,9 @@ class FeesController extends Controller
         ProgramFee::updateOrCreate(
             ['program_id' => $request->program_id, 'church_branch_id' => $branchId],
             [
-                'amount'     => $request->amount,
-                'exam_fee'   => $request->exam_fee ?? 0.00
+                'amount'      => $request->amount,
+                'exam_fee'    => $request->exam_fee ?? 0.00,
+                'feeding_fee' => $request->feeding_fee ?? 0.00,
             ]
         );
         return back()->with('success', 'Program fee configurations updated successfully.');

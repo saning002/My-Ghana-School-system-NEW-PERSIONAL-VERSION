@@ -700,6 +700,10 @@ class TenantSetupController extends Controller
             "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='students' AND column_name='admission_date') THEN ALTER TABLE students ADD COLUMN \"admission_date\" DATE NULL; END IF; END \$\$",
             "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='students' AND column_name='year_of_admission') THEN ALTER TABLE students ADD COLUMN \"year_of_admission\" INTEGER NULL; END IF; END \$\$",
             "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='students' AND column_name='portal_password') THEN ALTER TABLE students ADD COLUMN \"portal_password\" VARCHAR(255) NULL; END IF; END \$\$",
+            // feeding_fee — third fee mode: program_fees_with_feeding
+            "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='program_fees' AND column_name='feeding_fee') THEN ALTER TABLE program_fees ADD COLUMN \"feeding_fee\" DECIMAL(10,2) NOT NULL DEFAULT 0; END IF; END \$\$",
+            "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='student_fees' AND column_name='feeding_fee') THEN ALTER TABLE student_fees ADD COLUMN \"feeding_fee\" DECIMAL(10,2) NULL; END IF; END \$\$",
+            "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='term_fee_bills' AND column_name='feeding_fee') THEN ALTER TABLE term_fee_bills ADD COLUMN \"feeding_fee\" DECIMAL(10,2) NOT NULL DEFAULT 0; END IF; END \$\$",
         ];
     }
 

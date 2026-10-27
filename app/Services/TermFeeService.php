@@ -32,6 +32,7 @@ class TermFeeService
             $examFee     = (float) $bill->exam_fee;
             $otherFees   = (float) $bill->other_fees;
             $otherLabel  = $bill->other_fees_label;
+            $feedingFee  = (float) ($bill->feeding_fee ?? 0);
             $totalBilled = (float) $bill->total_billed;
         } else {
             // Auto-calculate from program fees
@@ -47,7 +48,8 @@ class TermFeeService
             if ($programFeeRow) {
                 $programFee  = (float) $programFeeRow->amount;
                 $examFee     = (float) $programFeeRow->exam_fee;
-                $totalBilled = $programFee + $examFee;
+                $feedingFee  = (float) ($programFeeRow->feeding_fee ?? 0);
+                $totalBilled = $programFee + $examFee + $feedingFee;
             }
         }
 
@@ -69,6 +71,7 @@ class TermFeeService
             'session_id'     => $sessionId,
             'program_fee'    => $programFee,
             'exam_fee'       => $examFee,
+            'feeding_fee'    => $feedingFee,
             'other_fees'     => $otherFees,
             'other_label'    => $otherLabel,
             'total_billed'   => $totalBilled,
@@ -128,15 +131,16 @@ class TermFeeService
      * Bill a student for a specific term.
      * Creates or updates the term_fee_bills record.
      */
-    public function billStudent(Student $student, int $sessionId, float $programFee, float $examFee, float $otherFees = 0, ?string $otherLabel = null): object
+    public function billStudent(Student $student, int $sessionId, float $programFee, float $examFee, float $otherFees = 0, ?string $otherLabel = null, float $feedingFee = 0): object
     {
-        $total = $programFee + $examFee + $otherFees;
+        $total = $programFee + $examFee + $otherFees + $feedingFee;
 
         return (object) DB::table('term_fee_bills')->updateOrInsert(
             ['student_id' => $student->id, 'academic_session_id' => $sessionId],
             [
                 'program_fee'      => $programFee,
                 'exam_fee'         => $examFee,
+                'feeding_fee'      => $feedingFee,
                 'other_fees'       => $otherFees,
                 'other_fees_label' => $otherLabel,
                 'total_billed'     => $total,
@@ -173,7 +177,10 @@ class TermFeeService
                     $student,
                     $sessionId,
                     (float) $programFeeRow->amount,
-                    (float) $programFeeRow->exam_fee
+                    (float) $programFeeRow->exam_fee,
+                    0,
+                    null,
+                    (float) ($programFeeRow->feeding_fee ?? 0)
                 );
                 $count++;
             }

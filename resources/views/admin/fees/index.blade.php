@@ -209,64 +209,87 @@
 </style>
 
 {{-- ══ FEE MODE TOGGLE ═══════════════════════════════════════════════════════ --}}
-@php $feeMode   = $feeMode   ?? 'program_fees'; @endphp
-@php $dailyRate = $dailyRate ?? 5; @endphp
+@php
+    $feeMode   = $feeMode   ?? 'program_fees';
+    $dailyRate = $dailyRate ?? 5;
+    $isWith    = $feeMode === 'program_fees_with_feeding';
+    $isDaily   = $feeMode === 'daily_fees';
+    $isProg    = $feeMode === 'program_fees';
+@endphp
 
 <div class="premium-card overflow-hidden mb-6">
     <div class="px-5 py-4 border-b flex items-center gap-3"
-         style="background:linear-gradient(135deg,{{ $feeMode==='daily_fees' ? '#f0fdf4,#dcfce7' : '#fef9c3,#fef3c7' }})">
+         style="background:linear-gradient(135deg,{{ $isDaily ? '#f0fdf4,#dcfce7' : ($isWith ? '#eff6ff,#dbeafe' : '#fef9c3,#fef3c7') }})">
         <div class="w-9 h-9 rounded-xl flex items-center justify-center"
-             style="background:{{ $feeMode==='daily_fees' ? '#16a34a' : '#D4A017' }}">
-            <i class="fas {{ $feeMode==='daily_fees' ? 'fa-calendar-check' : 'fa-coins' }} text-white text-sm"></i>
+             style="background:{{ $isDaily ? '#16a34a' : ($isWith ? '#3b82f6' : '#D4A017') }}">
+            <i class="fas {{ $isDaily ? 'fa-calendar-check' : ($isWith ? 'fa-utensils' : 'fa-coins') }} text-white text-sm"></i>
         </div>
         <div>
-            <h3 class="text-sm font-bold" style="color:{{ $feeMode==='daily_fees' ? '#166534' : '#78520a' }}">
+            <h3 class="text-sm font-bold" style="color:{{ $isDaily ? '#166534' : ($isWith ? '#1e3a8a' : '#78520a') }}">
                 Fee Mode:
-                <span class="ml-1">{{ $feeMode==='daily_fees' ? '⚡ Daily Fees' : '📋 Program / Term Fees' }}</span>
+                <span class="ml-1">
+                    @if($isDaily) ⚡ Daily Fees
+                    @elseif($isWith) 🍽️ Program + Feeding Fees
+                    @else 📋 Program / Term Fees
+                    @endif
+                </span>
             </h3>
-            <p class="text-xs" style="color:{{ $feeMode==='daily_fees' ? '#166534aa' : '#78520aaa' }}">
-                {{ $feeMode==='daily_fees'
-                    ? 'Students are charged GH₵ '.$dailyRate.' per school day. Go to Daily Fees to mark payments.'
-                    : 'Students are charged per program or term. Set fees per program below.' }}
+            <p class="text-xs mt-0.5" style="color:{{ $isDaily ? '#166534aa' : ($isWith ? '#1e3a8aaa' : '#78520aaa') }}">
+                @if($isDaily) Students are charged GH₵ {{ $dailyRate }} per school day.
+                @elseif($isWith) Tuition + Feeding fee billed separately per term.
+                @else Students are charged a lump fee per program / term.
+                @endif
             </p>
         </div>
     </div>
     <form method="POST" action="{{ route('admin.fees.mode') }}" class="px-5 py-4">
         @csrf
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-start">
 
-            {{-- Mode selector --}}
-            <div class="sm:col-span-1">
+            {{-- Mode selector — 3 options --}}
+            <div class="sm:col-span-2 lg:col-span-2">
                 <label class="block text-xs font-bold uppercase tracking-wide text-gray-600 mb-2">Fee Collection Mode</label>
-                <div class="grid grid-cols-2 gap-2">
+                <div class="grid grid-cols-3 gap-2">
+                    {{-- Program Fees --}}
                     <label class="cursor-pointer">
-                        <input type="radio" name="fee_mode" value="program_fees"
-                               class="sr-only peer" {{ $feeMode==='program_fees' ? 'checked' : '' }}>
-                        <span class="flex flex-col items-center gap-1 rounded-xl border-2 border-gray-200 bg-gray-50 p-3 text-center transition-all
-                                     peer-checked:border-yellow-500 peer-checked:bg-yellow-50">
-                            <i class="fas fa-coins text-lg text-yellow-500"></i>
+                        <input type="radio" name="fee_mode" value="program_fees" class="sr-only peer" {{ $isProg ? 'checked' : '' }}>
+                        <span class="flex flex-col items-center gap-1 rounded-xl border-2 border-gray-200 bg-gray-50 p-3 text-center transition-all peer-checked:border-yellow-500 peer-checked:bg-yellow-50">
+                            <i class="fas fa-coins text-xl text-yellow-500"></i>
                             <span class="text-xs font-bold text-gray-700 leading-tight">Program<br>Fees</span>
-                            <span class="text-[10px] text-gray-400">Per term</span>
+                            <span class="text-[10px] text-gray-400">Tuition only</span>
                         </span>
                     </label>
+                    {{-- Program + Feeding --}}
                     <label class="cursor-pointer">
-                        <input type="radio" name="fee_mode" value="daily_fees"
-                               class="sr-only peer" {{ $feeMode==='daily_fees' ? 'checked' : '' }}>
-                        <span class="flex flex-col items-center gap-1 rounded-xl border-2 border-gray-200 bg-gray-50 p-3 text-center transition-all
-                                     peer-checked:border-emerald-500 peer-checked:bg-emerald-50">
-                            <i class="fas fa-calendar-check text-lg text-emerald-500"></i>
+                        <input type="radio" name="fee_mode" value="program_fees_with_feeding" class="sr-only peer" {{ $isWith ? 'checked' : '' }}>
+                        <span class="flex flex-col items-center gap-1 rounded-xl border-2 border-gray-200 bg-gray-50 p-3 text-center transition-all peer-checked:border-blue-500 peer-checked:bg-blue-50">
+                            <i class="fas fa-utensils text-xl text-blue-500"></i>
+                            <span class="text-xs font-bold text-gray-700 leading-tight">Program +<br>Feeding</span>
+                            <span class="text-[10px] text-gray-400">Separate lines</span>
+                        </span>
+                    </label>
+                    {{-- Daily Fees --}}
+                    <label class="cursor-pointer">
+                        <input type="radio" name="fee_mode" value="daily_fees" class="sr-only peer" {{ $isDaily ? 'checked' : '' }}>
+                        <span class="flex flex-col items-center gap-1 rounded-xl border-2 border-gray-200 bg-gray-50 p-3 text-center transition-all peer-checked:border-emerald-500 peer-checked:bg-emerald-50">
+                            <i class="fas fa-calendar-check text-xl text-emerald-500"></i>
                             <span class="text-xs font-bold text-gray-700 leading-tight">Daily<br>Fees</span>
                             <span class="text-[10px] text-gray-400">Per day</span>
                         </span>
                     </label>
                 </div>
+                <div class="mt-2 p-2.5 rounded-lg text-[11px] text-gray-500 bg-gray-50 border border-gray-100">
+                    <strong>Program Fees:</strong> One lump fee per term (e.g. GHS 500/term) ·
+                    <strong>Program + Feeding:</strong> Tuition fee + separate feeding fee per term ·
+                    <strong>Daily Fees:</strong> Charged per school day attended
+                </div>
             </div>
 
-            {{-- Daily rate --}}
-            <div>
+            {{-- Daily rate (shown for daily mode) --}}
+            <div id="dailyRateGroup" class="{{ $isDaily ? '' : 'opacity-40 pointer-events-none' }}">
                 <label class="block text-xs font-bold uppercase tracking-wide text-gray-600 mb-2">
                     Daily Rate (GH₵)
-                    <span class="font-normal text-gray-400 normal-case ml-1">— only used in Daily Fees mode</span>
+                    <span class="font-normal text-gray-400 normal-case ml-1">Daily mode only</span>
                 </label>
                 <div class="flex items-center gap-2 border border-gray-200 rounded-xl px-3 py-2.5 bg-white focus-within:ring-2 focus-within:ring-emerald-400">
                     <span class="text-gray-500 font-bold text-sm">GH₵</span>
@@ -277,18 +300,36 @@
                 </div>
             </div>
 
-            {{-- Save + shortcut --}}
-            <div class="flex flex-col gap-2">
+            {{-- Save --}}
+            <div class="flex flex-col gap-2 justify-end">
                 <button type="submit"
                     class="w-full premium-btn py-3 rounded-xl text-sm font-bold text-white shadow-sm"
                     style="background:linear-gradient(135deg,#D4A017,#b8860b)">
                     <i class="fas fa-save mr-1.5"></i> Save Fee Mode
                 </button>
-                @if($feeMode === 'daily_fees')
+                @if($isDaily)
                 <a href="{{ route('admin.daily-fees.index') }}"
                    class="w-full text-center py-2.5 rounded-xl text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition-colors">
                     <i class="fas fa-external-link-alt mr-1"></i> Go to Daily Fees →
                 </a>
+                @endif
+            </div>
+        </div>
+    </form>
+</div>
+
+{{-- ══ FEEDING FEE INFO (shown only in program_fees_with_feeding mode) ═══════ --}}
+@if($isWith)
+<div class="rounded-xl border border-blue-200 bg-blue-50 p-4 mb-6 flex items-start gap-3">
+    <i class="fas fa-info-circle text-blue-500 mt-0.5"></i>
+    <div class="text-sm text-blue-800">
+        <strong>Feeding Fee Mode active.</strong>
+        Set a <strong>Feeding Fee</strong> per program in the "Program Fees" section below.
+        Each student's term bill will show <em>Tuition Fee</em> + <em>Feeding Fee</em> as separate line items.
+        Students can pay either or both — the system tracks balances for each separately in the total.
+    </div>
+</div>
+@endif
                 @endif
             </div>
         </div>
@@ -522,33 +563,33 @@
     <form method="POST" action="{{ route('admin.fees.set-bulk') }}" class="px-4 py-4 space-y-3">
         @csrf
         <input type="hidden" name="student_ids[]" value="">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
             <div class="input-field">
                 <label class="block text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wide">Program Fee (GH₵) *</label>
                 <input type="number" name="amount" step="0.01" min="0" required
                     class="w-full px-4 py-3 border-1.5 border-blue-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                     placeholder="0.00">
-                @error('amount')
-                    <p class="text-red-600 text-xs mt-1.5 font-medium">{{ $message }}</p>
-                @enderror
             </div>
             <div class="input-field">
                 <label class="block text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wide">Exam Fee (GH₵)</label>
                 <input type="number" name="exam_fee" step="0.01" min="0"
                     class="w-full px-4 py-3 border border-blue-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                     placeholder="0.00">
-                @error('exam_fee')
-                    <p class="text-red-600 text-xs mt-1.5 font-medium">{{ $message }}</p>
-                @enderror
+            </div>
+            <div class="input-field {{ $isWith ? '' : 'opacity-40' }}" id="feedingFeeGroup">
+                <label class="block text-xs font-semibold mb-2 uppercase tracking-wide {{ $isWith ? 'text-blue-700' : 'text-gray-400' }}">
+                    Feeding Fee (GH₵)
+                    @if($isWith)<span class="text-[10px] text-blue-500 normal-case ml-1">— feeding mode</span>@endif
+                </label>
+                <input type="number" name="feeding_fee" step="0.01" min="0"
+                    class="w-full px-4 py-3 border rounded-xl text-sm focus:outline-none focus:ring-2 bg-white {{ $isWith ? 'border-blue-300 focus:ring-blue-500' : 'border-gray-200 cursor-not-allowed' }}"
+                    placeholder="0.00" {{ $isWith ? '' : 'disabled' }}>
             </div>
             <div class="input-field">
                 <label class="block text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wide">Notes</label>
                 <input type="text" name="notes"
                     class="w-full px-4 py-3 border border-blue-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                     placeholder="Scholarship, Sponsor...">
-                @error('notes')
-                    <p class="text-red-600 text-xs mt-1.5 font-medium">{{ $message }}</p>
-                @enderror
             </div>
         </div>
         <div class="flex gap-2">

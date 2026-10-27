@@ -14,9 +14,10 @@ class StoreProgramFeeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'program_id' => 'required|exists:programs,id',
-            'amount'     => 'required|numeric|min:0',
-            'exam_fee'   => 'nullable|numeric|min:0',
+            'program_id'  => 'required|exists:programs,id',
+            'amount'      => 'required|numeric|min:0',
+            'exam_fee'    => 'nullable|numeric|min:0',
+            'feeding_fee' => 'nullable|numeric|min:0',
         ];
     }
 }
