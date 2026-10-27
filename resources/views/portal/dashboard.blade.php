@@ -549,6 +549,13 @@
           <p class="page-subtitle">Your billing details</p>
         </div>
 
+        @php
+            $onlinePayEnabled = \App\Models\Setting::get('school_paystack_secret_key', '') !== ''
+                             && \App\Models\Setting::get('school_paystack_public_key', '') !== '';
+            $currentSessionId = \App\Models\AcademicSession::where('id', '>', 0)->latest()->first()?->id;
+            $balance = $fees['balance'] ?? 0;
+        @endphp
+
         <div class="analytics-grid" style="grid-template-columns:repeat(2,1fr); gap:12px; margin-bottom:16px;">
           <div class="analytics-box">
             <div class="label">Program Tuition</div>
@@ -567,13 +574,62 @@
           </div>
           <div class="analytics-box">
             <div class="label">Outstanding</div>
-            <p class="value" style="color:{{ ($fees['balance'] ?? 0) > 0 ? '#dc2626' : '#fbbf24' }};">GH₵{{ number_format($fees['balance'] ?? 0, 0) }}</p>
+            <p class="value" style="color:{{ $balance > 0 ? '#dc2626' : '#059669' }};">GH₵{{ number_format($balance, 0) }}</p>
             <div class="detail">Net Balance</div>
           </div>
         </div>
 
+        {{-- Pay Now section --}}
+        @if($balance > 0 && $onlinePayEnabled && $currentSessionId)
+        <div class="card" style="background:linear-gradient(135deg,#1e3a5f,#0f2544);border:none;margin-bottom:16px;">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+                <div style="width:40px;height:40px;background:rgba(251,191,36,.15);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <i class="fas fa-credit-card" style="color:#fbbf24;font-size:1rem;"></i>
+                </div>
+                <div>
+                    <div style="font-size:13px;font-weight:800;color:#fff;">Pay Online</div>
+                    <div style="font-size:11px;color:rgba(255,255,255,.5);">Card · Mobile Money · Bank Transfer</div>
+                </div>
+            </div>
+            <form method="POST" action="{{ route('portal.fees.initiate') }}" id="feePayForm">
+                @csrf
+                <input type="hidden" name="session_id" value="{{ $currentSessionId }}">
+                <div style="margin-bottom:12px;">
+                    <label style="font-size:11px;font-weight:700;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px;">Amount to Pay (GH₵)</label>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
+                        <button type="button" onclick="setPayAmount({{ number_format($balance, 2, '.', '') }})"
+                            style="background:rgba(251,191,36,.15);border:1px solid rgba(251,191,36,.3);color:#fbbf24;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;">
+                            Full Balance (GH₵{{ number_format($balance, 2) }})
+                        </button>
+                        <button type="button" onclick="setPayAmount({{ number_format($balance/2, 2, '.', '') }})"
+                            style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.7);padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;">
+                            Half (GH₵{{ number_format($balance/2, 2) }})
+                        </button>
+                    </div>
+                    <input type="number" name="amount" id="payAmount"
+                        value="{{ number_format($balance, 2, '.', '') }}"
+                        min="1" max="{{ number_format($balance, 2, '.', '') }}" step="0.01" required
+                        style="width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#fff;border-radius:10px;padding:10px 14px;font-size:13px;font-weight:700;">
+                </div>
+                <button type="submit"
+                    style="width:100%;background:linear-gradient(135deg,#fbbf24,#d97706);color:#1e3a5f;border:none;border-radius:12px;padding:12px;font-size:13px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+                    <i class="fas fa-lock"></i> Pay Securely via Paystack
+                </button>
+                <p style="text-align:center;font-size:10px;color:rgba(255,255,255,.35);margin-top:8px;">
+                    <i class="fas fa-shield-alt"></i> Secured by Paystack · Payments go directly to the school
+                </p>
+            </form>
+        </div>
+        @elseif($balance <= 0)
+        <div class="card" style="background:#f0fdf4;border:1px solid #bbf7d0;margin-bottom:16px;text-align:center;padding:20px;">
+            <i class="fas fa-check-circle" style="font-size:2rem;color:#16a34a;display:block;margin-bottom:8px;"></i>
+            <div style="font-size:13px;font-weight:800;color:#166534;">All Fees Cleared</div>
+            <div style="font-size:11px;color:#15803d;margin-top:4px;">Your account is fully paid up.</div>
+        </div>
+        @endif
+
         <div class="card">
-          <h2><i class="fas fa-history" style="color:#fbbf24;margin-right:6px;"></i>Payments</h2>
+          <h2><i class="fas fa-history" style="color:#fbbf24;margin-right:6px;"></i>Payment History</h2>
           @if($student->payments->isEmpty())
             <div class="empty-state" style="padding:30px;">
               <i class="fas fa-wallet"></i>
@@ -582,13 +638,14 @@
           @else
             <div class="table-wrap">
               <table>
-                <thead><tr><th>Date</th><th>Amount</th><th>Status</th></tr></thead>
+                <thead><tr><th>Date</th><th>Amount</th><th>Method</th><th>Receipt</th></tr></thead>
                 <tbody>
-                  @foreach($student->payments->sortByDesc('payment_date')->take(8) as $payment)
+                  @foreach($student->payments->sortByDesc('payment_date') as $payment)
                     <tr>
-                      <td>{{ optional($payment->payment_date)->format('M d') ?? '—' }}</td>
-                      <td><strong>GH₵{{ number_format($payment->amount_paid, 0) }}</strong></td>
-                      <td><span class="badge success">Paid</span></td>
+                      <td>{{ optional($payment->payment_date)->format('d M Y') ?? '—' }}</td>
+                      <td><strong>GH₵{{ number_format($payment->amount_paid, 2) }}</strong></td>
+                      <td style="font-size:11px;">{{ ucfirst(str_replace('_', ' ', $payment->payment_method ?? 'cash')) }}</td>
+                      <td style="font-size:10px;color:#6b7280;">{{ $payment->receipt_number ?? '—' }}</td>
                     </tr>
                   @endforeach
                 </tbody>
@@ -916,6 +973,11 @@
       const current = localStorage.getItem('portal_theme') || 'gold';
       applyTheme(current === 'dark' ? 'gold' : 'dark');
     });
+  </script>
+  <script>
+  function setPayAmount(val) {
+    document.getElementById('payAmount').value = val;
+  }
   </script>
 </body>
 </html>

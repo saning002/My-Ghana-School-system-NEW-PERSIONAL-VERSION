@@ -121,7 +121,18 @@ class AdminSettingsController extends Controller
             'lecturer_can_reports'         => 'nullable|boolean',
             'lecturer_can_notifications'   => 'nullable|boolean',
             'lecturer_can_edit_profile'    => 'nullable|boolean',
+            // Online fee payment (school's own Paystack keys)
+            'school_paystack_public_key'   => 'nullable|string|max:100',
+            'school_paystack_secret_key'   => 'nullable|string|max:100',
         ]);
+
+        // Save school Paystack keys if provided
+        if ($request->filled('school_paystack_public_key')) {
+            Setting::set('school_paystack_public_key', trim($request->school_paystack_public_key));
+        }
+        if ($request->filled('school_paystack_secret_key')) {
+            Setting::set('school_paystack_secret_key', trim($request->school_paystack_secret_key));
+        }
 
         Setting::set('school_name', $request->school_name);
         Setting::set('school_subtitle', $request->school_subtitle ?? '');

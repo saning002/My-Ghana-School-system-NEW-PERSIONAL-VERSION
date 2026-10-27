@@ -4,225 +4,186 @@ namespace App\Http\Controllers\Student;
 
 use App\Http\Controllers\Controller;
 use App\Models\Payment;
-use App\Models\PaystackTransaction;
+use App\Models\Setting;
 use App\Models\Student;
-use App\Services\FeeCalculationService;
-use App\Services\PaystackService;
-use App\Services\TenantService;
+use App\Services\TermFeeService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Str;
 
+/**
+ * Handles online fee payment via Paystack from the student portal.
+ * Uses the school's own Paystack keys stored in the tenant settings table.
+ * Money goes directly to the school's Paystack account — not the platform.
+ */
 class FeePaymentController extends Controller
 {
-    public function __construct(
-        private PaystackService      $paystack,
-        private FeeCalculationService $feeService
-    ) {}
+    public function __construct(private TermFeeService $feeService) {}
 
     /**
-     * Show the online fee payment page.
-     * Accessible from the student portal dashboard.
+     * Initiate a Paystack payment for outstanding fees.
      */
-    public function showPayPage()
-    {
-        $student = Auth::guard('web') ->user()?->student
-                ?? $this->getPortalStudent();
-
-        if (!$student) {
-            return redirect()->route('portal.login')
-                ->with('error', 'Please log in to pay fees.');
-        }
-
-        $feeSummary = $this->feeService->calculate($student);
-        $balance    = $feeSummary['balance'];
-
-        return view('student.fee-payment', compact('student', 'feeSummary', 'balance'));
-    }
-
-    /**
-     * Initialize Paystack transaction for school fee payment.
-     */
-    public function initialize(Request $request)
+    public function initiate(Request $request)
     {
         $student = $this->getPortalStudent();
-
         if (!$student) {
-            return redirect()->route('portal.login')
-                ->with('error', 'Session expired. Please log in again.');
+            return redirect()->route('portal.login')->with('error', 'Please log in first.');
         }
 
-        $validated = $request->validate([
-            'amount'      => 'required|numeric|min:1',
-            'email'       => 'required|email',
-            'payer_name'  => 'nullable|string|max:255',
-            'description' => 'nullable|string|max:255',
+        $request->validate([
+            'amount'     => 'required|numeric|min:1',
+            'session_id' => 'required|exists:academic_sessions,id',
         ]);
 
-        $amount    = (float) $validated['amount'];
-        $reference = PaystackService::generateReference('FEE');
-        $tenant    = TenantService::current();
+        $amount    = (float) $request->amount;
+        $sessionId = (int) $request->session_id;
+        $tenantId  = session('tenant_id');
 
-        // Store pending transaction in central DB
-        PaystackTransaction::create([
-            'type'         => 'school_fee',
-            'tenant_id'    => $tenant?->id,
-            'student_id'   => $student->id,
-            'student_name' => $student->user?->full_name ?? 'Student',
-            'payer_email'  => $validated['email'],
-            'payer_name'   => $validated['payer_name'] ?? $student->user?->full_name,
-            'reference'    => $reference,
-            'amount'       => $amount,
-            'description'  => $validated['description'] ?? 'School fee payment — ' . ($student->user?->full_name ?? $student->student_id),
-            'status'       => 'pending',
-        ]);
-
-        $result = $this->paystack->initializeTransaction(
-            email:       $validated['email'],
-            amount:      $amount,
-            reference:   $reference,
-            callbackUrl: route('paystack.fee.callback', ['reference' => $reference]),
-            metadata:    [
-                'type'       => 'school_fee',
-                'student_id' => $student->id,
-                'tenant_id'  => $tenant?->id,
-                'tenant_slug'=> $tenant?->slug,
-                'student_no' => $student->student_id,
-            ]
-        );
-
-        if (!$result['status']) {
-            return back()->with('error', 'Could not connect to Paystack: ' . $result['message']);
+        // Get the school's own Paystack secret key
+        $secretKey = Setting::get('school_paystack_secret_key', '');
+        if (empty($secretKey)) {
+            return back()->with('error', 'Online payment is not configured for this school. Please pay at the accounts office.');
         }
 
-        return redirect($result['authorization_url']);
+        $email    = $student->user?->email ?? $student->guardian_email ?? 'student@school.com';
+        $reference = 'FEE-' . strtoupper(Str::random(8)) . '-' . time();
+        $amountKobo = (int) round($amount * 100); // Paystack uses kobo (smallest unit)
+
+        // Store pending transaction in tenant DB
+        DB::table('payments')->insert([
+            'student_id'          => $student->id,
+            'amount_paid'         => $amount,
+            'payment_date'        => now()->toDateString(),
+            'payment_method'      => 'paystack',
+            'academic_session_id' => $sessionId,
+            'paystack_reference'  => $reference,
+            'paystack_status'     => 'pending',
+            'receipt_number'      => null, // will be set on success
+            'notes'               => 'Online payment — pending Paystack confirmation',
+            'payer_name'          => $student->user?->full_name ?? 'Student',
+            'created_at'          => now(),
+            'updated_at'          => now(),
+        ]);
+
+        // Initialize Paystack transaction using the school's key
+        try {
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $secretKey,
+                'Content-Type'  => 'application/json',
+            ])->post('https://api.paystack.co/transaction/initialize', [
+                'email'        => $email,
+                'amount'       => $amountKobo,
+                'reference'    => $reference,
+                'currency'     => 'GHS',
+                'callback_url' => route('portal.fees.callback', ['reference' => $reference]),
+                'metadata'     => [
+                    'student_id'   => $student->id,
+                    'student_name' => $student->user?->full_name,
+                    'student_no'   => $student->student_id,
+                    'session_id'   => $sessionId,
+                    'tenant_id'    => $tenantId,
+                    'cancel_action'=> route('portal.dashboard'),
+                ],
+            ]);
+
+            $data = $response->json();
+
+            if ($response->successful() && ($data['status'] ?? false)) {
+                return redirect($data['data']['authorization_url']);
+            }
+
+            // Failed — delete the pending record
+            DB::table('payments')->where('paystack_reference', $reference)->delete();
+            return back()->with('error', 'Could not connect to payment gateway. Please try again.');
+
+        } catch (\Throwable $e) {
+            DB::table('payments')->where('paystack_reference', $reference)->delete();
+            Log::error('Student fee payment initiation failed: ' . $e->getMessage());
+            return back()->with('error', 'Payment could not be initiated. Please try again or pay at the office.');
+        }
     }
 
     /**
-     * Paystack redirects here after payment attempt.
+     * Handle Paystack callback after student fee payment.
      */
     public function callback(Request $request)
     {
         $reference = $request->query('reference') ?? $request->query('trxref');
 
         if (!$reference) {
-            return view('paystack.status', [
-                'status'  => 'failed',
-                'message' => 'Invalid payment callback — no reference.',
-                'type'    => 'school_fee',
-            ]);
+            return redirect()->route('portal.dashboard')->with('error', 'Invalid payment reference.');
         }
 
-        $transaction = PaystackTransaction::where('reference', $reference)->first();
+        // Find the pending payment
+        $payment = DB::table('payments')
+            ->where('paystack_reference', $reference)
+            ->first();
 
-        if (!$transaction) {
-            return view('paystack.status', [
-                'status'  => 'failed',
-                'message' => 'Transaction not found.',
-                'type'    => 'school_fee',
-            ]);
+        if (!$payment) {
+            return redirect()->route('portal.dashboard')->with('error', 'Payment record not found.');
         }
 
         // Already processed
-        if ($transaction->isSuccess()) {
-            return view('paystack.status', [
-                'status'      => 'success',
-                'message'     => 'Payment already confirmed.',
-                'transaction' => $transaction,
-                'type'        => 'school_fee',
-            ]);
+        if ($payment->paystack_status === 'success') {
+            return redirect()->route('portal.dashboard')->with('success', 'Payment already confirmed. Receipt: ' . $payment->receipt_number);
         }
 
-        // Verify with Paystack
-        $verification = $this->paystack->verifyTransaction($reference);
-
-        if (!$verification['status'] || !$verification['paid']) {
-            $transaction->update([
-                'status'            => 'failed',
-                'paystack_response' => json_encode($verification['data'] ?? []),
-            ]);
-
-            return view('paystack.status', [
-                'status'      => 'failed',
-                'message'     => $verification['message'] ?? 'Payment was not successful.',
-                'transaction' => $transaction,
-                'type'        => 'school_fee',
-            ]);
+        // Verify with school's Paystack key
+        $secretKey = Setting::get('school_paystack_secret_key', '');
+        if (empty($secretKey)) {
+            return redirect()->route('portal.dashboard')->with('error', 'Payment verification failed — contact the school office.');
         }
 
-        // Payment confirmed — record in the tenant's DB
-        $this->recordFeePayment($transaction, $verification);
-
-        return view('paystack.status', [
-            'status'      => 'success',
-            'message'     => 'Fee payment confirmed! Your payment has been recorded.',
-            'transaction' => $transaction->fresh(),
-            'type'        => 'school_fee',
-        ]);
-    }
-
-    // ─── Internal helpers ────────────────────────────────────────────────────────
-
-    private function recordFeePayment(PaystackTransaction $tx, array $verification): void
-    {
         try {
-            // If tenant context is set, switch to tenant DB to record the payment
-            $tenant = $tx->tenant;
-            if ($tenant) {
-                DB::purge('tenant');
-                \Illuminate\Support\Facades\Config::set(
-                    'database.connections.tenant',
-                    $tenant->dbConfig()
-                );
-                DB::setDefaultConnection('tenant');
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $secretKey,
+            ])->get('https://api.paystack.co/transaction/verify/' . $reference);
+
+            $data = $response->json();
+
+            if (!$response->successful() || !($data['status'] ?? false)) {
+                DB::table('payments')->where('paystack_reference', $reference)
+                    ->update(['paystack_status' => 'failed', 'notes' => 'Verification failed', 'updated_at' => now()]);
+                return redirect()->route('portal.dashboard')->with('error', 'Payment verification failed. Contact the school office with reference: ' . $reference);
             }
 
-            // Record payment in the school's payments table
-            $payment = DB::connection('tenant')->table('payments')->insertGetId([
-                'student_id'          => $tx->student_id,
-                'amount_paid'         => $tx->amount,
-                'payment_date'        => now()->toDateString(),
-                'notes'               => 'Online payment via Paystack — Ref: ' . $tx->reference,
-                'payment_method'      => 'paystack',
-                'paystack_reference'  => $tx->reference,
-                'paystack_status'     => 'success',
-                'paystack_channel'    => $verification['channel'] ?? null,
-                'transaction_id'      => $verification['data']['id'] ?? null,
-                'created_at'          => now(),
-                'updated_at'          => now(),
+            $txData = $data['data'] ?? [];
+            $status = $txData['status'] ?? 'failed';
+
+            if ($status !== 'success') {
+                DB::table('payments')->where('paystack_reference', $reference)
+                    ->update(['paystack_status' => $status, 'notes' => 'Paystack status: ' . $status, 'updated_at' => now()]);
+                return redirect()->route('portal.dashboard')->with('error', 'Payment was not successful. Status: ' . $status . '. Reference: ' . $reference);
+            }
+
+            // Generate receipt number
+            $receiptNumber = 'RCP-' . date('Y') . '-' . strtoupper(Str::random(6));
+
+            // Mark payment as successful
+            DB::table('payments')->where('paystack_reference', $reference)->update([
+                'paystack_status' => 'success',
+                'paystack_channel'=> $txData['channel'] ?? null,
+                'receipt_number'  => $receiptNumber,
+                'notes'           => 'Online payment via ' . ($txData['channel'] ?? 'Paystack'),
+                'updated_at'      => now(),
             ]);
 
-            // Reset to central DB
-            DB::setDefaultConnection('pgsql');
-            DB::purge('tenant');
-
-            // Update the central transaction record
-            $tx->update([
-                'status'             => 'success',
-                'paystack_id'        => $verification['data']['id'] ?? null,
-                'channel'            => $verification['channel'] ?? null,
-                'paystack_response'  => json_encode($verification['data'] ?? []),
-                'school_payment_id'  => $payment,
-                'paid_at'            => now(),
-            ]);
+            return redirect()->route('portal.dashboard')
+                ->with('success', "Payment of GHS " . number_format($payment->amount_paid, 2) . " confirmed! Receipt: {$receiptNumber}");
 
         } catch (\Throwable $e) {
-            Log::error('recordFeePayment failed: ' . $e->getMessage());
-            DB::setDefaultConnection('pgsql');
+            Log::error('Student fee payment callback failed: ' . $e->getMessage());
+            return redirect()->route('portal.dashboard')->with('error', 'Verification error. Contact the school with reference: ' . $reference);
         }
     }
 
     private function getPortalStudent(): ?Student
     {
-        // Student portal uses session-based auth stored in 'portal_student_id'
-        $studentId = session('portal_student_id');
-        if (!$studentId) return null;
-
-        try {
-            return Student::with('user')->find($studentId);
-        } catch (\Throwable $e) {
-            return null;
-        }
+        $id = Session::get('portal_student_id');
+        if (!$id) return null;
+        return Student::with('user')->find($id);
     }
 }

@@ -1940,11 +1940,9 @@ Route::prefix('pay-subscription')->name('paystack.subscription.')->group(functio
 });
 
 // ── 3. School fee payments (student/parent pays school fees) ──────────────
-// These are inside the portal prefix but added here to keep Paystack routes together.
-// Routes: /portal/pay-fees (GET) and /portal/pay-fees/initialize (POST)
-Route::prefix('portal')->name('portal.fee.')->middleware(['portal.auth', 'tenant'])->group(function () {
-    Route::get('/pay-fees',             [\App\Http\Controllers\Student\FeePaymentController::class, 'showPayPage'])->name('pay');
-    Route::post('/pay-fees/initialize', [\App\Http\Controllers\Student\FeePaymentController::class, 'initialize'])->name('pay.initialize');
+Route::prefix('portal')->name('portal.fees.')->middleware(['tenant', 'portal.auth'])->group(function () {
+    Route::post('/fees/pay',      [\App\Http\Controllers\Student\FeePaymentController::class, 'initiate'])->name('initiate');
+    Route::get('/fees/callback',  [\App\Http\Controllers\Student\FeePaymentController::class, 'callback'])->name('callback')->withoutMiddleware(['portal.auth']);
 });
 
 // Fee callback — no middleware (Paystack redirects here after payment)

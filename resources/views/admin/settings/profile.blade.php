@@ -235,6 +235,61 @@
 </form>
 </div>
 
+{{-- ── ONLINE FEE PAYMENT SETTINGS ─────────────────────────────────────── --}}
+<div class="card overflow-hidden mb-6">
+    <div class="px-5 py-4 border-b bg-green-50 flex items-center gap-2">
+        <div class="w-8 h-8 rounded-xl bg-green-500 flex items-center justify-center">
+            <i class="fas fa-credit-card text-white text-sm"></i>
+        </div>
+        <div>
+            <h3 class="text-sm font-bold text-green-900">Online Fee Payment (Paystack)</h3>
+            <p class="text-xs text-green-600 mt-0.5">Allow parents/students to pay fees online directly to your school's Paystack account</p>
+        </div>
+    </div>
+    <form method="POST" action="{{ route('admin.settings.save') }}" class="px-5 py-5">
+        @csrf
+        <div class="rounded-xl bg-blue-50 border border-blue-100 p-3 mb-4 text-xs text-blue-700">
+            <i class="fas fa-info-circle mr-1"></i>
+            <strong>How it works:</strong> Payments go directly to your school's Paystack account — not the platform.
+            Get your keys from <a href="https://dashboard.paystack.com/#/settings/developers" target="_blank" class="underline font-bold">Paystack Dashboard → Settings → API Keys</a>.
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wide text-gray-600 mb-1">Public Key</label>
+                <input type="text" name="school_paystack_public_key"
+                    value="{{ old('school_paystack_public_key', \App\Models\Setting::get('school_paystack_public_key','')) }}"
+                    placeholder="pk_live_xxxx or pk_test_xxxx"
+                    class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-green-400">
+                <p class="text-[10px] text-gray-400 mt-1">Safe to put in frontend code</p>
+            </div>
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wide text-gray-600 mb-1">Secret Key</label>
+                <input type="password" name="school_paystack_secret_key"
+                    value="{{ old('school_paystack_secret_key', \App\Models\Setting::get('school_paystack_secret_key','')) }}"
+                    placeholder="sk_live_xxxx or sk_test_xxxx"
+                    class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-green-400">
+                <p class="text-[10px] text-red-400 mt-1">Keep secret — never share this</p>
+            </div>
+        </div>
+        @if(\App\Models\Setting::get('school_paystack_secret_key','') !== '')
+        <div class="rounded-xl bg-green-50 border border-green-200 p-2.5 mb-4 text-xs text-green-700 flex items-center gap-2">
+            <i class="fas fa-check-circle text-green-500"></i>
+            Online fee payment is <strong>active</strong> — students see a "Pay Now" button in their portal.
+        </div>
+        @else
+        <div class="rounded-xl bg-gray-50 border border-gray-200 p-2.5 mb-4 text-xs text-gray-500 flex items-center gap-2">
+            <i class="fas fa-info-circle"></i>
+            Add your Paystack keys above to enable online payments. Leave blank to disable.
+        </div>
+        @endif
+        <button type="submit"
+            class="px-6 py-3 rounded-xl text-sm font-bold text-white shadow-sm"
+            style="background:linear-gradient(135deg,#16a34a,#15803d)">
+            <i class="fas fa-save mr-1.5"></i> Save Payment Settings
+        </button>
+    </form>
+</div>
+
 
 {{-- ═══════════════════════════════════════════════════════════════
      TAB: THEME & COLOURS
