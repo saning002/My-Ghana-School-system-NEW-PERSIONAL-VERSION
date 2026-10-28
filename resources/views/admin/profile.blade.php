@@ -15,15 +15,15 @@
     }
 }">
     {{-- Header --}}
-    <div class="card border border-amber-200/60 bg-gradient-to-r from-amber-50 via-amber-50/40 to-white p-6">
+    <div class="card border border-[var(--brand)]/60 bg-gradient-to-r from-amber-50 via-amber-50/40 to-white p-6">
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <p class="text-xs font-bold uppercase tracking-wider text-amber-700">Account Settings</p>
+                <p class="text-xs font-bold uppercase tracking-wider text-[var(--primary-text)]">Account Settings</p>
                 <h2 class="text-2xl font-extrabold text-slate-900 mt-1">My Profile</h2>
                 <p class="text-xs text-slate-600 mt-0.5">Keep your information and security password up to date.</p>
             </div>
-            <div class="inline-flex items-center gap-2 rounded-full border border-amber-300/60 bg-white px-3.5 py-1.5 text-xs font-bold text-amber-800 shadow-sm shrink-0">
-                <i class="fas fa-user-circle text-amber-500"></i>
+            <div class="inline-flex items-center gap-2 rounded-full border border-amber-300/60 bg-white px-3.5 py-1.5 text-xs font-bold text-[var(--primary-text)] shadow-sm shrink-0">
+                <i class="fas fa-user-circle text-[var(--brand)]"></i>
                 {{ auth()->user()->isSuperAdmin() ? 'Super Admin' : 'Administrator' }}
             </div>
         </div>
@@ -46,7 +46,7 @@
                                 <img src="{{ filter_var($photo, FILTER_VALIDATE_URL) ? $photo : Storage::disk('public')->url($photo) }}"
                                      alt="Profile Photo" class="w-28 h-28 rounded-full object-cover border-4 border-amber-400 shadow-md">
                             @else
-                                <div class="w-28 h-28 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center font-extrabold text-3xl border-4 border-amber-300 shadow-inner">
+                                <div class="w-28 h-28 rounded-full bg-[var(--primary-pale)] text-[var(--primary-text)] flex items-center justify-center font-extrabold text-3xl border-4 border-amber-300 shadow-inner">
                                     {{ strtoupper(substr(auth()->user()->full_name ?? 'A', 0, 1)) }}
                                 </div>
                             @endif
@@ -58,7 +58,7 @@
                     </div>
                     <div>
                         <h3 class="text-lg font-extrabold text-slate-900 leading-tight">{{ auth()->user()->full_name }}</h3>
-                        <p class="text-xs font-semibold text-amber-700 mt-0.5">{{ auth()->user()->email }}</p>
+                        <p class="text-xs font-semibold text-[var(--primary-text)] mt-0.5">{{ auth()->user()->email }}</p>
                         @if(auth()->user()->church_branch_id)
                         <p class="text-xs text-slate-400 mt-1">
                             <i class="fas fa-code-branch mr-1"></i>
@@ -110,12 +110,12 @@
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1">New Password</label>
                             <input type="password" name="password"
-                                class="w-full rounded-xl border-slate-200 bg-slate-50/50 p-3 text-sm focus:border-amber-500 focus:ring-amber-500 focus:bg-white transition-all" placeholder="••••••••">
+                                class="w-full rounded-xl border-slate-200 bg-slate-50/50 p-3 text-sm focus:border-amber-500 focus:ring-amber-500 focus:bg-white transition-all" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1">Confirm New Password</label>
                             <input type="password" name="password_confirmation"
-                                class="w-full rounded-xl border-slate-200 bg-slate-50/50 p-3 text-sm focus:border-amber-500 focus:ring-amber-500 focus:bg-white transition-all" placeholder="••••••••">
+                                class="w-full rounded-xl border-slate-200 bg-slate-50/50 p-3 text-sm focus:border-amber-500 focus:ring-amber-500 focus:bg-white transition-all" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢">
                         </div>
                     </div>
                 </div>

@@ -37,7 +37,7 @@
         <p class="text-sm text-gray-500 mt-1">{{ $branches->total() }} branch{{ $branches->total() !== 1 ? 'es' : '' }} in the system</p>
     </div>
     <a href="{{ route('admin.branches.create') }}"
-       class="inline-flex items-center gap-2 px-6 py-3 bg-yellow-600 text-white rounded-xl text-sm font-semibold hover:bg-yellow-700 shadow-sm transition-all">
+       class="inline-flex items-center gap-2 px-6 py-3 bg-[var(--primary)] text-white rounded-xl text-sm font-semibold hover:bg-[var(--primary-dark)] shadow-sm transition-all">
         <i class="fas fa-plus"></i> Add Branch
     </a>
 </div>
@@ -81,7 +81,7 @@
         </div>
 
         <a href="{{ route('admin.branches.admins.index', $branch) }}"
-           class="w-full flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-semibold transition-all bg-yellow-50 text-yellow-700 hover:bg-yellow-100">
+           class="w-full flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-semibold transition-all bg-[var(--primary-pale)] text-[var(--primary-text)] hover:bg-[var(--primary-pale)]">
             <i class="fas fa-users"></i> Manage Admins
         </a>
     </div>
@@ -93,7 +93,7 @@
         <p class="text-gray-600 font-medium text-lg mb-2">No branches created yet</p>
         <p class="text-gray-500 text-sm mb-6">Get started by creating your first ministry branch</p>
         <a href="{{ route('admin.branches.create') }}"
-           class="inline-flex items-center gap-2 px-6 py-3 bg-yellow-600 text-white rounded-xl text-sm font-semibold hover:bg-yellow-700">
+           class="inline-flex items-center gap-2 px-6 py-3 bg-[var(--primary)] text-white rounded-xl text-sm font-semibold hover:bg-[var(--primary-dark)]">
             <i class="fas fa-plus"></i> Create First Branch
         </a>
     </div>

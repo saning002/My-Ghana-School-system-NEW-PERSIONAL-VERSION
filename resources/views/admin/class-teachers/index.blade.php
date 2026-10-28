@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('title','Class Teacher Assignments')
-@section('subtitle','Assign one teacher to manage each class — they take daily register for all subjects')
+@section('subtitle','Assign one teacher to manage each class â€” they take daily register for all subjects')
 
 @section('content')
 <div class="space-y-5">
@@ -37,7 +37,7 @@
                 <i class="fas fa-check text-emerald-300 text-[10px]"></i>
                 {{ $programs->filter(fn($p) => $p->classTeacherAssignment)->count() }} assigned
             </div>
-            <div class="inline-flex items-center gap-2 rounded-full bg-amber-500/20 border border-amber-400/30 px-3.5 py-1 text-xs font-bold text-amber-200">
+            <div class="inline-flex items-center gap-2 rounded-full bg-[var(--primary-pale)]0/20 border border-amber-400/30 px-3.5 py-1 text-xs font-bold text-amber-200">
                 <i class="fas fa-exclamation text-amber-300 text-[10px]"></i>
                 {{ $programs->filter(fn($p) => !$p->classTeacherAssignment)->count() }} unassigned
             </div>
@@ -50,10 +50,10 @@
     <i class="fas fa-lightbulb text-indigo-400 mt-0.5 shrink-0"></i>
     <div class="text-xs text-indigo-700 leading-relaxed space-y-1">
         <p><strong class="text-indigo-900">How it works:</strong></p>
-        <p>• The assigned class teacher logs in and sees a <strong>Class Register</strong> button on their dashboard.</p>
-        <p>• They mark attendance once per day for their class — this covers all subjects for that day.</p>
-        <p>• Subject teachers can still mark attendance for their own courses as usual.</p>
-        <p>• A teacher can be a class teacher for one class AND a subject teacher in multiple other classes.</p>
+        <p>â€¢ The assigned class teacher logs in and sees a <strong>Class Register</strong> button on their dashboard.</p>
+        <p>â€¢ They mark attendance once per day for their class â€” this covers all subjects for that day.</p>
+        <p>â€¢ Subject teachers can still mark attendance for their own courses as usual.</p>
+        <p>â€¢ A teacher can be a class teacher for one class AND a subject teacher in multiple other classes.</p>
     </div>
 </div>
 
@@ -95,7 +95,7 @@
                     {{ strtoupper(substr($assignment->lecturer?->full_name ?? '?', 0, 1)) }}
                 </div>
                 <div class="flex-1 min-w-0">
-                    <p class="text-sm font-bold text-emerald-900 truncate">{{ $assignment->lecturer?->full_name ?? '—' }}</p>
+                    <p class="text-sm font-bold text-emerald-900 truncate">{{ $assignment->lecturer?->full_name ?? 'â€”' }}</p>
                     <p class="text-[11px] text-emerald-600">Class Teacher</p>
                 </div>
                 <form method="POST" action="{{ route('admin.class-teachers.remove') }}"
@@ -116,7 +116,7 @@
                 <div class="flex gap-2">
                     <select name="lecturer_id" required
                         class="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 min-w-0">
-                        <option value="">— Select teacher —</option>
+                        <option value="">â€” Select teacher â€”</option>
                         @foreach($lecturers as $l)
                         <option value="{{ $l->id }}"
                             {{ $assignment?->lecturer_id == $l->id ? 'selected' : '' }}>

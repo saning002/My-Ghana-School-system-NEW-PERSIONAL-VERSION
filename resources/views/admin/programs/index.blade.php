@@ -37,7 +37,7 @@
         <p class="text-sm text-gray-500 mt-1">{{ $programs->total() }} program{{ $programs->total() !== 1 ? 's' : '' }} in the system</p>
     </div>
     <a href="{{ route('admin.programs.create') }}"
-       class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-yellow-600 to-yellow-700 text-white rounded-xl text-sm font-semibold hover:from-yellow-700 hover:to-yellow-800 shadow-lg hover:shadow-xl transition-all">
+       class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[var(--primary)] to-[var(--primary-dark)] text-white rounded-xl text-sm font-semibold hover:from-[var(--primary-dark)] hover:to-[var(--primary-dark)] shadow-lg hover:shadow-xl transition-all">
         <i class="fas fa-plus"></i> Add Program
     </a>
 </div>
@@ -46,8 +46,8 @@
     @forelse($programs as $program)
     <div class="program-card p-6">
         <div class="flex items-start justify-between mb-4">
-            <div class="w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0 bg-gradient-to-br from-yellow-100 to-yellow-50">
-                <i class="fas fa-graduation-cap text-lg text-yellow-700"></i>
+            <div class="w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0 bg-gradient-to-br from-[var(--primary-pale)] to-[var(--primary-pale)]">
+                <i class="fas fa-graduation-cap text-lg text-[var(--primary-text)]"></i>
             </div>
             <div class="flex gap-1.5">
                 <a href="{{ route('admin.programs.edit',$program) }}"
@@ -65,13 +65,13 @@
         <h3 class="text-base font-bold text-gray-900 mb-2 line-clamp-2">{{ $program->name }}</h3>
         <p class="text-xs text-gray-500 mb-4">
             <i class="fas fa-layers mr-1" style="color: #D4A017;"></i>
-            Level {{ $program->sequence }} · {{ $program->duration }} months
+            Level {{ $program->sequence }} Â· {{ $program->duration }} months
         </p>
 
         <div class="grid grid-cols-2 gap-2 mb-4">
-            <div class="rounded-lg p-3 text-center bg-gradient-to-br from-yellow-50 to-yellow-100/50 border border-yellow-200/50">
-                <p class="text-xl font-bold text-yellow-900">{{ $program->students_count ?? 0 }}</p>
-                <p class="text-xs text-yellow-700 mt-0.5 font-semibold">Enrolled</p>
+            <div class="rounded-lg p-3 text-center bg-gradient-to-br from-[var(--primary-pale)] to-[var(--primary-pale)]/50 border border-[var(--brand)]/50">
+                <p class="text-xl font-bold text-[var(--primary-text)]">{{ $program->students_count ?? 0 }}</p>
+                <p class="text-xs text-[var(--primary-text)] mt-0.5 font-semibold">Enrolled</p>
             </div>
             <div class="rounded-lg p-3 text-center bg-gradient-to-br from-blue-50 to-blue-100/50 border border-blue-200/50">
                 <p class="text-xl font-bold text-blue-900">{{ $program->courses->count() }}</p>
@@ -80,7 +80,7 @@
         </div>
 
         <a href="{{ route('admin.programs.show',$program) }}"
-           class="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg text-xs font-semibold transition-colors bg-yellow-50 text-yellow-700 hover:bg-yellow-100">
+           class="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg text-xs font-semibold transition-colors bg-[var(--primary-pale)] text-[var(--primary-text)] hover:bg-[var(--primary-pale)]">
             View Details <i class="fas fa-arrow-right text-[10px]"></i>
         </a>
     </div>
@@ -92,7 +92,7 @@
         <p class="text-gray-600 font-medium text-lg mb-2">No programs created yet</p>
         <p class="text-gray-500 text-sm mb-6">Create programs to organize your academic offerings</p>
         <a href="{{ route('admin.programs.create') }}"
-           class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-yellow-600 to-yellow-700 text-white rounded-xl text-sm font-semibold hover:from-yellow-700 hover:to-yellow-800">
+           class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[var(--primary)] to-[var(--primary-dark)] text-white rounded-xl text-sm font-semibold hover:from-[var(--primary-dark)] hover:to-[var(--primary-dark)]">
             <i class="fas fa-plus"></i> Create First Program
         </a>
     </div>

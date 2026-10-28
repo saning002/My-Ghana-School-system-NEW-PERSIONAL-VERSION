@@ -5,7 +5,7 @@
 @section('content')
 <div class="max-w-4xl mx-auto space-y-6">
 
-    {{-- ── Back + Actions ── --}}
+    {{-- â”€â”€ Back + Actions â”€â”€ --}}
     <div class="flex items-center justify-between">
         <a href="{{ route('admin.lecturers.index') }}" class="text-sm text-gray-500 hover:text-gray-700 font-medium flex items-center gap-1">
             <i class="fas fa-arrow-left text-xs"></i> Back to Teachers
@@ -26,16 +26,16 @@
         </div>
     </div>
 
-    {{-- ── Profile Card ── --}}
+    {{-- â”€â”€ Profile Card â”€â”€ --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        <div class="bg-gradient-to-r from-yellow-600 to-yellow-700 h-24 relative">
+        <div class="bg-gradient-to-r from-[var(--primary)] to-[var(--primary-dark)] h-24 relative">
             <div class="absolute -bottom-10 left-6">
                 @if($lecturer->photo_url)
                     <img src="{{ $lecturer->photo_url }}" alt="{{ $lecturer->full_name }}"
                          class="w-20 h-20 rounded-2xl object-cover border-4 border-white shadow-md">
                 @else
                     <div class="w-20 h-20 rounded-2xl bg-white flex items-center justify-center border-4 border-white shadow-md">
-                        <span class="text-3xl font-bold text-yellow-600">{{ strtoupper(substr($lecturer->full_name, 0, 1)) }}</span>
+                        <span class="text-3xl font-bold text-[var(--brand)]">{{ strtoupper(substr($lecturer->full_name, 0, 1)) }}</span>
                     </div>
                 @endif
             </div>
@@ -48,13 +48,13 @@
                         <p class="text-sm text-blue-600 font-semibold mt-0.5">{{ $lecturer->qualification }}</p>
                     @endif
                 </div>
-                <span class="text-xs px-3 py-1 bg-yellow-50 text-yellow-700 border border-yellow-200 rounded-full font-semibold">
+                <span class="text-xs px-3 py-1 bg-[var(--primary-pale)] text-[var(--primary-text)] border border-[var(--brand)] rounded-full font-semibold">
                     <i class="fas fa-chalkboard-user mr-1"></i> Teacher
                 </span>
             </div>
 
             @if($lecturer->bio)
-                <p class="mt-3 text-sm text-gray-600 leading-relaxed border-l-4 border-yellow-300 pl-3">
+                <p class="mt-3 text-sm text-gray-600 leading-relaxed border-l-4 border-[var(--brand)] pl-3">
                     {{ $lecturer->bio }}
                 </p>
             @endif
@@ -63,49 +63,49 @@
             <div class="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 @if($lecturer->email)
                 <div class="flex items-center gap-2 text-sm text-gray-600 bg-gray-50 rounded-xl px-3 py-2">
-                    <i class="fas fa-envelope text-yellow-500 w-4 text-center flex-shrink-0"></i>
+                    <i class="fas fa-envelope text-[var(--brand)] w-4 text-center flex-shrink-0"></i>
                     <span class="truncate">{{ $lecturer->email }}</span>
                 </div>
                 @endif
                 @if($lecturer->phone)
                 <div class="flex items-center gap-2 text-sm text-gray-600 bg-gray-50 rounded-xl px-3 py-2">
-                    <i class="fas fa-phone text-yellow-500 w-4 text-center flex-shrink-0"></i>
+                    <i class="fas fa-phone text-[var(--brand)] w-4 text-center flex-shrink-0"></i>
                     {{ $lecturer->phone }}
                 </div>
                 @endif
                 @if($lecturer->date_of_birth)
                 <div class="flex items-center gap-2 text-sm text-gray-600 bg-gray-50 rounded-xl px-3 py-2">
-                    <i class="fas fa-birthday-cake text-yellow-500 w-4 text-center flex-shrink-0"></i>
+                    <i class="fas fa-birthday-cake text-[var(--brand)] w-4 text-center flex-shrink-0"></i>
                     {{ $lecturer->date_of_birth->format('d M Y') }}
                 </div>
                 @endif
                 @if($lecturer->gender)
                 <div class="flex items-center gap-2 text-sm text-gray-600 bg-gray-50 rounded-xl px-3 py-2">
-                    <i class="fas fa-venus-mars text-yellow-500 w-4 text-center flex-shrink-0"></i>
+                    <i class="fas fa-venus-mars text-[var(--brand)] w-4 text-center flex-shrink-0"></i>
                     {{ ucfirst($lecturer->gender) }}
                 </div>
                 @endif
                 @if($lecturer->nationality)
                 <div class="flex items-center gap-2 text-sm text-gray-600 bg-gray-50 rounded-xl px-3 py-2">
-                    <i class="fas fa-flag text-yellow-500 w-4 text-center flex-shrink-0"></i>
+                    <i class="fas fa-flag text-[var(--brand)] w-4 text-center flex-shrink-0"></i>
                     {{ $lecturer->nationality }}
                 </div>
                 @endif
                 @if($lecturer->address)
                 <div class="flex items-center gap-2 text-sm text-gray-600 bg-gray-50 rounded-xl px-3 py-2 sm:col-span-2 lg:col-span-1">
-                    <i class="fas fa-map-marker-alt text-yellow-500 w-4 text-center flex-shrink-0"></i>
+                    <i class="fas fa-map-marker-alt text-[var(--brand)] w-4 text-center flex-shrink-0"></i>
                     <span class="truncate">{{ $lecturer->address }}</span>
                 </div>
                 @endif
                 <div class="flex items-center gap-2 text-sm text-gray-600 bg-gray-50 rounded-xl px-3 py-2">
-                    <i class="fas fa-calendar-plus text-yellow-500 w-4 text-center flex-shrink-0"></i>
+                    <i class="fas fa-calendar-plus text-[var(--brand)] w-4 text-center flex-shrink-0"></i>
                     Joined {{ $lecturer->created_at->format('M Y') }}
                 </div>
             </div>
         </div>
     </div>
 
-    {{-- ── Course Assignments ── --}}
+    {{-- â”€â”€ Course Assignments â”€â”€ --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-blue-100/40 flex items-center justify-between">
             <h3 class="text-sm font-bold text-blue-900 flex items-center gap-2">
@@ -133,7 +133,7 @@
                 <div class="px-6 py-4">
                     <div class="flex items-center gap-2 mb-3">
                         @if($program)
-                            <span class="w-5 h-5 rounded-full bg-yellow-500 text-white text-[10px] font-bold flex items-center justify-center flex-shrink-0">
+                            <span class="w-5 h-5 rounded-full bg-[var(--primary-pale)]0 text-white text-[10px] font-bold flex items-center justify-center flex-shrink-0">
                                 {{ $program->sequence }}
                             </span>
                             <p class="text-sm font-bold text-gray-800">{{ $program->name }}</p>
@@ -149,7 +149,7 @@
                                 <i class="fas fa-book"></i>
                             </div>
                             <div class="min-w-0">
-                                <p class="text-sm font-semibold text-gray-800 truncate">{{ $assignment->course->name ?? '—' }}</p>
+                                <p class="text-sm font-semibold text-gray-800 truncate">{{ $assignment->course->name ?? 'â€”' }}</p>
                                 <p class="text-xs text-gray-400 font-mono">{{ $assignment->course->code ?? '' }}</p>
                             </div>
                         </div>

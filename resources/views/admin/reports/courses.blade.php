@@ -16,7 +16,7 @@
     <form method="GET" class="flex flex-wrap gap-3 items-end">
         <div class="flex-1 min-w-32">
             <label class="block text-xs font-semibold text-gray-500 mb-1.5">{{ $programLabelSingular }}</label>
-            <select name="program_id" class="w-full px-3 py-2.5 border border-yellow-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2">
+            <select name="program_id" class="w-full px-3 py-2.5 border border-[var(--brand)] rounded-xl text-sm bg-white focus:outline-none focus:ring-2">
                 <option value="">All {{ $programLabel }}</option>
                 @foreach($programs as $p)
                 <option value="{{ $p->id }}" {{ request('program_id')==$p->id?'selected':'' }}>{{ $p->name }}</option>
@@ -38,7 +38,7 @@
                class="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold bg-green-50 text-green-700 hover:bg-green-100 {{ $courses->isEmpty() ? 'opacity-50 pointer-events-none' : '' }}">
                 <i class="fas fa-file-excel"></i> Excel
             </a>
-            <button type="button" onclick="window.print()" class="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold text-white" style="background:#D4A017">
+            <button type="button" onclick="window.print()" class="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold text-white" style="background:var(--brand)">
                 <i class="fas fa-print"></i> Print
             </button>
         </div>
@@ -49,13 +49,13 @@
     @forelse($courses as $course)
     <div class="card p-5">
         <div class="flex items-start justify-between mb-3">
-            <span class="text-xs font-bold px-2.5 py-1 rounded-lg" style="background:#fef9c3;color:#78520a">{{ $course->code }}</span>
-            <span class="text-xs text-gray-400">{{ $course->program->name??'—' }}</span>
+            <span class="text-xs font-bold px-2.5 py-1 rounded-lg" style="background:var(--primary-pale);color:var(--primary-text)">{{ $course->code }}</span>
+            <span class="text-xs text-gray-400">{{ $course->program->name??'â€”' }}</span>
         </div>
         <h3 class="text-sm font-bold text-ink mb-3">{{ $course->name }}</h3>
-        <div class="flex items-center justify-between pt-3 border-t border-yellow-50">
+        <div class="flex items-center justify-between pt-3 border-t border-[var(--primary-pale)]">
             <span class="text-xs text-gray-500">{{ $course->enrollments_count }} enrolled</span>
-            <a href="{{ route('admin.courses.show',$course) }}" class="text-xs font-semibold" style="color:#D4A017">View →</a>
+            <a href="{{ route('admin.courses.show',$course) }}" class="text-xs font-semibold" style="color:var(--brand)">View â†’</a>
         </div>
     </div>
     @empty

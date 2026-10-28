@@ -16,7 +16,7 @@
                 <h2 class="text-2xl font-bold text-gray-900">{{ $branch->name }}</h2>
                 <p class="text-sm text-gray-500 mt-1">{{ $branch->location ?? 'No location set' }}</p>
             </div>
-            <span class="px-4 py-2 bg-amber-50 text-amber-700 rounded-xl text-sm font-semibold">
+            <span class="px-4 py-2 bg-[var(--primary-pale)] text-[var(--primary-text)] rounded-xl text-sm font-semibold">
                 Code: {{ $branch->code ? strtoupper($branch->code) : $branch->getCodeOrDerived() }}
             </span>
         </div>
@@ -27,7 +27,7 @@
     <p class="text-xs text-gray-500">{{ $admins->total() }} admin{{ $admins->total() !== 1 ? 's' : '' }}</p>
     <a href="{{ route('admin.branches.admins.create', $branch) }}"
        class="flex items-center gap-2 px-4 py-2.5 text-white rounded-xl text-sm font-semibold shadow-sm"
-       style="background:#D4A017">
+       style="background:var(--brand)">
         <i class="fas fa-plus text-xs"></i> Add Admin
     </a>
 </div>
@@ -39,7 +39,7 @@
             <div class="flex-1">
                 <div class="flex items-center gap-3 mb-2">
                     <div class="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold"
-                         style="background:linear-gradient(135deg,#D4A017,#b8860b)">
+                         style="background:linear-gradient(135deg,var(--brand),var(--primary-dark))">
                         {{ strtoupper(substr($admin->full_name, 0, 1)) }}
                     </div>
                     <div>
@@ -54,7 +54,7 @@
             </div>
             <div class="flex gap-2">
                 <a href="{{ route('admin.branches.admins.edit', [$branch, $admin]) }}"
-                   class="w-10 h-10 rounded-xl bg-gray-100 hover:bg-amber-100 text-gray-500 hover:text-amber-600 flex items-center justify-center transition-colors"
+                   class="w-10 h-10 rounded-xl bg-gray-100 hover:bg-[var(--primary-pale)] text-gray-500 hover:text-[var(--brand)] flex items-center justify-center transition-colors"
                    title="Edit admin">
                     <i class="fas fa-pen text-xs"></i>
                 </a>
@@ -73,7 +73,7 @@
         <p class="text-gray-400 font-medium text-sm">No admins assigned to this branch yet.</p>
         <a href="{{ route('admin.branches.admins.create', $branch) }}"
            class="inline-flex items-center gap-2 mt-4 px-4 py-2.5 text-white rounded-xl text-sm font-semibold"
-           style="background:#D4A017">
+           style="background:var(--brand)">
             <i class="fas fa-plus"></i> Add First Admin
         </a>
     </div>

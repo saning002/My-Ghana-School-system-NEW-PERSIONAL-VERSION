@@ -41,7 +41,7 @@
         <a href="{{ route('admin.exams.bulk') }}" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-2xl text-sm font-semibold shadow-lg hover:shadow-xl transition-all">
             <i class="fas fa-file-pdf"></i> Bulk Download
         </a>
-        <a href="{{ route('admin.exams.create') }}" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-yellow-600 text-white rounded-2xl text-sm font-semibold hover:bg-yellow-700 shadow-sm transition-all">
+        <a href="{{ route('admin.exams.create') }}" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[var(--primary)] text-white rounded-2xl text-sm font-semibold hover:bg-[var(--primary-dark)] shadow-sm transition-all">
             <i class="fas fa-plus"></i> Enter Scores
         </a>
     </div>
@@ -51,10 +51,10 @@
     @forelse($programs as $program)
     <div class="exam-card p-5">
         <div class="flex items-start justify-between mb-4">
-            <div class="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 bg-yellow-100">
-                <i class="fas fa-file-chart-line text-base text-yellow-700"></i>
+            <div class="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 bg-[var(--primary-pale)]">
+                <i class="fas fa-file-chart-line text-base text-[var(--primary-text)]"></i>
             </div>
-            <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-yellow-100 text-yellow-700">Seq. {{ $program->sequence }}</span>
+            <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-[var(--primary-pale)] text-[var(--primary-text)]">Seq. {{ $program->sequence }}</span>
         </div>
         <h3 class="text-[15px] font-bold text-slate-900 mb-2 leading-tight">{{ $program->name }}</h3>
         <p class="text-sm text-slate-600 mb-3">
@@ -62,10 +62,10 @@
             {{ $program->courses_count }} course{{ $program->courses_count !== 1 ? 's' : '' }}
         </p>
         <p class="text-xs text-slate-500 mb-4 pb-4 border-b border-slate-100">
-            {{ $program->duration }}-month program · Level {{ $program->sequence }}
+            {{ $program->duration }}-month program Â· Level {{ $program->sequence }}
         </p>
         <a href="{{ route('admin.exams.create') }}?program_id={{ $program->id }}"
-           class="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold transition-all bg-yellow-50 text-yellow-700 hover:bg-yellow-100">
+           class="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold transition-all bg-[var(--primary-pale)] text-[var(--primary-text)] hover:bg-[var(--primary-pale)]">
             <i class="fas fa-pen"></i> Enter Scores
         </a>
     </div>

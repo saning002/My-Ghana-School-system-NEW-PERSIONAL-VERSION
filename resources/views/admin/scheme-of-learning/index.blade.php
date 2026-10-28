@@ -5,15 +5,15 @@
 @section('content')
 <div class="space-y-5" x-data="{ mode: '{{ request('mode','entries') }}' }">
 
-{{-- ── Filters ────────────────────────────────────────────────────────────── --}}
+{{-- â”€â”€ Filters â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
 <div class="card p-5">
     <form method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
         <input type="hidden" name="mode" :value="mode">
         <div>
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Program *</label>
             <select name="program_id" onchange="this.form.submit()"
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400">
-                <option value="">— Select Program —</option>
+                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)]">
+                <option value="">â€” Select Program â€”</option>
                 @foreach($programs as $p)
                 <option value="{{ $p->id }}" {{ request('program_id')==$p->id?'selected':'' }}>{{ $p->name }}</option>
                 @endforeach
@@ -22,11 +22,11 @@
         <div>
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Course *</label>
             <select name="course_id" onchange="this.form.submit()"
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)]"
                 {{ !$selectedProgram?'disabled':'' }}>
-                <option value="">— Select Course —</option>
+                <option value="">â€” Select Course â€”</option>
                 @if($selectedProgram)
-                <option value="all" {{ request('course_id')==='all'?'selected':'' }}>📚 All Courses</option>
+                <option value="all" {{ request('course_id')==='all'?'selected':'' }}>ðŸ“š All Courses</option>
                 @endif
                 @foreach($courses as $c)
                 <option value="{{ $c->id }}" {{ request('course_id')==$c->id?'selected':'' }}>{{ $c->name }}</option>
@@ -36,7 +36,7 @@
         <div>
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Academic Year</label>
             <select name="academic_year" onchange="this.form.submit()"
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)]">
                 @foreach($years as $yr)
                 <option value="{{ $yr }}" {{ $selectedYear==$yr?'selected':'' }}>{{ $yr }}</option>
                 @endforeach
@@ -46,7 +46,7 @@
         <div>
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Term / Semester</label>
             <input type="text" name="term" value="{{ request('term') }}" placeholder="e.g. Term 1"
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)]"
                 onchange="this.form.submit()">
         </div>
     </form>
@@ -54,7 +54,7 @@
 
 @if($selectedProgram && ($selectedCourse || $isAllCourses))
 
-{{-- ── Dual-Mode Tab Bar ───────────────────────────────────────────────────── --}}
+{{-- â”€â”€ Dual-Mode Tab Bar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
 <div class="flex gap-1 p-1 rounded-2xl bg-slate-100 border border-slate-200 shadow-inner">
     <button @click="mode='entries'"
         :class="mode==='entries'
@@ -63,7 +63,7 @@
         class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold transition-all">
         <i class="fas fa-list-ul text-xs"></i>
         <span>Create Entries</span>
-        <span class="ml-1 rounded-full bg-yellow-100 text-yellow-800 text-[10px] font-extrabold px-2 py-0.5">
+        <span class="ml-1 rounded-full bg-[var(--primary-pale)] text-[var(--primary-text)] text-[10px] font-extrabold px-2 py-0.5">
             {{ $entries->count() }}
         </span>
     </button>
@@ -81,18 +81,18 @@
     </button>
 </div>
 
-{{-- ══════════════════════════════════════════════════════════════════════════
-     MODE A — CREATE ENTRIES (weekly topic-by-topic plan)
-     ══════════════════════════════════════════════════════════════════════════ --}}
+{{-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+     MODE A â€” CREATE ENTRIES (weekly topic-by-topic plan)
+     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
 <div x-show="mode==='entries'" x-cloak>
     <div class="card overflow-hidden">
         <div class="flex items-center justify-between px-5 py-4 border-b bg-slate-50">
             <div>
-                <h3 class="text-sm font-extrabold text-slate-800">{{ $selectedProgram->name }} — {{ $isAllCourses ? 'All Courses' : ($selectedCourse?->name ?? 'Course') }}</h3>
+                <h3 class="text-sm font-extrabold text-slate-800">{{ $selectedProgram->name }} â€” {{ $isAllCourses ? 'All Courses' : ($selectedCourse?->name ?? 'Course') }}</h3>
                 <p class="text-xs text-slate-500 mt-0.5">
                     Academic Year {{ $selectedYear }}
-                    @if(request('term')) · {{ request('term') }} @endif
-                    · {{ $entries->count() }} week entries
+                    @if(request('term')) Â· {{ request('term') }} @endif
+                    Â· {{ $entries->count() }} week entries
                 </p>
             </div>
             @if(! $isAllCourses && $selectedCourse)
@@ -148,11 +148,11 @@
                     <tr class="hover:bg-slate-50 transition-colors">
                         @if($isAllCourses)
                         <td class="px-4 py-3 font-semibold text-slate-700 text-xs whitespace-nowrap">
-                            {{ $entry->course?->name ?? '—' }}
+                            {{ $entry->course?->name ?? 'â€”' }}
                         </td>
                         @endif
                         <td class="px-4 py-3">
-                            <span class="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-yellow-100 text-yellow-800 text-xs font-extrabold">
+                            <span class="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-[var(--primary-pale)] text-[var(--primary-text)] text-xs font-extrabold">
                                 {{ $entry->week_number }}
                             </span>
                         </td>
@@ -175,9 +175,9 @@
                         <td class="px-4 py-3 hidden md:table-cell">
                             @if($entry->assessment_type)
                             <span class="rounded-full bg-indigo-100 text-indigo-700 px-2.5 py-0.5 text-[11px] font-bold">{{ $entry->assessment_type }}</span>
-                            @else<span class="text-slate-300 text-xs">—</span>@endif
+                            @else<span class="text-slate-300 text-xs">â€”</span>@endif
                         </td>
-                        <td class="px-4 py-3 text-xs text-slate-500 hidden lg:table-cell">{{ $entry->lecturer?->full_name ?? '—' }}</td>
+                        <td class="px-4 py-3 text-xs text-slate-500 hidden lg:table-cell">{{ $entry->lecturer?->full_name ?? 'â€”' }}</td>
                         <td class="px-4 py-3 text-right">
                             <div class="flex items-center justify-end gap-1.5">
                                 @if($entry->pdf_path)
@@ -191,7 +191,7 @@
                                 </a>
                                 @endif
                                 <a href="{{ route('admin.scheme-of-learning.edit', $entry) }}"
-                                   class="w-7 h-7 flex items-center justify-center rounded-lg bg-slate-100 text-slate-500 hover:bg-yellow-50 hover:text-yellow-700 transition-colors">
+                                   class="w-7 h-7 flex items-center justify-center rounded-lg bg-slate-100 text-slate-500 hover:bg-[var(--primary-pale)] hover:text-[var(--primary-text)] transition-colors">
                                     <i class="fas fa-pen text-[10px]"></i>
                                 </a>
                                 <form method="POST" action="{{ route('admin.scheme-of-learning.destroy', $entry) }}"
@@ -212,11 +212,11 @@
     </div>
 </div>
 
-{{-- ══════════════════════════════════════════════════════════════════════════
-     MODE B — UPLOAD FULL PDF SCHEME
+{{-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+     MODE B â€” UPLOAD FULL PDF SCHEME
      Admin uploads one PDF that covers the entire term/year scheme.
      Lecturers view and download it from their portal.
-     ══════════════════════════════════════════════════════════════════════════ --}}
+     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
 <div x-show="mode==='pdf'" x-cloak>
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
 
@@ -232,8 +232,8 @@
                 </div>
             </div>
 
-            <div class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 mb-4 text-xs text-amber-800 font-medium">
-                <i class="fas fa-info-circle mr-1 text-amber-500"></i>
+            <div class="rounded-xl border border-[var(--brand)] bg-[var(--primary-pale)] px-4 py-3 mb-4 text-xs text-[var(--primary-text)] font-medium">
+                <i class="fas fa-info-circle mr-1 text-[var(--brand)]"></i>
                 This PDF is <strong>separate</strong> from the weekly entries above. Lecturers will see it as a downloadable scheme document in their portal.
             </div>
 
@@ -243,7 +243,7 @@
                   enctype="multipart/form-data"
                   class="space-y-4">
                 @csrf
-                {{-- Hidden fields — course + program already selected --}}
+                {{-- Hidden fields â€” course + program already selected --}}
                 <input type="hidden" name="program_id"   value="{{ $selectedProgram->id }}">
                 @if(! $isAllCourses && $selectedCourse)
                 <input type="hidden" name="course_id"    value="{{ $selectedCourse->id }}">
@@ -258,7 +258,7 @@
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Select Course *</label>
                     <select name="course_id" required
                         class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-400">
-                        <option value="">— Select Course —</option>
+                        <option value="">â€” Select Course â€”</option>
                         @foreach($courses as $c)
                         <option value="{{ $c->id }}">{{ $c->name }}</option>
                         @endforeach
@@ -282,7 +282,7 @@
                 <div class="rounded-xl border-2 border-dashed border-red-200 bg-red-50/30 p-5 text-center" id="pdf-drop-zone">
                     <i class="fas fa-file-pdf text-3xl text-red-400 mb-2 block"></i>
                     <p class="text-sm font-bold text-slate-700 mb-1">Drop PDF here or click to browse</p>
-                    <p class="text-xs text-slate-400 mb-3">PDF only · Max 20MB</p>
+                    <p class="text-xs text-slate-400 mb-3">PDF only Â· Max 20MB</p>
                     <input type="file" name="pdf_file" accept=".pdf" required id="pdf-upload-input"
                         class="w-full text-sm text-slate-500 file:mr-3 file:py-2 file:px-5 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-red-500 file:text-white hover:file:bg-red-600 transition-colors cursor-pointer"
                         onchange="updatePdfLabel(this)">
@@ -328,11 +328,11 @@
                         <p class="text-xs font-bold text-slate-800 truncate">
                             @if($isAllCourses && $pe->course) [{{ $pe->course->name }}] @endif
                             {{ $pe->term ?: 'Full Scheme' }}
-                            @if($pe->topic !== '[Full Scheme PDF]') · {{ $pe->topic }} @endif
+                            @if($pe->topic !== '[Full Scheme PDF]') Â· {{ $pe->topic }} @endif
                         </p>
                         <p class="text-[10px] text-slate-400 mt-0.5">
                             Uploaded {{ $pe->created_at?->diffForHumans() }}
-                            @if($pe->remarks) · {{ Str::limit($pe->remarks, 60) }} @endif
+                            @if($pe->remarks) Â· {{ Str::limit($pe->remarks, 60) }} @endif
                         </p>
                     </div>
                     <div class="flex gap-1.5 shrink-0">
@@ -383,7 +383,7 @@ function updatePdfLabel(input) {
     const label = document.getElementById('pdf-file-label');
     if (input.files && input.files[0]) {
         const size = (input.files[0].size / 1024 / 1024).toFixed(2);
-        label.textContent = '✓ ' + input.files[0].name + ' (' + size + ' MB)';
+        label.textContent = 'âœ“ ' + input.files[0].name + ' (' + size + ' MB)';
         label.classList.remove('hidden');
     }
 }

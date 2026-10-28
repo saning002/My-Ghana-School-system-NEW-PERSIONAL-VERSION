@@ -38,7 +38,7 @@
             <div>
                 <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:1px;opacity:.55;margin-bottom:4px;">Fees &rsaquo; Term Ledger</div>
                 <h3 class="fw-black mb-1" style="font-size:1.6rem;">
-                    <i class="fas fa-file-invoice-dollar me-2" style="color:#f59e0b;"></i>Term Fee Ledger
+                    <i class="fas fa-file-invoice-dollar me-2" style="color:var(--brand);"></i>Term Fee Ledger
                 </h3>
                 <p style="opacity:.65;font-size:.875rem;margin:0;">Track fees billed, paid and owed per student per term</p>
             </div>
@@ -143,7 +143,7 @@
         </div>
         <div class="col-6 col-lg-3">
             <div class="tl-stat">
-                <div class="tl-stat-icon" style="background:#fef9c3;color:#d97706;"><i class="fas fa-file-invoice-dollar"></i></div>
+                <div class="tl-stat-icon" style="background:var(--primary-pale);color:var(--primary-dark);"><i class="fas fa-file-invoice-dollar"></i></div>
                 <div>
                     <div style="font-size:1.1rem;font-weight:800;line-height:1;color:#1e293b;">GHS {{ number_format($totalBilled,2) }}</div>
                     <div style="font-size:.72rem;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-top:2px;">Total Billed</div>
@@ -174,7 +174,7 @@
     {{-- Ledger table --}}
     <div class="tl-card">
         <div class="tl-card-hd">
-            <span style="font-weight:700;font-size:.9rem;"><i class="fas fa-table me-2 text-primary"></i>Student Ledger — {{ $selectedSession?->year }}</span>
+            <span style="font-weight:700;font-size:.9rem;"><i class="fas fa-table me-2 text-primary"></i>Student Ledger â€” {{ $selectedSession?->year }}</span>
             <span style="font-size:.78rem;color:#64748b;">{{ $summaries->count() }} record(s)</span>
         </div>
         <div class="table-responsive">
@@ -194,12 +194,12 @@
                 @forelse($summaries as $s)
                 <tr class="tl-row">
                     <td>
-                        <div style="font-weight:700;font-size:.875rem;color:#1e293b;">{{ $s['student']->user?->full_name ?? '—' }}</div>
+                        <div style="font-weight:700;font-size:.875rem;color:#1e293b;">{{ $s['student']->user?->full_name ?? 'â€”' }}</div>
                         <span style="background:#f1f5f9;color:#475569;font-size:.7rem;font-weight:600;padding:2px 8px;border-radius:10px;">
                             {{ $s['student']->student_id }}
                         </span>
                     </td>
-                    <td style="font-size:.875rem;color:#475569;">{{ $s['student']->program?->name ?? '—' }}</td>
+                    <td style="font-size:.875rem;color:#475569;">{{ $s['student']->program?->name ?? 'â€”' }}</td>
                     <td class="text-end" style="font-size:.875rem;">GHS {{ number_format($s['total_billed'],2) }}</td>
                     <td class="text-end" style="font-size:.875rem;font-weight:600;color:#16a34a;">GHS {{ number_format($s['total_paid'],2) }}</td>
                     <td class="text-end">
@@ -224,7 +224,7 @@
                                 <i class="fas fa-history"></i>
                             </a>
                             @if($selectedSession)
-                            <button class="action-btn" style="background:#fef9c3;color:#d97706;" title="Send reminder"
+                            <button class="action-btn" style="background:var(--primary-pale);color:var(--primary-dark);" title="Send reminder"
                                 onclick="openReminderModal({{ $s['student']->id }}, {{ $selectedSession->id }}, '{{ addslashes($s['student']->user?->full_name) }}')">
                                 <i class="fas fa-paper-plane"></i>
                             </button>
@@ -250,12 +250,12 @@
     </div>
 </div>
 
-{{-- ── Reminder Modal ────────────────────────────────────────────────────── --}}
+{{-- â”€â”€ Reminder Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
 <div id="reminderModal" class="rm-modal-bg" style="display:none;" onclick="if(event.target===this)closeModals()">
     <div class="rm-modal">
         <div style="background:linear-gradient(135deg,#0f3460,#16213e);padding:1.25rem 1.5rem;color:#fff;display:flex;align-items:center;justify-content:space-between;">
             <div>
-                <div style="font-weight:700;font-size:.95rem;"><i class="fas fa-paper-plane me-2" style="color:#f59e0b;"></i>Send Fee Reminder</div>
+                <div style="font-weight:700;font-size:.95rem;"><i class="fas fa-paper-plane me-2" style="color:var(--brand);"></i>Send Fee Reminder</div>
                 <div id="rmStudentName" style="font-size:.78rem;opacity:.6;margin-top:2px;"></div>
             </div>
             <button onclick="closeModals()" style="background:rgba(255,255,255,.1);border:none;color:#fff;width:30px;height:30px;border-radius:8px;cursor:pointer;">
@@ -315,7 +315,7 @@
                     Cancel
                 </button>
                 <button type="submit" onclick="return submitRmForm()"
-                    style="background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;border-radius:10px;padding:10px 24px;font-weight:700;font-size:.875rem;cursor:pointer;display:flex;align-items:center;gap:8px;">
+                    style="background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;border:none;border-radius:10px;padding:10px 24px;font-weight:700;font-size:.875rem;cursor:pointer;display:flex;align-items:center;gap:8px;">
                     <i class="fas fa-paper-plane"></i> Send Reminder
                 </button>
             </div>
@@ -323,7 +323,7 @@
     </div>
 </div>
 
-{{-- ── Payment Modal ─────────────────────────────────────────────────────── --}}
+{{-- â”€â”€ Payment Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
 <div id="paymentModal" class="rm-modal-bg" style="display:none;" onclick="if(event.target===this)closeModals()">
     <div class="rm-modal">
         <div style="background:linear-gradient(135deg,#16a34a,#15803d);padding:1.25rem 1.5rem;color:#fff;display:flex;align-items:center;justify-content:space-between;">
@@ -390,7 +390,7 @@
 
 @push('scripts')
 <script>
-// ── Channel toggles for reminder modal ───────────────────────────────────
+// â”€â”€ Channel toggles for reminder modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const rmCh = {sms:false, wa:false, mail:false};
 function toggleRmCh(key, pill) {
     rmCh[key] = !rmCh[key];
@@ -402,7 +402,7 @@ function toggleRmCh(key, pill) {
 }
 function anyRmCh() { return Object.values(rmCh).some(Boolean); }
 
-// ── Reminder modal ────────────────────────────────────────────────────────
+// â”€â”€ Reminder modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 let rmOrigMsg = '';
 function openReminderModal(studentId, sessionId, name) {
     document.getElementById('rmStudentId').value = studentId;
@@ -436,7 +436,7 @@ function submitRmForm() {
     return confirm('Send this reminder to the student?');
 }
 
-// ── Payment modal ─────────────────────────────────────────────────────────
+// â”€â”€ Payment modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function openPaymentModal(studentId, name, sessionId) {
     document.getElementById('pmStudentId').value  = studentId;
     document.getElementById('pmSessionId').value  = sessionId || '';

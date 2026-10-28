@@ -16,14 +16,14 @@
         <p class="text-sm text-gray-500 mt-1">{{ $admins->total() }} admin{{ $admins->total() !== 1 ? 's' : '' }} managing the system</p>
     </div>
     <a href="{{ route('admin.admins.create') }}"
-       class="inline-flex items-center gap-2 px-6 py-3 bg-yellow-600 text-white rounded-xl text-sm font-semibold hover:bg-yellow-700 shadow-sm transition-all">
+       class="inline-flex items-center gap-2 px-6 py-3 bg-[var(--primary)] text-white rounded-xl text-sm font-semibold hover:bg-[var(--primary-dark)] shadow-sm transition-all">
         <i class="fas fa-plus"></i> Add Administrator
     </a>
 </div>
 
 <div class="card overflow-hidden shadow-sm border border-gray-100">
-    <div class="px-6 py-5 bg-yellow-50 border-b border-yellow-200/50">
-        <h3 class="text-base font-bold text-yellow-900">
+    <div class="px-6 py-5 bg-[var(--primary-pale)] border-b border-[var(--brand)]/50">
+        <h3 class="text-base font-bold text-[var(--primary-text)]">
             <i class="fas fa-users-cog mr-2"></i>All Administrators
         </h3>
     </div>
@@ -59,11 +59,11 @@
                         </div>
                     </td>
                     <td class="px-6 py-4 text-sm text-gray-600">
-                        <i class="fas fa-phone text-yellow-600 mr-2"></i>{{ $admin->phone ?? '—' }}
+                        <i class="fas fa-phone text-[var(--brand)] mr-2"></i>{{ $admin->phone ?? 'â€”' }}
                     </td>
                     <td class="px-6 py-4">
                         @if($admin->branch)
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-yellow-100 text-yellow-800 text-xs font-semibold rounded-lg border border-yellow-200">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[var(--primary-pale)] text-[var(--primary-text)] text-xs font-semibold rounded-lg border border-[var(--brand)]">
                             <i class="fas fa-building text-[10px]"></i>
                             {{ $admin->branch->name }}
                         </span>
@@ -76,7 +76,7 @@
                     </td>
                     <td class="px-6 py-4">
                         @if($admin->isSuperAdmin())
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-100 text-amber-900 text-xs font-bold rounded-lg border border-amber-200">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[var(--primary-pale)] text-amber-900 text-xs font-bold rounded-lg border border-[var(--brand)]">
                             <i class="fas fa-crown text-[10px]"></i>
                             Super Admin
                         </span>
@@ -119,7 +119,7 @@
                         <p class="text-gray-600 font-medium text-lg mb-2">No administrators found</p>
                         <p class="text-gray-500 text-sm mb-6">Get started by adding your first administrator</p>
                         <a href="{{ route('admin.admins.create') }}"
-                           class="inline-flex items-center gap-2 px-6 py-3 bg-yellow-600 text-white rounded-xl text-sm font-semibold hover:bg-yellow-700">
+                           class="inline-flex items-center gap-2 px-6 py-3 bg-[var(--primary)] text-white rounded-xl text-sm font-semibold hover:bg-[var(--primary-dark)]">
                             <i class="fas fa-plus"></i> Add Administrator
                         </a>
                     </td>

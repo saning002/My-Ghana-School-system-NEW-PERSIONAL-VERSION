@@ -17,7 +17,7 @@
 </div>
 @endif
 
-{{-- ── STATS OVERVIEW ──────────────────────────────────────────────────── --}}
+{{-- â”€â”€ STATS OVERVIEW â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
     @php
         $totalLogs = $allLogs->count();
@@ -34,7 +34,7 @@
         <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mt-0.5">Classwork</p>
     </div>
     <div class="card p-4 text-center">
-        <p class="text-2xl font-extrabold text-amber-600">{{ $hwLogs }}</p>
+        <p class="text-2xl font-extrabold text-[var(--brand)]">{{ $hwLogs }}</p>
         <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mt-0.5">Homework</p>
     </div>
     <div class="card p-4 text-center">
@@ -43,13 +43,13 @@
     </div>
 </div>
 
-{{-- ── FILTERS ─────────────────────────────────────────────────────────── --}}
+{{-- â”€â”€ FILTERS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
 <div class="card p-4">
     <form method="GET" class="flex flex-wrap gap-3 items-end">
         <div class="flex-1 min-w-[150px]">
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Teacher</label>
             <select name="lecturer_id" onchange="this.form.submit()"
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)]">
                 <option value="">All Teachers</option>
                 @foreach($lecturers as $l)
                 <option value="{{ $l->id }}" {{ ($filterLecturer ?? '') == $l->id ? 'selected' : '' }}>
@@ -61,7 +61,7 @@
         <div class="flex-1 min-w-[130px]">
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Type</label>
             <select name="type" onchange="this.form.submit()"
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)]">
                 <option value="">All Types</option>
                 <option value="classwork"    {{ ($filterType ?? '') === 'classwork'    ? 'selected' : '' }}>Classwork</option>
                 <option value="homework"     {{ ($filterType ?? '') === 'homework'     ? 'selected' : '' }}>Homework</option>
@@ -71,7 +71,7 @@
         <div class="flex-1 min-w-[130px]">
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">From Date</label>
             <input type="date" name="date_from" value="{{ $filterDate ?? '' }}" onchange="this.form.submit()"
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)]">
         </div>
         @if(($filterLecturer ?? '') || ($filterType ?? '') || ($filterDate ?? ''))
         <a href="{{ route('admin.work-monitoring.index') }}"
@@ -82,11 +82,11 @@
     </form>
 </div>
 
-{{-- ── ALL RECENT LOG ENTRIES (always visible) ────────────────────────── --}}
+{{-- â”€â”€ ALL RECENT LOG ENTRIES (always visible) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
 <div class="card overflow-hidden">
     <div class="px-5 py-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
         <h3 class="text-sm font-extrabold text-slate-800 flex items-center gap-2">
-            <i class="fas fa-list-ul text-amber-500"></i>
+            <i class="fas fa-list-ul text-[var(--brand)]"></i>
             All Work Log Entries
             <span class="rounded-full bg-slate-200 text-slate-600 text-[10px] font-bold px-2 py-0.5">{{ $allLogs->count() }}</span>
         </h3>
@@ -114,7 +114,7 @@
             </thead>
             <tbody class="divide-y divide-slate-50">
                 @foreach($allLogs as $log)
-                <tr class="hover:bg-amber-50/20 transition-colors" x-data="{ showComment: false }">
+                <tr class="hover:bg-[var(--primary-pale)]/20 transition-colors" x-data="{ showComment: false }">
                     <td class="px-4 py-3 text-xs font-bold text-slate-600 whitespace-nowrap">
                         {{ $log->date instanceof \Carbon\Carbon ? $log->date->format('M d, Y') : \Carbon\Carbon::parse($log->date)->format('M d, Y') }}
                     </td>
@@ -123,7 +123,7 @@
                             <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-400 to-yellow-600 flex items-center justify-center text-white text-[10px] font-extrabold shrink-0">
                                 {{ strtoupper(substr($log->lecturer?->full_name ?? '?', 0, 1)) }}
                             </div>
-                            <span class="text-xs font-semibold text-slate-700">{{ $log->lecturer?->full_name ?? '—' }}</span>
+                            <span class="text-xs font-semibold text-slate-700">{{ $log->lecturer?->full_name ?? 'â€”' }}</span>
                         </div>
                     </td>
                     <td class="px-4 py-3">
@@ -132,7 +132,7 @@
                                 <i class="fas fa-pencil-alt text-[8px]"></i> Classwork
                             </span>
                         @elseif($log->type === 'homework')
-                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 text-[11px] font-bold">
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[var(--primary-pale)] text-[var(--primary-text)] text-[11px] font-bold">
                                 <i class="fas fa-book text-[8px]"></i> Homework
                             </span>
                         @else
@@ -141,8 +141,8 @@
                             </span>
                         @endif
                     </td>
-                    <td class="px-4 py-3 text-xs font-bold text-slate-800">{{ $log->course?->name ?? '—' }}</td>
-                    <td class="px-4 py-3 text-xs text-slate-600">{{ $log->program?->name ?? '—' }}</td>
+                    <td class="px-4 py-3 text-xs font-bold text-slate-800">{{ $log->course?->name ?? 'â€”' }}</td>
+                    <td class="px-4 py-3 text-xs text-slate-600">{{ $log->program?->name ?? 'â€”' }}</td>
                     <td class="px-4 py-3">
                         <p class="text-xs font-semibold text-slate-800">{{ $log->title }}</p>
                         @if(!empty($log->topic_covered))
@@ -209,13 +209,13 @@
     @endif
 </div>
 
-{{-- ── PER-TEACHER PROGRESS (collapsible) ─────────────────────────────── --}}
+{{-- â”€â”€ PER-TEACHER PROGRESS (collapsible) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
 <div class="card overflow-hidden">
     <button type="button" onclick="togglePanel('teacher-progress')"
         class="w-full flex items-center justify-between px-5 py-4 bg-slate-50 hover:bg-slate-100 transition-colors text-left border-b border-slate-100">
         <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-xl bg-amber-100 flex items-center justify-center">
-                <i class="fas fa-chart-bar text-amber-600 text-xs"></i>
+            <div class="w-8 h-8 rounded-xl bg-[var(--primary-pale)] flex items-center justify-center">
+                <i class="fas fa-chart-bar text-[var(--brand)] text-xs"></i>
             </div>
             <div>
                 <p class="text-sm font-extrabold text-slate-800">Per-Teacher Subject Progress</p>
@@ -264,9 +264,9 @@
                         <div class="flex items-center justify-between mb-2">
                             <p class="text-xs font-bold text-slate-700 truncate">{{ $a->course->name }}</p>
                             @if($allMet)
-                            <span class="text-[9px] font-bold text-emerald-600 bg-emerald-100 px-1.5 py-0.5 rounded-full">✓ Done</span>
+                            <span class="text-[9px] font-bold text-emerald-600 bg-emerald-100 px-1.5 py-0.5 rounded-full">âœ“ Done</span>
                             @else
-                            <span class="text-[9px] font-bold text-amber-600 bg-amber-100 px-1.5 py-0.5 rounded-full">In Progress</span>
+                            <span class="text-[9px] font-bold text-[var(--brand)] bg-[var(--primary-pale)] px-1.5 py-0.5 rounded-full">In Progress</span>
                             @endif
                         </div>
                         @foreach([
@@ -301,7 +301,7 @@
     </div>
 </div>
 
-{{-- ── SUBJECT EXPECTATIONS ────────────────────────────────────────────── --}}
+{{-- â”€â”€ SUBJECT EXPECTATIONS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
 <div class="card overflow-hidden">
     <button type="button" onclick="togglePanel('exp-panel')"
         class="w-full flex items-center justify-between px-5 py-4 bg-slate-50 hover:bg-slate-100 transition-colors text-left border-b border-slate-100">
@@ -332,7 +332,7 @@
                             class="w-full px-2 py-1.5 text-sm border border-slate-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400/40">
                     </div>
                     <div>
-                        <label class="text-[10px] font-bold text-amber-600 uppercase tracking-widest block mb-1">Homeworks</label>
+                        <label class="text-[10px] font-bold text-[var(--brand)] uppercase tracking-widest block mb-1">Homeworks</label>
                         <input type="number" name="expected_homeworks" min="0"
                             value="{{ $course->expected_homeworks ?? '' }}"
                             placeholder="{{ $globalExpected['homework'] }}"
@@ -371,7 +371,7 @@ function togglePanel(id) {
     if (icon) icon.style.transform = el.classList.contains('hidden') ? '' : 'rotate(180deg)';
 }
 
-// ── Work Log Detail Modal ─────────────────────────────────────────────────
+// â”€â”€ Work Log Detail Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function showLogDetail(url) {
     const modal = document.getElementById('logDetailModal');
     const body  = document.getElementById('logDetailBody');
@@ -390,7 +390,7 @@ function showLogDetail(url) {
 
             const typeColors = {
                 classwork:    'bg-purple-100 text-purple-700',
-                homework:     'bg-amber-100 text-amber-700',
+                homework:     'bg-[var(--primary-pale)] text-[var(--primary-text)]',
                 monthly_test: 'bg-rose-100 text-rose-700',
             };
             const tc = typeColors[d.type] || 'bg-slate-100 text-slate-600';
@@ -474,7 +474,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLogDeta
 </script>
 @endpush
 
-{{-- ── Work Log Detail Modal ───────────────────────────────────────────── --}}
+{{-- â”€â”€ Work Log Detail Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
 <div id="logDetailModal"
      class="hidden fixed inset-0 z-50 flex items-center justify-center p-4"
      onclick="if(event.target===this)closeLogDetail()">

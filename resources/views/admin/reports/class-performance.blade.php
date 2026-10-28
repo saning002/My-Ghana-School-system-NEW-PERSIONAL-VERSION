@@ -25,7 +25,7 @@
                 @foreach($sessions as $sess)
                     @foreach($sess->periods as $p)
                     <option value="{{ $p->id }}" {{ request('period_id')==$p->id?'selected':'' }}>
-                        {{ $p->full_label }}{{ $p->is_active?' ★':'' }}
+                        {{ $p->full_label }}{{ $p->is_active?' â˜…':'' }}
                     </option>
                     @endforeach
                 @endforeach
@@ -81,7 +81,7 @@
         @foreach($data['grade_distribution'] as $grade => $count)
         @php
             $pct = $totalStudents > 0 ? round($count/$totalStudents*100) : 0;
-            $colors = ['A1'=>'bg-emerald-500','A2'=>'bg-emerald-400','A3'=>'bg-teal-400','B1'=>'bg-blue-500','B2'=>'bg-blue-400','B3'=>'bg-indigo-400','C'=>'bg-amber-500','F'=>'bg-red-500'];
+            $colors = ['A1'=>'bg-emerald-500','A2'=>'bg-emerald-400','A3'=>'bg-teal-400','B1'=>'bg-blue-500','B2'=>'bg-blue-400','B3'=>'bg-indigo-400','C'=>'bg-[var(--primary-pale)]0','F'=>'bg-red-500'];
             $bar = $colors[$grade] ?? 'bg-slate-400';
         @endphp
         <div class="flex items-center gap-2 mb-2">
@@ -167,7 +167,7 @@
                 <tr class="hover:bg-slate-50 transition-colors">
                     <td class="px-5 py-3">
                         <span class="inline-flex h-7 w-7 items-center justify-center rounded-full text-xs font-extrabold
-                            {{ $r['rank']==1?'bg-yellow-400 text-yellow-900':($r['rank']==2?'bg-slate-300 text-slate-700':($r['rank']==3?'bg-amber-600 text-white':'bg-slate-100 text-slate-600')) }}">
+                            {{ $r['rank']==1?'bg-[var(--primary)] text-[var(--primary-text)]':($r['rank']==2?'bg-slate-300 text-slate-700':($r['rank']==3?'bg-amber-600 text-white':'bg-slate-100 text-slate-600')) }}">
                             {{ $r['rank'] }}
                         </span>
                     </td>
@@ -184,7 +184,7 @@
                     </td>
                     <td class="px-4 py-3 text-center font-extrabold text-slate-800">{{ $r['average'] }}%</td>
                     <td class="px-4 py-3 text-center">
-                        @php $gc=['A1'=>'bg-emerald-100 text-emerald-800','A2'=>'bg-emerald-100 text-emerald-700','A3'=>'bg-teal-100 text-teal-800','B1'=>'bg-blue-100 text-blue-800','B2'=>'bg-blue-100 text-blue-700','B3'=>'bg-indigo-100 text-indigo-800','C'=>'bg-amber-100 text-amber-800','F'=>'bg-red-100 text-red-800']; @endphp
+                        @php $gc=['A1'=>'bg-emerald-100 text-emerald-800','A2'=>'bg-emerald-100 text-emerald-700','A3'=>'bg-teal-100 text-teal-800','B1'=>'bg-blue-100 text-blue-800','B2'=>'bg-blue-100 text-blue-700','B3'=>'bg-indigo-100 text-indigo-800','C'=>'bg-[var(--primary-pale)] text-[var(--primary-text)]','F'=>'bg-red-100 text-red-800']; @endphp
                         <span class="rounded-full px-2.5 py-0.5 text-[11px] font-extrabold {{ $gc[$r['grade']]??'bg-slate-100 text-slate-600' }}">{{ $r['grade'] }}</span>
                     </td>
                     <td class="px-4 py-3 text-center">

@@ -5,7 +5,7 @@
 @section('content')
 <div class="max-w-4xl mx-auto space-y-6">
 
-    {{-- ── Header ── --}}
+    {{-- â”€â”€ Header â”€â”€ --}}
     <div class="flex items-center justify-between">
         <div>
             <h2 class="text-xl font-bold text-gray-900 flex items-center gap-2">
@@ -18,18 +18,18 @@
         </a>
     </div>
 
-    {{-- ── Step 1: Program + Attempt picker ── --}}
+    {{-- â”€â”€ Step 1: Program + Attempt picker â”€â”€ --}}
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <h3 class="font-semibold text-gray-800 mb-4 flex items-center gap-2">
-            <span class="w-6 h-6 rounded-full bg-yellow-400 text-white text-xs font-bold flex items-center justify-center">1</span>
+            <span class="w-6 h-6 rounded-full bg-[var(--primary)] text-white text-xs font-bold flex items-center justify-center">1</span>
             Select Program &amp; Attempt
         </h3>
         <form method="GET" action="{{ route('admin.exams.bulk') }}" class="flex flex-wrap gap-4 items-end">
             <div class="flex-1 min-w-[200px]">
                 <label class="block text-xs font-semibold text-gray-600 mb-1">Program</label>
                 <select name="program_id" required
-                    class="w-full rounded-lg border-gray-300 shadow-sm focus:border-yellow-400 focus:ring-yellow-400 text-sm">
-                    <option value="">— Choose program —</option>
+                    class="w-full rounded-lg border-gray-300 shadow-sm focus:border-[var(--brand)] focus:ring-[var(--brand)] text-sm">
+                    <option value="">â€” Choose program â€”</option>
                     @foreach($programs as $prog)
                         <option value="{{ $prog->id }}" {{ ($selectedProgram?->id == $prog->id) ? 'selected' : '' }}>
                             {{ $prog->name }}
@@ -42,7 +42,7 @@
             <div class="w-48">
                 <label class="block text-xs font-semibold text-gray-600 mb-1">Attempt</label>
                 <select name="attempt"
-                    class="w-full rounded-lg border-gray-300 shadow-sm focus:border-yellow-400 focus:ring-yellow-400 text-sm">
+                    class="w-full rounded-lg border-gray-300 shadow-sm focus:border-[var(--brand)] focus:ring-[var(--brand)] text-sm">
                     @foreach($attempts as $att)
                         <option value="{{ $att }}" {{ $att == $currentAttempt ? 'selected' : '' }}>
                             Attempt {{ $att }}
@@ -55,13 +55,13 @@
             @endif
 
             <button type="submit"
-                class="px-5 py-2.5 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg text-sm font-semibold shadow-sm transition-colors flex items-center gap-2">
+                class="px-5 py-2.5 bg-[var(--primary-pale)]0 hover:bg-[var(--primary)] text-white rounded-lg text-sm font-semibold shadow-sm transition-colors flex items-center gap-2">
                 <i class="fas fa-search"></i> Load Students
             </button>
         </form>
 
         @if($selectedProgram && $attempts->isEmpty())
-            <p class="mt-4 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-4 py-2">
+            <p class="mt-4 text-sm text-[var(--primary-text)] bg-[var(--primary-pale)] border border-[var(--brand)] rounded-lg px-4 py-2">
                 <i class="fas fa-exclamation-triangle mr-1"></i>
                 No exam scores have been entered for <strong>{{ $selectedProgram->name }}</strong> yet.
             </p>
@@ -69,17 +69,17 @@
     </div>
 
     @if($selectedProgram && $students->isNotEmpty())
-    {{-- ── Step 2: Student selector ── --}}
+    {{-- â”€â”€ Step 2: Student selector â”€â”€ --}}
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <h3 class="font-semibold text-gray-800 mb-1 flex items-center gap-2">
-            <span class="w-6 h-6 rounded-full bg-yellow-400 text-white text-xs font-bold flex items-center justify-center">2</span>
+            <span class="w-6 h-6 rounded-full bg-[var(--primary)] text-white text-xs font-bold flex items-center justify-center">2</span>
             Select Students
             <span class="ml-auto text-xs text-gray-500 font-normal">
                 <strong class="text-gray-700" id="selected-count">0</strong> of {{ $students->count() }} selected
             </span>
         </h3>
         <p class="text-xs text-gray-500 mb-4 ml-8">
-            Showing students with scores for <strong>{{ $selectedProgram->name }}</strong> — Attempt {{ $currentAttempt }}
+            Showing students with scores for <strong>{{ $selectedProgram->name }}</strong> â€” Attempt {{ $currentAttempt }}
         </p>
 
         {{-- Select all / deselect all --}}
@@ -93,7 +93,7 @@
                 <i class="fas fa-times mr-1"></i> Deselect All
             </button>
             {{-- Search --}}
-            <input type="text" id="student-filter" placeholder="Filter by name or ID…"
+            <input type="text" id="student-filter" placeholder="Filter by name or IDâ€¦"
                 oninput="filterStudents(this.value)"
                 class="ml-auto w-52 px-3 py-1.5 text-xs rounded-lg border border-gray-200 focus:outline-none focus:ring-1 focus:ring-yellow-300 bg-white">
         </div>
@@ -101,30 +101,30 @@
         {{-- Student checkboxes --}}
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-96 overflow-y-auto pr-1" id="student-list">
             @foreach($students as $student)
-            <label class="student-row flex items-center gap-3 p-3 rounded-xl border border-gray-100 hover:border-yellow-300 hover:bg-yellow-50/40 cursor-pointer transition-colors"
+            <label class="student-row flex items-center gap-3 p-3 rounded-xl border border-gray-100 hover:border-[var(--brand)] hover:bg-[var(--primary-pale)]/40 cursor-pointer transition-colors"
                    data-name="{{ strtolower($student->user->full_name ?? '') }}"
                    data-sid="{{ strtolower($student->student_id) }}">
                 <input type="checkbox" name="student_ids[]" value="{{ $student->id }}"
-                    class="student-checkbox w-4 h-4 rounded text-yellow-500 border-gray-300 focus:ring-yellow-400"
+                    class="student-checkbox w-4 h-4 rounded text-[var(--brand)] border-gray-300 focus:ring-[var(--brand)]"
                     onchange="updateCount()">
                 <div class="flex-1 min-w-0">
-                    <p class="text-sm font-semibold text-gray-800 truncate">{{ $student->user->full_name ?? '—' }}</p>
+                    <p class="text-sm font-semibold text-gray-800 truncate">{{ $student->user->full_name ?? 'â€”' }}</p>
                     <p class="text-xs text-gray-500 font-mono">{{ $student->student_id }}</p>
                 </div>
-                <i class="fas fa-check text-yellow-500 text-xs opacity-0 check-icon"></i>
+                <i class="fas fa-check text-[var(--brand)] text-xs opacity-0 check-icon"></i>
             </label>
             @endforeach
         </div>
     </div>
 
-    {{-- ── Step 3: Actions ── --}}
+    {{-- â”€â”€ Step 3: Actions â”€â”€ --}}
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <h3 class="font-semibold text-gray-800 mb-4 flex items-center gap-2">
-            <span class="w-6 h-6 rounded-full bg-yellow-400 text-white text-xs font-bold flex items-center justify-center">3</span>
+            <span class="w-6 h-6 rounded-full bg-[var(--primary)] text-white text-xs font-bold flex items-center justify-center">3</span>
             Download or Print
         </h3>
 
-        <div id="no-selection-warning" class="mb-4 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-4 py-2 hidden">
+        <div id="no-selection-warning" class="mb-4 text-sm text-[var(--primary-text)] bg-[var(--primary-pale)] border border-[var(--brand)] rounded-lg px-4 py-2 hidden">
             <i class="fas fa-exclamation-triangle mr-1"></i> Please select at least one student first.
         </div>
 
@@ -152,7 +152,7 @@
 
         <p class="text-xs text-gray-400 mt-3">
             <i class="fas fa-info-circle mr-1"></i>
-            "Print" opens the multi-page PDF in a new tab — use your browser's print dialog (Ctrl+P / ⌘+P) to print all cards.
+            "Print" opens the multi-page PDF in a new tab â€” use your browser's print dialog (Ctrl+P / âŒ˜+P) to print all cards.
         </p>
     </div>
 
@@ -166,9 +166,9 @@
     </form>
 
     @elseif($selectedProgram && $students->isEmpty())
-    <div class="bg-amber-50 text-amber-800 border border-amber-200 rounded-xl p-5 flex items-center gap-3">
-        <i class="fas fa-exclamation-triangle text-amber-500 text-xl"></i>
-        <p class="text-sm font-medium">No students have scores for <strong>{{ $selectedProgram->name }}</strong> — Attempt {{ $currentAttempt }}.</p>
+    <div class="bg-[var(--primary-pale)] text-[var(--primary-text)] border border-[var(--brand)] rounded-xl p-5 flex items-center gap-3">
+        <i class="fas fa-exclamation-triangle text-[var(--brand)] text-xl"></i>
+        <p class="text-sm font-medium">No students have scores for <strong>{{ $selectedProgram->name }}</strong> â€” Attempt {{ $currentAttempt }}.</p>
     </div>
     @endif
 

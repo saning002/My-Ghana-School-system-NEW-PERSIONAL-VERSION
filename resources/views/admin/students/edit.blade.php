@@ -209,7 +209,7 @@
                             @keydown.enter.prevent="selectHighlighted()"
                             @blur="delayClose()"
                             class="input-premium w-full px-4 py-3 text-[14px] {{ $errors->has('church_branch_id') ? 'border-red-500 bg-red-50' : '' }}"
-                            placeholder="Search or type new branch name…"
+                            placeholder="Search or type new branch nameâ€¦"
                             autocomplete="off">
                         <input type="hidden" name="church_branch_id" :value="selectedId">
                         <input type="hidden" name="branch_new"       :value="selectedId ? '' : query.trim()">
@@ -217,15 +217,15 @@
                             class="absolute z-50 mt-1 w-full bg-white border border-slate-200 rounded-xl shadow-lg overflow-hidden max-h-52 overflow-y-auto">
                             <template x-for="(item, idx) in filtered" :key="item.id ?? item.name">
                                 <div @mousedown.prevent="select(item)"
-                                    :class="idx===highlight ? 'bg-yellow-50 text-yellow-700' : 'text-slate-700'"
-                                    class="px-4 py-2.5 text-[14px] font-semibold cursor-pointer hover:bg-yellow-50 flex items-center gap-3">
+                                    :class="idx===highlight ? 'bg-[var(--primary-pale)] text-[var(--primary-text)]' : 'text-slate-700'"
+                                    class="px-4 py-2.5 text-[14px] font-semibold cursor-pointer hover:bg-[var(--primary-pale)] flex items-center gap-3">
                                     <i class="fas fa-church text-xs opacity-50"></i>
                                     <span x-text="item.name"></span>
                                     <span x-show="!item.id" class="ml-auto text-[11px] font-bold uppercase tracking-wider text-slate-400">New branch</span>
                                 </div>
                             </template>
                         </div>
-                        <p x-show="query.trim() && !selectedId" x-cloak class="text-[12px] font-semibold text-yellow-600 mt-2">
+                        <p x-show="query.trim() && !selectedId" x-cloak class="text-[12px] font-semibold text-[var(--brand)] mt-2">
                             <i class="fas fa-plus-circle mr-1"></i>A new branch "<span x-text="query.trim()"></span>" will be created.
                         </p>
                         @error('church_branch_id')

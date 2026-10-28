@@ -24,7 +24,7 @@
             <select name="student_id" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
                 <option value="">-- Select Student --</option>
                 @foreach($students as $s)
-                <option value="{{ $s->id }}" {{ request('student_id')==$s->id?'selected':'' }}>{{ $s->student_id }} — {{ $s->user->full_name }}</option>
+                <option value="{{ $s->id }}" {{ request('student_id')==$s->id?'selected':'' }}>{{ $s->student_id }} â€” {{ $s->user->full_name }}</option>
                 @endforeach
             </select>
         </div>
@@ -45,7 +45,7 @@
 
 @if($data && $student)
 
-@php $gc=['A1'=>'bg-emerald-100 text-emerald-800','A2'=>'bg-emerald-100 text-emerald-700','A3'=>'bg-teal-100 text-teal-800','B1'=>'bg-blue-100 text-blue-800','B2'=>'bg-blue-100 text-blue-700','B3'=>'bg-indigo-100 text-indigo-800','C'=>'bg-amber-100 text-amber-800','F'=>'bg-red-100 text-red-800']; @endphp
+@php $gc=['A1'=>'bg-emerald-100 text-emerald-800','A2'=>'bg-emerald-100 text-emerald-700','A3'=>'bg-teal-100 text-teal-800','B1'=>'bg-blue-100 text-blue-800','B2'=>'bg-blue-100 text-blue-700','B3'=>'bg-indigo-100 text-indigo-800','C'=>'bg-[var(--primary-pale)] text-[var(--primary-text)]','F'=>'bg-red-100 text-red-800']; @endphp
 
 {{-- Student Header Card --}}
 <div class="rounded-2xl border border-indigo-100 bg-gradient-to-r from-indigo-50 to-violet-50 p-6 flex flex-col sm:flex-row sm:items-center gap-5">
@@ -113,7 +113,7 @@
             ['label'=>'School Days', 'val'=>$data['school_days']??0,  'color'=>'text-slate-800'],
             ['label'=>'Present',     'val'=>$data['present_days']??0, 'color'=>'text-emerald-700'],
             ['label'=>'Absent',      'val'=>$data['absent_days']??0,  'color'=>'text-red-600'],
-            ['label'=>'Rate',        'val'=>($data['att_pct']??0).'%','color'=>($data['att_pct']??0)>=75?'text-emerald-700':'text-amber-700'],
+            ['label'=>'Rate',        'val'=>($data['att_pct']??0).'%','color'=>($data['att_pct']??0)>=75?'text-emerald-700':'text-[var(--primary-text)]'],
         ] as $a)
         <div class="rounded-xl bg-slate-50 border border-slate-100 px-4 py-3 text-center">
             <p class="text-2xl font-extrabold {{ $a['color'] }}">{{ $a['val'] }}</p>

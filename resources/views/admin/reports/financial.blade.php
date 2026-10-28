@@ -17,15 +17,15 @@
 <div class="grid grid-cols-3 gap-3 mb-5 no-print">
     <div class="card p-4 text-center" style="border-top:3px solid #D4A017">
         <p class="text-xs text-gray-500 mb-1 font-semibold uppercase">Total Billed</p>
-        <p class="text-xl font-bold" style="color:#78520a">GH₵ {{ number_format($global['billed'],2) }}</p>
+        <p class="text-xl font-bold" style="color:var(--primary-text)">GHâ‚µ {{ number_format($global['billed'],2) }}</p>
     </div>
     <div class="card p-4 text-center" style="border-top:3px solid #16a34a">
         <p class="text-xs text-gray-500 mb-1 font-semibold uppercase">Collected</p>
-        <p class="text-xl font-bold text-green-700">GH₵ {{ number_format($global['collected'],2) }}</p>
+        <p class="text-xl font-bold text-green-700">GHâ‚µ {{ number_format($global['collected'],2) }}</p>
     </div>
     <div class="card p-4 text-center" style="border-top:3px solid #dc2626">
         <p class="text-xs text-gray-500 mb-1 font-semibold uppercase">Outstanding</p>
-        <p class="text-xl font-bold text-red-600">GH₵ {{ number_format($global['outstanding'],2) }}</p>
+        <p class="text-xl font-bold text-red-600">GHâ‚µ {{ number_format($global['outstanding'],2) }}</p>
     </div>
 </div>
 
@@ -34,7 +34,7 @@
     <form method="GET" class="flex flex-wrap gap-3 items-end">
         <div class="flex-1 min-w-32">
             <label class="block text-xs font-semibold text-gray-500 mb-1.5">{{ $programLabelSingular }}</label>
-            <select name="program_id" class="w-full px-3 py-2.5 border border-yellow-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2">
+            <select name="program_id" class="w-full px-3 py-2.5 border border-[var(--brand)] rounded-xl text-sm bg-white focus:outline-none focus:ring-2">
                 <option value="">All {{ $programLabel }}</option>
                 @foreach($programs as $p)
                 <option value="{{ $p->id }}" {{ request('program_id')==$p->id?'selected':'' }}>{{ $p->name }}</option>
@@ -56,7 +56,7 @@
                class="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold bg-green-50 text-green-700 hover:bg-green-100 {{ $studentFees->isEmpty() ? 'opacity-50 pointer-events-none' : '' }}">
                 <i class="fas fa-file-excel"></i> Excel
             </a>
-            <button type="button" onclick="window.print()" class="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold text-white" style="background:#D4A017">
+            <button type="button" onclick="window.print()" class="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold text-white" style="background:var(--brand)">
                 <i class="fas fa-print"></i> Print
             </button>
         </div>
@@ -68,25 +68,25 @@
     <div class="table-wrap">
         <table class="w-full">
             <thead>
-                <tr style="background:#fef9c3">
-                    <th class="text-left px-5 py-4 text-xs font-semibold uppercase tracking-wider" style="color:#78520a">Student</th>
-                    <th class="text-left px-5 py-4 text-xs font-semibold uppercase tracking-wider" style="color:#78520a">{{ $programLabelSingular }}</th>
-                    <th class="text-right px-5 py-4 text-xs font-semibold uppercase tracking-wider" style="color:#78520a">Total Fees</th>
-                    <th class="text-right px-5 py-4 text-xs font-semibold uppercase tracking-wider" style="color:#78520a">Paid</th>
-                    <th class="text-right px-5 py-4 text-xs font-semibold uppercase tracking-wider" style="color:#78520a">Balance</th>
+                <tr style="background:var(--primary-pale)">
+                    <th class="text-left px-5 py-4 text-xs font-semibold uppercase tracking-wider" style="color:var(--primary-text)">Student</th>
+                    <th class="text-left px-5 py-4 text-xs font-semibold uppercase tracking-wider" style="color:var(--primary-text)">{{ $programLabelSingular }}</th>
+                    <th class="text-right px-5 py-4 text-xs font-semibold uppercase tracking-wider" style="color:var(--primary-text)">Total Fees</th>
+                    <th class="text-right px-5 py-4 text-xs font-semibold uppercase tracking-wider" style="color:var(--primary-text)">Paid</th>
+                    <th class="text-right px-5 py-4 text-xs font-semibold uppercase tracking-wider" style="color:var(--primary-text)">Balance</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-yellow-50">
+            <tbody class="divide-y divide-[var(--primary-pale)]">
                 @forelse($studentFees as $row)
-                <tr class="hover:bg-yellow-50/30 transition-colors">
+                <tr class="hover:bg-[var(--primary-pale)]/30 transition-colors">
                     <td class="px-5 py-4">
                         <p class="text-sm font-semibold text-ink">{{ $row['student']->user->full_name }}</p>
                         <p class="text-xs text-gray-400 font-mono">{{ $row['student']->student_id }}</p>
                     </td>
-                    <td class="px-5 py-4 text-sm text-gray-600">{{ $row['student']->program->name??'—' }}</td>
-                    <td class="px-5 py-4 text-sm font-semibold text-right" style="color:#78520a">GH₵ {{ number_format($row['total'],2) }}</td>
-                    <td class="px-5 py-4 text-sm font-semibold text-right text-green-700">GH₵ {{ number_format($row['paid'],2) }}</td>
-                    <td class="px-5 py-4 text-sm font-bold text-right {{ $row['balance']>0?'text-red-600':'text-green-600' }}">GH₵ {{ number_format($row['balance'],2) }}</td>
+                    <td class="px-5 py-4 text-sm text-gray-600">{{ $row['student']->program->name??'â€”' }}</td>
+                    <td class="px-5 py-4 text-sm font-semibold text-right" style="color:var(--primary-text)">GHâ‚µ {{ number_format($row['total'],2) }}</td>
+                    <td class="px-5 py-4 text-sm font-semibold text-right text-green-700">GHâ‚µ {{ number_format($row['paid'],2) }}</td>
+                    <td class="px-5 py-4 text-sm font-bold text-right {{ $row['balance']>0?'text-red-600':'text-green-600' }}">GHâ‚µ {{ number_format($row['balance'],2) }}</td>
                 </tr>
                 @empty
                 <tr><td colspan="5" class="px-5 py-12 text-center text-gray-400 text-sm">No records found.</td></tr>
@@ -95,7 +95,7 @@
         </table>
     </div>
     @if($students->hasPages())
-    <div class="px-5 py-4 border-t border-yellow-50">{{ $students->links() }}</div>
+    <div class="px-5 py-4 border-t border-[var(--primary-pale)]">{{ $students->links() }}</div>
     @endif
 </div>
 @endsection

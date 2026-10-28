@@ -17,8 +17,8 @@
         <div class="flex-1 min-w-[180px]">
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Program *</label>
             <select name="program_id" onchange="this.form.submit()"
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400">
-                <option value="">— Select Program —</option>
+                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)]">
+                <option value="">â€” Select Program â€”</option>
                 @foreach($programs as $p)
                 <option value="{{ $p->id }}" {{ request('program_id')==$p->id?'selected':'' }}>{{ $p->name }}</option>
                 @endforeach
@@ -27,7 +27,7 @@
         <div class="w-32">
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Attempt</label>
             <select name="attempt" onchange="this.form.submit()"
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)]">
                 @foreach(range(1,5) as $a)
                 <option value="{{ $a }}" {{ $selectedAttempt==$a?'selected':'' }}>Attempt {{ $a }}</option>
                 @endforeach
@@ -49,8 +49,8 @@
 <div class="card overflow-hidden">
     <div class="px-5 py-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
         <div>
-            <h3 class="text-sm font-extrabold text-slate-800">{{ $selectedProgram->name }} — Attempt {{ $selectedAttempt }}</h3>
-            <p class="text-xs text-slate-500 mt-0.5">{{ $students->count() }} students · Click a row to fill in their report</p>
+            <h3 class="text-sm font-extrabold text-slate-800">{{ $selectedProgram->name }} â€” Attempt {{ $selectedAttempt }}</h3>
+            <p class="text-xs text-slate-500 mt-0.5">{{ $students->count() }} students Â· Click a row to fill in their report</p>
         </div>
         <span class="text-xs text-slate-400">
             {{ $reports->count() }} of {{ $students->count() }} reports filled
@@ -60,12 +60,12 @@
         @foreach($students as $student)
         @php $rpt = $reports->get($student->id); @endphp
         <a href="{{ route('admin.student-reports.edit', [$student, 'program_id'=>$selectedProgram->id,'attempt'=>$selectedAttempt]) }}"
-           class="flex items-center gap-4 px-5 py-3.5 hover:bg-yellow-50 transition-colors group">
+           class="flex items-center gap-4 px-5 py-3.5 hover:bg-[var(--primary-pale)] transition-colors group">
             <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-yellow-600 flex items-center justify-center text-white text-xs font-extrabold shrink-0 shadow">
                 {{ strtoupper(substr($student->user->full_name??'?',0,1)) }}
             </div>
             <div class="flex-1 min-w-0">
-                <p class="text-sm font-bold text-slate-800 group-hover:text-yellow-700 transition-colors">{{ $student->user->full_name }}</p>
+                <p class="text-sm font-bold text-slate-800 group-hover:text-[var(--primary-text)] transition-colors">{{ $student->user->full_name }}</p>
                 <p class="text-xs text-slate-400 font-mono">{{ $student->student_id }}</p>
             </div>
             @if($rpt)
@@ -81,7 +81,7 @@
                 <i class="fas fa-check text-[8px]"></i> Filled
             </span>
             @else
-            <span class="shrink-0 rounded-full bg-amber-100 text-amber-700 text-[10px] font-bold px-2 py-0.5">
+            <span class="shrink-0 rounded-full bg-[var(--primary-pale)] text-[var(--primary-text)] text-[10px] font-bold px-2 py-0.5">
                 <i class="fas fa-edit text-[8px]"></i> Fill Now
             </span>
             @endif

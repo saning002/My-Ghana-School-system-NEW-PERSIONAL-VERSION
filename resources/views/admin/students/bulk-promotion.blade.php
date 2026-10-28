@@ -4,10 +4,10 @@
 
 @section('content')
 <div class="space-y-6">
-    <div class="card border border-amber-100 bg-[#fffaf0] p-6">
+    <div class="card border border-[var(--primary-pale)] bg-[#fffaf0] p-6">
         <div class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
-                <p class="text-xs font-semibold uppercase tracking-[0.28em] text-amber-700">Academic Management</p>
+                <p class="text-xs font-semibold uppercase tracking-[0.28em] text-[var(--primary-text)]">Academic Management</p>
                 <h2 class="text-2xl font-semibold text-slate-900 mt-2">Program-Filtered Promotion</h2>
                 <p class="text-sm text-slate-600 mt-1">Select a program to review students, promote them to the next level, or flag them to repeat.</p>
             </div>
@@ -48,7 +48,7 @@
                     <h3 class="text-xl font-bold text-slate-900">{{ $selectedProgram->name }}</h3>
                     <p class="text-xs text-slate-500 mt-1">
                         @if($nextProgram)
-                            Next Program Level: <span class="font-semibold text-amber-700">{{ $nextProgram->name }}</span>
+                            Next Program Level: <span class="font-semibold text-[var(--primary-text)]">{{ $nextProgram->name }}</span>
                         @else
                             <span class="text-emerald-700 font-semibold"><i class="fas fa-flag-checkered mr-1"></i> Final Program (Promoting graduates students)</span>
                         @endif
@@ -81,7 +81,7 @@
                         <thead>
                             <tr class="bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-500 border-b border-slate-100">
                                 <th class="p-4 w-12 text-center">
-                                    <input type="checkbox" @change="selectedIds = $el.checked ? [{{ $students->pluck('id')->implode(',') }}] : []" class="rounded text-amber-600 focus:ring-amber-500 w-4 h-4">
+                                    <input type="checkbox" @change="selectedIds = $el.checked ? [{{ $students->pluck('id')->implode(',') }}] : []" class="rounded text-[var(--brand)] focus:ring-amber-500 w-4 h-4">
                                 </th>
                                 <th class="p-4">Student ID</th>
                                 <th class="p-4">Full Name</th>
@@ -93,21 +93,21 @@
                             @foreach($students as $student)
                                 <tr class="hover:bg-slate-50/80 transition-colors">
                                     <td class="p-4 text-center">
-                                        <input type="checkbox" name="student_ids[]" value="{{ $student->id }}" x-model.number="selectedIds" form="bulkPromoteForm" class="rounded text-amber-600 focus:ring-amber-500 w-4 h-4">
+                                        <input type="checkbox" name="student_ids[]" value="{{ $student->id }}" x-model.number="selectedIds" form="bulkPromoteForm" class="rounded text-[var(--brand)] focus:ring-amber-500 w-4 h-4">
                                         <input type="checkbox" name="student_ids[]" value="{{ $student->id }}" x-model.number="selectedIds" form="bulkRepeatForm" class="hidden">
                                     </td>
                                     <td class="p-4 font-mono font-medium text-slate-800">{{ $student->student_id }}</td>
-                                    <td class="p-4 font-semibold text-slate-900">{{ $student->user->full_name ?? '—' }}</td>
+                                    <td class="p-4 font-semibold text-slate-900">{{ $student->user->full_name ?? 'â€”' }}</td>
                                     <td class="p-4">
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold {{ $student->status === 'active' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800' }}">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold {{ $student->status === 'active' ? 'bg-emerald-100 text-emerald-800' : 'bg-[var(--primary-pale)] text-[var(--primary-text)]' }}">
                                             {{ ucfirst($student->status) }}
                                         </span>
                                     </td>
                                     <td class="p-4 text-right">
                                         <form method="POST" action="{{ route('admin.students.promote', $student) }}" class="inline-block">
                                             @csrf
-                                            <button type="submit" class="px-3 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 text-xs font-bold transition-colors">
-                                                Promote →
+                                            <button type="submit" class="px-3 py-1.5 rounded-lg bg-[var(--primary-pale)] hover:bg-[var(--primary-pale)] text-[var(--primary-text)] text-xs font-bold transition-colors">
+                                                Promote â†’
                                             </button>
                                         </form>
                                     </td>

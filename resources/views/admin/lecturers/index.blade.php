@@ -10,7 +10,7 @@
         <p class="text-sm text-gray-500 mt-1">{{ $lecturers->total() }} teacher{{ $lecturers->total() !== 1 ? 's' : '' }} in the system</p>
     </div>
     <a href="{{ route('admin.lecturers.create') }}"
-       class="inline-flex items-center gap-2 px-5 py-2.5 bg-yellow-600 text-white rounded-xl text-sm font-semibold hover:bg-yellow-700 shadow-sm transition-all">
+       class="inline-flex items-center gap-2 px-5 py-2.5 bg-[var(--primary)] text-white rounded-xl text-sm font-semibold hover:bg-[var(--primary-dark)] shadow-sm transition-all">
         <i class="fas fa-plus"></i> Add Teacher
     </a>
 </div>
@@ -24,9 +24,9 @@
             <div class="flex-shrink-0">
                 @if($lecturer->photo_url)
                     <img src="{{ $lecturer->photo_url }}" alt="{{ $lecturer->full_name }}"
-                         class="w-16 h-16 rounded-2xl object-cover border-2 border-yellow-100 shadow-sm">
+                         class="w-16 h-16 rounded-2xl object-cover border-2 border-[var(--primary-pale)] shadow-sm">
                 @else
-                    <div class="w-16 h-16 rounded-2xl flex items-center justify-center font-bold text-xl text-white bg-yellow-600 shadow-sm select-none">
+                    <div class="w-16 h-16 rounded-2xl flex items-center justify-center font-bold text-xl text-white bg-[var(--primary)] shadow-sm select-none">
                         {{ strtoupper(substr($lecturer->full_name, 0, 1)) }}
                     </div>
                 @endif
@@ -46,10 +46,10 @@
         {{-- Stats bar --}}
         <div class="px-5 pb-4 flex gap-4 text-xs text-gray-500">
             @if($lecturer->phone)
-                <span class="flex items-center gap-1"><i class="fas fa-phone text-yellow-500"></i>{{ $lecturer->phone }}</span>
+                <span class="flex items-center gap-1"><i class="fas fa-phone text-[var(--brand)]"></i>{{ $lecturer->phone }}</span>
             @endif
             <span class="flex items-center gap-1 ml-auto">
-                <i class="fas fa-book-open text-yellow-500"></i>
+                <i class="fas fa-book-open text-[var(--brand)]"></i>
                 {{ $lecturer->course_assignments_count }} course{{ $lecturer->course_assignments_count !== 1 ? 's' : '' }}
             </span>
         </div>
@@ -57,7 +57,7 @@
         {{-- Actions --}}
         <div class="px-5 pb-4 flex gap-2">
             <a href="{{ route('admin.lecturers.show', $lecturer) }}"
-               class="flex-1 text-center px-3 py-2 bg-yellow-50 text-yellow-800 hover:bg-yellow-100 rounded-xl text-xs font-semibold transition-colors">
+               class="flex-1 text-center px-3 py-2 bg-[var(--primary-pale)] text-[var(--primary-text)] hover:bg-[var(--primary-pale)] rounded-xl text-xs font-semibold transition-colors">
                 <i class="fas fa-eye mr-1"></i> View
             </a>
             <a href="{{ route('admin.lecturers.edit', $lecturer) }}"
@@ -82,7 +82,7 @@
         <p class="text-gray-600 font-semibold text-lg mb-1">No teachers yet</p>
         <p class="text-gray-400 text-sm mb-5">Add your first teacher to get started.</p>
         <a href="{{ route('admin.lecturers.create') }}"
-           class="inline-flex items-center gap-2 px-5 py-2.5 bg-yellow-600 text-white rounded-xl text-sm font-semibold hover:bg-yellow-700">
+           class="inline-flex items-center gap-2 px-5 py-2.5 bg-[var(--primary)] text-white rounded-xl text-sm font-semibold hover:bg-[var(--primary-dark)]">
             <i class="fas fa-plus"></i> Add Teacher
         </a>
     </div>

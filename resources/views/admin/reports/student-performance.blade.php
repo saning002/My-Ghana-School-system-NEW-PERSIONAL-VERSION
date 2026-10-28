@@ -29,13 +29,13 @@
                 <option value="">-- Select student --</option>
                 @foreach($students as $s)
                 <option value="{{ $s->id }}" {{ request('student_id')==$s->id?'selected':'' }}>
-                    {{ $s->student_id }} — {{ $s->user->full_name }}
+                    {{ $s->student_id }} â€” {{ $s->user->full_name }}
                 </option>
                 @endforeach
                 @if($students->isEmpty())
                     @foreach(\App\Models\Student::with('user')->forExams()->orderBy('student_id')->get() as $s)
                     <option value="{{ $s->id }}" {{ request('student_id')==$s->id?'selected':'' }}>
-                        {{ $s->student_id }} — {{ $s->user->full_name }}
+                        {{ $s->student_id }} â€” {{ $s->user->full_name }}
                     </option>
                     @endforeach
                 @endif
@@ -108,7 +108,7 @@
 $gc = ['A1'=>'bg-emerald-100 text-emerald-800','A2'=>'bg-emerald-100 text-emerald-700',
        'A3'=>'bg-teal-100 text-teal-800','B1'=>'bg-blue-100 text-blue-800',
        'B2'=>'bg-blue-100 text-blue-700','B3'=>'bg-indigo-100 text-indigo-800',
-       'C'=>'bg-amber-100 text-amber-800','F'=>'bg-red-100 text-red-800'];
+       'C'=>'bg-[var(--primary-pale)] text-[var(--primary-text)]','F'=>'bg-red-100 text-red-800'];
 @endphp
 <div class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
     <div class="flex items-center justify-between px-5 py-3.5 bg-gradient-to-r from-slate-800 to-slate-700">

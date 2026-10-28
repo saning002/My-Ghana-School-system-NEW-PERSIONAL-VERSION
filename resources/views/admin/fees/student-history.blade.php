@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Fee History — ' . ($student->user?->full_name ?? 'Student'))
+@section('title', 'Fee History â€” ' . ($student->user?->full_name ?? 'Student'))
 
 @section('content')
 <style>
@@ -75,7 +75,7 @@
                 <span style="width:10px;height:10px;border-radius:50%;background:{{ $h['is_paid'] ? '#16a34a' : '#dc2626' }};flex-shrink:0;"></span>
                 <span style="font-weight:700;font-size:.95rem;color:#1e293b;">{{ $h['session']->year }}</span>
                 @if($h['carry_forward'] > 0)
-                    <span style="background:#fef9c3;color:#92400e;font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:4px;">
+                    <span style="background:var(--primary-pale);color:var(--primary-text);font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:4px;">
                         <i class="fas fa-arrow-right me-1"></i>Carry-forward: GHS {{ number_format($h['carry_forward'], 2) }}
                     </span>
                 @endif
@@ -141,12 +141,12 @@
                         <div style="font-size:.9rem;font-weight:700;color:#1e293b;">GHS {{ number_format($p->amount_paid, 2) }}</div>
                         <div style="font-size:.72rem;color:#94a3b8;margin-top:2px;">
                             <i class="fas fa-calendar me-1"></i>{{ \Carbon\Carbon::parse($p->payment_date)->format('d M Y') }}
-                            &nbsp;·&nbsp;{{ ucfirst(str_replace('_', ' ', $p->payment_method ?? 'cash')) }}
+                            &nbsp;Â·&nbsp;{{ ucfirst(str_replace('_', ' ', $p->payment_method ?? 'cash')) }}
                             @if($p->receipt_number)
-                                &nbsp;·&nbsp;<code style="font-size:.68rem;background:#e2e8f0;padding:1px 5px;border-radius:4px;">{{ $p->receipt_number }}</code>
+                                &nbsp;Â·&nbsp;<code style="font-size:.68rem;background:#e2e8f0;padding:1px 5px;border-radius:4px;">{{ $p->receipt_number }}</code>
                             @endif
                             @if($p->notes)
-                                &nbsp;·&nbsp;<span style="font-style:italic;">{{ $p->notes }}</span>
+                                &nbsp;Â·&nbsp;<span style="font-style:italic;">{{ $p->notes }}</span>
                             @endif
                         </div>
                     </div>

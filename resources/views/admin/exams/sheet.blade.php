@@ -74,8 +74,8 @@
             <div class="h-4"></div>
         @endif
         @if($students->count() == 0 || $courses->count() == 0)
-            <div class="bg-yellow-50 text-yellow-800 p-4 rounded-xl border border-yellow-200 flex items-center gap-3">
-                <i class="fas fa-exclamation-triangle text-yellow-500 text-xl"></i>
+            <div class="bg-[var(--primary-pale)] text-[var(--primary-text)] p-4 rounded-xl border border-[var(--brand)] flex items-center gap-3">
+                <i class="fas fa-exclamation-triangle text-[var(--brand)] text-xl"></i>
                 <p class="text-sm font-medium">No students or courses found for this program in your branch.</p>
             </div>
         @else
@@ -83,11 +83,11 @@
             @php $isPreCollegeFinal = ($selectedProgram->sequence === 1 && $currentAttempt === 1); @endphp
 
             @if($isPreCollegeFinal)
-            <div class="bg-amber-50 border border-amber-200 rounded-xl p-5 flex items-start gap-3">
-                <i class="fas fa-lock text-amber-500 text-lg mt-0.5"></i>
+            <div class="bg-[var(--primary-pale)] border border-[var(--brand)] rounded-xl p-5 flex items-start gap-3">
+                <i class="fas fa-lock text-[var(--brand)] text-lg mt-0.5"></i>
                 <div>
-                    <p class="text-sm font-bold text-amber-800">Pre-College Attempt 1 — Scores are final aggregates (out of 100)</p>
-                    <p class="text-xs text-amber-700 mt-1">Scores for this attempt are treated as 100% exam score — no weighting applied.</p>
+                    <p class="text-sm font-bold text-[var(--primary-text)]">Pre-College Attempt 1 â€” Scores are final aggregates (out of 100)</p>
+                    <p class="text-xs text-[var(--primary-text)] mt-1">Scores for this attempt are treated as 100% exam score â€” no weighting applied.</p>
                 </div>
             </div>
             @else
@@ -124,7 +124,7 @@
 
                     {{-- Row 2: SBA sub-component weights --}}
                     <p class="text-xs font-bold text-gray-600 uppercase tracking-wide mb-3">
-                        SBA Sub-Components — weights must add to 100
+                        SBA Sub-Components â€” weights must add to 100
                     </p>
                     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
                         @foreach([
@@ -160,7 +160,7 @@
                     <div>
                         <h3 class="font-bold text-gray-800 mb-2 flex items-center gap-2"><i class="fas fa-download text-green-600"></i> Download Excel Template</h3>
                         <p class="text-sm text-gray-600 mb-4">
-                            Downloads a spreadsheet with two columns per course — SBA ({{ $quizPercentage }}%) and Exam ({{ $examPercentage }}%). Fill it offline and upload below.
+                            Downloads a spreadsheet with two columns per course â€” SBA ({{ $quizPercentage }}%) and Exam ({{ $examPercentage }}%). Fill it offline and upload below.
                         </p>
                     </div>
                     <form action="{{ route('admin.exams.sheet.export') }}" method="GET">
@@ -197,7 +197,7 @@
                 </div>
             </div>
 
-            {{-- ── SBA Download Card ─────────────────────────────── --}}
+            {{-- â”€â”€ SBA Download Card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
             <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6"
                  x-data="{ selectAll: true, selectedStudents: {{ json_encode($students->pluck('id')->values()) }} }">
                 <h3 class="font-bold text-gray-800 mb-1 flex items-center gap-2">
@@ -258,7 +258,7 @@
                                        :value="{{ $stu->id }}"
                                        class="rounded text-teal-600">
                                 <span class="text-xs text-gray-700 truncate">
-                                    {{ $stu->user->full_name ?? '—' }}<br>
+                                    {{ $stu->user->full_name ?? 'â€”' }}<br>
                                     <span class="text-gray-400">{{ $stu->student_id }}</span>
                                 </span>
                             </label>
@@ -368,7 +368,7 @@
                                                        value="{{ $existing[$field] ?? '' }}"
                                                        min="0" max="{{ $sbaSubWeights[str_replace(['_score','_score'], '', $field)] ?? 100 }}" step="0.5"
                                                        class="w-16 text-center rounded border-{{ $col }}-200 text-xs py-1 px-1 focus:border-{{ $col }}-500"
-                                                       placeholder="—">
+                                                       placeholder="â€”">
                                             </td>
                                             @endforeach
                                             @endif
@@ -379,7 +379,7 @@
                                                        value="{{ $existing['exam_score'] ?? '' }}"
                                                        min="0" max="100" step="0.5"
                                                        class="w-16 text-center rounded border-orange-200 text-xs py-1 px-1 focus:border-orange-500"
-                                                       placeholder="—">
+                                                       placeholder="â€”">
                                             </td>
                                         @endforeach
                                     </tr>

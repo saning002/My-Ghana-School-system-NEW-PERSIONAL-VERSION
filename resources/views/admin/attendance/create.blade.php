@@ -9,9 +9,9 @@
 
     {{-- Step 1: Program & Course Selector --}}
     <div class="card overflow-hidden mb-5">
-        <div class="px-5 py-4 border-b border-yellow-50" style="background:#fef9c3">
-            <h2 class="text-sm font-bold" style="color:#78520a">
-                <i class="fas fa-filter mr-2"></i>Step 1 — Select Program
+        <div class="px-5 py-4 border-b border-[var(--primary-pale)]" style="background:var(--primary-pale)">
+            <h2 class="text-sm font-bold" style="color:var(--primary-text)">
+                <i class="fas fa-filter mr-2"></i>Step 1 â€” Select Program
             </h2>
         </div>
         <div class="px-5 py-5">
@@ -19,7 +19,7 @@
                 <div>
                     <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Program *</label>
                     <select x-model="programId" @change="onProgramChange()"
-                        class="w-full px-4 py-3 border border-yellow-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
+                        class="w-full px-4 py-3 border border-[var(--brand)] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
                         <option value="">Select program</option>
                         @foreach($programs as $program)
                             <option value="{{ $program->id }}" {{ request('program_id') == $program->id ? 'selected' : '' }}>
@@ -34,10 +34,10 @@
 
     {{-- Step 2: Live Student Search --}}
     <div class="card overflow-hidden mb-5" x-show="programId" x-cloak>
-        <div class="px-5 py-4 border-b border-yellow-50" style="background:#fef9c3">
+        <div class="px-5 py-4 border-b border-[var(--primary-pale)]" style="background:var(--primary-pale)">
             <div class="flex items-center justify-between">
-                <h2 class="text-sm font-bold" style="color:#78520a">
-                    <i class="fas fa-search mr-2"></i>Step 2 — Search &amp; Load Students
+                <h2 class="text-sm font-bold" style="color:var(--primary-text)">
+                    <i class="fas fa-search mr-2"></i>Step 2 â€” Search &amp; Load Students
                 </h2>
                 <span class="text-xs text-gray-500" x-show="students.length > 0">
                     <span x-text="students.length"></span> student<span x-show="students.length !== 1">s</span> loaded
@@ -51,7 +51,7 @@
                     x-model="searchQuery"
                     @input.debounce.300ms="fetchStudents()"
                     placeholder="Type a name or student ID to search..."
-                    class="w-full pl-9 pr-10 py-3 border border-yellow-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
+                    class="w-full pl-9 pr-10 py-3 border border-[var(--brand)] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
                 <button x-show="searchQuery" @click="searchQuery=''; fetchStudents()"
                     class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
                     <i class="fas fa-times text-xs"></i>
@@ -78,8 +78,8 @@
 
     {{-- Step 3: Mark Attendance Form --}}
     <form method="GET" action="{{ route('admin.attendance.template') }}" x-show="students.length > 0 && periodId" x-cloak class="card overflow-hidden mb-5">
-        <div class="px-5 py-4 border-b border-yellow-50" style="background:#fef9c3">
-            <h2 class="text-sm font-bold" style="color:#78520a"><i class="fas fa-download mr-2"></i>Download Attendance Book</h2>
+        <div class="px-5 py-4 border-b border-[var(--primary-pale)]" style="background:var(--primary-pale)">
+            <h2 class="text-sm font-bold" style="color:var(--primary-text)"><i class="fas fa-download mr-2"></i>Download Attendance Book</h2>
         </div>
         <div class="px-5 py-5 grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
             <input type="hidden" name="program_id" :value="programId">
@@ -88,7 +88,7 @@
 
             <div>
                 <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Template date</label>
-                <input type="date" x-model="attendanceDate" class="w-full px-4 py-3 border border-yellow-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
+                <input type="date" x-model="attendanceDate" class="w-full px-4 py-3 border border-[var(--brand)] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
             </div>
             <div>
                 <button type="submit" class="w-full inline-flex items-center justify-center px-4 py-3 bg-indigo-600 text-white rounded-xl text-sm font-semibold hover:bg-indigo-700 transition-colors">
@@ -103,8 +103,8 @@
 
     <form method="POST" action="{{ route('admin.attendance.import') }}" enctype="multipart/form-data" x-show="students.length > 0 && periodId" x-cloak class="card overflow-hidden mb-5">
         @csrf
-        <div class="px-5 py-4 border-b border-yellow-50" style="background:#fef9c3">
-            <h2 class="text-sm font-bold" style="color:#78520a"><i class="fas fa-upload mr-2"></i>Import Marked Attendance</h2>
+        <div class="px-5 py-4 border-b border-[var(--primary-pale)]" style="background:var(--primary-pale)">
+            <h2 class="text-sm font-bold" style="color:var(--primary-text)"><i class="fas fa-upload mr-2"></i>Import Marked Attendance</h2>
         </div>
         <div class="px-5 py-5 grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
             <input type="hidden" name="program_id" :value="programId">
@@ -113,7 +113,7 @@
             <div>
                 <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Attendance file</label>
                 <input type="file" name="attendance_file" accept=".xlsx,.xls,.csv" required
-                    class="w-full px-4 py-3 border border-yellow-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
+                    class="w-full px-4 py-3 border border-[var(--brand)] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
             </div>
             <input type="hidden" name="date" :value="attendanceDate">
             <div>
@@ -133,11 +133,11 @@
 
         <div class="card overflow-hidden">
             {{-- Header with date/period selectors --}}
-            <div class="px-5 py-4 border-b border-yellow-50" style="background:#fef9c3">
+            <div class="px-5 py-4 border-b border-[var(--primary-pale)]" style="background:var(--primary-pale)">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
-                        <h3 class="text-sm font-bold" style="color:#78520a">
-                            <i class="fas fa-clipboard-check mr-2"></i>Step 3 — Mark Attendance
+                        <h3 class="text-sm font-bold" style="color:var(--primary-text)">
+                            <i class="fas fa-clipboard-check mr-2"></i>Step 3 â€” Mark Attendance
                         </h3>
                         <p class="text-xs text-gray-500 mt-0.5">
                             <span x-text="students.length"></span> student<span x-show="students.length !== 1">s</span> listed
@@ -147,7 +147,7 @@
                         <div>
                             <label class="block text-xs font-semibold text-gray-500 mb-1">Period *</label>
                             <select name="academic_period_id" x-model="periodId" required
-                                class="px-3 py-2 border border-yellow-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
+                                class="px-3 py-2 border border-[var(--brand)] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
                                 <option value="">Select period</option>
                                 @foreach($periods as $period)
                                     <option value="{{ $period->id }}">{{ $period->month }} ({{ $period->session->year ?? '' }})</option>
@@ -157,14 +157,14 @@
                         <div>
                             <label class="block text-xs font-semibold text-gray-500 mb-1">Date *</label>
                             <input type="date" name="date" x-model="attendanceDate" value="{{ date('Y-m-d') }}" required
-                                class="px-3 py-2 border border-yellow-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
+                                class="px-3 py-2 border border-[var(--brand)] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
                         </div>
                     </div>
                 </div>
             </div>
 
             {{-- Quick mark all --}}
-            <div class="px-5 py-3 border-b border-yellow-50 flex items-center gap-3 bg-white">
+            <div class="px-5 py-3 border-b border-[var(--primary-pale)] flex items-center gap-3 bg-white">
                 <span class="text-xs text-gray-500 font-semibold">Mark all:</span>
                 <button type="button" @click="markAll('present')"
                     class="px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-lg text-xs font-semibold hover:bg-emerald-100 transition-colors">
@@ -177,10 +177,10 @@
             </div>
 
             {{-- Student list (rendered by Alpine from JSON) --}}
-            <div class="divide-y divide-yellow-50">
+            <div class="divide-y divide-[var(--primary-pale)]">
                 <template x-for="student in students" :key="student.id">
-                    <div class="flex items-center gap-4 px-5 py-4 hover:bg-yellow-50/30 transition-colors">
-                        <div class="w-10 h-10 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-sm flex-shrink-0"
+                    <div class="flex items-center gap-4 px-5 py-4 hover:bg-[var(--primary-pale)]/30 transition-colors">
+                        <div class="w-10 h-10 rounded-full bg-[var(--primary-pale)] text-[var(--primary-text)] flex items-center justify-center font-bold text-sm flex-shrink-0"
                              x-text="student.full_name.charAt(0).toUpperCase()"></div>
                         <div class="flex-1 min-w-0">
                             <p class="text-sm font-semibold text-gray-800 truncate" x-text="student.full_name"></p>
@@ -203,12 +203,12 @@
             </div>
 
             {{-- Save button --}}
-            <div class="px-5 py-4 border-t border-yellow-50 flex items-center gap-3" style="background:#fef9c3">
+            <div class="px-5 py-4 border-t border-[var(--primary-pale)] flex items-center gap-3" style="background:var(--primary-pale)">
                 <button type="submit" class="btn-gold px-6 py-3 rounded-xl text-sm font-semibold shadow-sm">
                     <i class="fas fa-save mr-2"></i> Save Attendance
                 </button>
                 <a href="{{ route('admin.attendance.index') }}"
-                   class="px-6 py-3 bg-white text-gray-700 rounded-xl text-sm font-semibold border border-yellow-200">
+                   class="px-6 py-3 bg-white text-gray-700 rounded-xl text-sm font-semibold border border-[var(--brand)]">
                     Cancel
                 </a>
             </div>

@@ -6,12 +6,12 @@
 <div class="space-y-6">
 
 @if(session('error'))
-<div class="rounded-2xl bg-amber-50 border border-amber-200 px-5 py-3 text-sm font-semibold text-amber-800 flex items-center gap-2">
-    <i class="fas fa-exclamation-triangle text-amber-500"></i> {{ session('error') }}
+<div class="rounded-2xl bg-[var(--primary-pale)] border border-[var(--brand)] px-5 py-3 text-sm font-semibold text-[var(--primary-text)] flex items-center gap-2">
+    <i class="fas fa-exclamation-triangle text-[var(--brand)]"></i> {{ session('error') }}
 </div>
 @endif
 
-{{-- ── Hero ── --}}
+{{-- â”€â”€ Hero â”€â”€ --}}
 <div class="rounded-3xl overflow-hidden relative" style="background:linear-gradient(135deg,#0d0a2e 0%,#2d2480 40%,#5647d6 75%,#a395f5 100%)">
     <div class="absolute inset-0 pointer-events-none">
         <div class="absolute -top-16 -right-16 h-64 w-64 rounded-full bg-white/4 blur-3xl"></div>
@@ -32,7 +32,7 @@
                     ['val'=>$summary['total_students'], 'label'=>'Students',   'icon'=>'fa-user-graduate'],
                     ['val'=>$summary['total_programs'],  'label'=>'Programs',   'icon'=>'fa-graduation-cap'],
                     ['val'=>$summary['attendance_rate'].'%','label'=>'Attendance','icon'=>'fa-clipboard-check'],
-                    ['val'=>'GH₵'.number_format($summary['fees']['outstanding']??0,0),'label'=>'Outstanding','icon'=>'fa-coins'],
+                    ['val'=>'GHâ‚µ'.number_format($summary['fees']['outstanding']??0,0),'label'=>'Outstanding','icon'=>'fa-coins'],
                 ] as $s)
                 <div class="rounded-2xl bg-white/10 border border-white/15 px-4 py-3 text-white">
                     <p class="text-xl font-extrabold leading-none">{{ $s['val'] }}</p>
@@ -52,14 +52,14 @@
             @endif
             <div class="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/15 px-4 py-1.5 text-xs font-bold text-white/70">
                 <i class="fas fa-check-circle text-emerald-400"></i> {{ $completeCount }} marks complete
-                &nbsp;·&nbsp;
-                <i class="fas fa-clock text-amber-400"></i> {{ $pendingCount }} pending
+                &nbsp;Â·&nbsp;
+                <i class="fas fa-clock text-[var(--brand)]"></i> {{ $pendingCount }} pending
             </div>
         </div>
     </div>
 </div>
 
-{{-- ── Report Categories ── --}}
+{{-- â”€â”€ Report Categories â”€â”€ --}}
 @php
 $categories = [
     [
@@ -89,7 +89,7 @@ $categories = [
         'title' => 'Financial Reports',
         'icon'  => 'fa-coins',
         'color' => 'from-amber-500 to-orange-600',
-        'badge' => 'bg-amber-50 text-amber-700',
+        'badge' => 'bg-[var(--primary-pale)] text-[var(--primary-text)]',
         'items' => [
             ['href'=>route('admin.reports.fee-statement'), 'icon'=>'fa-file-invoice',  'label'=>'Student Fee Statement', 'sub'=>'Charges, payments, and balance per student'],
             ['href'=>route('admin.reports.financial'),     'icon'=>'fa-chart-pie',     'label'=>'Financial Overview',   'sub'=>'Collection summary, outstanding fees'],

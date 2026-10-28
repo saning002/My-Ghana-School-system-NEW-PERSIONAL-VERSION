@@ -5,15 +5,15 @@
 @section('content')
 <div class="grid grid-cols-1 lg:grid-cols-5 gap-5">
 
-    {{-- ── SEND FORM ───────────────────────────────────────────────────── --}}
+    {{-- â”€â”€ SEND FORM â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
     <div class="lg:col-span-2">
         <div class="card overflow-hidden sticky top-20"
              x-data="{
                 recipientType: '{{ old('recipient_type', 'student') }}',
                 audience: '{{ old('audience', 'all') }}'
              }">
-            <div class="px-5 py-4 border-b border-yellow-50" style="background:#fef9c3">
-                <h3 class="text-sm font-bold" style="color:#78520a">
+            <div class="px-5 py-4 border-b border-[var(--primary-pale)]" style="background:var(--primary-pale)">
+                <h3 class="text-sm font-bold" style="color:var(--primary-text)">
                     <i class="fas fa-paper-plane mr-2"></i>Send Notification
                 </h3>
             </div>
@@ -22,11 +22,11 @@
 
                 @if($errors->any())
                 <div class="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-xs text-red-700 space-y-1">
-                    @foreach($errors->all() as $e)<div>• {{ $e }}</div>@endforeach
+                    @foreach($errors->all() as $e)<div>â€¢ {{ $e }}</div>@endforeach
                 </div>
                 @endif
 
-                {{-- ── Step 1: Who to notify ──────────────────────────── --}}
+                {{-- â”€â”€ Step 1: Who to notify â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
                 <div>
                     <label class="block text-xs font-semibold text-gray-600 mb-2">Notify *</label>
                     <div class="grid grid-cols-2 gap-2">
@@ -34,8 +34,8 @@
                             <input type="radio" name="recipient_type" value="student"
                                    x-model="recipientType" class="sr-only peer">
                             <div class="flex items-center gap-2 p-3 rounded-xl border-2 transition-all
-                                        peer-checked:border-yellow-500 peer-checked:bg-yellow-50 border-gray-200">
-                                <i class="fas fa-user-graduate text-sm" style="color:#D4A017"></i>
+                                        peer-checked:border-[var(--brand)] peer-checked:bg-[var(--primary-pale)] border-gray-200">
+                                <i class="fas fa-user-graduate text-sm" style="color:var(--brand)"></i>
                                 <div>
                                     <p class="text-xs font-bold text-gray-800">Students</p>
                                     <p class="text-xs text-gray-400">Student portal</p>
@@ -57,7 +57,7 @@
                     </div>
                 </div>
 
-                {{-- ── Step 2: Audience scope ──────────────────────────── --}}
+                {{-- â”€â”€ Step 2: Audience scope â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
                 <div>
                     <label class="block text-xs font-semibold text-gray-600 mb-2">Send To *</label>
                     <div class="grid grid-cols-2 gap-2">
@@ -65,8 +65,8 @@
                             <input type="radio" name="audience" value="all"
                                    x-model="audience" class="sr-only peer" checked>
                             <div class="flex items-center gap-2 p-3 rounded-xl border-2 transition-all
-                                        peer-checked:border-yellow-500 peer-checked:bg-yellow-50 border-gray-200">
-                                <i class="fas fa-users text-sm" style="color:#D4A017"></i>
+                                        peer-checked:border-[var(--brand)] peer-checked:bg-[var(--primary-pale)] border-gray-200">
+                                <i class="fas fa-users text-sm" style="color:var(--brand)"></i>
                                 <div>
                                     <p class="text-xs font-bold text-gray-800">All</p>
                                     <p class="text-xs text-gray-400" x-text="recipientType === 'lecturer' ? 'All teachers' : 'All students'"></p>
@@ -77,8 +77,8 @@
                             <input type="radio" name="audience" value="individual"
                                    x-model="audience" class="sr-only peer">
                             <div class="flex items-center gap-2 p-3 rounded-xl border-2 transition-all
-                                        peer-checked:border-yellow-500 peer-checked:bg-yellow-50 border-gray-200">
-                                <i class="fas fa-user text-sm" style="color:#D4A017"></i>
+                                        peer-checked:border-[var(--brand)] peer-checked:bg-[var(--primary-pale)] border-gray-200">
+                                <i class="fas fa-user text-sm" style="color:var(--brand)"></i>
                                 <div>
                                     <p class="text-xs font-bold text-gray-800">Individual</p>
                                     <p class="text-xs text-gray-400">One person</p>
@@ -96,8 +96,8 @@
                     <div class="mt-3" x-show="audience === 'individual' && recipientType === 'lecturer'" x-cloak>
                         <label class="block text-xs font-semibold text-gray-600 mb-1">Select Teacher *</label>
                         <select name="lecturer_id"
-                                class="w-full px-4 py-3 border border-yellow-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 bg-white">
-                            <option value="">— Choose a teacher —</option>
+                                class="w-full px-4 py-3 border border-[var(--brand)] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 bg-white">
+                            <option value="">â€” Choose a teacher â€”</option>
                             @foreach($lecturers as $lecturer)
                             <option value="{{ $lecturer->id }}" {{ old('lecturer_id') == $lecturer->id ? 'selected' : '' }}>
                                 {{ $lecturer->full_name }}
@@ -107,32 +107,32 @@
                     </div>
                 </div>
 
-                {{-- ── Type ────────────────────────────────────────────── --}}
+                {{-- â”€â”€ Type â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
                 <div>
                     <label class="block text-xs font-semibold text-gray-600 mb-2">Notification Type *</label>
                     <select name="type" required
-                            class="w-full px-4 py-3 border border-yellow-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
-                        <option value="general">📢 General Announcement</option>
-                        <option value="fee">💰 Fee Reminder</option>
-                        <option value="emergency">🚨 Emergency Alert</option>
-                        <option value="result">📋 Result Notice</option>
-                        <option value="attendance">📅 Attendance Notice</option>
+                            class="w-full px-4 py-3 border border-[var(--brand)] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
+                        <option value="general">ðŸ“¢ General Announcement</option>
+                        <option value="fee">ðŸ’° Fee Reminder</option>
+                        <option value="emergency">ðŸš¨ Emergency Alert</option>
+                        <option value="result">ðŸ“‹ Result Notice</option>
+                        <option value="attendance">ðŸ“… Attendance Notice</option>
                     </select>
                 </div>
 
-                {{-- ── Title ───────────────────────────────────────────── --}}
+                {{-- â”€â”€ Title â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
                 <div>
                     <label class="block text-xs font-semibold text-gray-600 mb-2">Title *</label>
                     <input type="text" name="title" value="{{ old('title') }}" required
-                           class="w-full px-4 py-3 border border-yellow-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
+                           class="w-full px-4 py-3 border border-[var(--brand)] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
                            placeholder="e.g. Important Announcement">
                 </div>
 
-                {{-- ── Message ─────────────────────────────────────────── --}}
+                {{-- â”€â”€ Message â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
                 <div>
                     <label class="block text-xs font-semibold text-gray-600 mb-2">Message *</label>
                     <textarea name="message" rows="4" required
-                              class="w-full px-4 py-3 border border-yellow-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white resize-none"
+                              class="w-full px-4 py-3 border border-[var(--brand)] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white resize-none"
                               placeholder="Write your message here...">{{ old('message') }}</textarea>
                 </div>
 
@@ -143,12 +143,12 @@
         </div>
     </div>
 
-    {{-- ── NOTIFICATIONS LIST ──────────────────────────────────────────── --}}
+    {{-- â”€â”€ NOTIFICATIONS LIST â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
     <div class="lg:col-span-3">
         <div class="flex items-center justify-between mb-4">
             <h3 class="text-sm font-bold text-gray-700">
                 Sent Notifications
-                <span class="ml-2 text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full font-semibold">
+                <span class="ml-2 text-xs bg-[var(--primary-pale)] text-[var(--primary-text)] px-2 py-0.5 rounded-full font-semibold">
                     {{ $notifications->total() }}
                 </span>
             </h3>
@@ -212,7 +212,7 @@
                         <div class="flex items-center justify-between">
                             <p class="text-xs text-gray-400">
                                 <i class="fas fa-clock mr-1"></i>
-                                {{ $notif->created_at->diffForHumans() }} — by {{ $notif->sender->full_name ?? 'Admin' }}
+                                {{ $notif->created_at->diffForHumans() }} â€” by {{ $notif->sender->full_name ?? 'Admin' }}
                             </p>
                             <form method="POST" action="{{ route('admin.notifications.destroy', $notif) }}"
                                   onsubmit="return confirm('Delete this notification?')">

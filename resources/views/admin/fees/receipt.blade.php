@@ -16,7 +16,7 @@
         .school-info p  { font-size:12px; opacity:0.7; }
         .receipt-badge { text-align:right; }
         .receipt-badge .label { font-size:11px; opacity:0.7; text-transform:uppercase; letter-spacing:1px; }
-        .receipt-badge .number { font-size:18px; font-weight:800; color:#fbbf24; }
+        .receipt-badge .number { font-size:18px; font-weight:800; color:var(--brand); }
         .receipt-badge .date   { font-size:12px; opacity:0.7; margin-top:2px; }
 
         /* Status stamp */
@@ -43,7 +43,7 @@
         /* Amount highlight */
         .amount-box { background:linear-gradient(135deg,#0f3460,#16213e); color:#fff; border-radius:10px; padding:16px 20px; margin-top:20px; display:flex; justify-content:space-between; align-items:center; }
         .amount-box .label { font-size:12px; opacity:0.7; }
-        .amount-box .value { font-size:24px; font-weight:800; color:#fbbf24; }
+        .amount-box .value { font-size:24px; font-weight:800; color:var(--brand); }
 
         /* Footer */
         .receipt-footer { background:#f8fafc; border-top:1px solid #e2e8f0; padding:16px 32px; display:flex; justify-content:space-between; align-items:center; font-size:11px; color:#94a3b8; }
@@ -63,8 +63,8 @@
 <body>
 
 <div class="print-actions">
-    <button class="btn-print" onclick="window.print()"><i>🖨</i> Print Receipt</button>
-    <a href="{{ url()->previous() }}" class="btn-back">← Back</a>
+    <button class="btn-print" onclick="window.print()"><i>ðŸ–¨</i> Print Receipt</button>
+    <a href="{{ url()->previous() }}" class="btn-back">â† Back</a>
 </div>
 
 <div class="receipt-wrapper">
@@ -83,7 +83,7 @@
     </div>
 
     <div class="paid-stamp">
-        <span>✓ Payment Received</span>
+        <span>âœ“ Payment Received</span>
     </div>
 
     <div class="receipt-body">
@@ -93,15 +93,15 @@
         <div class="info-grid">
             <div class="info-item">
                 <div class="label">Full Name</div>
-                <div class="value">{{ $student?->user?->full_name ?? '—' }}</div>
+                <div class="value">{{ $student?->user?->full_name ?? 'â€”' }}</div>
             </div>
             <div class="info-item">
                 <div class="label">Student ID</div>
-                <div class="value">{{ $student?->student_id ?? '—' }}</div>
+                <div class="value">{{ $student?->student_id ?? 'â€”' }}</div>
             </div>
             <div class="info-item">
                 <div class="label">Programme</div>
-                <div class="value">{{ $student?->program?->name ?? '—' }}</div>
+                <div class="value">{{ $student?->program?->name ?? 'â€”' }}</div>
             </div>
             <div class="info-item">
                 <div class="label">Academic Session</div>
@@ -115,11 +115,11 @@
         <div class="info-grid">
             <div class="info-item">
                 <div class="label">Payer Name</div>
-                <div class="value">{{ $payment->payer_name ?? '—' }}</div>
+                <div class="value">{{ $payment->payer_name ?? 'â€”' }}</div>
             </div>
             <div class="info-item">
                 <div class="label">Phone</div>
-                <div class="value">{{ $payment->payer_phone ?? '—' }}</div>
+                <div class="value">{{ $payment->payer_phone ?? 'â€”' }}</div>
             </div>
         </div>
         @endif
@@ -138,7 +138,7 @@
                 <tr>
                     <td>
                         School Fees Payment
-                        @if($session) — {{ $session->year }} @endif
+                        @if($session) â€” {{ $session->year }} @endif
                         @if($payment->notes) <br><small style="color:#94a3b8;">{{ $payment->notes }}</small> @endif
                     </td>
                     <td>{{ ucfirst(str_replace('_', ' ', $payment->payment_method ?? 'cash')) }}</td>
@@ -166,7 +166,7 @@
 
     {{-- Footer --}}
     <div class="receipt-footer">
-        <div>{{ $schoolName }} — Official Receipt</div>
+        <div>{{ $schoolName }} â€” Official Receipt</div>
         <div>Generated: {{ now()->format('d M Y H:i') }}</div>
         <div>Receipt: {{ $payment->receipt_number ?? 'N/A' }}</div>
     </div>
@@ -174,8 +174,8 @@
 </div>
 
 <div class="print-actions">
-    <button class="btn-print" onclick="window.print()"><i>🖨</i> Print Receipt</button>
-    <a href="{{ url()->previous() }}" class="btn-back">← Back</a>
+    <button class="btn-print" onclick="window.print()"><i>ðŸ–¨</i> Print Receipt</button>
+    <a href="{{ url()->previous() }}" class="btn-back">â† Back</a>
 </div>
 
 </body>

@@ -5,18 +5,18 @@
 @section('content')
 <div class="max-w-3xl mx-auto">
 
-    {{-- ── Step 1: Select Program ── --}}
+    {{-- â”€â”€ Step 1: Select Program â”€â”€ --}}
     <div class="card overflow-hidden mb-5">
-        <div class="px-5 py-4 border-b border-yellow-50" style="background:#fef9c3">
-            <h2 class="text-base font-bold" style="color:#78520a">Step 1 — Select Program</h2>
+        <div class="px-5 py-4 border-b border-[var(--primary-pale)]" style="background:var(--primary-pale)">
+            <h2 class="text-base font-bold" style="color:var(--primary-text)">Step 1 â€” Select Program</h2>
         </div>
         <div class="px-5 py-5">
             <form method="GET" action="{{ route('admin.exams.create') }}">
                 <label class="block text-xs font-semibold text-gray-600 mb-1.5">Program *</label>
                 <div class="flex gap-3">
                     <select name="program_id" required
-                        class="flex-1 px-4 py-3 border border-yellow-200 rounded-xl text-sm focus:outline-none focus:ring-2 bg-white">
-                        <option value="">Select program…</option>
+                        class="flex-1 px-4 py-3 border border-[var(--brand)] rounded-xl text-sm focus:outline-none focus:ring-2 bg-white">
+                        <option value="">Select programâ€¦</option>
                         @foreach($programs as $prog)
                             <option value="{{ $prog->id }}"
                                 {{ $selectedProgram && $selectedProgram->id == $prog->id ? 'selected' : '' }}>
@@ -32,12 +32,12 @@
         </div>
     </div>
 
-    {{-- ── Step 2: Select Student ── --}}
+    {{-- â”€â”€ Step 2: Select Student â”€â”€ --}}
     @if($selectedProgram)
     <div class="card overflow-hidden mb-5">
-        <div class="px-5 py-4 border-b border-yellow-50" style="background:#fef9c3">
-            <h2 class="text-base font-bold" style="color:#78520a">
-                Step 2 — Select Student
+        <div class="px-5 py-4 border-b border-[var(--primary-pale)]" style="background:var(--primary-pale)">
+            <h2 class="text-base font-bold" style="color:var(--primary-text)">
+                Step 2 â€” Select Student
                 <span class="font-normal text-xs ml-2 opacity-70">{{ $selectedProgram->name }}</span>
             </h2>
         </div>
@@ -50,22 +50,22 @@
 
                     {{-- Search box --}}
                     <label class="block text-xs font-semibold text-gray-600 mb-1.5">Search by name or ID</label>
-                    <input type="text" id="student-search" placeholder="Type name or student ID…"
-                        class="w-full px-4 py-3 border border-yellow-200 rounded-xl text-sm focus:outline-none focus:ring-2 bg-white mb-3"
+                    <input type="text" id="student-search" placeholder="Type name or student IDâ€¦"
+                        class="w-full px-4 py-3 border border-[var(--brand)] rounded-xl text-sm focus:outline-none focus:ring-2 bg-white mb-3"
                         autocomplete="off">
 
                     {{-- Student select --}}
                     <label class="block text-xs font-semibold text-gray-600 mb-1.5">Student *</label>
                     <div class="flex gap-3">
                         <select name="student_id" id="student-select" required
-                            class="flex-1 px-4 py-3 border border-yellow-200 rounded-xl text-sm focus:outline-none focus:ring-2 bg-white">
-                            <option value="">Select student…</option>
+                            class="flex-1 px-4 py-3 border border-[var(--brand)] rounded-xl text-sm focus:outline-none focus:ring-2 bg-white">
+                            <option value="">Select studentâ€¦</option>
                             @foreach($students as $stu)
                                 <option value="{{ $stu->id }}"
                                     data-name="{{ strtolower($stu->user?->full_name ?? '') }}"
                                     data-sid="{{ strtolower($stu->student_id) }}"
                                     {{ $selectedStudent && $selectedStudent->id == $stu->id ? 'selected' : '' }}>
-                                    {{ $stu->user?->full_name ?? '—' }} ({{ $stu->student_id }})
+                                    {{ $stu->user?->full_name ?? 'â€”' }} ({{ $stu->student_id }})
                                 </option>
                             @endforeach
                         </select>
@@ -89,7 +89,7 @@
                         const q = this.value.trim().toLowerCase();
 
                         if (!q) {
-                            // Reset — show all options, hide results box
+                            // Reset â€” show all options, hide results box
                             allOptions.forEach(o => o.hidden = false);
                             resultsBox.innerHTML = '';
                             resultsBox.classList.add('hidden');
@@ -111,10 +111,10 @@
                         }
 
                         resultsBox.innerHTML = matches.map(o => `
-                            <div class="flex items-center justify-between px-4 py-2.5 rounded-xl border border-yellow-100 bg-yellow-50/50 mb-2 cursor-pointer hover:bg-yellow-100 transition-colors"
+                            <div class="flex items-center justify-between px-4 py-2.5 rounded-xl border border-[var(--primary-pale)] bg-[var(--primary-pale)]/50 mb-2 cursor-pointer hover:bg-[var(--primary-pale)] transition-colors"
                                  data-val="${o.value}" onclick="pickStudent(this)">
                                 <span class="text-sm font-semibold text-gray-800">${o.textContent.trim()}</span>
-                                <span class="text-xs text-amber-700 font-mono">${o.dataset.sid.toUpperCase()}</span>
+                                <span class="text-xs text-[var(--primary-text)] font-mono">${o.dataset.sid.toUpperCase()}</span>
                             </div>
                         `).join('');
                         resultsBox.classList.remove('hidden');
@@ -137,7 +137,7 @@
     </div>
     @endif
 
-    {{-- ── Step 3: Enter Scores ── --}}
+    {{-- â”€â”€ Step 3: Enter Scores â”€â”€ --}}
     @if($selectedProgram && $selectedStudent)
         @if($courses->isEmpty())
             <div class="card p-8 text-center">
@@ -148,20 +148,20 @@
             {{-- Attempt selector --}}
             @if($attempts->count() > 0)
             <div class="card overflow-hidden mb-4">
-                <div class="px-5 py-4 flex flex-wrap items-center gap-3" style="background:#fef9c3">
+                <div class="px-5 py-4 flex flex-wrap items-center gap-3" style="background:var(--primary-pale)">
                     <span class="text-xs font-semibold text-gray-600">Attempt:</span>
                     @foreach($attempts as $att)
                         <a href="{{ route('admin.exams.create', ['program_id' => $selectedProgram->id, 'student_id' => $selectedStudent->id, 'attempt' => $att]) }}"
                            class="px-4 py-1.5 rounded-full text-xs font-bold border transition-colors
-                                  {{ $att == $currentAttempt ? 'border-amber-500 text-amber-800' : 'border-yellow-200 text-gray-500 bg-white hover:bg-yellow-50' }}"
-                           style="{{ $att == $currentAttempt ? 'background:#fde68a' : '' }}">
+                                  {{ $att == $currentAttempt ? 'border-amber-500 text-[var(--primary-text)]' : 'border-[var(--brand)] text-gray-500 bg-white hover:bg-[var(--primary-pale)]' }}"
+                           style="{{ $att == $currentAttempt ? 'background:var(--primary-pale)' : '' }}">
                             Attempt {{ $att }}
                         </a>
                     @endforeach
                     {{-- New attempt button --}}
                     @php $newAttempt = ($attempts->max() ?? 0) + 1; @endphp
                     <a href="{{ route('admin.exams.create', ['program_id' => $selectedProgram->id, 'student_id' => $selectedStudent->id, 'attempt' => $newAttempt]) }}"
-                       class="ml-auto px-4 py-1.5 rounded-full text-xs font-bold border border-dashed border-amber-400 text-amber-700 bg-white hover:bg-yellow-50 transition-colors">
+                       class="ml-auto px-4 py-1.5 rounded-full text-xs font-bold border border-dashed border-amber-400 text-[var(--primary-text)] bg-white hover:bg-[var(--primary-pale)] transition-colors">
                         <i class="fas fa-plus mr-1"></i> New Attempt ({{ $newAttempt }})
                     </a>
                 </div>
@@ -175,16 +175,16 @@
                 <input type="hidden" name="attempt"    value="{{ $currentAttempt }}">
 
                 <div class="card overflow-hidden mb-5">
-                    <div class="px-5 py-4 border-b border-yellow-50 flex items-center justify-between" style="background:#fef9c3">
+                    <div class="px-5 py-4 border-b border-[var(--primary-pale)] flex items-center justify-between" style="background:var(--primary-pale)">
                         <div>
-                            <h3 class="text-sm font-bold" style="color:#78520a">
-                                Step 3 — Enter Scores
-                                <span class="ml-2 px-2 py-0.5 rounded-full text-xs font-bold" style="background:#fde68a;color:#78520a">
+                            <h3 class="text-sm font-bold" style="color:var(--primary-text)">
+                                Step 3 â€” Enter Scores
+                                <span class="ml-2 px-2 py-0.5 rounded-full text-xs font-bold" style="background:var(--primary-pale);color:var(--primary-text)">
                                     Attempt {{ $currentAttempt }}
                                 </span>
                             </h3>
                             <p class="text-xs text-gray-500 mt-0.5">
-                                {{ $selectedStudent->user?->full_name ?? '—' }} &mdash; {{ $selectedProgram->name }}
+                                {{ $selectedStudent->user?->full_name ?? 'â€”' }} &mdash; {{ $selectedProgram->name }}
                             </p>
                         </div>
                         <div class="text-right">
@@ -201,7 +201,7 @@
                             </div>
                             @else
                             <div class="mt-1">
-                                <span class="px-2 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800">
+                                <span class="px-2 py-0.5 rounded-full text-xs font-bold bg-[var(--primary-pale)] text-[var(--primary-text)]">
                                     <i class="fas fa-lock mr-1"></i>Final score /100
                                 </span>
                             </div>
@@ -210,17 +210,17 @@
                     </div>
 
                     @if($isPreCollegeFinal)
-                    <div class="px-5 py-3 bg-amber-50 border-b border-amber-100 text-xs text-amber-700 flex items-center gap-2">
+                    <div class="px-5 py-3 bg-[var(--primary-pale)] border-b border-[var(--primary-pale)] text-xs text-[var(--primary-text)] flex items-center gap-2">
                         <i class="fas fa-info-circle"></i>
-                        Pre-College attempt 1 scores are final marks out of 100. Enter only the Score column — quiz weighting does not apply.
+                        Pre-College attempt 1 scores are final marks out of 100. Enter only the Score column â€” quiz weighting does not apply.
                     </div>
                     @endif
 
                     <div class="table-wrap">
                         <table class="w-full">
                             <thead>
-                                <tr style="background:#fef9c3">
-                                    <th class="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider" style="color:#78520a">Course</th>
+                                <tr style="background:var(--primary-pale)">
+                                    <th class="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider" style="color:var(--primary-text)">Course</th>
                                     @if(!$isPreCollegeFinal)
                                     {{-- 4 SBA sub-columns --}}
                                     @php
@@ -253,10 +253,10 @@
                                     <th class="text-center px-3 py-3 text-xs font-semibold uppercase tracking-wider text-gray-500">Aggregate</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-yellow-50">
+                            <tbody class="divide-y divide-[var(--primary-pale)]">
                                 @foreach($courses as $i => $course)
                                     @php $score = $existing->get($course->id); @endphp
-                                    <tr class="hover:bg-yellow-50/30 transition-colors">
+                                    <tr class="hover:bg-[var(--primary-pale)]/30 transition-colors">
                                         <td class="px-5 py-3">
                                             <input type="hidden" name="scores[{{ $i }}][course_id]" value="{{ $course->id }}">
                                             <p class="text-sm font-semibold text-gray-800">{{ $course->name }}</p>
@@ -274,12 +274,12 @@
                                                 oninput="calcRow({{ $i }})"
                                                 class="w-16 px-1 py-2 border rounded-lg text-xs text-center focus:outline-none focus:ring-1 bg-white"
                                                 style="border-color:{{ $col['color'] }}40"
-                                                placeholder="—">
+                                                placeholder="â€”">
                                         </td>
                                         @endforeach
                                         {{-- Computed class score (read-only) --}}
                                         <td class="px-2 py-3 text-center" style="background:#eff6ff">
-                                            <span id="classScore_{{ $i }}" class="font-bold text-sm text-blue-700">—</span>
+                                            <span id="classScore_{{ $i }}" class="font-bold text-sm text-blue-700">â€”</span>
                                             {{-- Hidden field to submit the class score as sba_score --}}
                                             <input type="hidden" name="scores[{{ $i }}][sba_score]" id="sbaHidden_{{ $i }}" value="">
                                         </td>
@@ -295,11 +295,11 @@
                                                 min="0" max="100" step="0.5"
                                                 oninput="calcRow({{ $i }})"
                                                 class="w-full px-2 py-2 border border-orange-200 rounded-lg text-sm text-center focus:outline-none focus:ring-2 focus:ring-orange-300 bg-white"
-                                                placeholder="—">
+                                                placeholder="â€”">
                                         </td>
                                         {{-- Live aggregate --}}
                                         <td class="px-3 py-3 text-center">
-                                            <span id="agg_{{ $i }}" class="font-bold text-sm text-gray-700">—</span>
+                                            <span id="agg_{{ $i }}" class="font-bold text-sm text-gray-700">â€”</span>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -307,18 +307,18 @@
                         </table>
                     </div>
 
-                    <div class="px-5 py-4 border-t border-yellow-50 flex gap-3" style="background:#fef9c3">
+                    <div class="px-5 py-4 border-t border-[var(--primary-pale)] flex gap-3" style="background:var(--primary-pale)">
                         <button type="submit" class="btn-gold px-6 py-3 rounded-xl text-sm font-semibold shadow-sm">
                             <i class="fas fa-save mr-2"></i> Save Scores
                         </button>
                         @if($attempts->count() > 0)
                         <a href="{{ route('admin.exams.show', [$selectedStudent->id, $selectedProgram->id]) }}?attempt={{ $currentAttempt }}"
-                           class="px-6 py-3 bg-white text-gray-700 rounded-xl text-sm font-semibold border border-yellow-200">
+                           class="px-6 py-3 bg-white text-gray-700 rounded-xl text-sm font-semibold border border-[var(--brand)]">
                             View Report Card
                         </a>
                         @endif
                         <a href="{{ route('admin.exams.index') }}"
-                           class="px-6 py-3 bg-white text-gray-700 rounded-xl text-sm font-semibold border border-yellow-200">
+                           class="px-6 py-3 bg-white text-gray-700 rounded-xl text-sm font-semibold border border-[var(--brand)]">
                             Cancel
                         </a>
                     </div>
@@ -339,7 +339,7 @@
                     subSum += el ? (parseFloat(el.value) || 0) : 0;
                 });
 
-                // Class Score = (subSum / totalSubWeight) × sbaPct
+                // Class Score = (subSum / totalSubWeight) Ã— sbaPct
                 var classScore = totalSubW > 0 ? (subSum / totalSubW) * sbaPct : 0;
 
                 // Update the displayed class score
@@ -350,7 +350,7 @@
                 var hid = document.getElementById('sbaHidden_' + i);
                 if (hid) hid.value = classScore.toFixed(2);
 
-                // Aggregate = classScore + examScore × (examPct/100)
+                // Aggregate = classScore + examScore Ã— (examPct/100)
                 var exam = parseFloat(document.getElementById('exam_' + i)?.value) || 0;
                 var agg  = classScore + (exam * examPct / 100);
                 var el   = document.getElementById('agg_' + i);

@@ -59,10 +59,10 @@
                 <p class="text-sm font-semibold text-gray-800 truncate">{{ $item['student']->user->full_name }}</p>
                 <div class="flex items-center gap-2 mt-1">
                     <div class="flex-1 bg-gray-100 rounded-full h-1.5">
-                        <div class="h-1.5 rounded-full {{ $item['rate']>=75?'bg-emerald-500':($item['rate']>=50?'bg-amber-500':'bg-red-500') }}"
+                        <div class="h-1.5 rounded-full {{ $item['rate']>=75?'bg-emerald-500':($item['rate']>=50?'bg-[var(--primary-pale)]0':'bg-red-500') }}"
                              style="width:{{ $item['rate'] }}%"></div>
                     </div>
-                    <span class="text-xs font-bold {{ $item['rate']>=75?'text-emerald-600':($item['rate']>=50?'text-amber-600':'text-red-600') }} flex-shrink-0">
+                    <span class="text-xs font-bold {{ $item['rate']>=75?'text-emerald-600':($item['rate']>=50?'text-[var(--brand)]':'text-red-600') }} flex-shrink-0">
                         {{ $item['rate'] }}%
                     </span>
                 </div>
@@ -96,7 +96,7 @@
                    class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-green-50 text-green-700 hover:bg-green-100 {{ $attendances->total() === 0 ? 'opacity-50 pointer-events-none' : '' }}">
                     <i class="fas fa-file-excel"></i> Excel
                 </a>
-                <button onclick="window.print()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white" style="background:#D4A017">
+                <button onclick="window.print()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white" style="background:var(--brand)">
                     <i class="fas fa-print"></i> Print
                 </button>
             </div>
@@ -111,8 +111,8 @@
                 <i class="fas {{ $att->status==='present'?'fa-check text-emerald-600':'fa-times text-red-500' }} text-xs"></i>
             </div>
             <div class="flex-1 min-w-0">
-                <p class="text-sm font-semibold text-gray-800 truncate">{{ $att->student->user->full_name??'—' }}</p>
-                <p class="text-xs text-gray-400">{{ $att->course->code??'—' }} · {{ \Carbon\Carbon::parse($att->date)->format('M d, Y') }}</p>
+                <p class="text-sm font-semibold text-gray-800 truncate">{{ $att->student->user->full_name??'â€”' }}</p>
+                <p class="text-xs text-gray-400">{{ $att->course->code??'â€”' }} Â· {{ \Carbon\Carbon::parse($att->date)->format('M d, Y') }}</p>
             </div>
             <span class="text-xs px-2 py-1 rounded-full font-semibold flex-shrink-0 {{ $att->status==='present'?'bg-emerald-100 text-emerald-700':'bg-red-100 text-red-600' }}">
                 {{ ucfirst($att->status) }}
@@ -138,9 +138,9 @@
             <tbody class="divide-y divide-gray-50">
                 @forelse($attendances as $att)
                 <tr class="hover:bg-gray-50/50">
-                    <td class="px-6 py-4 text-sm font-semibold text-gray-800">{{ $att->student->user->full_name??'—' }}</td>
-                    <td class="px-6 py-4 text-sm text-gray-600"><span class="font-mono text-xs bg-gray-100 px-2 py-1 rounded">{{ $att->course->code??'—' }}</span></td>
-                    <td class="px-6 py-4 text-sm text-gray-600">{{ $att->academicPeriod->month??'—' }}</td>
+                    <td class="px-6 py-4 text-sm font-semibold text-gray-800">{{ $att->student->user->full_name??'â€”' }}</td>
+                    <td class="px-6 py-4 text-sm text-gray-600"><span class="font-mono text-xs bg-gray-100 px-2 py-1 rounded">{{ $att->course->code??'â€”' }}</span></td>
+                    <td class="px-6 py-4 text-sm text-gray-600">{{ $att->academicPeriod->month??'â€”' }}</td>
                     <td class="px-6 py-4 text-sm text-gray-600">{{ \Carbon\Carbon::parse($att->date)->format('M d, Y') }}</td>
                     <td class="px-6 py-4">
                         <span class="text-xs px-2.5 py-1 rounded-full font-semibold {{ $att->status==='present'?'bg-emerald-100 text-emerald-700':'bg-red-100 text-red-600' }}">

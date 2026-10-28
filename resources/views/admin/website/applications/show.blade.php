@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Application — '.$application->child_full_name)
+@section('title', 'Application â€” '.$application->child_full_name)
 
 @section('content')
 <div class="max-w-3xl space-y-6">
@@ -60,13 +60,13 @@
 
   {{-- Notes --}}
   <div class="card overflow-hidden">
-    <div class="px-6 py-4 bg-yellow-50 border-b">
-      <h3 class="font-bold text-yellow-900 text-sm"><i class="fas fa-sticky-note text-yellow-500 mr-2"></i>Admin Notes</h3>
+    <div class="px-6 py-4 bg-[var(--primary-pale)] border-b">
+      <h3 class="font-bold text-[var(--primary-text)] text-sm"><i class="fas fa-sticky-note text-[var(--brand)] mr-2"></i>Admin Notes</h3>
     </div>
     <form method="POST" action="{{ route('admin.website.applications.status', $application) }}" class="px-6 py-5 space-y-4">
       @csrf @method('PATCH')
       <input type="hidden" name="status" value="{{ $application->status }}">
-      <textarea name="notes" rows="4" placeholder="Add internal notes about this application…"
+      <textarea name="notes" rows="4" placeholder="Add internal notes about this applicationâ€¦"
         class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm resize-none">{{ $application->notes }}</textarea>
       <button type="submit" class="btn-gold px-6 py-2.5 rounded-xl text-sm font-bold"><i class="fas fa-save mr-2"></i>Save Notes</button>
     </form>

@@ -29,7 +29,7 @@
     {{-- Conduct / Attitude / Interest --}}
     <div class="card p-5 space-y-4">
         <h3 class="text-sm font-extrabold text-slate-800 flex items-center gap-2 border-b border-slate-100 pb-3">
-            <i class="fas fa-star text-amber-500"></i>
+            <i class="fas fa-star text-[var(--brand)]"></i>
             Conduct, Attitude & Interest
         </h3>
 
@@ -44,7 +44,7 @@
                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Conduct</label>
                 <input list="conduct-list" name="conduct"
                     value="{{ old('conduct', $report->conduct ?? '') }}"
-                    class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                    class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)]"
                     placeholder="e.g. Excellent">
                 <datalist id="conduct-list">
                     @foreach($conductOptions as $o)<option value="{{ $o }}">@endforeach
@@ -54,7 +54,7 @@
                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Attitude</label>
                 <input list="attitude-list" name="attitude"
                     value="{{ old('attitude', $report->attitude ?? '') }}"
-                    class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                    class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)]"
                     placeholder="e.g. Very Good">
                 <datalist id="attitude-list">
                     @foreach($attitudeOptions as $o)<option value="{{ $o }}">@endforeach
@@ -64,7 +64,7 @@
                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Interest</label>
                 <input list="interest-list" name="interest"
                     value="{{ old('interest', $report->interest ?? '') }}"
-                    class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                    class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)]"
                     placeholder="e.g. Keen">
                 <datalist id="interest-list">
                     @foreach($interestOptions as $o)<option value="{{ $o }}">@endforeach
@@ -75,14 +75,14 @@
         <div>
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Class / Form Teacher's Remarks</label>
             <textarea name="class_teacher_remark" rows="2"
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 resize-none"
+                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)] resize-none"
                 placeholder="e.g. Promoted to the next class. Keep it up!">{{ old('class_teacher_remark', $report->class_teacher_remark ?? '') }}</textarea>
         </div>
 
         <div>
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Head Teacher's Remarks</label>
             <textarea name="head_teacher_remark" rows="2"
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 resize-none"
+                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)] resize-none"
                 placeholder="e.g. Well done. Continue to work hard.">{{ old('head_teacher_remark', $report->head_teacher_remark ?? '') }}</textarea>
         </div>
 
@@ -90,7 +90,7 @@
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Promoted To</label>
             <input type="text" name="promoted_to"
                 value="{{ old('promoted_to', $report->promoted_to ?? '') }}"
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)]"
                 placeholder="e.g. Class 4, Next Level, JHS 2...">
         </div>
     </div>

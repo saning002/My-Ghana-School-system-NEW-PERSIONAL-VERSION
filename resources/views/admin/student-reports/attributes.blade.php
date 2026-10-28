@@ -14,19 +14,19 @@
 {{-- Add new attribute --}}
 <div class="card p-5">
     <h3 class="text-sm font-extrabold text-slate-800 mb-4 flex items-center gap-2">
-        <i class="fas fa-plus-circle text-amber-500"></i> Add New Attribute
+        <i class="fas fa-plus-circle text-[var(--brand)]"></i> Add New Attribute
     </h3>
     <form method="POST" action="{{ route('admin.student-reports.attributes.store') }}" class="flex flex-wrap gap-3 items-end">
         @csrf
         <div class="flex-1 min-w-[160px]">
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Attribute Name *</label>
             <input type="text" name="name" required value="{{ old('name') }}"
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)]"
                 placeholder="e.g. Neatness, Honesty...">
         </div>
         <div class="min-w-[160px]">
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Type</label>
-            <select name="type" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400">
+            <select name="type" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)]">
                 <option value="personality">Personality</option>
                 <option value="conduct">Conduct</option>
                 <option value="attitude">Attitude</option>
@@ -36,7 +36,7 @@
         <div class="w-24">
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Order</label>
             <input type="number" name="sort_order" min="0" value="{{ old('sort_order', $attributes->count() + 1) }}"
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)]">
         </div>
         <button type="submit" class="btn-gold px-5 py-2.5 rounded-xl text-sm font-bold shadow active:scale-95 whitespace-nowrap">
             <i class="fas fa-plus mr-1 text-xs"></i> Add Attribute
@@ -67,7 +67,7 @@
                 'personality' => 'bg-violet-100 text-violet-700',
                 'conduct'     => 'bg-blue-100 text-blue-700',
                 'attitude'    => 'bg-emerald-100 text-emerald-700',
-                'interest'    => 'bg-amber-100 text-amber-700',
+                'interest'    => 'bg-[var(--primary-pale)] text-[var(--primary-text)]',
             ];
         @endphp
         <div class="flex items-center gap-3 px-5 py-3 hover:bg-slate-50 transition-colors" x-data="{ editing: false }">
@@ -90,14 +90,14 @@
                       class="flex flex-wrap gap-2 items-end">
                     @csrf @method('PUT')
                     <input type="text" name="name" value="{{ $attr->name }}" required
-                        class="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 flex-1 min-w-[140px]">
-                    <select name="type" class="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                        class="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)] flex-1 min-w-[140px]">
+                    <select name="type" class="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)]">
                         @foreach(['personality','conduct','attitude','interest'] as $t)
                         <option value="{{ $t }}" {{ $attr->type === $t ? 'selected' : '' }}>{{ ucfirst($t) }}</option>
                         @endforeach
                     </select>
                     <input type="number" name="sort_order" value="{{ $attr->sort_order }}" min="0"
-                        class="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-sm w-16 focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                        class="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-sm w-16 focus:outline-none focus:ring-2 focus:ring-[var(--brand)]">
                     <label class="flex items-center gap-1.5 text-xs font-semibold text-slate-600 cursor-pointer">
                         <input type="checkbox" name="is_active" value="1" {{ $attr->is_active ? 'checked' : '' }} class="rounded accent-emerald-500">
                         Active
@@ -110,7 +110,7 @@
             {{-- Actions --}}
             <div x-show="!editing" class="flex gap-1.5 shrink-0">
                 <button @click="editing=true" type="button"
-                    class="w-7 h-7 flex items-center justify-center rounded-lg bg-slate-100 text-slate-500 hover:bg-yellow-50 hover:text-yellow-700 transition-colors">
+                    class="w-7 h-7 flex items-center justify-center rounded-lg bg-slate-100 text-slate-500 hover:bg-[var(--primary-pale)] hover:text-[var(--primary-text)] transition-colors">
                     <i class="fas fa-pen text-[10px]"></i>
                 </button>
                 <form method="POST" action="{{ route('admin.student-reports.attributes.destroy', $attr) }}"
@@ -128,14 +128,14 @@
 </div>
 
 {{-- Quick guide --}}
-<div class="rounded-2xl border border-amber-200 bg-amber-50 p-5 text-sm text-amber-800">
-    <p class="font-bold mb-2"><i class="fas fa-info-circle mr-1 text-amber-500"></i> How this works</p>
+<div class="rounded-2xl border border-[var(--brand)] bg-[var(--primary-pale)] p-5 text-sm text-[var(--primary-text)]">
+    <p class="font-bold mb-2"><i class="fas fa-info-circle mr-1 text-[var(--brand)]"></i> How this works</p>
     <ul class="list-disc list-inside space-y-1 text-xs leading-relaxed">
         <li>These attributes appear in the <strong>Personality Development</strong> section of every report card</li>
         <li>Teachers select a rating (<strong>Very Good / Good / Average / Weak / Poor</strong>) for each student per attempt</li>
         <li>Admin fills in <strong>Conduct, Attitude, Interest, Class Teacher Remarks, Head Teacher Remarks</strong></li>
         <li>All values are automatically printed on the PDF report card</li>
-        <li>Go to <a href="{{ route('admin.student-reports.index') }}" class="underline font-bold text-amber-700">Student Reports</a> to fill in ratings per student</li>
+        <li>Go to <a href="{{ route('admin.student-reports.index') }}" class="underline font-bold text-[var(--primary-text)]">Student Reports</a> to fill in ratings per student</li>
     </ul>
 </div>
 

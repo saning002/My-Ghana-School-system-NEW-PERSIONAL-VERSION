@@ -1,16 +1,16 @@
 @extends('layouts.app')
 @section('title','Add Student')
-@section('subtitle','Student Admission Form — Royal Fame International School')
+@section('subtitle','Student Admission Form â€” Royal Fame International School')
 
 @section('content')
 <div class="max-w-4xl mx-auto" x-data="studentForm()">
 
-    {{-- ── Header ─────────────────────────────────────────────────────────── --}}
+    {{-- â”€â”€ Header â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
     <div class="rounded-3xl overflow-hidden mb-5 border border-slate-200 shadow-sm">
         <div class="bg-gradient-to-r from-slate-800 to-slate-700 px-6 py-5 text-white flex items-center justify-between">
             <div>
                 <h2 class="text-lg font-extrabold tracking-tight">Student Admission Form</h2>
-                <p class="text-slate-300 text-xs mt-0.5">Complete all required sections — matches the official admission form</p>
+                <p class="text-slate-300 text-xs mt-0.5">Complete all required sections â€” matches the official admission form</p>
             </div>
             <div class="hidden sm:flex items-center gap-3 text-xs text-slate-300">
                 <span class="rounded-full bg-white/10 px-3 py-1 font-semibold">Application No: <span class="font-mono text-yellow-300">AUTO</span></span>
@@ -22,13 +22,13 @@
     <form method="POST" action="{{ route('admin.students.store') }}" enctype="multipart/form-data" class="space-y-4">
         @csrf
 
-        {{-- ══════════════════════════════════════════════════════════════════
-             SECTION A — PUPIL'S PERSONAL INFORMATION
-        ══════════════════════════════════════════════════════════════════ --}}
+        {{-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+             SECTION A â€” PUPIL'S PERSONAL INFORMATION
+        â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
         <div class="card overflow-hidden">
             <div class="section-header bg-slate-800 text-white px-5 py-3 flex items-center gap-3">
-                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-yellow-400 text-slate-900 text-xs font-extrabold shrink-0">A</span>
-                <h3 class="text-sm font-extrabold tracking-wide">SECTION A — PUPIL'S PERSONAL INFORMATION</h3>
+                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--primary)] text-slate-900 text-xs font-extrabold shrink-0">A</span>
+                <h3 class="text-sm font-extrabold tracking-wide">SECTION A â€” PUPIL'S PERSONAL INFORMATION</h3>
             </div>
             <div class="p-5 space-y-5">
 
@@ -42,7 +42,7 @@
                             </div>
                             <div class="flex-1">
                                 <input type="file" name="photo" accept="image/*" onchange="previewPhoto(this)"
-                                    class="w-full text-sm text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-yellow-50 file:text-yellow-700 hover:file:bg-yellow-100 transition-colors">
+                                    class="w-full text-sm text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-[var(--primary-pale)] file:text-[var(--primary-text)] hover:file:bg-[var(--primary-pale)] transition-colors">
                                 <label class="flex items-center gap-2 mt-2 text-xs text-slate-600 cursor-pointer">
                                     <input type="checkbox" name="passport_photo_attached" value="1" class="rounded accent-yellow-500">
                                     Passport photo physically attached to form
@@ -142,7 +142,7 @@
                         <label class="field-label">Class / Program Applying For *</label>
                         <select name="program_id" required x-model="selectedProgram" @change="loadCourses(); generateStudentId()"
                             class="field-input">
-                            <option value="">— Select Program —</option>
+                            <option value="">â€” Select Program â€”</option>
                             @foreach($programs as $program)
                             <option value="{{ $program->id }}" {{ old('program_id')==$program->id?'selected':'' }}>{{ $program->name }}</option>
                             @endforeach
@@ -159,7 +159,7 @@
                     <div class="flex items-center justify-between mb-2">
                         <label class="field-label mb-0">Courses / Subjects</label>
                         <button type="button" @click="toggleAll()"
-                            class="text-[11px] text-yellow-700 font-bold px-3 py-1 bg-yellow-50 hover:bg-yellow-100 rounded-lg border border-yellow-200 transition-colors">
+                            class="text-[11px] text-[var(--primary-text)] font-bold px-3 py-1 bg-[var(--primary-pale)] hover:bg-[var(--primary-pale)] rounded-lg border border-[var(--brand)] transition-colors">
                             <span x-text="allSelected ? 'Deselect All' : 'Select All'"></span>
                         </button>
                     </div>
@@ -179,13 +179,13 @@
             </div>
         </div>
 
-        {{-- ══════════════════════════════════════════════════════════════════
-             SECTION B — PREVIOUS SCHOOL DETAILS
-        ══════════════════════════════════════════════════════════════════ --}}
+        {{-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+             SECTION B â€” PREVIOUS SCHOOL DETAILS
+        â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
         <div class="card overflow-hidden">
             <div class="section-header bg-slate-700 text-white px-5 py-3 flex items-center gap-3">
-                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-yellow-400 text-slate-900 text-xs font-extrabold shrink-0">B</span>
-                <h3 class="text-sm font-extrabold tracking-wide">SECTION B — PREVIOUS SCHOOL DETAILS</h3>
+                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--primary)] text-slate-900 text-xs font-extrabold shrink-0">B</span>
+                <h3 class="text-sm font-extrabold tracking-wide">SECTION B â€” PREVIOUS SCHOOL DETAILS</h3>
             </div>
             <div class="p-5 space-y-4">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -219,13 +219,13 @@
             </div>
         </div>
 
-        {{-- ══════════════════════════════════════════════════════════════════
-             SECTION C — FATHER'S INFORMATION
-        ══════════════════════════════════════════════════════════════════ --}}
+        {{-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+             SECTION C â€” FATHER'S INFORMATION
+        â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
         <div class="card overflow-hidden">
             <div class="section-header bg-slate-700 text-white px-5 py-3 flex items-center gap-3">
-                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-yellow-400 text-slate-900 text-xs font-extrabold shrink-0">C</span>
-                <h3 class="text-sm font-extrabold tracking-wide">SECTION C — FATHER'S INFORMATION</h3>
+                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--primary)] text-slate-900 text-xs font-extrabold shrink-0">C</span>
+                <h3 class="text-sm font-extrabold tracking-wide">SECTION C â€” FATHER'S INFORMATION</h3>
             </div>
             <div class="p-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div class="sm:col-span-2">
@@ -251,13 +251,13 @@
             </div>
         </div>
 
-        {{-- ══════════════════════════════════════════════════════════════════
-             SECTION D — MOTHER'S INFORMATION
-        ══════════════════════════════════════════════════════════════════ --}}
+        {{-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+             SECTION D â€” MOTHER'S INFORMATION
+        â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
         <div class="card overflow-hidden">
             <div class="section-header bg-slate-700 text-white px-5 py-3 flex items-center gap-3">
-                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-yellow-400 text-slate-900 text-xs font-extrabold shrink-0">D</span>
-                <h3 class="text-sm font-extrabold tracking-wide">SECTION D — MOTHER'S INFORMATION</h3>
+                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--primary)] text-slate-900 text-xs font-extrabold shrink-0">D</span>
+                <h3 class="text-sm font-extrabold tracking-wide">SECTION D â€” MOTHER'S INFORMATION</h3>
             </div>
             <div class="p-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div class="sm:col-span-2">
@@ -283,13 +283,13 @@
             </div>
         </div>
 
-        {{-- ══════════════════════════════════════════════════════════════════
-             SECTION E — GUARDIAN INFORMATION (IF APPLICABLE)
-        ══════════════════════════════════════════════════════════════════ --}}
+        {{-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+             SECTION E â€” GUARDIAN INFORMATION (IF APPLICABLE)
+        â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
         <div class="card overflow-hidden">
             <div class="section-header bg-slate-700 text-white px-5 py-3 flex items-center gap-3">
-                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-yellow-400 text-slate-900 text-xs font-extrabold shrink-0">E</span>
-                <h3 class="text-sm font-extrabold tracking-wide">SECTION E — GUARDIAN INFORMATION <span class="font-normal text-slate-300 text-xs">(if applicable)</span></h3>
+                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--primary)] text-slate-900 text-xs font-extrabold shrink-0">E</span>
+                <h3 class="text-sm font-extrabold tracking-wide">SECTION E â€” GUARDIAN INFORMATION <span class="font-normal text-slate-300 text-xs">(if applicable)</span></h3>
             </div>
             <div class="p-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div class="sm:col-span-2">
@@ -315,23 +315,23 @@
             </div>
         </div>
 
-        {{-- ══════════════════════════════════════════════════════════════════
-             SECTION G — MEDICAL INFORMATION
-        ══════════════════════════════════════════════════════════════════ --}}
+        {{-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+             SECTION G â€” MEDICAL INFORMATION
+        â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
         <div class="card overflow-hidden">
             <div class="section-header bg-red-700 text-white px-5 py-3 flex items-center gap-3">
-                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-yellow-400 text-slate-900 text-xs font-extrabold shrink-0">G</span>
-                <h3 class="text-sm font-extrabold tracking-wide">SECTION G — MEDICAL INFORMATION</h3>
+                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--primary)] text-slate-900 text-xs font-extrabold shrink-0">G</span>
+                <h3 class="text-sm font-extrabold tracking-wide">SECTION G â€” MEDICAL INFORMATION</h3>
             </div>
             <div class="p-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                     <label class="field-label">Known Medical Condition</label>
-                    <input type="text" name="medical_condition" value="{{ old('medical_condition') }}" class="field-input" placeholder="e.g. Asthma, Diabetes — or None">
+                    <input type="text" name="medical_condition" value="{{ old('medical_condition') }}" class="field-input" placeholder="e.g. Asthma, Diabetes â€” or None">
                 </div>
                 <div>
                     <label class="field-label">Blood Group <span class="text-slate-400 font-normal text-xs">(optional)</span></label>
                     <select name="blood_group" class="field-input">
-                        <option value="">— Unknown —</option>
+                        <option value="">â€” Unknown â€”</option>
                         @foreach(['A+','A-','B+','B-','AB+','AB-','O+','O-'] as $bg)
                         <option value="{{ $bg }}" {{ old('blood_group')===$bg?'selected':'' }}>{{ $bg }}</option>
                         @endforeach
@@ -339,7 +339,7 @@
                 </div>
                 <div class="sm:col-span-2">
                     <label class="field-label">Allergies</label>
-                    <input type="text" name="allergies" value="{{ old('allergies') }}" class="field-input" placeholder="e.g. Penicillin, Peanuts — or None">
+                    <input type="text" name="allergies" value="{{ old('allergies') }}" class="field-input" placeholder="e.g. Penicillin, Peanuts â€” or None">
                 </div>
                 <div class="sm:col-span-2">
                     <label class="field-label">Special Educational Needs</label>
@@ -356,13 +356,13 @@
             </div>
         </div>
 
-        {{-- ══════════════════════════════════════════════════════════════════
-             SECTION H — PERSONS AUTHORIZED TO PICK UP THE CHILD
-        ══════════════════════════════════════════════════════════════════ --}}
+        {{-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+             SECTION H â€” PERSONS AUTHORIZED TO PICK UP THE CHILD
+        â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
         <div class="card overflow-hidden">
             <div class="section-header bg-slate-700 text-white px-5 py-3 flex items-center gap-3">
-                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-yellow-400 text-slate-900 text-xs font-extrabold shrink-0">H</span>
-                <h3 class="text-sm font-extrabold tracking-wide">SECTION H — PERSONS AUTHORIZED TO PICK UP THE CHILD</h3>
+                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--primary)] text-slate-900 text-xs font-extrabold shrink-0">H</span>
+                <h3 class="text-sm font-extrabold tracking-wide">SECTION H â€” PERSONS AUTHORIZED TO PICK UP THE CHILD</h3>
             </div>
             <div class="p-5 grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
@@ -380,13 +380,13 @@
             </div>
         </div>
 
-        {{-- ══════════════════════════════════════════════════════════════════
-             SECTION I — SCHOOL CONTRIBUTION STATUS
-        ══════════════════════════════════════════════════════════════════ --}}
+        {{-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+             SECTION I â€” SCHOOL CONTRIBUTION STATUS
+        â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
         <div class="card overflow-hidden">
             <div class="section-header bg-slate-700 text-white px-5 py-3 flex items-center gap-3">
-                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-yellow-400 text-slate-900 text-xs font-extrabold shrink-0">I</span>
-                <h3 class="text-sm font-extrabold tracking-wide">SECTION I — SCHOOL CONTRIBUTION STATUS</h3>
+                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--primary)] text-slate-900 text-xs font-extrabold shrink-0">I</span>
+                <h3 class="text-sm font-extrabold tracking-wide">SECTION I â€” SCHOOL CONTRIBUTION STATUS</h3>
             </div>
             <div class="p-5">
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -412,13 +412,13 @@
             </div>
         </div>
 
-        {{-- ══════════════════════════════════════════════════════════════════
-             SECTION J — CONSENT AND DECLARATION
-        ══════════════════════════════════════════════════════════════════ --}}
+        {{-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+             SECTION J â€” CONSENT AND DECLARATION
+        â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
         <div class="card overflow-hidden">
             <div class="section-header bg-slate-800 text-white px-5 py-3 flex items-center gap-3">
-                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-yellow-400 text-slate-900 text-xs font-extrabold shrink-0">J</span>
-                <h3 class="text-sm font-extrabold tracking-wide">SECTION J — CONSENT AND DECLARATION</h3>
+                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--primary)] text-slate-900 text-xs font-extrabold shrink-0">J</span>
+                <h3 class="text-sm font-extrabold tracking-wide">SECTION J â€” CONSENT AND DECLARATION</h3>
             </div>
             <div class="p-5 space-y-4">
                 <div class="rounded-xl border border-slate-200 bg-slate-50 p-4 text-xs text-slate-600 leading-relaxed space-y-1.5">
@@ -445,15 +445,15 @@
             </div>
         </div>
 
-        {{-- ══════════════════════════════════════════════════════════════════
+        {{-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
              SYSTEM / PORTAL DETAILS (for admin use)
-        ══════════════════════════════════════════════════════════════════ --}}
+        â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
         <div class="card overflow-hidden">
             <div class="section-header bg-indigo-700 text-white px-5 py-3 flex items-center gap-3">
-                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-yellow-400 text-slate-900 text-xs font-extrabold shrink-0">
+                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--primary)] text-slate-900 text-xs font-extrabold shrink-0">
                     <i class="fas fa-cog text-[10px]"></i>
                 </span>
-                <h3 class="text-sm font-extrabold tracking-wide">FOR OFFICIAL USE — SYSTEM &amp; PORTAL DETAILS</h3>
+                <h3 class="text-sm font-extrabold tracking-wide">FOR OFFICIAL USE â€” SYSTEM &amp; PORTAL DETAILS</h3>
             </div>
             <div class="p-5 space-y-4">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -481,7 +481,7 @@
                                 @keydown.enter.prevent="selectHighlighted()"
                                 @blur="delayClose()"
                                 class="field-input"
-                                placeholder="Search or type new branch name…"
+                                placeholder="Search or type new branch nameâ€¦"
                                 autocomplete="off" required>
                             <input type="hidden" name="church_branch_id" :value="selectedId" id="branch-id-hidden">
                             <input type="hidden" name="branch_new"       :value="selectedId ? '' : query.trim()">
@@ -489,8 +489,8 @@
                                 class="absolute z-50 mt-1 w-full bg-white border border-slate-200 rounded-xl shadow-lg overflow-hidden max-h-48 overflow-y-auto">
                                 <template x-for="(item, idx) in filtered" :key="item.id ?? item.name">
                                     <div @mousedown.prevent="select(item)"
-                                        :class="idx===highlight ? 'bg-yellow-50 text-yellow-800' : 'text-slate-700'"
-                                        class="px-4 py-2.5 text-sm cursor-pointer hover:bg-yellow-50 flex items-center gap-2">
+                                        :class="idx===highlight ? 'bg-[var(--primary-pale)] text-[var(--primary-text)]' : 'text-slate-700'"
+                                        class="px-4 py-2.5 text-sm cursor-pointer hover:bg-[var(--primary-pale)] flex items-center gap-2">
                                         <i class="fas fa-church text-xs opacity-50"></i>
                                         <span x-text="item.name"></span>
                                         <span x-show="!item.id" class="ml-auto text-xs text-slate-400 italic">New branch</span>
@@ -503,7 +503,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
                         <label class="field-label">Login Email *</label>
-                        <input type="email" name="email" value="{{ old('email') }}" class="field-input" placeholder="student@email.com — blank to auto-generate">
+                        <input type="email" name="email" value="{{ old('email') }}" class="field-input" placeholder="student@email.com â€” blank to auto-generate">
                         <p class="text-[11px] text-slate-400 mt-1">Leave blank to auto-assign a system email.</p>
                     </div>
                     <div>
@@ -512,7 +512,7 @@
                     </div>
                     <div>
                         <label class="field-label">Student Portal Password</label>
-                        <input type="password" name="portal_password" class="field-input" placeholder="Optional — for student portal">
+                        <input type="password" name="portal_password" class="field-input" placeholder="Optional â€” for student portal">
                     </div>
                 </div>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -563,7 +563,7 @@
             </div>
         </div>
 
-        {{-- ── Errors ───────────────────────────────────────────────────────── --}}
+        {{-- â”€â”€ Errors â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
         @if($errors->any())
         <div class="rounded-xl bg-red-50 border border-red-200 p-4">
             <p class="text-sm font-bold text-red-700 mb-2"><i class="fas fa-circle-exclamation mr-1"></i> Please fix the following errors:</p>
@@ -575,7 +575,7 @@
         </div>
         @endif
 
-        {{-- ── Submit ───────────────────────────────────────────────────────── --}}
+        {{-- â”€â”€ Submit â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
         <div class="flex flex-col sm:flex-row gap-3 pb-6">
             <button type="submit"
                 class="btn-gold flex-1 sm:flex-none px-8 py-3.5 rounded-2xl text-[14px] font-bold shadow-[0_4px_14px_0_rgba(212,160,23,0.39)] active:scale-95 flex items-center justify-center gap-2">

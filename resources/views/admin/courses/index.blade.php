@@ -10,7 +10,7 @@
         <p class="text-sm text-gray-500 mt-1">{{ $totalCourses }} course{{ $totalCourses !== 1 ? 's' : '' }} across {{ $programs->count() }} program{{ $programs->count() !== 1 ? 's' : '' }}</p>
     </div>
     <a href="{{ route('admin.courses.create') }}"
-       class="inline-flex items-center gap-2 px-6 py-3 bg-yellow-600 text-white rounded-xl text-sm font-semibold hover:bg-yellow-700 shadow-sm transition-all">
+       class="inline-flex items-center gap-2 px-6 py-3 bg-[var(--primary)] text-white rounded-xl text-sm font-semibold hover:bg-[var(--primary-dark)] shadow-sm transition-all">
         <i class="fas fa-plus"></i> Add Course
     </a>
 </div>
@@ -47,7 +47,7 @@
                 <div class="flex items-center gap-4">
                     <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
                          style="background: rgba(212,160,23,0.12);">
-                        <i class="fas fa-graduation-cap text-sm" style="color:#D4A017;"></i>
+                        <i class="fas fa-graduation-cap text-sm" style="color:var(--brand);"></i>
                     </div>
                     <div>
                         <h3 class="text-base font-bold text-gray-900">{{ $program->name }}</h3>
@@ -59,7 +59,7 @@
                 <div class="flex items-center gap-3">
                     <a href="{{ route('admin.courses.create') }}?program_id={{ $program->id }}"
                        onclick="event.stopPropagation()"
-                       class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-yellow-50 text-yellow-700 rounded-lg text-xs font-semibold hover:bg-yellow-100 transition-colors">
+                       class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[var(--primary-pale)] text-[var(--primary-text)] rounded-lg text-xs font-semibold hover:bg-[var(--primary-pale)] transition-colors">
                         <i class="fas fa-plus text-[10px]"></i> Add Course
                     </a>
                     <i id="chevron-{{ $program->id }}"
@@ -73,7 +73,7 @@
                     <div class="px-6 py-8 text-center border-t border-gray-50">
                         <p class="text-gray-400 text-sm">No courses added to this program yet.</p>
                         <a href="{{ route('admin.courses.create') }}?program_id={{ $program->id }}"
-                           class="inline-flex items-center gap-1.5 mt-3 px-4 py-2 bg-yellow-600 text-white rounded-lg text-xs font-semibold hover:bg-yellow-700 transition-colors">
+                           class="inline-flex items-center gap-1.5 mt-3 px-4 py-2 bg-[var(--primary)] text-white rounded-lg text-xs font-semibold hover:bg-[var(--primary-dark)] transition-colors">
                             <i class="fas fa-plus"></i> Add First Course
                         </a>
                     </div>
@@ -96,16 +96,16 @@
                                         <span class="font-semibold text-gray-900">{{ $course->name }}</span>
                                     </td>
                                     <td class="px-6 py-4">
-                                        <span class="inline-block px-2.5 py-1 rounded-lg text-xs font-bold bg-yellow-100 text-yellow-800">
+                                        <span class="inline-block px-2.5 py-1 rounded-lg text-xs font-bold bg-[var(--primary-pale)] text-[var(--primary-text)]">
                                             {{ $course->code }}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 hidden md:table-cell">
-                                        <span class="text-gray-500 text-xs line-clamp-1">{{ $course->description ?? '—' }}</span>
+                                        <span class="text-gray-500 text-xs line-clamp-1">{{ $course->description ?? 'â€”' }}</span>
                                     </td>
                                     <td class="px-6 py-4 text-center">
                                         <span class="inline-flex items-center gap-1 text-xs font-semibold text-gray-600">
-                                            <i class="fas fa-users text-yellow-500"></i>
+                                            <i class="fas fa-users text-[var(--brand)]"></i>
                                             {{ $course->enrollments_count ?? 0 }}
                                         </span>
                                     </td>

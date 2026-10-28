@@ -17,7 +17,7 @@
         <p class="text-indigo-200 text-sm mt-2 max-w-2xl leading-relaxed">
             Create portal accounts for <strong class="text-white">Accountants</strong>, <strong class="text-white">Headmasters</strong>,
             <strong class="text-white">Headteachers</strong>, <strong class="text-white">Deputies</strong> and <strong class="text-white">Secretaries</strong>.
-            All permissions are <strong class="text-yellow-300">ON by default</strong> — admin can turn individual ones off.
+            All permissions are <strong class="text-yellow-300">ON by default</strong> â€” admin can turn individual ones off.
         </p>
         <div class="flex flex-wrap gap-3 mt-4">
             @foreach(\App\Models\StaffPortalUser::$roleLabels as $role => $label)
@@ -61,7 +61,7 @@ $defaults = \App\Models\StaffPortalUser::$defaultPermissions;
 
 <div class="grid grid-cols-1 xl:grid-cols-5 gap-5">
 
-    {{-- ── Create form ──────────────────────────────────────────────────────── --}}
+    {{-- â”€â”€ Create form â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
     <div class="xl:col-span-2 rounded-2xl border border-slate-200 bg-white shadow-sm p-5 self-start">
         <h3 class="text-sm font-extrabold text-slate-800 mb-1">
             <i class="fas fa-user-plus text-violet-500 mr-1.5"></i>Create Account
@@ -107,9 +107,9 @@ $defaults = \App\Models\StaffPortalUser::$defaultPermissions;
                     <label class="text-xs font-bold uppercase tracking-wide text-slate-600">Permissions</label>
                     <div class="flex gap-2">
                         <button type="button" onclick="setAllNew(true)"
-                            class="text-[10px] font-bold text-violet-600 hover:text-violet-800 px-2 py-1 bg-violet-50 rounded-lg">✓ All ON</button>
+                            class="text-[10px] font-bold text-violet-600 hover:text-violet-800 px-2 py-1 bg-violet-50 rounded-lg">âœ“ All ON</button>
                         <button type="button" onclick="setAllNew(false)"
-                            class="text-[10px] font-bold text-slate-500 hover:text-slate-700 px-2 py-1 bg-slate-100 rounded-lg">✗ All OFF</button>
+                            class="text-[10px] font-bold text-slate-500 hover:text-slate-700 px-2 py-1 bg-slate-100 rounded-lg">âœ— All OFF</button>
                     </div>
                 </div>
                 <div class="space-y-2 max-h-[400px] overflow-y-auto pr-1" id="new-perm-container">
@@ -153,7 +153,7 @@ $defaults = \App\Models\StaffPortalUser::$defaultPermissions;
         </form>
     </div>
 
-    {{-- ── Existing accounts ─────────────────────────────────────────────────── --}}
+    {{-- â”€â”€ Existing accounts â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
     <div class="xl:col-span-3 space-y-4">
         <h3 class="text-sm font-extrabold text-slate-800">
             <i class="fas fa-users text-violet-400 mr-1.5"></i>Existing Accounts ({{ $staffUsers->count() }})
@@ -161,7 +161,7 @@ $defaults = \App\Models\StaffPortalUser::$defaultPermissions;
 
         @forelse($staffUsers as $user)
         @php
-            $roleColors = ['accountant'=>'bg-amber-100 text-amber-800','headmaster'=>'bg-indigo-100 text-indigo-800','headteacher'=>'bg-emerald-100 text-emerald-800','deputy'=>'bg-blue-100 text-blue-800','secretary'=>'bg-pink-100 text-pink-800'];
+            $roleColors = ['accountant'=>'bg-[var(--primary-pale)] text-[var(--primary-text)]','headmaster'=>'bg-indigo-100 text-indigo-800','headteacher'=>'bg-emerald-100 text-emerald-800','deputy'=>'bg-blue-100 text-blue-800','secretary'=>'bg-pink-100 text-pink-800'];
             $rc = $roleColors[$user->role] ?? 'bg-slate-100 text-slate-700';
             $userPerms = $user->permission_list;
         @endphp
@@ -176,7 +176,7 @@ $defaults = \App\Models\StaffPortalUser::$defaultPermissions;
                     </div>
                     <div>
                         <p class="text-sm font-extrabold text-slate-900">{{ $user->full_name }}</p>
-                        <p class="text-xs text-slate-400">{{ $user->email }}@if($user->phone) · {{ $user->phone }}@endif</p>
+                        <p class="text-xs text-slate-400">{{ $user->email }}@if($user->phone) Â· {{ $user->phone }}@endif</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
@@ -202,7 +202,7 @@ $defaults = \App\Models\StaffPortalUser::$defaultPermissions;
                         {{ $allPerms[$p] ?? $p }}
                     </span>
                     @empty
-                    <span class="text-xs text-red-400 font-semibold italic">⚠ No permissions — this account cannot access anything</span>
+                    <span class="text-xs text-red-400 font-semibold italic">âš  No permissions â€” this account cannot access anything</span>
                     @endforelse
                 </div>
             </div>
@@ -233,9 +233,9 @@ $defaults = \App\Models\StaffPortalUser::$defaultPermissions;
                             <p class="text-[11px] font-bold uppercase tracking-wide text-slate-500">Permissions</p>
                             <div class="flex gap-2">
                                 <button type="button" onclick="setAllEdit('edit-{{ $user->id }}', true)"
-                                    class="text-[10px] font-bold text-violet-600 hover:text-violet-800 px-2 py-1 bg-violet-50 rounded-lg">✓ All ON</button>
+                                    class="text-[10px] font-bold text-violet-600 hover:text-violet-800 px-2 py-1 bg-violet-50 rounded-lg">âœ“ All ON</button>
                                 <button type="button" onclick="setAllEdit('edit-{{ $user->id }}', false)"
-                                    class="text-[10px] font-bold text-slate-500 hover:text-slate-700 px-2 py-1 bg-slate-100 rounded-lg">✗ All OFF</button>
+                                    class="text-[10px] font-bold text-slate-500 hover:text-slate-700 px-2 py-1 bg-slate-100 rounded-lg">âœ— All OFF</button>
                             </div>
                         </div>
                         <div class="space-y-1.5 max-h-[360px] overflow-y-auto pr-1" id="edit-{{ $user->id }}">

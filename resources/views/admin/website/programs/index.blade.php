@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('title','Website Programs')
-@section('subtitle','Programs shown on the public /academics page — add, edit, reorder, toggle visibility')
+@section('subtitle','Programs shown on the public /academics page â€” add, edit, reorder, toggle visibility')
 
 @section('content')
 <div class="space-y-5">
@@ -21,7 +21,7 @@
     <div>
         <h2 class="text-sm font-extrabold text-slate-800">Academic Programs</h2>
         <p class="text-xs text-slate-500 mt-0.5">
-            {{ $programs->count() }} program(s) configured ·
+            {{ $programs->count() }} program(s) configured Â·
             <a href="{{ wu('academics') }}" target="_blank" class="text-indigo-600 font-semibold hover:underline">
                 <i class="fas fa-external-link-alt text-[9px] mr-0.5"></i>View on website
             </a>
@@ -48,12 +48,12 @@
 
 {{-- System programs not yet imported --}}
 @if($systemPrograms->count() > 0)
-<div class="rounded-2xl border border-amber-200 bg-amber-50 p-4">
+<div class="rounded-2xl border border-[var(--brand)] bg-[var(--primary-pale)] p-4">
     <div class="flex items-start gap-3 mb-3">
-        <i class="fas fa-exclamation-triangle text-amber-500 text-lg mt-0.5 shrink-0"></i>
+        <i class="fas fa-exclamation-triangle text-[var(--brand)] text-lg mt-0.5 shrink-0"></i>
         <div>
             <p class="text-sm font-bold text-amber-900">{{ $systemPrograms->count() }} system program(s) not yet on the website</p>
-            <p class="text-xs text-amber-700 mt-0.5">
+            <p class="text-xs text-[var(--primary-text)] mt-0.5">
                 The following programs exist in your school system but haven't been set up as website cards yet.
                 Click <strong>Import from System</strong> above to add them automatically, then edit each one to add a full description, image, curriculum details, and feature tags.
             </p>
@@ -61,7 +61,7 @@
     </div>
     <div class="flex flex-wrap gap-2">
         @foreach($systemPrograms as $sp)
-        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-100 border border-amber-300 text-amber-800 text-xs font-bold">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--primary-pale)] border border-amber-300 text-[var(--primary-text)] text-xs font-bold">
             <i class="fas fa-graduation-cap text-[9px]"></i> {{ $sp->name }}
         </span>
         @endforeach
@@ -109,7 +109,7 @@
                          alt="{{ $prog->name }}"
                          class="w-full h-20 object-cover rounded-lg mb-2">
                 @else
-                    <span class="text-4xl mb-2">{{ $prog->icon ?? '🎓' }}</span>
+                    <span class="text-4xl mb-2">{{ $prog->icon ?? 'ðŸŽ“' }}</span>
                 @endif
                 <span class="text-white text-[10px] font-bold text-center leading-tight">{{ $prog->name }}</span>
                 @if($prog->age_range && $prog->age_range !== 'All Ages')
@@ -129,7 +129,7 @@
                         <p class="text-[11px] text-slate-400 mt-0.5">
                             @if($prog->level)<span class="mr-2">{{ ucfirst(str_replace('_',' ',$prog->level)) }}</span>@endif
                             @if($prog->age_range && $prog->age_range !== 'All Ages')
-                            <span class="text-amber-600 font-semibold">{{ $prog->age_range }}</span>
+                            <span class="text-[var(--brand)] font-semibold">{{ $prog->age_range }}</span>
                             @endif
                         </p>
                     </div>
@@ -144,7 +144,7 @@
                 @if(!empty($prog->features) && count((array)$prog->features) > 0)
                 <div class="flex flex-wrap gap-1 mb-2">
                     @foreach(array_slice((array)$prog->features, 0, 4) as $feat)
-                    <span class="text-[9px] font-bold bg-indigo-50 text-indigo-700 px-1.5 py-0.5 rounded-full">✓ {{ $feat }}</span>
+                    <span class="text-[9px] font-bold bg-indigo-50 text-indigo-700 px-1.5 py-0.5 rounded-full">âœ“ {{ $feat }}</span>
                     @endforeach
                     @if(count((array)$prog->features) > 4)
                     <span class="text-[9px] text-slate-400">+{{ count((array)$prog->features) - 4 }} more</span>
@@ -161,7 +161,7 @@
                     <span class="flex items-center gap-1"><i class="fas fa-clock text-[8px] text-green-400"></i> Schedule set</span>
                     @endif
                     @if($prog->highlights)
-                    <span class="flex items-center gap-1"><i class="fas fa-star text-[8px] text-amber-400"></i> Highlights set</span>
+                    <span class="flex items-center gap-1"><i class="fas fa-star text-[8px] text-[var(--brand)]"></i> Highlights set</span>
                     @endif
                     @if(!$prog->curriculum && !$prog->description)
                     <span class="flex items-center gap-1 text-red-400"><i class="fas fa-exclamation-circle text-[8px]"></i> Needs full details</span>
@@ -173,7 +173,7 @@
         {{-- Action bar --}}
         <div class="flex items-center gap-2 px-4 py-2.5 bg-slate-50 border-t border-slate-100">
             <a href="{{ route('admin.website.programs.edit', $prog) }}"
-               class="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 text-xs font-bold hover:border-yellow-400 hover:text-yellow-700 hover:bg-yellow-50 transition-colors">
+               class="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 text-xs font-bold hover:border-yellow-400 hover:text-[var(--primary-text)] hover:bg-[var(--primary-pale)] transition-colors">
                 <i class="fas fa-pen text-[9px]"></i> Edit Card Text & Details
             </a>
 
@@ -210,11 +210,11 @@
     <div>
         <p class="text-sm font-bold text-indigo-800 mb-1">Customize the Academics Page Text</p>
         <p class="text-xs text-indigo-600 mb-2">
-            Change the hero title, section heading, card section labels (Curriculum, Highlights, Schedule), button texts, and the bottom enrollment banner from Website Settings → Academics Tab.
+            Change the hero title, section heading, card section labels (Curriculum, Highlights, Schedule), button texts, and the bottom enrollment banner from Website Settings â†’ Academics Tab.
         </p>
         <a href="{{ route('admin.website.site-settings') }}"
            class="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-700 bg-indigo-100 hover:bg-indigo-200 px-3 py-1.5 rounded-lg transition-colors">
-            <i class="fas fa-external-link-alt text-[9px]"></i> Open Site Settings → Academics Tab
+            <i class="fas fa-external-link-alt text-[9px]"></i> Open Site Settings â†’ Academics Tab
         </a>
     </div>
 </div>

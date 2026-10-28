@@ -4,10 +4,10 @@
 
 @section('content')
 <div class="space-y-6">
-    <div class="card border border-amber-100 bg-[#fffaf0] p-6">
+    <div class="card border border-[var(--primary-pale)] bg-[#fffaf0] p-6">
         <div class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
-                <p class="text-xs font-semibold uppercase tracking-[0.28em] text-amber-700">Academic Management</p>
+                <p class="text-xs font-semibold uppercase tracking-[0.28em] text-[var(--primary-text)]">Academic Management</p>
                 <h2 class="text-2xl font-semibold text-slate-900 mt-2">Bulk Student Promotion</h2>
                 <p class="text-sm text-slate-600 mt-1">Select students grouped by program to advance them to the next academic level.</p>
             </div>
@@ -31,10 +31,10 @@
             <div class="flex items-center justify-between bg-white p-4 rounded-2xl border border-slate-200 shadow-sm sticky top-16 z-20 mb-6">
                 <div class="flex items-center gap-3">
                     <span class="text-sm font-semibold text-slate-700">Selected Students:</span>
-                    <span class="px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-bold" x-text="selectedStudents.length">0</span>
+                    <span class="px-3 py-1 bg-[var(--primary-pale)] text-[var(--primary-text)] rounded-full text-xs font-bold" x-text="selectedStudents.length">0</span>
                 </div>
                 <div class="flex items-center gap-3">
-                    <button type="button" x-on:click="selectedStudents = Array.from(document.querySelectorAll('.student-checkbox:not(:disabled)')).map(cb => cb.value)" class="text-xs text-amber-700 font-semibold hover:underline">
+                    <button type="button" x-on:click="selectedStudents = Array.from(document.querySelectorAll('.student-checkbox:not(:disabled)')).map(cb => cb.value)" class="text-xs text-[var(--primary-text)] font-semibold hover:underline">
                         Select All
                     </button>
                     <span class="text-slate-300">|</span>
@@ -59,14 +59,14 @@
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 mb-4 border-b border-slate-100">
                             <div>
                                 <div class="flex items-center gap-2">
-                                    <span class="w-7 h-7 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-xs">
+                                    <span class="w-7 h-7 rounded-lg bg-[var(--primary-pale)] text-[var(--primary-text)] flex items-center justify-center font-bold text-xs">
                                         {{ $program->sequence ?? ($index + 1) }}
                                     </span>
                                     <h3 class="text-lg font-bold text-slate-900">{{ $program->name }}</h3>
                                 </div>
                                 <p class="text-xs text-slate-500 mt-1">
                                     @if($isFinal)
-                                        <span class="text-amber-600 font-semibold"><i class="fas fa-exclamation-triangle mr-1"></i> Final Program — Students will be marked as Graduated</span>
+                                        <span class="text-[var(--brand)] font-semibold"><i class="fas fa-exclamation-triangle mr-1"></i> Final Program â€” Students will be marked as Graduated</span>
                                     @elseif($nextProg)
                                         Advances to: <strong class="text-slate-700">{{ $nextProg->name }}</strong>
                                     @endif
@@ -81,7 +81,7 @@
                                         } else {
                                             selectedStudents = selectedStudents.filter(id => !ids.includes(Number(id)));
                                         }
-                                    " class="rounded text-amber-600 focus:ring-amber-500 w-4 h-4">
+                                    " class="rounded text-[var(--brand)] focus:ring-amber-500 w-4 h-4">
                                     Select Program Group ({{ $program->students->count() }})
                                 </label>
                             @endif
@@ -94,7 +94,7 @@
                                 @foreach($program->students as $student)
                                     <label class="flex items-center justify-between p-3 rounded-xl border border-slate-100 bg-slate-50/70 hover:bg-slate-100/80 transition-colors cursor-pointer">
                                         <div class="flex items-center gap-3 min-w-0">
-                                            <input type="checkbox" name="student_ids[]" value="{{ $student->id }}" x-model.number="selectedStudents" class="student-checkbox rounded text-amber-600 focus:ring-amber-500 w-4 h-4">
+                                            <input type="checkbox" name="student_ids[]" value="{{ $student->id }}" x-model.number="selectedStudents" class="student-checkbox rounded text-[var(--brand)] focus:ring-amber-500 w-4 h-4">
                                             <div class="min-w-0">
                                                 <p class="text-sm font-semibold text-slate-800 truncate">{{ $student->user?->full_name ?? 'Unnamed Student' }}</p>
                                                 <p class="text-xs text-slate-500">{{ $student->student_id }}</p>

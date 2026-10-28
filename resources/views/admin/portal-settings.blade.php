@@ -42,15 +42,15 @@
 
     {{-- Control Form --}}
     <div class="card overflow-hidden">
-        <div class="px-6 py-4 border-b border-yellow-50" style="background:#fef9c3">
-            <h3 class="text-sm font-bold" style="color:#78520a">
+        <div class="px-6 py-4 border-b border-[var(--primary-pale)]" style="background:var(--primary-pale)">
+            <h3 class="text-sm font-bold" style="color:var(--primary-text)">
                 <i class="fas fa-sliders-h mr-2"></i>Portal Access Control
             </h3>
         </div>
         <form method="POST" action="{{ route('admin.portal-settings.toggle') }}" class="px-6 py-6 space-y-8">
             @csrf
 
-            {{-- ── 1. Student Portal Section ── --}}
+            {{-- â”€â”€ 1. Student Portal Section â”€â”€ --}}
             <div class="space-y-4 pb-6 border-b border-gray-100">
                 <h4 class="text-sm font-bold text-gray-800 flex items-center gap-2">
                     <i class="fas fa-user-graduate text-blue-600"></i> Student Portal Access
@@ -99,7 +99,7 @@
                 </div>
             </div>
 
-            {{-- ── 2. Teachers Portal Section ── --}}
+            {{-- â”€â”€ 2. Teachers Portal Section â”€â”€ --}}
             <div class="space-y-4">
                 <h4 class="text-sm font-bold text-gray-800 flex items-center gap-2">
                     <i class="fas fa-chalkboard-user text-purple-600"></i> Teachers Portal Access
@@ -148,7 +148,7 @@
                 </div>
             </div>
 
-            {{-- ── 3. Teacher Feature Permissions ── --}}
+            {{-- â”€â”€ 3. Teacher Feature Permissions â”€â”€ --}}
             <div class="space-y-4 pt-6 border-t border-gray-100">
                 <div class="flex items-start justify-between">
                     <div>
@@ -182,17 +182,17 @@
                         <div>
                             <p class="text-sm font-bold text-gray-800">{{ $label }}</p>
                             <p class="text-[10px] font-semibold mt-0.5 {{ $isOn ? 'text-emerald-600' : 'text-red-500' }}">
-                                {{ $isOn ? '✅ Currently ON' : '❌ Currently OFF' }}
+                                {{ $isOn ? 'âœ… Currently ON' : 'âŒ Currently OFF' }}
                             </p>
                         </div>
                     </label>
                     @endforeach
                 </div>
-                <div class="rounded-xl bg-amber-50 border border-amber-200 px-4 py-3 text-xs text-amber-800">
-                    <i class="fas fa-info-circle mr-1 text-amber-500"></i>
+                <div class="rounded-xl bg-[var(--primary-pale)] border border-[var(--brand)] px-4 py-3 text-xs text-[var(--primary-text)]">
+                    <i class="fas fa-info-circle mr-1 text-[var(--brand)]"></i>
                     <strong>Note:</strong> These permissions control what features are visible to ALL teachers.
                     To give or restrict permissions for a specific staff member (Accountant, Headmaster etc.),
-                    use <a href="{{ route('admin.staff-portal-users.index') }}" class="underline font-bold text-amber-700">Staff Portal Accounts</a>.
+                    use <a href="{{ route('admin.staff-portal-users.index') }}" class="underline font-bold text-[var(--primary-text)]">Staff Portal Accounts</a>.
                 </div>
             </div>
 
@@ -202,10 +202,10 @@
         </form>
     </div>
 
-    {{-- ── Report Card Orientation ────────────────────────────────── --}}
+    {{-- â”€â”€ Report Card Orientation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
     <div class="card overflow-hidden">
-        <div class="px-6 py-4 border-b border-slate-100" style="background:#fef9c3">
-            <h3 class="text-sm font-bold" style="color:#78520a">
+        <div class="px-6 py-4 border-b border-slate-100" style="background:var(--primary-pale)">
+            <h3 class="text-sm font-bold" style="color:var(--primary-text)">
                 <i class="fas fa-file-alt mr-2"></i>Report Card Settings
             </h3>
         </div>
@@ -244,7 +244,7 @@
                             </div>
                             <div>
                                 <p class="font-bold text-gray-800 text-sm">Landscape (A4)</p>
-                                <p class="text-xs text-gray-500">Wider — two columns side by side</p>
+                                <p class="text-xs text-gray-500">Wider â€” two columns side by side</p>
                             </div>
                         </div>
                     </label>
@@ -259,7 +259,7 @@
                             </div>
                             <div>
                                 <p class="font-bold text-gray-800 text-sm">Portrait (A4)</p>
-                                <p class="text-xs text-gray-500">Taller — traditional page layout</p>
+                                <p class="text-xs text-gray-500">Taller â€” traditional page layout</p>
                             </div>
                         </div>
                     </label>
@@ -278,7 +278,7 @@
     {{-- Portal Links --}}
     <div class="space-y-4">
         <h3 class="text-sm font-bold text-gray-800">
-            <i class="fas fa-link mr-2 text-gray-500"></i>All Portal URLs — Share with staff
+            <i class="fas fa-link mr-2 text-gray-500"></i>All Portal URLs â€” Share with staff
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
@@ -330,8 +330,8 @@
             {{-- Accountant Portal --}}
             <div class="card p-5">
                 <div class="flex items-center gap-2 mb-3">
-                    <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:#fef3c7">
-                        <i class="fas fa-coins text-amber-600 text-sm"></i>
+                    <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:var(--primary-pale)">
+                        <i class="fas fa-coins text-[var(--brand)] text-sm"></i>
                     </div>
                     <p class="text-xs font-bold text-gray-700 uppercase tracking-wider">Accountant Portal</p>
                 </div>
@@ -344,7 +344,7 @@
                 </div>
                 <p class="text-[11px] text-gray-400 mt-2">
                     <i class="fas fa-info-circle mr-1"></i>
-                    Manage accounts at <a href="{{ route('admin.staff-portal-users.index') }}" class="underline font-semibold text-amber-700">Staff Portals</a>
+                    Manage accounts at <a href="{{ route('admin.staff-portal-users.index') }}" class="underline font-semibold text-[var(--primary-text)]">Staff Portals</a>
                 </p>
             </div>
 
@@ -414,7 +414,7 @@
                 </p>
                 <a href="{{ route('admin.staff-portal-users.index') }}"
                    class="inline-flex items-center gap-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-4 py-2.5 transition-all active:scale-95">
-                    <i class="fas fa-cog text-[10px]"></i> Manage Staff Portal Accounts →
+                    <i class="fas fa-cog text-[10px]"></i> Manage Staff Portal Accounts â†’
                 </a>
             </div>
         </div>

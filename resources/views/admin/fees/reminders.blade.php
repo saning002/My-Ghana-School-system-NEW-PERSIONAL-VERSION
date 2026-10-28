@@ -3,7 +3,7 @@
 
 @section('content')
 <style>
-/* ── Page base ── */
+/* â”€â”€ Page base â”€â”€ */
 .rm-hero {
     background: linear-gradient(135deg, #0f3460 0%, #16213e 100%);
     border-radius: 20px;
@@ -30,7 +30,7 @@
     border-radius: 50%;
 }
 
-/* ── Stat cards ── */
+/* â”€â”€ Stat cards â”€â”€ */
 .rm-stat {
     background: #fff;
     border-radius: 14px;
@@ -52,7 +52,7 @@
     flex-shrink: 0;
 }
 
-/* ── Cards ── */
+/* â”€â”€ Cards â”€â”€ */
 .rm-card {
     background: #fff;
     border-radius: 16px;
@@ -69,7 +69,7 @@
     justify-content: space-between;
 }
 
-/* ── Channel pills ── */
+/* â”€â”€ Channel pills â”€â”€ */
 .ch-pill {
     display: inline-flex;
     align-items: center;
@@ -90,7 +90,7 @@
 .ch-pill.on-wa   { border-color: #25d366; background: #f0fdf4; color: #15803d; }
 .ch-pill.on-mail { border-color: #3b82f6; background: #eff6ff; color: #1d4ed8; }
 
-/* ── Table ── */
+/* â”€â”€ Table â”€â”€ */
 .rm-thead th {
     font-size: .7rem;
     text-transform: uppercase;
@@ -128,7 +128,7 @@
 }
 .peek-btn:hover { background: #0f3460; color: #fff; }
 
-/* ── Send buttons ── */
+/* â”€â”€ Send buttons â”€â”€ */
 .btn-send-sel {
     background: linear-gradient(135deg, #f59e0b, #d97706);
     color: #fff !important;
@@ -159,7 +159,7 @@
 }
 .btn-send-all:hover { opacity: .9; transform: translateY(-1px); }
 
-/* ── Preview panel ── */
+/* â”€â”€ Preview panel â”€â”€ */
 .preview-bubble {
     background: #f0f9ff;
     border: 1px solid #bae6fd;
@@ -175,7 +175,7 @@
 
 <div class="container-fluid py-4" style="max-width:1400px;">
 
-    {{-- ── Hero ──────────────────────────────────────────────────────────── --}}
+    {{-- â”€â”€ Hero â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
     <div class="rm-hero">
         <div style="position:relative;z-index:1;" class="d-flex align-items-center justify-content-between flex-wrap gap-3">
             <div>
@@ -183,10 +183,10 @@
                     Fees &rsaquo; Reminders
                 </div>
                 <h3 class="fw-black mb-1" style="font-size:1.6rem;">
-                    <i class="fas fa-paper-plane me-2" style="color:#f59e0b;"></i>Fee Reminders
+                    <i class="fas fa-paper-plane me-2" style="color:var(--brand);"></i>Fee Reminders
                 </h3>
                 <p style="opacity:.65;font-size:.875rem;margin:0;">
-                    Each message is auto-personalised with the student's own balance — no copy-pasting needed.
+                    Each message is auto-personalised with the student's own balance â€” no copy-pasting needed.
                 </p>
             </div>
             <div class="d-flex gap-2 flex-wrap">
@@ -202,7 +202,7 @@
         </div>
     </div>
 
-    {{-- ── Alerts ──────────────────────────────────────────────────────────── --}}
+    {{-- â”€â”€ Alerts â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
     @if(session('success'))
     <div class="alert alert-dismissible fade show mb-4"
          style="border-radius:12px;border:none;background:#f0fdf4;color:#166534;border-left:4px solid #16a34a;">
@@ -212,7 +212,7 @@
     @endif
     @if(session('warning'))
     <div class="alert alert-dismissible fade show mb-4"
-         style="border-radius:12px;border:none;background:#fefce8;color:#854d0e;border-left:4px solid #ca8a04;">
+         style="border-radius:12px;border:none;background:var(--primary-pale);color:#854d0e;border-left:4px solid #ca8a04;">
         <i class="fas fa-exclamation-triangle me-2"></i>{{ session('warning') }}
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
@@ -225,7 +225,7 @@
     </div>
     @endif
 
-    {{-- ── Stats ──────────────────────────────────────────────────────────── --}}
+    {{-- â”€â”€ Stats â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
     @php
         $msgCredits = null;
         try { $msgCredits = \App\Models\MessagingCredit::forTenant(session('tenant_id', 0)); } catch(\Throwable $e) {}
@@ -244,7 +244,7 @@
         </div>
         <div class="col-6 col-lg-3">
             <div class="rm-stat">
-                <div class="rm-stat-icon" style="background:#fff7ed;color:#ea580c;">
+                <div class="rm-stat-icon" style="background:#fff7ed;color:var(--primary-dark);">
                     <i class="fas fa-coins"></i>
                 </div>
                 <div>
@@ -285,7 +285,7 @@
 
     <div class="row g-4">
 
-        {{-- ── LEFT COLUMN ────────────────────────────────────────────────── --}}
+        {{-- â”€â”€ LEFT COLUMN â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
         <div class="col-lg-8">
 
             {{-- Session picker --}}
@@ -324,7 +324,7 @@
                 <div class="rm-card">
                     <div class="rm-card-hd">
                         <span style="font-weight:700;font-size:.9rem;">
-                            <span style="background:#f59e0b;color:#fff;width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;margin-right:8px;">1</span>
+                            <span style="background:var(--primary);color:#fff;width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;margin-right:8px;">1</span>
                             Choose Channels
                         </span>
                         <span id="chWarnText" style="display:none;font-size:.78rem;color:#dc2626;">
@@ -400,7 +400,7 @@
                             @php
                                 $phone = $s['student']->user?->phone ?? $s['student']->guardian_phone ?? null;
                                 $email = $s['student']->user?->email ?? $s['student']->guardian_email ?? null;
-                                $name  = $s['student']->user?->full_name ?? '—';
+                                $name  = $s['student']->user?->full_name ?? 'â€”';
                             @endphp
                             <tr class="rm-row" id="row-{{ $s['student']->id }}"
                                 onclick="toggleRow({{ $s['student']->id }})">
@@ -422,7 +422,7 @@
                                         </span>
                                         @if($s['student']->program?->name)
                                         <span style="font-size:.72rem;color:#94a3b8;margin-left:4px;">
-                                            · {{ $s['student']->program->name }}
+                                            Â· {{ $s['student']->program->name }}
                                         </span>
                                         @endif
                                     </div>
@@ -439,7 +439,7 @@
                                     </div>
                                     @endif
                                     @if(!$email && !$phone)
-                                    <span style="font-size:.72rem;background:#fef9c3;color:#92400e;padding:2px 8px;border-radius:10px;">
+                                    <span style="font-size:.72rem;background:var(--primary-pale);color:var(--primary-text);padding:2px 8px;border-radius:10px;">
                                         <i class="fas fa-exclamation-triangle me-1"></i>No contact
                                     </span>
                                     @endif
@@ -474,7 +474,7 @@
                     <div style="padding:1.25rem 1.5rem;background:#f8fafc;border-top:1px solid #f1f5f9;">
                         <div style="font-size:.8rem;color:#64748b;margin-bottom:14px;">
                             <span style="background:#0f3460;color:#fff;width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;margin-right:8px;">3</span>
-                            <strong>Send</strong> — select students above, pick your channels, then fire.
+                            <strong>Send</strong> â€” select students above, pick your channels, then fire.
                         </div>
                         <div class="d-flex gap-3 flex-wrap">
                             <button type="submit" class="btn-send-sel"
@@ -498,19 +498,19 @@
             </form>
         </div>
 
-        {{-- ── RIGHT COLUMN: Preview panel ────────────────────────────────── --}}
+        {{-- â”€â”€ RIGHT COLUMN: Preview panel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
         <div class="col-lg-4">
             <div style="position:sticky;top:20px;">
 
                 {{-- Low credit warning --}}
                 @if(($msgCredits?->sms_credits ?? 0) < 10 || ($msgCredits?->whatsapp_credits ?? 0) < 10)
-                <div style="background:#fef9c3;border:1px solid #fbbf24;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem;">
-                    <div style="font-weight:700;font-size:.85rem;color:#92400e;margin-bottom:4px;">
+                <div style="background:var(--primary-pale);border:1px solid #fbbf24;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem;">
+                    <div style="font-weight:700;font-size:.85rem;color:var(--primary-text);margin-bottom:4px;">
                         <i class="fas fa-exclamation-triangle me-1"></i> Low Credits
                     </div>
                     <div style="font-size:.78rem;color:#78350f;">
                         You're running low on messaging credits.
-                        <a href="{{ route('admin.subscription.show') }}" style="color:#92400e;font-weight:700;text-decoration:underline;">
+                        <a href="{{ route('admin.subscription.show') }}" style="color:var(--primary-text);font-weight:700;text-decoration:underline;">
                             Top up here
                         </a>.
                     </div>
@@ -522,7 +522,7 @@
                         style="background:linear-gradient(135deg,#1e293b,#0f3460);color:#fff;border:none;">
                         <div>
                             <div style="font-weight:700;font-size:.9rem;">
-                                <i class="fas fa-comment-dots me-2" style="color:#f59e0b;"></i>Message Preview
+                                <i class="fas fa-comment-dots me-2" style="color:var(--brand);"></i>Message Preview
                             </div>
                             <div id="pvName"
                                 style="font-size:.75rem;opacity:.55;margin-top:3px;">
@@ -600,7 +600,7 @@
 
 @push('scripts')
 <script>
-// ── Channel toggles ────────────────────────────────────────────────────────
+// â”€â”€ Channel toggles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const chActive = { sms: false, wa: false, mail: false };
 function toggleCh(key, pill) {
     chActive[key] = !chActive[key];
@@ -616,7 +616,7 @@ function toggleCh(key, pill) {
 }
 function anyChannel() { return Object.values(chActive).some(Boolean); }
 
-// ── Row selection ──────────────────────────────────────────────────────────
+// â”€â”€ Row selection â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function toggleRow(id) {
     const cb = document.getElementById('cb-' + id);
     cb.checked = !cb.checked;
@@ -642,7 +642,7 @@ function recount() {
     document.getElementById('selBadge').textContent   = n;
 }
 
-// ── Validation ─────────────────────────────────────────────────────────────
+// â”€â”€ Validation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function validate() {
     if (!anyChannel()) {
         document.getElementById('chWarnText').style.display = 'inline';
@@ -661,7 +661,7 @@ function validateAll() {
     return confirm('Send reminders to ALL ' + total + ' owing student(s)?');
 }
 
-// ── Preview ────────────────────────────────────────────────────────────────
+// â”€â”€ Preview â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 let originalMsg = '';
 
 function loadPreview(studentId, sessionId, name) {
@@ -702,7 +702,7 @@ function resetMsg() {
     document.getElementById('pvMsg').value = originalMsg;
 }
 
-// ── Quick send one student ─────────────────────────────────────────────────
+// â”€â”€ Quick send one student â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function quickSend() {
     if (!anyChannel()) {
         alert('Please select at least one channel (SMS, WhatsApp, or Email) first.');

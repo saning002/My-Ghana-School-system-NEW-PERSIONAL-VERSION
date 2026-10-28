@@ -5,7 +5,7 @@
 @section('content')
 <div class="space-y-6">
 
-{{-- ── Active Period Banner ─────────────────────────────────────────────── --}}
+{{-- â”€â”€ Active Period Banner â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
 @if($activePeriod)
 <div class="rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shadow-lg shadow-emerald-200">
     <div class="flex items-center gap-3 text-white">
@@ -26,16 +26,16 @@
     </form>
 </div>
 @else
-<div class="rounded-2xl bg-amber-50 border border-amber-200 px-5 py-4 flex items-center gap-3">
-    <i class="fas fa-exclamation-triangle text-amber-500 text-lg shrink-0"></i>
+<div class="rounded-2xl bg-[var(--primary-pale)] border border-[var(--brand)] px-5 py-4 flex items-center gap-3">
+    <i class="fas fa-exclamation-triangle text-[var(--brand)] text-lg shrink-0"></i>
     <div>
-        <p class="text-sm font-bold text-amber-800">No active period set</p>
-        <p class="text-xs text-amber-700 mt-0.5">Teachers cannot record attendance or scores until you activate a period below. Click <strong>Set Active</strong> on any period.</p>
+        <p class="text-sm font-bold text-[var(--primary-text)]">No active period set</p>
+        <p class="text-xs text-[var(--primary-text)] mt-0.5">Teachers cannot record attendance or scores until you activate a period below. Click <strong>Set Active</strong> on any period.</p>
     </div>
 </div>
 @endif
 
-{{-- ── Flash messages ───────────────────────────────────────────────────── --}}
+{{-- â”€â”€ Flash messages â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
 @if(session('success'))
 <div class="rounded-2xl bg-emerald-50 border border-emerald-200 px-5 py-3 flex items-center gap-3">
     <i class="fas fa-circle-check text-emerald-500"></i>
@@ -51,7 +51,7 @@
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-    {{-- ── Create Form ──────────────────────────────────────────────────── --}}
+    {{-- â”€â”€ Create Form â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
     <div class="glass-card p-6 self-start rounded-2xl border border-slate-200 bg-white shadow-sm">
         <h3 class="text-base font-extrabold text-slate-900 mb-0.5">Create New Session</h3>
         <p class="text-xs text-slate-500 mb-5">Periods are auto-generated based on the mode you choose.</p>
@@ -60,7 +60,7 @@
             @csrf
             @if($errors->any())
             <div class="rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-xs text-red-700">
-                @foreach($errors->all() as $e)<div>• {{ $e }}</div>@endforeach
+                @foreach($errors->all() as $e)<div>â€¢ {{ $e }}</div>@endforeach
             </div>
             @endif
 
@@ -88,8 +88,8 @@
                     <label class="cursor-pointer">
                         <input type="radio" name="mode" value="term" class="sr-only peer" {{ old('mode')==='term' ? 'checked' : '' }}>
                         <span class="flex flex-col items-center gap-1.5 rounded-xl border-2 border-slate-200 bg-slate-50 p-3 text-center transition-all
-                                     peer-checked:border-amber-500 peer-checked:bg-amber-50 peer-checked:text-amber-800">
-                            <i class="fas fa-calendar-days text-lg text-amber-400 peer-checked:text-amber-600"></i>
+                                     peer-checked:border-[var(--brand)] peer-checked:bg-[var(--primary-pale)] peer-checked:text-[var(--primary-text)]">
+                            <i class="fas fa-calendar-days text-lg text-[var(--brand)] peer-checked:text-[var(--brand)]"></i>
                             <span class="text-xs font-extrabold">Term</span>
                             <span class="text-[10px] text-slate-400">3 periods</span>
                         </span>
@@ -104,7 +104,7 @@
         </form>
     </div>
 
-    {{-- ── Quick Stats ──────────────────────────────────────────────────── --}}
+    {{-- â”€â”€ Quick Stats â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
     <div class="lg:col-span-2 space-y-4">
         <div class="grid grid-cols-3 gap-4">
             <div class="rounded-2xl border border-slate-200 bg-white p-4 text-center shadow-sm">
@@ -116,7 +116,7 @@
                 <p class="text-xs text-slate-500 mt-1">Total Periods</p>
             </div>
             <div class="rounded-2xl border border-slate-200 bg-white p-4 text-center shadow-sm">
-                <p class="text-lg font-extrabold text-slate-900">{{ $sessions->first()?->year ?? '—' }}</p>
+                <p class="text-lg font-extrabold text-slate-900">{{ $sessions->first()?->year ?? 'â€”' }}</p>
                 <p class="text-xs text-slate-500 mt-1">Latest</p>
             </div>
         </div>
@@ -132,21 +132,21 @@
     </div>
 </div>
 
-{{-- ── Sessions List ────────────────────────────────────────────────────── --}}
+{{-- â”€â”€ Sessions List â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
 @forelse($sessions as $session)
 <div class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
     {{-- Session header --}}
     <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50">
         <div class="flex items-center gap-3">
             <div class="flex h-10 w-10 items-center justify-center rounded-xl
-                {{ $session->mode === 'term' ? 'bg-amber-100 text-amber-700' : 'bg-violet-100 text-violet-700' }}">
+                {{ $session->mode === 'term' ? 'bg-[var(--primary-pale)] text-[var(--primary-text)]' : 'bg-violet-100 text-violet-700' }}">
                 <i class="{{ $session->mode === 'term' ? 'fas fa-calendar-days' : 'fas fa-layer-group' }}"></i>
             </div>
             <div>
                 <div class="flex items-center gap-2">
                     <p class="text-sm font-extrabold text-slate-900">{{ $session->year }}</p>
                     <span class="rounded-full px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider
-                        {{ $session->mode === 'term' ? 'bg-amber-100 text-amber-700' : 'bg-violet-100 text-violet-700' }}">
+                        {{ $session->mode === 'term' ? 'bg-[var(--primary-pale)] text-[var(--primary-text)]' : 'bg-violet-100 text-violet-700' }}">
                         {{ ucfirst($session->mode) }}
                     </span>
                 </div>
@@ -167,7 +167,7 @@
         @if($session->periods->isEmpty())
             <p class="text-xs text-red-500 text-center py-2">
                 <i class="fas fa-exclamation-triangle mr-1"></i>
-                No periods — delete and recreate this session.
+                No periods â€” delete and recreate this session.
             </p>
         @else
         <div class="grid grid-cols-1 sm:grid-cols-2 {{ $session->mode === 'term' ? 'lg:grid-cols-3' : 'lg:grid-cols-2' }} gap-3">
@@ -182,7 +182,7 @@
                         <p class="text-sm font-extrabold {{ $isActive ? 'text-emerald-800' : 'text-slate-800' }}">
                             {{ $period->name ?: $period->month }}
                         </p>
-                        <p class="text-[11px] text-slate-400 mt-0.5">{{ $session->year }} · ID #{{ $period->id }}</p>
+                        <p class="text-[11px] text-slate-400 mt-0.5">{{ $session->year }} Â· ID #{{ $period->id }}</p>
                     </div>
                     @if($isActive)
                     <span class="shrink-0 inline-flex items-center gap-1 rounded-full bg-emerald-500 text-white text-[10px] font-extrabold px-2.5 py-1 uppercase tracking-wider">

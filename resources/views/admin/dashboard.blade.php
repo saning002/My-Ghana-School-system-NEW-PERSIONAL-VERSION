@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('title','Dashboard')
-@section('subtitle', ($schoolName ?? 'School') . ' — Admin Overview')
+@section('subtitle', ($schoolName ?? 'School') . ' â€” Admin Overview')
 
 @section('content')
 
@@ -46,8 +46,8 @@
             <p class="font-bold text-red-800">Storage health issue detected</p>
             <p class="text-sm text-red-700 mt-1">The application cannot write files to one or more storage locations. Please verify permissions for the paths below:</p>
             <ul class="text-sm text-red-700 mt-3 space-y-1 list-disc list-inside">
-                <li><strong>Public disk:</strong> {{ $storageHealth['public_disk_path'] ?? 'N/A' }} — {{ $storageHealth['public_disk_writable'] ? 'Writable' : 'Not writable' }}</li>
-                <li><strong>Fallback uploads:</strong> {{ $storageHealth['uploads_path'] ?? 'N/A' }} — {{ $storageHealth['uploads_writable'] ? 'Writable' : 'Not writable' }}</li>
+                <li><strong>Public disk:</strong> {{ $storageHealth['public_disk_path'] ?? 'N/A' }} â€” {{ $storageHealth['public_disk_writable'] ? 'Writable' : 'Not writable' }}</li>
+                <li><strong>Fallback uploads:</strong> {{ $storageHealth['uploads_path'] ?? 'N/A' }} â€” {{ $storageHealth['uploads_writable'] ? 'Writable' : 'Not writable' }}</li>
             </ul>
             <p class="text-sm text-red-700 mt-3">Fix permissions for these directories or contact your server administrator before uploading student photos.</p>
         </div>
@@ -59,12 +59,12 @@
 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
     <div class="card p-5 relative overflow-hidden group">
         <div class="absolute inset-0 opacity-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjIiIGZpbGw9IiNENEEwMTciLz48L3N2Zz4=')]"></div>
-        <div class="absolute inset-0 bg-yellow-50/70"></div>
+        <div class="absolute inset-0 bg-[var(--primary-pale)]/70"></div>
         <div class="relative z-10 flex items-center gap-4">
-            <div class="w-12 h-12 rounded-2xl flex items-center justify-center bg-yellow-100 text-yellow-700 shadow-sm"><i class="fas fa-file-invoice-dollar text-xl"></i></div>
+            <div class="w-12 h-12 rounded-2xl flex items-center justify-center bg-[var(--primary-pale)] text-[var(--primary-text)] shadow-sm"><i class="fas fa-file-invoice-dollar text-xl"></i></div>
             <div>
                 <p class="text-xs text-slate-500 mb-0.5 font-bold uppercase tracking-wider">Total Billed</p>
-                <p class="text-2xl font-extrabold text-slate-800 tracking-tight">GH₵ {{ number_format($fees['billed'],2) }}</p>
+                <p class="text-2xl font-extrabold text-slate-800 tracking-tight">GHâ‚µ {{ number_format($fees['billed'],2) }}</p>
             </div>
         </div>
     </div>
@@ -75,7 +75,7 @@
             <div class="w-12 h-12 rounded-2xl flex items-center justify-center bg-green-100 text-green-700 shadow-sm"><i class="fas fa-wallet text-xl"></i></div>
             <div>
                 <p class="text-xs text-slate-500 mb-0.5 font-bold uppercase tracking-wider">Collected</p>
-                <p class="text-2xl font-extrabold text-green-700 tracking-tight">GH₵ {{ number_format($fees['collected'],2) }}</p>
+                <p class="text-2xl font-extrabold text-green-700 tracking-tight">GHâ‚µ {{ number_format($fees['collected'],2) }}</p>
             </div>
         </div>
     </div>
@@ -86,7 +86,7 @@
             <div class="w-12 h-12 rounded-2xl flex items-center justify-center bg-red-100 text-red-600 shadow-sm"><i class="fas fa-exclamation-circle text-xl"></i></div>
             <div>
                 <p class="text-xs text-slate-500 mb-0.5 font-bold uppercase tracking-wider">Outstanding</p>
-                <p class="text-2xl font-extrabold text-red-600 tracking-tight">GH₵ {{ number_format($fees['outstanding'],2) }}</p>
+                <p class="text-2xl font-extrabold text-red-600 tracking-tight">GHâ‚µ {{ number_format($fees['outstanding'],2) }}</p>
             </div>
         </div>
     </div>
@@ -140,14 +140,14 @@
         </div>
     </div>
 
-    {{-- Attendance Trend — styled like teacher portal --}}
+    {{-- Attendance Trend â€” styled like teacher portal --}}
     <div class="overflow-hidden rounded-2xl" style="background:linear-gradient(135deg,#0d0a2e 0%,#1a1550 25%,#2d2480 55%,#5647d6 80%,#7c6ee8 100%)">
         {{-- Header --}}
         <div class="px-5 pt-5 pb-3 flex items-center justify-between">
             <div>
                 <p class="text-[10px] font-bold uppercase tracking-widest text-indigo-300 mb-0.5">Live Data</p>
                 <h3 class="text-sm font-extrabold text-white">Attendance Trend</h3>
-                <p class="text-[11px] text-indigo-200 mt-0.5">Present vs absent — recent records</p>
+                <p class="text-[11px] text-indigo-200 mt-0.5">Present vs absent â€” recent records</p>
             </div>
             <span class="flex items-center gap-1.5 rounded-full border border-emerald-400/40 bg-emerald-500/20 px-3 py-1 text-[10px] font-extrabold text-emerald-300 uppercase tracking-wider">
                 <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>Live
@@ -157,11 +157,11 @@
         <div class="px-5 pb-3 flex gap-4">
             <div class="flex items-center gap-1.5">
                 <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 inline-block"></span>
-                <span class="text-[11px] font-bold text-emerald-200">Present: <span id="admin-total-present">—</span></span>
+                <span class="text-[11px] font-bold text-emerald-200">Present: <span id="admin-total-present">â€”</span></span>
             </div>
             <div class="flex items-center gap-1.5">
                 <span class="w-2.5 h-2.5 rounded-full bg-red-400 inline-block"></span>
-                <span class="text-[11px] font-bold text-red-300">Absent: <span id="admin-total-absent">—</span></span>
+                <span class="text-[11px] font-bold text-red-300">Absent: <span id="admin-total-absent">â€”</span></span>
             </div>
         </div>
         {{-- Chart on white background panel --}}
@@ -171,7 +171,7 @@
     </div>
 </div>
 
-{{-- Recent Activities — unified feed from all system actions --}}
+{{-- Recent Activities â€” unified feed from all system actions --}}
 <div class="card overflow-hidden">
     <div class="flex items-center justify-between px-6 py-5 border-b border-slate-100">
         <div class="flex items-center gap-2">

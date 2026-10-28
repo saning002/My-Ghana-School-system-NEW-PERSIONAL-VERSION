@@ -10,7 +10,7 @@
         ['label'=>'Total Students','value'=>$summary['total_students'],'icon'=>'fa-user-graduate','bg'=>'#fef9c3','ic'=>'#78520a'],
         ['label'=>'Graduated',     'value'=>$summary['graduated'],     'icon'=>'fa-graduation-cap','bg'=>'#dbeafe','ic'=>'#1e40af'],
         ['label'=>'Attendance',    'value'=>$summary['attendance_rate'].'%','icon'=>'fa-clipboard-check','bg'=>'#dcfce7','ic'=>'#166534'],
-        ['label'=>'Outstanding',   'value'=>'GH₵ '.number_format($summary['fees']['outstanding'],0),'icon'=>'fa-coins','bg'=>'#fce7f3','ic'=>'#9d174d'],
+        ['label'=>'Outstanding',   'value'=>'GHâ‚µ '.number_format($summary['fees']['outstanding'],0),'icon'=>'fa-coins','bg'=>'#fce7f3','ic'=>'#9d174d'],
     ] as $c)
     <div class="card p-4">
         <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-3" style="background:{{ $c['bg'] }}">
@@ -82,22 +82,22 @@
 </div>
 
 <div class="card overflow-hidden">
-    <div class="px-5 py-4 border-b border-yellow-50" style="background:#fef9c3">
-        <h3 class="text-sm font-bold" style="color:#78520a">{{ $programLabelSingular }} Enrollment Breakdown</h3>
+    <div class="px-5 py-4 border-b border-[var(--primary-pale)]" style="background:var(--primary-pale)">
+        <h3 class="text-sm font-bold" style="color:var(--primary-text)">{{ $programLabelSingular }} Enrollment Breakdown</h3>
     </div>
-    <div class="divide-y divide-yellow-50">
+    <div class="divide-y divide-[var(--primary-pale)]">
         @foreach($programStats as $stat)
         <div class="px-5 py-4">
             <div class="flex items-center justify-between mb-2">
                 <p class="text-sm font-semibold text-ink">{{ $stat['program']->name }}</p>
-                <span class="text-xs font-bold" style="color:#78520a">{{ $stat['enrolled'] }} students</span>
+                <span class="text-xs font-bold" style="color:var(--primary-text)">{{ $stat['enrolled'] }} students</span>
             </div>
             @php $max = collect($programStats)->max('enrolled'); $pct = $max > 0 ? round(($stat['enrolled']/$max)*100) : 0; @endphp
-            <div class="w-full bg-yellow-100 rounded-full h-2 mb-2">
-                <div class="h-2 rounded-full transition-all" style="width:{{ $pct }}%;background:#D4A017"></div>
+            <div class="w-full bg-[var(--primary-pale)] rounded-full h-2 mb-2">
+                <div class="h-2 rounded-full transition-all" style="width:{{ $pct }}%;background:var(--brand)"></div>
             </div>
             <div class="flex items-center gap-4 text-xs text-gray-400">
-                <span><i class="fas fa-book-open mr-1" style="color:#D4A017"></i>{{ $stat['program']->courses->count() }} courses</span>
+                <span><i class="fas fa-book-open mr-1" style="color:var(--brand)"></i>{{ $stat['program']->courses->count() }} courses</span>
                 <span><i class="fas fa-graduation-cap mr-1 text-blue-400"></i>{{ $stat['graduated'] }} graduated</span>
             </div>
         </div>
@@ -152,7 +152,7 @@
         }
     });
 
-    // Chart 2: Student Status Distribution (doughnut — shows real data)
+    // Chart 2: Student Status Distribution (doughnut â€” shows real data)
     createChart(document.getElementById('reports-fees-chart'), {
         type: 'doughnut',
         data: {
