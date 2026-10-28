@@ -90,21 +90,30 @@ class TenantMiddleware
             app()->instance('owner_theme_override', $tenant->theme_json);
         }
 
-        // ── Read school settings from the NOW-CORRECT tenant DB ──────────
-        // The AppServiceProvider::boot() ran before the session was available
-        // and read from the central DB. Override those shared variables here
-        // so the admin panel shows the correct school's name, logo, etc.
+        // ── Read ALL school settings in ONE cached query ──────────────────────
+        // Cache key is per-tenant so each school gets its own cache entry.
+        // TTL = 5 minutes — settings changes apply within 5 min automatically.
+        // Cache is busted immediately when admin saves settings (in controllers).
         try {
-            // Fetch ALL needed settings in ONE query
-            $neededKeys = ['school_name','school_subtitle','site_logo_url'];
-            $coreSettings = DB::connection('tenant')
-                ->table('settings')
-                ->whereIn('key', $neededKeys)
-                ->pluck('value', 'key');
+            $cacheKey = 'tenant_settings_' . $tenant->slug;
+            $allSettings = \Illuminate\Support\Facades\Cache::remember($cacheKey, 300, function () {
+                $keys = [
+                    'school_name','school_subtitle','site_logo_url',
+                    'sidebar_students_label','sidebar_lecturers_label','sidebar_teachers_label',
+                    'sidebar_programs_label','sidebar_courses_label','sidebar_attendance_label',
+                    'sidebar_exams_label','sidebar_fees_label','sidebar_reports_label',
+                    'sidebar_portals_label','sidebar_settings_label','sidebar_guide_label',
+                ];
+                return DB::connection('tenant')
+                    ->table('settings')
+                    ->whereIn('key', $keys)
+                    ->pluck('value', 'key')
+                    ->toArray();
+            });
 
-            $schoolName     = $coreSettings['school_name']     ?? config('app.name');
-            $schoolSubtitle = $coreSettings['school_subtitle'] ?? '';
-            $storedLogo     = $coreSettings['site_logo_url']   ?? null;
+            $schoolName     = $allSettings['school_name']     ?? config('app.name');
+            $schoolSubtitle = $allSettings['school_subtitle'] ?? '';
+            $storedLogo     = $allSettings['site_logo_url']   ?? null;
 
             $logoUrl = null;
             if ($storedLogo) {
@@ -114,51 +123,19 @@ class TenantMiddleware
             }
 
             $sidebarLabels = [
-                'students'   => 'Students',
-                'lecturers'  => 'Teachers',
-                'teachers'   => 'Teachers',
-                'programs'   => 'Programs',
-                'courses'    => 'Courses',
-                'attendance' => 'Attendance',
-                'exams'      => 'Exams & Results',
-                'fees'       => 'Fees & Payments',
-                'reports'    => 'Reports',
-                'portals'    => 'Student Portal',
-                'settings'   => 'Settings',
-                'guide'      => 'Admin Guide',
+                'students'   => $allSettings['sidebar_students_label']   ?? 'Students',
+                'lecturers'  => $allSettings['sidebar_lecturers_label']  ?? 'Teachers',
+                'teachers'   => $allSettings['sidebar_teachers_label']   ?? 'Teachers',
+                'programs'   => $allSettings['sidebar_programs_label']   ?? 'Programs',
+                'courses'    => $allSettings['sidebar_courses_label']    ?? 'Courses',
+                'attendance' => $allSettings['sidebar_attendance_label'] ?? 'Attendance',
+                'exams'      => $allSettings['sidebar_exams_label']      ?? 'Exams & Results',
+                'fees'       => $allSettings['sidebar_fees_label']       ?? 'Fees & Payments',
+                'reports'    => $allSettings['sidebar_reports_label']    ?? 'Reports',
+                'portals'    => $allSettings['sidebar_portals_label']    ?? 'Student Portal',
+                'settings'   => $allSettings['sidebar_settings_label']  ?? 'Settings',
+                'guide'      => $allSettings['sidebar_guide_label']      ?? 'Admin Guide',
             ];
-
-            // Fetch all sidebar labels in ONE query instead of 12 separate queries
-            $labelKeys = [
-                'sidebar_students_label','sidebar_lecturers_label','sidebar_teachers_label',
-                'sidebar_programs_label','sidebar_courses_label','sidebar_attendance_label',
-                'sidebar_exams_label','sidebar_fees_label','sidebar_reports_label',
-                'sidebar_portals_label','sidebar_settings_label','sidebar_guide_label',
-            ];
-            $settingsRows = DB::connection('tenant')
-                ->table('settings')
-                ->whereIn('key', $labelKeys)
-                ->pluck('value', 'key');
-
-            $keyMap = [
-                'sidebar_students_label'   => 'students',
-                'sidebar_lecturers_label'  => 'lecturers',
-                'sidebar_teachers_label'   => 'teachers',
-                'sidebar_programs_label'   => 'programs',
-                'sidebar_courses_label'    => 'courses',
-                'sidebar_attendance_label' => 'attendance',
-                'sidebar_exams_label'      => 'exams',
-                'sidebar_fees_label'       => 'fees',
-                'sidebar_reports_label'    => 'reports',
-                'sidebar_portals_label'    => 'portals',
-                'sidebar_settings_label'   => 'settings',
-                'sidebar_guide_label'      => 'guide',
-            ];
-            foreach ($keyMap as $dbKey => $labelKey) {
-                if (!empty($settingsRows[$dbKey])) {
-                    $sidebarLabels[$labelKey] = $settingsRows[$dbKey];
-                }
-            }
 
             $programLabel = $sidebarLabels['programs'] ?? 'Programs';
             $programLabelSingular = \Illuminate\Support\Str::singular($programLabel);
@@ -169,6 +146,31 @@ class TenantMiddleware
             view()->share('sidebarLabels', $sidebarLabels);
             view()->share('programLabel', $programLabel);
             view()->share('programLabelSingular', $programLabelSingular);
+
+            // ── Pre-compute admin theme CSS variables ─────────────────────────
+            // Doing this in middleware means zero DB work during Blade rendering.
+            // Uses the same single cached query above — no extra DB hit.
+            $themeCacheKey = 'tenant_theme_' . $tenant->slug;
+            $adminTheme = \Illuminate\Support\Facades\Cache::remember($themeCacheKey, 300, function () use ($tenant) {
+                $defaults = \App\Models\Website\SiteSetting::defaultTheme();
+                try {
+                    $row = DB::connection('tenant')->table('site_settings')->first(['theme_colors']);
+                    if ($row && $row->theme_colors) {
+                        $saved = is_array($row->theme_colors)
+                            ? $row->theme_colors
+                            : (json_decode($row->theme_colors, true) ?? []);
+                        return array_merge($defaults, $saved);
+                    }
+                } catch (\Throwable $e) {}
+                return $defaults;
+            });
+
+            // Owner panel theme_json overrides everything
+            if (!empty($tenant->theme_json)) {
+                $adminTheme = array_merge($adminTheme, $tenant->theme_json);
+            }
+
+            view()->share('__adminTheme', $adminTheme);
         } catch (\Throwable $e) {
             // Keep the defaults from AppServiceProvider if tenant DB fails
         }

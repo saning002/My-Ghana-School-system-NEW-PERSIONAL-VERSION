@@ -306,6 +306,13 @@ class WebsiteContentController extends Controller
             return back()->withErrors(['error' => 'Settings could not be saved: ' . $e->getMessage()])->withInput();
         }
 
+        // Bust theme cache so admin layout picks up new colours immediately
+        $slug = session('tenant_slug');
+        if ($slug) {
+            \Illuminate\Support\Facades\Cache::forget('tenant_theme_' . $slug);
+            \Illuminate\Support\Facades\Cache::forget('tenant_settings_' . $slug);
+        }
+
         return back()->with('success', 'Website settings saved successfully.');
     }
 

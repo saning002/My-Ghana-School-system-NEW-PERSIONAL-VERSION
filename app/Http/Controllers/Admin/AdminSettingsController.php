@@ -12,6 +12,19 @@ use Illuminate\Support\Facades\Storage;
 class AdminSettingsController extends Controller
 {
     /**
+     * Bust the tenant settings cache so the next request re-reads from DB.
+     * Called after any settings save.
+     */
+    private function bustSettingsCache(): void
+    {
+        $slug = session('tenant_slug');
+        if ($slug) {
+            \Illuminate\Support\Facades\Cache::forget('tenant_settings_' . $slug);
+            \Illuminate\Support\Facades\Cache::forget('tenant_theme_' . $slug);
+        }
+    }
+
+    /**
      * Show admin settings page
      */
     public function show()
@@ -212,6 +225,7 @@ class AdminSettingsController extends Controller
             Setting::set($key, $request->boolean($key) ? '1' : '0');
         }
 
+        $this->bustSettingsCache();
         return back()->with('success', 'Branding and sidebar labels updated successfully.');
     }
 

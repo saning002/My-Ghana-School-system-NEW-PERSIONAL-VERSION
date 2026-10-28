@@ -70,7 +70,14 @@ class ThemeController extends Controller
             ],
         ]);
 
-        // Bust the view cache so the new CSS variables are picked up immediately
+        // Bust the settings + theme cache so next request picks up new colours
+        $slug = session('tenant_slug');
+        if ($slug) {
+            \Illuminate\Support\Facades\Cache::forget('tenant_settings_' . $slug);
+            \Illuminate\Support\Facades\Cache::forget('tenant_theme_' . $slug);
+        }
+
+        // Clear compiled views so CSS variables update immediately
         try { \Artisan::call('view:clear'); } catch (\Throwable) {}
 
         return back()->with('success', 'Theme colours saved successfully. The new colours are now live across the entire system.');
@@ -83,6 +90,12 @@ class ThemeController extends Controller
     {
         $setting = SiteSetting::instance();
         $setting->update(['theme_colors' => SiteSetting::defaultTheme()]);
+
+        $slug = session('tenant_slug');
+        if ($slug) {
+            \Illuminate\Support\Facades\Cache::forget('tenant_settings_' . $slug);
+            \Illuminate\Support\Facades\Cache::forget('tenant_theme_' . $slug);
+        }
 
         try { \Artisan::call('view:clear'); } catch (\Throwable) {}
 

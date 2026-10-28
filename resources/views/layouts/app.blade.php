@@ -24,41 +24,23 @@
     </script>
     <style>
         @php
-            // Read admin theme from tenant DB — SiteSetting has TenantAwareConnection
-            $__adminPrimary = '#D4A017';
-            $__adminNav     = '#0B1121';
-            $__accent       = '#0891b2';
-            $__primary      = '#f59e0b';
-            $__primaryDark  = '#d97706';
-            $__primaryPale  = '#fef8e8';
-            $__primaryText  = '#f3af20';
-            $__surface      = '#f4f8ff';
-            $__text         = '#0f172a';
+            // Theme is pre-computed by TenantMiddleware — zero DB work here
+            $__t            = $__adminTheme ?? \App\Models\Website\SiteSetting::defaultTheme();
+            $__adminPrimary = $__t['adminPrimary'] ?? '#D4A017';
+            $__adminNav     = $__t['adminNav']     ?? '#0B1121';
+            $__accent       = $__t['accent']       ?? '#0891b2';
+            $__primary      = $__t['primary']      ?? '#f59e0b';
             try {
-                $__t = \App\Models\Website\SiteSetting::instance()->theme;
-                $__adminPrimary = $__t['adminPrimary'] ?? $__adminPrimary;
-                $__adminNav     = $__t['adminNav']     ?? $__adminNav;
-                $__accent       = $__t['accent']       ?? $__accent;
-                $__primary      = $__t['primary']      ?? $__primary;
                 $__primaryDark  = \App\Http\Controllers\Admin\ThemeController::darken($__primary, 15);
                 $__primaryPale  = \App\Http\Controllers\Admin\ThemeController::lighten($__primary, 90);
                 $__primaryText  = \App\Http\Controllers\Admin\ThemeController::lighten($__primary, 25);
-                $__surface      = $__t['bg']            ?? $__surface;
-                $__text         = $__t['text']          ?? $__text;
-            } catch (\Throwable $__e) {}
-            // Owner-panel theme override takes final precedence
-            try {
-                $__ownerTheme = app()->bound('owner_theme_override') ? app('owner_theme_override') : null;
-                if ($__ownerTheme) {
-                    $__adminPrimary = $__ownerTheme['adminPrimary'] ?? $__adminPrimary;
-                    $__adminNav     = $__ownerTheme['adminNav']     ?? $__adminNav;
-                    $__primary      = $__ownerTheme['primary']      ?? $__primary;
-                    $__accent       = $__ownerTheme['accent']       ?? $__accent;
-                    $__primaryDark  = \App\Http\Controllers\Admin\ThemeController::darken($__primary, 15);
-                    $__primaryPale  = \App\Http\Controllers\Admin\ThemeController::lighten($__primary, 90);
-                    $__primaryText  = \App\Http\Controllers\Admin\ThemeController::lighten($__primary, 25);
-                }
-            } catch (\Throwable $__e2) {}
+            } catch (\Throwable $__e) {
+                $__primaryDark = '#d97706';
+                $__primaryPale = '#fef8e8';
+                $__primaryText = '#f3af20';
+            }
+            $__surface = $__t['bg']   ?? '#f4f8ff';
+            $__text    = $__t['text'] ?? '#0f172a';
         @endphp
         :root{
             --brand:{{ $__adminPrimary }};
