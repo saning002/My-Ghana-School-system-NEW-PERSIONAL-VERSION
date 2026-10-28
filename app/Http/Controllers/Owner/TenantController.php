@@ -252,9 +252,34 @@ class TenantController extends Controller
 
         $tenant->features()->sync($sync);
 
+        // Rebuild fast-lookup cache
+        $tenant->rebuildModulesCache();
+
         AuditLog::record('tenant.features_updated', "Features updated for '{$tenant->name}'", $tenant->id);
 
-        return back()->with('success', 'Feature overrides saved.');
+        return back()->with('success', 'Module settings saved.')->with('active_tab', 'modules');
+    }
+
+    /**
+     * Save admin panel theme colours for this tenant (from owner panel).
+     */
+    public function updateTheme(Request $request, Tenant $tenant)
+    {
+        $validated = $request->validate([
+            'adminPrimary' => 'nullable|regex:/^#[0-9A-Fa-f]{6}$/',
+            'adminNav'     => 'nullable|regex:/^#[0-9A-Fa-f]{6}$/',
+            'primary'      => 'nullable|regex:/^#[0-9A-Fa-f]{6}$/',
+            'accent'       => 'nullable|regex:/^#[0-9A-Fa-f]{6}$/',
+        ]);
+
+        $existing = $tenant->theme_json ?? [];
+        $merged   = array_merge($existing, array_filter($validated, fn($v) => $v !== null));
+
+        $tenant->update(['theme_json' => $merged]);
+
+        AuditLog::record('tenant.theme_updated', "Admin theme updated for '{$tenant->name}'", $tenant->id);
+
+        return back()->with('success', 'Theme colours saved.')->with('active_tab', 'theme');
     }
 
     private function syncPlanFeaturesToTenant(Tenant $tenant): void

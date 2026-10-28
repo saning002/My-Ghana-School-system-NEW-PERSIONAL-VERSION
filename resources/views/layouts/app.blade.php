@@ -46,6 +46,19 @@
                 $__surface      = $__t['bg']            ?? $__surface;
                 $__text         = $__t['text']          ?? $__text;
             } catch (\Throwable $__e) {}
+            // Owner-panel theme override takes final precedence
+            try {
+                $__ownerTheme = app()->bound('owner_theme_override') ? app('owner_theme_override') : null;
+                if ($__ownerTheme) {
+                    $__adminPrimary = $__ownerTheme['adminPrimary'] ?? $__adminPrimary;
+                    $__adminNav     = $__ownerTheme['adminNav']     ?? $__adminNav;
+                    $__primary      = $__ownerTheme['primary']      ?? $__primary;
+                    $__accent       = $__ownerTheme['accent']       ?? $__accent;
+                    $__primaryDark  = \App\Http\Controllers\Admin\ThemeController::darken($__primary, 15);
+                    $__primaryPale  = \App\Http\Controllers\Admin\ThemeController::lighten($__primary, 90);
+                    $__primaryText  = \App\Http\Controllers\Admin\ThemeController::lighten($__primary, 25);
+                }
+            } catch (\Throwable $__e2) {}
         @endphp
         :root{
             --brand:{{ $__adminPrimary }};
@@ -176,34 +189,34 @@
                     ['route' => 'lecturer.profile.edit',         'icon' => 'fa-user',            'label' => 'Profile',      'show' => \App\Models\Setting::lecturerCan('edit_profile')],
                 ], fn($item) => $item['show']))
                 : [
-                    ['route'=>'admin.dashboard',                'icon'=>'fa-chart-pie',          'label'=>'Dashboard',                   'perm'=>'dashboard'],
-                    ['route'=>'admin.students.index',           'icon'=>'fa-user-graduate',      'label'=>$sidebarLabels['students'],     'perm'=>'students'],
-                    ['route'=>'admin.lecturers.index',          'icon'=>'fa-chalkboard-user',    'label'=>$sidebarLabels['teachers'],     'perm'=>'lecturers'],
-                    ['route'=>'admin.class-teachers.index',     'icon'=>'fa-user-tie',           'label'=>'Class Teachers',              'perm'=>'class_teachers'],
-                    ['route'=>'admin.work-monitoring.index',    'icon'=>'fa-tasks',              'label'=>'Teacher Work Logs',           'perm'=>'work_logs'],
-                    ['route'=>'admin.student-reports.index',    'icon'=>'fa-file-signature',     'label'=>'Student Reports',             'perm'=>'student_reports'],
-                    ['route'=>'admin.staff-portal-users.index', 'icon'=>'fa-user-shield',        'label'=>'Staff Portals',               'perm'=>null],
-                    ['route'=>'admin.programs.index',           'icon'=>'fa-graduation-cap',     'label'=>$sidebarLabels['programs'],    'perm'=>'programs'],
-                    ['route'=>'admin.courses.index',            'icon'=>'fa-book-open',          'label'=>$sidebarLabels['courses'],     'perm'=>'courses'],
-                    ['route'=>'admin.attendance.index',         'icon'=>'fa-clipboard-check',    'label'=>$sidebarLabels['attendance'],  'perm'=>'attendance'],
-                    ['route'=>'admin.academic-sessions.index',  'icon'=>'fa-calendar-alt',       'label'=>'Academic Sessions',           'perm'=>'academic_sessions'],
-                    ['route'=>'admin.timetable.index',          'icon'=>'fa-table-cells',        'label'=>'Timetable',                  'perm'=>'timetable'],
-                    ['route'=>'admin.scheme-of-learning.index', 'icon'=>'fa-book-open',          'label'=>'Scheme of Learning',          'perm'=>'scheme_of_learning'],
-                    ['route'=>'admin.calendar.index',           'icon'=>'fa-calendar-days',      'label'=>'School Calendar',            'perm'=>'calendar'],
-                    ['route'=>'admin.exams.index',              'icon'=>'fa-file-alt',           'label'=>$sidebarLabels['exams'],       'perm'=>'exams'],
-                    ['route'=>'admin.exams.sheet',              'icon'=>'fa-table',              'label'=>'Exams Sheet',                'perm'=>'exams'],
-                    ['route'=>'admin.exam-questions.index',     'icon'=>'fa-file-upload',        'label'=>'Exam Questions',              'perm'=>'exam_questions'],
-                    ['route'=>'admin.fees.index',               'icon'=>'fa-coins',              'label'=>$sidebarLabels['fees'],        'perm'=>'fees'],
-                    ['route'=>'admin.fees.term.index',          'icon'=>'fa-file-invoice-dollar', 'label'=>'Term Ledger',                 'perm'=>'fees'],
-                    ['route'=>'admin.fees.reminders.index',     'icon'=>'fa-bell',                'label'=>'Fee Reminders',              'perm'=>'fees'],
-                    ['route'=>'admin.daily-fees.index',         'icon'=>'fa-calendar-check',     'label'=>'Daily Fees',                 'perm'=>'daily_fees'],
-                    ['route'=>'admin.reports.index',            'icon'=>'fa-chart-bar',          'label'=>$sidebarLabels['reports'],     'perm'=>'reports'],
-                    ['route'=>'admin.notifications.index',      'icon'=>'fa-bell',               'label'=>'Notifications',              'perm'=>'notifications'],
-                    ['route'=>'admin.portal-settings',          'icon'=>'fa-graduation-cap',     'label'=>$sidebarLabels['portals'],     'perm'=>null],
-                    ['route'=>'admin.settings',                 'icon'=>'fa-sliders-h',          'label'=>$sidebarLabels['settings'],    'perm'=>null],
-                    ['route'=>'admin.guide',                    'icon'=>'fa-question-circle',    'label'=>$sidebarLabels['guide'],       'perm'=>null],
-                    ['route'=>'admin.subscription.show',        'icon'=>'fa-shield-alt',          'label'=>'Subscription',                 'perm'=>null],
-                    ['route'=>'admin.profile',                  'icon'=>'fa-user-circle',         'label'=>'My Profile',                  'perm'=>'__always__'],
+                    ['route'=>'admin.dashboard',                'icon'=>'fa-chart-pie',          'label'=>'Dashboard',                   'perm'=>'dashboard',      'module'=>null],
+                    ['route'=>'admin.students.index',           'icon'=>'fa-user-graduate',      'label'=>$sidebarLabels['students'],     'perm'=>'students',       'module'=>'students'],
+                    ['route'=>'admin.lecturers.index',          'icon'=>'fa-chalkboard-user',    'label'=>$sidebarLabels['teachers'],     'perm'=>'lecturers',      'module'=>'teachers'],
+                    ['route'=>'admin.class-teachers.index',     'icon'=>'fa-user-tie',           'label'=>'Class Teachers',              'perm'=>'class_teachers', 'module'=>'teachers'],
+                    ['route'=>'admin.work-monitoring.index',    'icon'=>'fa-tasks',              'label'=>'Teacher Work Logs',           'perm'=>'work_logs',      'module'=>'teachers'],
+                    ['route'=>'admin.student-reports.index',    'icon'=>'fa-file-signature',     'label'=>'Student Reports',             'perm'=>'student_reports','module'=>'student_reports'],
+                    ['route'=>'admin.staff-portal-users.index', 'icon'=>'fa-user-shield',        'label'=>'Staff Portals',               'perm'=>null,             'module'=>'staff_portal'],
+                    ['route'=>'admin.programs.index',           'icon'=>'fa-graduation-cap',     'label'=>$sidebarLabels['programs'],    'perm'=>'programs',       'module'=>'programs'],
+                    ['route'=>'admin.courses.index',            'icon'=>'fa-book-open',          'label'=>$sidebarLabels['courses'],     'perm'=>'courses',        'module'=>'courses'],
+                    ['route'=>'admin.attendance.index',         'icon'=>'fa-clipboard-check',    'label'=>$sidebarLabels['attendance'],  'perm'=>'attendance',     'module'=>'attendance'],
+                    ['route'=>'admin.academic-sessions.index',  'icon'=>'fa-calendar-alt',       'label'=>'Academic Sessions',           'perm'=>'academic_sessions','module'=>'academic_sessions'],
+                    ['route'=>'admin.timetable.index',          'icon'=>'fa-table-cells',        'label'=>'Timetable',                  'perm'=>'timetable',      'module'=>'timetable'],
+                    ['route'=>'admin.scheme-of-learning.index', 'icon'=>'fa-book-open',          'label'=>'Scheme of Learning',          'perm'=>'scheme_of_learning','module'=>'scheme_of_learning'],
+                    ['route'=>'admin.calendar.index',           'icon'=>'fa-calendar-days',      'label'=>'School Calendar',            'perm'=>'calendar',       'module'=>'calendar'],
+                    ['route'=>'admin.exams.index',              'icon'=>'fa-file-alt',           'label'=>$sidebarLabels['exams'],       'perm'=>'exams',          'module'=>'exams'],
+                    ['route'=>'admin.exams.sheet',              'icon'=>'fa-table',              'label'=>'Exams Sheet',                'perm'=>'exams',          'module'=>'exams'],
+                    ['route'=>'admin.exam-questions.index',     'icon'=>'fa-file-upload',        'label'=>'Exam Questions',              'perm'=>'exam_questions', 'module'=>'exams'],
+                    ['route'=>'admin.fees.index',               'icon'=>'fa-coins',              'label'=>$sidebarLabels['fees'],        'perm'=>'fees',           'module'=>'fees'],
+                    ['route'=>'admin.fees.term.index',          'icon'=>'fa-file-invoice-dollar', 'label'=>'Term Ledger',                'perm'=>'fees',           'module'=>'fees'],
+                    ['route'=>'admin.fees.reminders.index',     'icon'=>'fa-bell',               'label'=>'Fee Reminders',              'perm'=>'fees',           'module'=>'fee_reminders'],
+                    ['route'=>'admin.daily-fees.index',         'icon'=>'fa-calendar-check',     'label'=>'Daily Fees',                 'perm'=>'daily_fees',     'module'=>'daily_fees'],
+                    ['route'=>'admin.reports.index',            'icon'=>'fa-chart-bar',          'label'=>$sidebarLabels['reports'],    'perm'=>'reports',        'module'=>'reports'],
+                    ['route'=>'admin.notifications.index',      'icon'=>'fa-bell',               'label'=>'Notifications',              'perm'=>'notifications',  'module'=>'notifications'],
+                    ['route'=>'admin.portal-settings',          'icon'=>'fa-graduation-cap',     'label'=>$sidebarLabels['portals'],    'perm'=>null,             'module'=>'portals'],
+                    ['route'=>'admin.settings',                 'icon'=>'fa-sliders-h',          'label'=>$sidebarLabels['settings'],   'perm'=>null,             'module'=>null],
+                    ['route'=>'admin.guide',                    'icon'=>'fa-question-circle',    'label'=>$sidebarLabels['guide'],      'perm'=>null,             'module'=>null],
+                    ['route'=>'admin.subscription.show',        'icon'=>'fa-shield-alt',         'label'=>'Subscription',              'perm'=>null,             'module'=>null],
+                    ['route'=>'admin.profile',                  'icon'=>'fa-user-circle',        'label'=>'My Profile',                'perm'=>'__always__',     'module'=>null],
                 ];
 
             // If it's a staff portal user, filter out the ones they don't have permission for.
@@ -217,6 +230,11 @@
             }
         @endphp
         @foreach($menuItems as $item)
+        @php
+            // Skip items whose module is disabled for this tenant
+            $moduleKey = $item['module'] ?? null;
+            if ($moduleKey && isset($enabledModules) && $enabledModules !== null && !in_array($moduleKey, $enabledModules, true)) continue;
+        @endphp
         <a href="{{ route($item['route']) }}" @click="drawerOpen=false"
            class="sidebar-link flex items-center gap-3 px-3 py-3 rounded-xl text-white/65 text-sm font-medium
                   {{ request()->routeIs(str_replace('.index','',$item['route']).'*')||request()->routeIs($item['route'])?'active':'' }}">
@@ -242,6 +260,8 @@
 
         {{-- ── Website CMS ─────────────────────────────────────────── --}}
         @if(!$staffPortalNav && auth()->check() && (auth()->user()->isSuperAdmin() || auth()->user()->isBranchAdmin()))
+        @php $websiteEnabled = !isset($enabledModules) || $enabledModules === null || in_array('website', $enabledModules ?? [], true); @endphp
+        @if($websiteEnabled)
         <p class="text-white/20 text-[10px] font-semibold uppercase tracking-widest px-3 mt-4 mb-1">Website</p>
         <a href="{{ route('admin.website.dashboard') }}" @click="drawerOpen=false"
            class="sidebar-link flex items-center gap-3 px-3 py-3 rounded-xl text-white/65 text-sm font-medium
@@ -280,6 +300,7 @@
                 <i class="fas fa-cog w-4 text-center"></i> Site Settings
             </a>
         </div>
+        @endif
         @endif
         @endif
     </nav>

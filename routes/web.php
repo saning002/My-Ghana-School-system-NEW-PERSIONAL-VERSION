@@ -1904,6 +1904,7 @@ Route::prefix('owner')->name('owner.')->group(function () {
             ->parameters(['schools' => 'tenant']);
         Route::post('/schools/{tenant}/status',         [\App\Http\Controllers\Owner\TenantController::class,      'updateStatus'])->name('schools.status');
         Route::post('/schools/{tenant}/features',       [\App\Http\Controllers\Owner\TenantController::class,      'updateFeatures'])->name('schools.features');
+        Route::post('/schools/{tenant}/theme',          [\App\Http\Controllers\Owner\TenantController::class,      'updateTheme'])->name('schools.theme');
 
         // School setup — run migrations, create/reset admin
         Route::post('/schools/{tenant}/setup/migrate',       [\App\Http\Controllers\Owner\TenantSetupController::class, 'runMigrations'])->name('schools.setup.migrate');

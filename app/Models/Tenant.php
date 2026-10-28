@@ -15,6 +15,7 @@ class Tenant extends Model
         'db_host', 'db_port', 'db_name', 'db_username', 'db_password',
         'plan_id', 'status', 'trial_ends_at', 'subscription_ends_at',
         'backup_frequency', 'last_backup_at', 'notes',
+        'modules_json', 'theme_json',
         // Cloudinary per school
         'cloudinary_cloud_name', 'cloudinary_api_key', 'cloudinary_api_secret',
         // Backblaze B2 per school
@@ -25,6 +26,8 @@ class Tenant extends Model
         'trial_ends_at'        => 'datetime',
         'subscription_ends_at' => 'datetime',
         'last_backup_at'       => 'datetime',
+        'modules_json'         => 'array',
+        'theme_json'           => 'array',
     ];
 
     // Encrypt password on set
@@ -128,6 +131,49 @@ class Tenant extends Model
     {
         if (!$this->subscription_ends_at) return 0;
         return max(0, now()->diffInDays($this->subscription_ends_at, false));
+    }
+
+    /**
+     * Fast module check using cached modules_json column.
+     * Falls back to DB query if cache is empty.
+     */
+    public function moduleEnabled(string $key): bool
+    {
+        if (!empty($this->modules_json)) {
+            return in_array($key, (array) $this->modules_json, true);
+        }
+        return $this->hasFeature($key);
+    }
+
+    /**
+     * Rebuild and cache the modules_json column from tenant_features + plan_features.
+     * Call this after saving feature overrides.
+     */
+    public function rebuildModulesCache(): void
+    {
+        $allFeatures    = \App\Models\Feature::where('is_active', true)->get();
+        $planFeatureIds = $this->plan_id
+            ? \Illuminate\Support\Facades\DB::table('plan_features')
+                ->where('plan_id', $this->plan_id)->pluck('feature_id')->toArray()
+            : [];
+
+        $overrides = \Illuminate\Support\Facades\DB::table('tenant_features')
+            ->where('tenant_id', $this->id)
+            ->get(['feature_id', 'enabled'])
+            ->mapWithKeys(fn($r) => [(int)$r->feature_id => (bool)$r->enabled])
+            ->toArray();
+
+        $enabled = [];
+        foreach ($allFeatures as $f) {
+            $on = array_key_exists($f->id, $overrides)
+                ? $overrides[$f->id]
+                : in_array($f->id, $planFeatureIds);
+            if ($on) {
+                $enabled[] = $f->key;
+            }
+        }
+
+        $this->updateQuietly(['modules_json' => $enabled]);
     }
 
     /**

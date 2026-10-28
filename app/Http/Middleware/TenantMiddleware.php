@@ -65,6 +65,44 @@ class TenantMiddleware
         // Share tenant with all Blade views
         view()->share('currentTenant', $tenant);
 
+        // ── Check if the requested route's module is enabled ─────────────────
+        $enabledModules = $tenant->modules_json ?? null;
+        if ($enabledModules !== null) {
+            $routeModule = $this->routeToModule($request);
+            if ($routeModule && !in_array($routeModule, $enabledModules, true)) {
+                return response()->view('tenant.module-disabled', [
+                    'tenant' => $tenant,
+                    'module' => $routeModule,
+                ], 403);
+            }
+        }
+
+        // Share tenant with all Blade views
+        view()->share('currentTenant', $tenant);
+
+        // ── Share enabled modules so sidebar/views can hide disabled items ──
+        $enabledModules = $tenant->modules_json ?? [];
+        // If cache is empty (new tenant or pre-cache), treat all as enabled
+        // so nothing is accidentally hidden before owner has configured modules
+        if (empty($enabledModules)) {
+            $enabledModules = null; // null = all enabled (no restriction)
+        }
+        view()->share('enabledModules', $enabledModules);
+
+        // Helper: moduleEnabled($key) — true if null (all) or key in array
+        view()->composer('*', function ($view) use ($enabledModules) {
+            $view->with('_moduleEnabled', function (string $key) use ($enabledModules): bool {
+                if ($enabledModules === null) return true;
+                return in_array($key, $enabledModules, true);
+            });
+        });
+
+        // ── Apply owner-set admin theme to the tenant's site_settings ────────
+        // If owner set a theme_json on the tenant, it takes precedence
+        if (!empty($tenant->theme_json)) {
+            app()->instance('owner_theme_override', $tenant->theme_json);
+        }
+
         // ── Read school settings from the NOW-CORRECT tenant DB ──────────
         // The AppServiceProvider::boot() ran before the session was available
         // and read from the central DB. Override those shared variables here
@@ -219,5 +257,50 @@ class TenantMiddleware
         // Always reset to pgsql (the central DB) — never mysql
         DB::setDefaultConnection('pgsql');
         DB::purge('tenant');
+    }
+
+    /**
+     * Map an incoming route name to its module key.
+     * Returns null if the route doesn't belong to a gated module.
+     */
+    private function routeToModule(\Illuminate\Http\Request $request): ?string
+    {
+        $route = $request->route()?->getName() ?? '';
+
+        $map = [
+            'admin.students'         => 'students',
+            'admin.lecturers'        => 'teachers',
+            'admin.programs'         => 'programs',
+            'admin.courses'          => 'courses',
+            'admin.attendance'       => 'attendance',
+            'admin.exams'            => 'exams',
+            'admin.academic-sessions'=> 'academic_sessions',
+            'admin.timetable'        => 'timetable',
+            'admin.scheme-of-learning'=> 'scheme_of_learning',
+            'admin.calendar'         => 'calendar',
+            'admin.student-reports'  => 'student_reports',
+            'admin.fees'             => 'fees',
+            'admin.fees.term'        => 'fees',
+            'admin.fees.reminders'   => 'fee_reminders',
+            'admin.daily-fees'       => 'daily_fees',
+            'admin.reports'          => 'reports',
+            'admin.notifications'    => 'notifications',
+            'admin.portal-settings'  => 'portals',
+            'admin.staff-portal'     => 'staff_portal',
+            'admin.website'          => 'website',
+            'admin.work-monitoring'  => 'teachers',
+            'admin.class-teachers'   => 'teachers',
+            'admin.exam-questions'   => 'exams',
+            'student.'               => 'portals',
+            'website.'               => 'website',
+        ];
+
+        foreach ($map as $prefix => $module) {
+            if (str_starts_with($route, $prefix)) {
+                return $module;
+            }
+        }
+
+        return null; // dashboard, settings, profile — always accessible
     }
 }

@@ -102,7 +102,12 @@
 
 {{-- Tabs --}}
 <ul class="nav nav-tabs mb-3" id="schoolTabs">
-    <li class="nav-item"><a class="nav-link {{ session('active_tab') === 'setup' ? '' : 'active' }}" data-bs-toggle="tab" href="#tab-features">Features</a></li>
+    <li class="nav-item"><a class="nav-link {{ !session('active_tab') || session('active_tab') === 'modules' ? 'active' : '' }}" data-bs-toggle="tab" href="#tab-features">
+        <i class="fas fa-toggle-on me-1"></i> Modules
+    </a></li>
+    <li class="nav-item"><a class="nav-link {{ session('active_tab') === 'theme' ? 'active' : '' }}" data-bs-toggle="tab" href="#tab-theme">
+        <i class="fas fa-palette me-1"></i> Theme
+    </a></li>
     <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-payments">Payments</a></li>
     <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-backups">Backups</a></li>
     <li class="nav-item"><a class="nav-link {{ session('active_tab') === 'setup' ? 'active' : '' }}" data-bs-toggle="tab" href="#tab-setup">
@@ -113,21 +118,52 @@
 
 <div class="tab-content">
 
-    {{-- Features Tab --}}
-    <div class="tab-pane fade show active" id="tab-features">
+    {{-- Modules Tab --}}
+    <div class="tab-pane fade {{ !session('active_tab') || session('active_tab') === 'modules' ? 'show active' : '' }}" id="tab-features">
         <div class="owner-card">
-            <div class="card-header">Feature Overrides for {{ $tenant->name }}</div>
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <span><i class="fas fa-toggle-on me-2 text-success"></i> Module Access for {{ $tenant->name }}</span>
+                <span style="font-size:0.78rem;color:#94a3b8;">Toggle which parts of the system this school can access</span>
+            </div>
             <div class="card-body">
-                <p style="font-size:0.85rem;color:#64748b;">
-                    Check to <strong>enable</strong> a feature for this school. Uncheck to <strong>disable</strong>.
+
+                @if(session('active_tab') === 'modules')
+                <div class="alert alert-success alert-dismissible fade show" style="border-radius:8px;" role="alert">
+                    <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                @endif
+
+                <p style="font-size:0.85rem;color:#64748b;margin-bottom:1.5rem;">
+                    <i class="fas fa-info-circle text-info me-1"></i>
+                    Enabled modules appear in the school's sidebar. Disabled modules are completely hidden and blocked.
                     <span class="text-success"><i class="fas fa-layer-group"></i></span> = included in their plan.
+                    Changes take effect immediately — no restart needed.
                 </p>
+
                 <form method="POST" action="{{ route('owner.schools.features', $tenant) }}">
                     @csrf
+                    @php
+                        $moduleGroups = [
+                            'Core'          => ['icon' => 'fa-school',         'color' => '#3b82f6'],
+                            'Academic'      => ['icon' => 'fa-graduation-cap', 'color' => '#8b5cf6'],
+                            'Finance'       => ['icon' => 'fa-coins',          'color' => '#f59e0b'],
+                            'Communication' => ['icon' => 'fa-bell',           'color' => '#10b981'],
+                            'Reports'       => ['icon' => 'fa-chart-bar',      'color' => '#f43f5e'],
+                            'Website'       => ['icon' => 'fa-globe',          'color' => '#0891b2'],
+                        ];
+                    @endphp
+
                     @forelse($features as $group => $groupFeatures)
+                    @php $gStyle = $moduleGroups[$group] ?? ['icon' => 'fa-puzzle-piece', 'color' => '#64748b']; @endphp
                     <div class="mb-4">
-                        <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:1px;color:#94a3b8;font-weight:700;margin-bottom:0.75rem;">
-                            {{ ucfirst($group) }}
+                        <div class="d-flex align-items-center gap-2 mb-3 pb-2" style="border-bottom:2px solid #f1f5f9;">
+                            <div style="width:28px;height:28px;background:{{ $gStyle['color'] }}20;border-radius:6px;display:flex;align-items:center;justify-content:center;">
+                                <i class="fas {{ $gStyle['icon'] }}" style="color:{{ $gStyle['color'] }};font-size:0.75rem;"></i>
+                            </div>
+                            <span style="font-size:0.78rem;text-transform:uppercase;letter-spacing:1px;color:#64748b;font-weight:700;">
+                                {{ ucfirst($group) }}
+                            </span>
                         </div>
                         <div class="row g-2">
                             @foreach($groupFeatures as $feature)
@@ -137,32 +173,232 @@
                                     : in_array($feature->id, $planFeatureIds);
                             @endphp
                             <div class="col-md-4 col-sm-6">
-                                <div class="form-check d-flex align-items-center gap-2 p-2 rounded" style="background:#f8fafc;">
-                                    <input class="form-check-input" type="checkbox"
+                                <label for="feat_{{ $feature->id }}"
+                                    style="display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-radius:10px;border:2px solid {{ $isEnabled ? '#dcfce7' : '#f1f5f9' }};background:{{ $isEnabled ? '#f0fdf4' : '#f8fafc' }};cursor:pointer;transition:all .15s;"
+                                    class="feat-label">
+                                    <input class="form-check-input mt-1 feat-check" type="checkbox"
                                         name="features[]"
                                         value="{{ $feature->id }}"
                                         id="feat_{{ $feature->id }}"
                                         {{ $isEnabled ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="feat_{{ $feature->id }}" style="font-size:0.875rem;cursor:pointer;">
-                                        {{ $feature->label }}
-                                        @if(in_array($feature->id, $planFeatureIds))
-                                            <small class="text-success ms-1" title="In plan"><i class="fas fa-layer-group"></i></small>
+                                    <div>
+                                        <div style="font-size:0.875rem;font-weight:600;color:#1e293b;">
+                                            {{ $feature->label }}
+                                            @if(in_array($feature->id, $planFeatureIds))
+                                                <i class="fas fa-layer-group text-success ms-1" title="In plan" style="font-size:0.7rem;"></i>
+                                            @endif
+                                        </div>
+                                        @if(!empty($feature->description))
+                                        <div style="font-size:0.75rem;color:#94a3b8;margin-top:2px;">{{ $feature->description }}</div>
                                         @endif
-                                    </label>
-                                </div>
+                                    </div>
+                                </label>
                             </div>
                             @endforeach
                         </div>
                     </div>
                     @empty
-                    <p class="text-muted">No features defined yet. <a href="{{ route('owner.features.index') }}">Add features</a>.</p>
+                    <div class="text-center py-4">
+                        <i class="fas fa-puzzle-piece text-muted mb-2" style="font-size:2rem;"></i>
+                        <p class="text-muted">No modules defined yet.</p>
+                        <a href="{{ route('owner.features.index') }}" class="btn btn-sm btn-owner-primary">
+                            <i class="fas fa-plus me-1"></i> Add Modules
+                        </a>
+                    </div>
                     @endforelse
+
                     @if($features->count())
-                    <button type="submit" class="btn btn-owner-primary mt-2">
-                        <i class="fas fa-save me-1"></i> Save Feature Overrides
-                    </button>
+                    <div class="d-flex gap-2 mt-3 pt-3" style="border-top:1px solid #f1f5f9;">
+                        <button type="submit" class="btn btn-owner-primary">
+                            <i class="fas fa-save me-1"></i> Save Module Access
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="toggleAll(true)">Enable All</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="toggleAll(false)">Disable All</button>
+                    </div>
                     @endif
                 </form>
+            </div>
+        </div>
+    </div>
+
+    {{-- Theme Tab --}}
+    <div class="tab-pane fade {{ session('active_tab') === 'theme' ? 'show active' : '' }}" id="tab-theme">
+        <div class="row g-4">
+            {{-- Colour pickers --}}
+            <div class="col-lg-7">
+                <div class="owner-card">
+                    <div class="card-header d-flex align-items-center gap-2">
+                        <i class="fas fa-palette text-info"></i>
+                        Admin Panel Theme for {{ $tenant->name }}
+                    </div>
+                    <div class="card-body">
+
+                        @if(session('active_tab') === 'theme')
+                        <div class="alert alert-success alert-dismissible fade show" style="border-radius:8px;" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                        @endif
+
+                        <p style="font-size:0.85rem;color:#64748b;margin-bottom:1.5rem;">
+                            Set the admin panel colours for this school. These override anything the school sets themselves,
+                            so use it when you want to brand a school's panel differently.
+                            Leave fields blank to let the school control their own colours.
+                        </p>
+
+                        <form method="POST" action="{{ route('owner.schools.theme', $tenant) }}">
+                            @csrf
+                            @php $th = $tenant->theme_json ?? []; @endphp
+
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold" style="font-size:0.85rem;">
+                                        Sidebar Accent Colour
+                                        <small class="text-muted fw-normal">(top glow &amp; active indicator)</small>
+                                    </label>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <input type="color" name="adminPrimary" class="form-control form-control-color"
+                                            value="{{ $th['adminPrimary'] ?? '#D4A017' }}" style="width:60px;height:38px;">
+                                        <input type="text" class="form-control form-control-sm color-text"
+                                            value="{{ $th['adminPrimary'] ?? '#D4A017' }}"
+                                            placeholder="#D4A017" style="font-family:monospace;"
+                                            oninput="syncColor(this, 'adminPrimary')">
+                                        <input type="hidden" name="adminPrimary" id="inp_adminPrimary" value="{{ $th['adminPrimary'] ?? '#D4A017' }}">
+                                    </div>
+                                    <div class="form-text">Affects sidebar active link, card accents, and buttons.</div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold" style="font-size:0.85rem;">
+                                        Sidebar Background Colour
+                                    </label>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <input type="color" name="adminNav_color" class="form-control form-control-color"
+                                            value="{{ $th['adminNav'] ?? '#0B1121' }}" style="width:60px;height:38px;">
+                                        <input type="text" class="form-control form-control-sm"
+                                            value="{{ $th['adminNav'] ?? '#0B1121' }}"
+                                            placeholder="#0B1121" style="font-family:monospace;"
+                                            oninput="syncColor(this, 'adminNav')">
+                                        <input type="hidden" name="adminNav" id="inp_adminNav" value="{{ $th['adminNav'] ?? '#0B1121' }}">
+                                    </div>
+                                    <div class="form-text">The dark background of the left sidebar.</div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold" style="font-size:0.85rem;">
+                                        Primary Action Colour
+                                        <small class="text-muted fw-normal">(buttons, badges)</small>
+                                    </label>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <input type="color" name="primary_color" class="form-control form-control-color"
+                                            value="{{ $th['primary'] ?? '#f59e0b' }}" style="width:60px;height:38px;">
+                                        <input type="text" class="form-control form-control-sm"
+                                            value="{{ $th['primary'] ?? '#f59e0b' }}"
+                                            placeholder="#f59e0b" style="font-family:monospace;"
+                                            oninput="syncColor(this, 'primary')">
+                                        <input type="hidden" name="primary" id="inp_primary" value="{{ $th['primary'] ?? '#f59e0b' }}">
+                                    </div>
+                                    <div class="form-text">Used for Save buttons, success states, and pill badges.</div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold" style="font-size:0.85rem;">
+                                        Accent / Link Colour
+                                    </label>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <input type="color" name="accent_color" class="form-control form-control-color"
+                                            value="{{ $th['accent'] ?? '#0891b2' }}" style="width:60px;height:38px;">
+                                        <input type="text" class="form-control form-control-sm"
+                                            value="{{ $th['accent'] ?? '#0891b2' }}"
+                                            placeholder="#0891b2" style="font-family:monospace;"
+                                            oninput="syncColor(this, 'accent')">
+                                        <input type="hidden" name="accent" id="inp_accent" value="{{ $th['accent'] ?? '#0891b2' }}">
+                                    </div>
+                                    <div class="form-text">Used for active tab underlines and secondary UI elements.</div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex gap-2 mt-4">
+                                <button type="submit" class="btn btn-owner-primary">
+                                    <i class="fas fa-save me-1"></i> Save Theme
+                                </button>
+                                @if(!empty($th))
+                                <button type="button" class="btn btn-outline-danger btn-sm"
+                                    onclick="if(confirm('Reset theme to defaults?')) { document.getElementById('resetThemeForm').submit(); }">
+                                    <i class="fas fa-undo me-1"></i> Reset to Default
+                                </button>
+                                @endif
+                            </div>
+                        </form>
+
+                        {{-- Reset form (empties theme_json) --}}
+                        <form id="resetThemeForm" method="POST" action="{{ route('owner.schools.theme', $tenant) }}" style="display:none;">
+                            @csrf
+                            {{-- send empty values to clear --}}
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Live preview --}}
+            <div class="col-lg-5">
+                <div class="owner-card">
+                    <div class="card-header"><i class="fas fa-eye me-2"></i>Live Preview</div>
+                    <div class="card-body p-0">
+                        <div id="themePreview" style="border-radius:0 0 10px 10px;overflow:hidden;">
+                            {{-- Sidebar preview --}}
+                            <div id="prev_sidebar" style="background:#0B1121;padding:16px 14px;display:flex;align-items:center;gap:10px;">
+                                <div id="prev_logo" style="width:36px;height:36px;background:#D4A017;border-radius:8px;display:flex;align-items:center;justify-content:center;">
+                                    <i class="fas fa-school" style="color:#fff;font-size:0.9rem;"></i>
+                                </div>
+                                <div>
+                                    <div style="color:#fff;font-size:0.85rem;font-weight:700;">{{ $tenant->name }}</div>
+                                    <div style="color:rgba(255,255,255,.4);font-size:0.7rem;">Admin Panel</div>
+                                </div>
+                            </div>
+                            {{-- Nav items preview --}}
+                            <div id="prev_nav" style="background:#0B1121;padding:8px 8px 4px;">
+                                <div id="prev_active_item" style="background:rgba(212,160,23,.14);border-left:3px solid #D4A017;border-radius:8px;padding:8px 12px;color:#fff;font-size:0.82rem;font-weight:600;display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+                                    <i class="fas fa-chart-pie" style="width:16px;text-align:center;"></i> Dashboard
+                                </div>
+                                <div style="padding:8px 12px;color:rgba(255,255,255,.5);font-size:0.82rem;display:flex;align-items:center;gap:8px;">
+                                    <i class="fas fa-user-graduate" style="width:16px;text-align:center;"></i> Students
+                                </div>
+                                <div style="padding:8px 12px;color:rgba(255,255,255,.5);font-size:0.82rem;display:flex;align-items:center;gap:8px;">
+                                    <i class="fas fa-coins" style="width:16px;text-align:center;"></i> Fees &amp; Payments
+                                </div>
+                            </div>
+                            {{-- Content area preview --}}
+                            <div style="background:#f4f8ff;padding:12px;">
+                                <div id="prev_btn" style="display:inline-flex;align-items:center;gap:6px;background:#f59e0b;color:#fff;padding:6px 14px;border-radius:8px;font-size:0.8rem;font-weight:600;">
+                                    <i class="fas fa-save"></i> Save Changes
+                                </div>
+                                <div style="margin-top:8px;background:#fff;border-radius:8px;padding:10px;border:1px solid #e2e8f0;">
+                                    <div id="prev_badge" style="display:inline-block;background:#fef8e8;color:#D4A017;font-size:0.7rem;font-weight:700;padding:2px 8px;border-radius:20px;">Active</div>
+                                    <span style="font-size:0.8rem;color:#64748b;margin-left:8px;">Student: John Mensah</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Current applied theme --}}
+                @if(!empty($th))
+                <div class="owner-card mt-3">
+                    <div class="card-header" style="font-size:0.85rem;">Currently Applied</div>
+                    <div class="card-body py-2">
+                        @foreach(['adminPrimary' => 'Sidebar Accent', 'adminNav' => 'Sidebar BG', 'primary' => 'Primary', 'accent' => 'Accent'] as $k => $label)
+                        @if(isset($th[$k]))
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <div style="width:20px;height:20px;background:{{ $th[$k] }};border-radius:4px;border:1px solid rgba(0,0,0,.1);flex-shrink:0;"></div>
+                            <span style="font-size:0.8rem;color:#64748b;">{{ $label }}</span>
+                            <code style="font-size:0.75rem;color:#94a3b8;">{{ $th[$k] }}</code>
+                        </div>
+                        @endif
+                        @endforeach
+                    </div>
+                </div>
+                @endif
             </div>
         </div>
     </div>
@@ -490,6 +726,96 @@ const ADMINS_URL  = '{{ route('owner.schools.setup.admins',   $tenant) }}';
 const BRANCHES_URL= '{{ route('owner.schools.setup.branches', $tenant) }}';
 const DELETE_BASE = '/owner/schools/' + TENANT_ID + '/setup/admins/';
 const UPDATE_BASE = '/owner/schools/' + TENANT_ID + '/setup/admins/';
+
+// ── Module toggle helpers ────────────────────────────────────────────────────
+function toggleAll(state) {
+    document.querySelectorAll('.feat-check').forEach(cb => {
+        cb.checked = state;
+        const label = cb.closest('.feat-label');
+        if (label) {
+            label.style.background = state ? '#f0fdf4' : '#f8fafc';
+            label.style.borderColor = state ? '#dcfce7' : '#f1f5f9';
+        }
+    });
+}
+
+document.querySelectorAll('.feat-check').forEach(cb => {
+    cb.addEventListener('change', function () {
+        const label = this.closest('.feat-label');
+        if (label) {
+            label.style.background  = this.checked ? '#f0fdf4' : '#f8fafc';
+            label.style.borderColor = this.checked ? '#dcfce7' : '#f1f5f9';
+        }
+    });
+});
+
+// ── Theme live preview ───────────────────────────────────────────────────────
+const colorInputs = {
+    adminPrimary: { el: null, targets: ['prev_logo', 'prev_active_item', 'prev_badge'] },
+    adminNav:     { el: null, targets: ['prev_sidebar', 'prev_nav'] },
+    primary:      { el: null, targets: ['prev_btn'] },
+    accent:       { el: null, targets: [] },
+};
+
+function syncColor(textInput, key) {
+    const val = textInput.value.trim();
+    const hidden = document.getElementById('inp_' + key);
+    if (hidden) hidden.value = val;
+    // sync the color picker on the same row
+    const colorPicker = textInput.closest('.d-flex')?.querySelector('input[type="color"]');
+    if (colorPicker && /^#[0-9A-Fa-f]{6}$/.test(val)) {
+        colorPicker.value = val;
+        updatePreview(key, val);
+    }
+}
+
+function updatePreview(key, val) {
+    if (key === 'adminNav') {
+        const sidebar = document.getElementById('prev_sidebar');
+        const nav     = document.getElementById('prev_nav');
+        if (sidebar) sidebar.style.background = val;
+        if (nav)     nav.style.background     = val;
+    }
+    if (key === 'adminPrimary') {
+        const logo = document.getElementById('prev_logo');
+        if (logo) logo.style.background = val;
+        const activeItem = document.getElementById('prev_active_item');
+        if (activeItem) {
+            activeItem.style.borderLeftColor = val;
+            activeItem.style.background = val + '22';
+        }
+        const badge = document.getElementById('prev_badge');
+        if (badge) {
+            badge.style.color = val;
+            badge.style.background = val + '22';
+        }
+    }
+    if (key === 'primary') {
+        const btn = document.getElementById('prev_btn');
+        if (btn) btn.style.background = val;
+    }
+}
+
+// Wire color pickers
+document.querySelectorAll('input[type="color"]').forEach(picker => {
+    picker.addEventListener('input', function () {
+        const row    = this.closest('.d-flex');
+        const text   = row?.querySelector('input[type="text"]');
+        const name   = this.getAttribute('name');
+        // Determine key from the name (strip _color suffix)
+        const key = name?.replace('_color', '').replace('_', '');
+        if (text) text.value = this.value;
+        // find the hidden input
+        const keyMap = { adminPrimary: 'adminPrimary', adminNav_color: 'adminNav', primary_color: 'primary', accent_color: 'accent' };
+        const hKey = keyMap[name] || name;
+        const hidden = document.getElementById('inp_' + hKey);
+        if (hidden) hidden.value = this.value;
+        // update preview
+        const previewKey = hKey === 'adminNav_color' ? 'adminNav' : hKey === 'primary_color' ? 'primary' : hKey === 'accent_color' ? 'accent' : hKey;
+        updatePreview(previewKey, this.value);
+    });
+});
+
 
 let branchCache = null;
 
