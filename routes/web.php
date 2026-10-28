@@ -1556,6 +1556,61 @@ Route::get('/debug/test-save-settings', function (\Illuminate\Http\Request $requ
 // ── Go-Live Health Check ──────────────────────────────────────────────────
 Route::get('/health-check', [\App\Http\Controllers\HealthCheckController::class, 'check'])->middleware('web');
 
+// ── Setup: run central DB migration + seed module features ───────────────
+// Hit: /setup/run-migrations-and-seed
+// This adds modules_json + theme_json to tenants table and seeds all 18 modules.
+Route::get('/setup/run-migrations-and-seed', function () {
+    $results = [];
+
+    // Step 1: Run the migration (adds modules_json + theme_json to tenants)
+    try {
+        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        $results[] = '✅ Migrations ran: ' . trim(\Illuminate\Support\Facades\Artisan::output());
+    } catch (\Throwable $e) {
+        $results[] = '⚠️ Migration error: ' . $e->getMessage();
+    }
+
+    // Step 2: Seed module features
+    try {
+        \Illuminate\Support\Facades\Artisan::call('db:seed', [
+            '--class' => 'ModuleFeatureSeeder',
+            '--force' => true,
+        ]);
+        $results[] = '✅ Module features seeded: ' . trim(\Illuminate\Support\Facades\Artisan::output());
+    } catch (\Throwable $e) {
+        $results[] = '⚠️ Seeder error: ' . $e->getMessage();
+    }
+
+    // Step 3: Check what's in the features table now
+    try {
+        $features = \Illuminate\Support\Facades\DB::table('features')
+            ->orderBy('group')->orderBy('sort_order')
+            ->get(['key', 'label', 'group']);
+        $results[] = '📋 Features in DB (' . $features->count() . ' total):';
+        foreach ($features as $f) {
+            $results[] = "   [{$f->group}] {$f->key} — {$f->label}";
+        }
+    } catch (\Throwable $e) {
+        $results[] = '⚠️ Could not read features: ' . $e->getMessage();
+    }
+
+    // Step 4: Check tenants table has the new columns
+    try {
+        $cols = \Illuminate\Support\Facades\DB::connection('pgsql')
+            ->select("SELECT column_name FROM information_schema.columns WHERE table_name = 'tenants' AND column_name IN ('modules_json','theme_json')");
+        $colNames = collect($cols)->pluck('column_name')->toArray();
+        $results[] = '🔍 New tenant columns: ' . implode(', ', $colNames ?: ['NONE — migration may have failed']);
+    } catch (\Throwable $e) {
+        $results[] = '⚠️ Column check error: ' . $e->getMessage();
+    }
+
+    return response('<pre style="font-family:monospace;padding:20px;background:#0f172a;color:#94a3b8;min-height:100vh;">'
+        . implode("\n", $results)
+        . "\n\n<span style='color:#4ade80;font-weight:bold;'>Done. You can close this tab.</span>"
+        . '</pre>');
+})->middleware('web');
+
+
 // ── Diagnostic: check site_settings in CENTRAL DB ────────────────────────
 Route::get('/debug/central-site-settings', function () {
     try {
