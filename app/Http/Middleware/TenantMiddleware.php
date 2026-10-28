@@ -77,28 +77,15 @@ class TenantMiddleware
             }
         }
 
-        // Share tenant with all Blade views
-        view()->share('currentTenant', $tenant);
-
         // ── Share enabled modules so sidebar/views can hide disabled items ──
-        $enabledModules = $tenant->modules_json ?? [];
-        // If cache is empty (new tenant or pre-cache), treat all as enabled
-        // so nothing is accidentally hidden before owner has configured modules
+        $enabledModules = $tenant->modules_json ?? null;
+        // null = all enabled (no restriction — new tenant not yet configured)
         if (empty($enabledModules)) {
-            $enabledModules = null; // null = all enabled (no restriction)
+            $enabledModules = null;
         }
         view()->share('enabledModules', $enabledModules);
 
-        // Helper: moduleEnabled($key) — true if null (all) or key in array
-        view()->composer('*', function ($view) use ($enabledModules) {
-            $view->with('_moduleEnabled', function (string $key) use ($enabledModules): bool {
-                if ($enabledModules === null) return true;
-                return in_array($key, $enabledModules, true);
-            });
-        });
-
-        // ── Apply owner-set admin theme to the tenant's site_settings ────────
-        // If owner set a theme_json on the tenant, it takes precedence
+        // ── Apply owner-set admin theme ───────────────────────────────────────
         if (!empty($tenant->theme_json)) {
             app()->instance('owner_theme_override', $tenant->theme_json);
         }
@@ -108,9 +95,16 @@ class TenantMiddleware
         // and read from the central DB. Override those shared variables here
         // so the admin panel shows the correct school's name, logo, etc.
         try {
-            $schoolName     = Setting::get('school_name', config('app.name'));
-            $schoolSubtitle = Setting::get('school_subtitle', '');
-            $storedLogo     = Setting::get('site_logo_url');
+            // Fetch ALL needed settings in ONE query
+            $neededKeys = ['school_name','school_subtitle','site_logo_url'];
+            $coreSettings = DB::connection('tenant')
+                ->table('settings')
+                ->whereIn('key', $neededKeys)
+                ->pluck('value', 'key');
+
+            $schoolName     = $coreSettings['school_name']     ?? config('app.name');
+            $schoolSubtitle = $coreSettings['school_subtitle'] ?? '';
+            $storedLogo     = $coreSettings['site_logo_url']   ?? null;
 
             $logoUrl = null;
             if ($storedLogo) {
@@ -120,19 +114,51 @@ class TenantMiddleware
             }
 
             $sidebarLabels = [
-                'students'   => Setting::get('sidebar_students_label', 'Students'),
-                'lecturers'  => Setting::get('sidebar_lecturers_label', 'Teachers'),
-                'teachers'   => Setting::get('sidebar_teachers_label', 'Teachers'),
-                'programs'   => Setting::get('sidebar_programs_label', 'Programs'),
-                'courses'    => Setting::get('sidebar_courses_label', 'Courses'),
-                'attendance' => Setting::get('sidebar_attendance_label', 'Attendance'),
-                'exams'      => Setting::get('sidebar_exams_label', 'Exams & Results'),
-                'fees'       => Setting::get('sidebar_fees_label', 'Fees & Payments'),
-                'reports'    => Setting::get('sidebar_reports_label', 'Reports'),
-                'portals'    => Setting::get('sidebar_portals_label', 'Student Portal'),
-                'settings'   => Setting::get('sidebar_settings_label', 'Settings'),
-                'guide'      => Setting::get('sidebar_guide_label', 'Admin Guide'),
+                'students'   => 'Students',
+                'lecturers'  => 'Teachers',
+                'teachers'   => 'Teachers',
+                'programs'   => 'Programs',
+                'courses'    => 'Courses',
+                'attendance' => 'Attendance',
+                'exams'      => 'Exams & Results',
+                'fees'       => 'Fees & Payments',
+                'reports'    => 'Reports',
+                'portals'    => 'Student Portal',
+                'settings'   => 'Settings',
+                'guide'      => 'Admin Guide',
             ];
+
+            // Fetch all sidebar labels in ONE query instead of 12 separate queries
+            $labelKeys = [
+                'sidebar_students_label','sidebar_lecturers_label','sidebar_teachers_label',
+                'sidebar_programs_label','sidebar_courses_label','sidebar_attendance_label',
+                'sidebar_exams_label','sidebar_fees_label','sidebar_reports_label',
+                'sidebar_portals_label','sidebar_settings_label','sidebar_guide_label',
+            ];
+            $settingsRows = DB::connection('tenant')
+                ->table('settings')
+                ->whereIn('key', $labelKeys)
+                ->pluck('value', 'key');
+
+            $keyMap = [
+                'sidebar_students_label'   => 'students',
+                'sidebar_lecturers_label'  => 'lecturers',
+                'sidebar_teachers_label'   => 'teachers',
+                'sidebar_programs_label'   => 'programs',
+                'sidebar_courses_label'    => 'courses',
+                'sidebar_attendance_label' => 'attendance',
+                'sidebar_exams_label'      => 'exams',
+                'sidebar_fees_label'       => 'fees',
+                'sidebar_reports_label'    => 'reports',
+                'sidebar_portals_label'    => 'portals',
+                'sidebar_settings_label'   => 'settings',
+                'sidebar_guide_label'      => 'guide',
+            ];
+            foreach ($keyMap as $dbKey => $labelKey) {
+                if (!empty($settingsRows[$dbKey])) {
+                    $sidebarLabels[$labelKey] = $settingsRows[$dbKey];
+                }
+            }
 
             $programLabel = $sidebarLabels['programs'] ?? 'Programs';
             $programLabelSingular = \Illuminate\Support\Str::singular($programLabel);

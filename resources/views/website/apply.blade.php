@@ -58,7 +58,7 @@
             <div class="field"><label>Date of Birth *</label><input type="date" name="child_dob" value="{{ old('child_dob') }}" required></div>
             <div class="field"><label>Gender *</label>
               <select name="child_gender" required>
-                <option value="">Select–�</option>
+                <option value="">Select–</option>
                 <option value="M" {{ old('child_gender')=='M'?'selected':'' }}>Male</option>
                 <option value="F" {{ old('child_gender')=='F'?'selected':'' }}>Female</option>
               </select>
@@ -66,14 +66,14 @@
           </div>
           <div class="field"><label>Program Applying For *</label>
             <select name="program_applying" required>
-              <option value="">Select a program–�</option>
+              <option value="">Select a program–</option>
               @foreach([['daycare','Day Care (Ages 1–2)'],['nursery','Nursery (Ages 2–3)'],['preschool','Preschool (Ages 3–4)'],['kindergarten','Kindergarten (Ages 4–5)']] as [$v,$l])
               <option value="{{ $v }}" {{ old('program_applying')==$v?'selected':'' }}>{{ $l }}</option>
               @endforeach
             </select>
           </div>
           <div class="field"><label>Previous School (if any)</label><input type="text" name="previous_school" value="{{ old('previous_school') }}" placeholder="Leave blank if none"></div>
-          <div class="field"><label>Special Needs / Medical Notes</label><textarea name="special_needs" rows="3" placeholder="Allergies, disabilities, or medical conditions we should know about–�">{{ old('special_needs') }}</textarea></div>
+          <div class="field"><label>Special Needs / Medical Notes</label><textarea name="special_needs" rows="3" placeholder="Allergies, disabilities, or medical conditions we should know about–">{{ old('special_needs') }}</textarea></div>
         </div>
 
         <div class="form-block reveal reveal-delay-1">
@@ -82,7 +82,7 @@
             <div class="field"><label>Full Name *</label><input type="text" name="parent_name" value="{{ old('parent_name') }}" required></div>
             <div class="field"><label>Relationship *</label>
               <select name="relationship" required>
-                <option value="">Select–�</option>
+                <option value="">Select–</option>
                 @foreach(['Mother','Father','Guardian','Grandparent','Other'] as $r)
                 <option value="{{ $r }}" {{ old('relationship')==$r?'selected':'' }}>{{ $r }}</option>
                 @endforeach
@@ -96,7 +96,7 @@
           <div class="field"><label>Home Address *</label><textarea name="address" rows="2" required>{{ old('address') }}</textarea></div>
           <div class="field"><label>How Did You Hear About Us?</label>
             <select name="how_did_you_hear">
-              <option value="">Select–�</option>
+              <option value="">Select–</option>
               @foreach(['Social Media','Friend or Family','Google Search','School Website','Flyer / Poster','Other'] as $h)
               <option value="{{ $h }}" {{ old('how_did_you_hear')==$h?'selected':'' }}>{{ $h }}</option>
               @endforeach

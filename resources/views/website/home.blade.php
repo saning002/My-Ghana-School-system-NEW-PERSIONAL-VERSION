@@ -65,7 +65,7 @@ if ($heroLayout === 'centered') {
     $showStats = true; $showCtasBool = true;
 }
 @endphp
-/* �"?�"? Hero �"?�"? */
+/* "?"? Hero "?"? */
 .hero{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden;{{ $heroBg }}}
 .hero-video{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);min-width:100%;min-height:100%;width:auto;height:auto;object-fit:cover;z-index:0;}
 /* YouTube iframe needs different sizing */
@@ -127,7 +127,7 @@ iframe.hero-video{width:100vw;height:56.25vw;min-height:100vh;min-width:177.78vh
 .why-card h3{font-size:1.05rem;font-weight:800;color:var(--navy);margin-bottom:10px;}
 .why-card p{font-size:.9rem;color:var(--gray-500);line-height:1.75;}
 
-/* �"?�"? Programs �"?�"? */
+/* "?"? Programs "?"? */
 .prog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(256px,1fr));gap:24px;}
 .prog-card{border-radius:var(--r-xl);overflow:hidden;box-shadow:var(--shadow-sm);border:1px solid var(--gray-200);background:var(--white);transition:var(--trans);}
 .prog-card:hover{transform:translateY(-5px);box-shadow:var(--shadow-lg);border-color:transparent;}
@@ -139,7 +139,7 @@ iframe.hero-video{width:100vw;height:56.25vw;min-height:100vh;min-width:177.78vh
 .prog-body{padding:20px 26px 24px;}
 .prog-body p{font-size:.9rem;color:var(--gray-500);line-height:1.75;margin-bottom:16px;}
 
-/* �"?�"? Testimonials �"?�"? */
+/* "?"? Testimonials "?"? */
 .testi-section{background:linear-gradient(160deg,var(--navy) 0%,var(--nav-bg) 100%);}
 .testi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:20px;}
 .testi-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:26px;transition:var(--trans);}
@@ -152,7 +152,7 @@ iframe.hero-video{width:100vw;height:56.25vw;min-height:100vh;min-width:177.78vh
 .testi-name{font-size:.88rem;font-weight:700;color:#fff;}
 .testi-role{font-size:.75rem;color:rgba(255,255,255,.4);margin-top:2px;}
 
-/* �"?�"? Blog �"?�"? */
+/* "?"? Blog "?"? */
 .blog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:24px;}
 .blog-card{border-radius:var(--r-xl);overflow:hidden;background:var(--white);box-shadow:var(--shadow-sm);border:1px solid var(--gray-200);transition:var(--trans);}
 .blog-card:hover{transform:translateY(-5px);box-shadow:var(--shadow-lg);border-color:transparent;}
@@ -166,7 +166,7 @@ iframe.hero-video{width:100vw;height:56.25vw;min-height:100vh;min-width:177.78vh
 .blog-link{font-size:.82rem;font-weight:700;color:var(--gold-dark);display:inline-flex;align-items:center;gap:5px;transition:var(--trans);}
 .blog-link:hover{gap:9px;}
 
-/* �"?�"? CTA banner �"?�"? */
+/* "?"? CTA banner "?"? */
 .cta-banner{background:linear-gradient(135deg,var(--gold) 0%,var(--gold-dark) 100%);padding:88px 0;text-align:center;position:relative;overflow:hidden;}
 .cta-banner::before{content:'';position:absolute;top:-60px;left:-60px;width:280px;height:280px;border-radius:50%;background:rgba(255,255,255,.07);}
 .cta-banner::after{content:'';position:absolute;bottom:-80px;right:-40px;width:360px;height:360px;border-radius:50%;background:rgba(255,255,255,.06);}
@@ -181,7 +181,7 @@ iframe.hero-video{width:100vw;height:56.25vw;min-height:100vh;min-width:177.78vh
 
 @section('content')
 
-{{-- �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� HERO �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� --}}
+{{-- ............................... HERO ................................ --}}
 <section class="hero">
     @if($heroBgType === 'video' && $site->hero_bg_video_url)
         @php
@@ -255,7 +255,7 @@ iframe.hero-video{width:100vw;height:56.25vw;min-height:100vh;min-width:177.78vh
     </div>
 </section>
 
-{{-- �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� WHY CHOOSE US �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� --}}
+{{-- ........................... WHY CHOOSE US ........................... --}}
 @php
 $whyFeatures = $site->why_features ?? [
     ['icon'=>'fa-heart','title'=>'Child-Centred Care','desc'=>'Every decision we make puts your child\'s wellbeing and happiness first.'],
@@ -285,10 +285,10 @@ $whyFeatures = $site->why_features ?? [
   </div>
 </section>
 
-{{-- �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� PROGRAMS �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� --}}
+{{-- ............................... PROGRAMS ............................ --}}
 {{-- Programs section removed from home page – programs are shown on /academics --}}
 
-{{-- �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� TESTIMONIALS �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� --}}
+{{-- .............................. TESTIMONIALS ......................... --}}
 @if($testimonials->count())
 <section class="section testi-section">
   <div class="container">
@@ -300,7 +300,7 @@ $whyFeatures = $site->why_features ?? [
     <div class="testi-grid">
       @foreach($testimonials as $t)
       <div class="testi-card reveal">
-        <div class="testi-stars">{{ str_repeat('�~.', $t->rating) }}{{ str_repeat('�~?', 5 - $t->rating) }}</div>
+        <div class="testi-stars">{{ str_repeat('~.', $t->rating) }}{{ str_repeat('~?', 5 - $t->rating) }}</div>
         <p class="testi-text">"{{ $t->message }}"</p>
         <div class="testi-author">
           <div class="testi-avatar">{{ strtoupper(substr($t->parent_name,0,1)) }}</div>
@@ -316,7 +316,7 @@ $whyFeatures = $site->why_features ?? [
 </section>
 @endif
 
-{{-- �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� BLOG �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� --}}
+{{-- ................................ BLOG .............................. --}}
 @if($posts->count())
 <section class="section">
   <div class="container">
@@ -332,7 +332,7 @@ $whyFeatures = $site->why_features ?? [
           @if($post->featured_image_path)
             <img src="{{ img_url() }}" alt="{{ $post->title }}">
           @else
-            �Y"�
+            Y"
           @endif
         </div>
         <div class="blog-body">
@@ -348,7 +348,7 @@ $whyFeatures = $site->why_features ?? [
 </section>
 @endif
 
-{{-- �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� EVENTS �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� --}}
+{{-- ................................ EVENTS ............................ --}}
 @if($events->count())
 <section class="section" style="background:var(--off-white);">
   <div class="container">
@@ -364,7 +364,7 @@ $whyFeatures = $site->why_features ?? [
           @if($event->image_path)
             <img src="{{ img_url() }}" alt="{{ $event->title }}">
           @else
-            �Y".
+            Y".
           @endif
         </div>
         <div class="blog-body">
@@ -380,7 +380,7 @@ $whyFeatures = $site->why_features ?? [
 </section>
 @endif
 
-{{-- �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� CTA �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� --}}
+{{-- ................................. CTA .............................. --}}
 <section class="cta-banner">
   <div class="container cta-banner-inner">
     <h2>{{ $site->cta_title ?? 'Ready to Join Our Family?' }}</h2>

@@ -76,12 +76,12 @@
     </div>
     <div class="mv-grid reveal">
       <div class="mv-card">
-        <div class="mv-icon">�YZ�</div>
+        <div class="mv-icon">&#127793;</div>
         <h3>Our Mission</h3>
         <p>{{ $site->mission ?? 'To provide a safe, nurturing, and stimulating learning environment that fosters the holistic development of every child – intellectually, emotionally, socially, and physically – through innovative, play-based education.' }}</p>
       </div>
       <div class="mv-card">
-        <div class="mv-icon">�YOY</div>
+        <div class="mv-icon">&#11088;</div>
         <h3>Our Vision</h3>
         <p>{{ $site->vision ?? 'To be the leading early childhood institution in the community, recognized for excellence in education, holistic child development, and building the foundation for lifelong learning and leadership.' }}</p>
       </div>
