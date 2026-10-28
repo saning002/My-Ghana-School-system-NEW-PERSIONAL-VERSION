@@ -97,9 +97,26 @@
         .bg-brand { background: var(--brand) !important; }
         .text-primary-theme { color: var(--primary) !important; }
         .bg-primary-theme { background: var(--primary) !important; }
+        .bg-primary-pale { background: var(--primary-pale) !important; }
+        .text-primary-text { color: var(--primary-text) !important; }
+        .text-primary-dark { color: var(--primary-dark) !important; }
         .border-brand { border-color: var(--brand) !important; }
+        .border-primary-pale { border-color: var(--primary-pale) !important; }
+        .ring-brand { --tw-ring-color: var(--brand) !important; }
         .text-accent { color: var(--brand-2) !important; }
         .bg-accent { background: var(--brand-2) !important; }
+        .divide-primary-pale > * + * { border-color: var(--primary-pale) !important; }
+        .hover\:bg-primary-dark:hover { background: var(--primary-dark) !important; }
+        .hover\:bg-primary-pale:hover { background: var(--primary-pale) !important; }
+        .hover\:text-brand:hover { color: var(--brand) !important; }
+        .from-primary { --tw-gradient-from: var(--primary) !important; }
+        .to-primary-dark { --tw-gradient-to: var(--primary-dark) !important; }
+        .from-primary-pale { --tw-gradient-from: var(--primary-pale) !important; }
+        .to-primary-pale { --tw-gradient-to: var(--primary-pale) !important; }
+        .peer:checked ~ .peer-checked\:border-brand { border-color: var(--brand) !important; }
+        .peer:checked ~ .peer-checked\:bg-primary-pale { background: var(--primary-pale) !important; }
+        .file\:bg-primary-pale::file-selector-button { background: var(--primary-pale) !important; }
+        .file\:text-brand::file-selector-button { color: var(--brand) !important; }
     </style>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
