@@ -1,6 +1,21 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
+    {{-- PAGE LOADER: covers white flash while DB/scripts load --}}
+    <style>
+        #_pl{position:fixed;inset:0;z-index:99999;background:#0B1121;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .3s ease,visibility .3s ease}
+        #_pl.out{opacity:0;visibility:hidden;pointer-events:none}
+        #_pl .ring{width:46px;height:46px;border:3px solid rgba(212,160,23,.2);border-top-color:#D4A017;border-radius:50%;animation:_spin .65s linear infinite}
+        #_pl .lbl{margin-top:16px;font:600 13px/1 system-ui,sans-serif;color:rgba(255,255,255,.4);letter-spacing:.05em}
+        @keyframes _spin{to{transform:rotate(360deg)}}
+    </style>
+    <script>
+        (function(){
+            function hide(){var l=document.getElementById('_pl');if(l){l.classList.add('out');setTimeout(function(){if(l.parentNode)l.parentNode.removeChild(l)},350)}}
+            document.addEventListener('DOMContentLoaded',hide);
+            setTimeout(hide,5000);
+        })();
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#2563eb">
@@ -124,6 +139,7 @@
     @stack('styles')
 </head>
 <body x-data="{drawerOpen:false}" class="bg-surface" @keydown.escape.window="drawerOpen=false">
+<div id="_pl"><div class="ring"></div><div class="lbl">Loading...</div></div>
 
 {{-- Mobile menu scrim: only while drawer is open (avoids stray full-screen overlays) --}}
 <div x-show="drawerOpen" x-cloak x-transition.opacity.duration.200ms
