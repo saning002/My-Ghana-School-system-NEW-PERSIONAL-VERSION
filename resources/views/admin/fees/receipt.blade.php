@@ -11,7 +11,7 @@
         .receipt-wrapper { max-width:680px; margin:30px auto; background:#fff; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.08); overflow:hidden; }
 
         /* Header */
-        .receipt-header { background:linear-gradient(135deg,#0f3460,#16213e); padding:28px 32px; color:#fff; display:flex; justify-content:space-between; align-items:center; }
+        .receipt-header { background:linear-gradient(135deg,var(--admin-nav),var(--admin-nav)); padding:28px 32px; color:#fff; display:flex; justify-content:space-between; align-items:center; }
         .school-info h1 { font-size:20px; font-weight:800; margin-bottom:4px; }
         .school-info p  { font-size:12px; opacity:0.7; }
         .receipt-badge { text-align:right; }
@@ -41,7 +41,7 @@
         .fee-table tfoot td { font-weight:700; background:#f8fafc; border-top:2px solid #e2e8f0; padding:12px; font-size:14px; }
 
         /* Amount highlight */
-        .amount-box { background:linear-gradient(135deg,#0f3460,#16213e); color:#fff; border-radius:10px; padding:16px 20px; margin-top:20px; display:flex; justify-content:space-between; align-items:center; }
+        .amount-box { background:linear-gradient(135deg,var(--admin-nav),var(--admin-nav)); color:#fff; border-radius:10px; padding:16px 20px; margin-top:20px; display:flex; justify-content:space-between; align-items:center; }
         .amount-box .label { font-size:12px; opacity:0.7; }
         .amount-box .value { font-size:24px; font-weight:800; color:var(--brand); }
 
@@ -50,7 +50,7 @@
 
         /* Print actions */
         .print-actions { text-align:center; padding:20px; }
-        .btn-print { background:#0f3460; color:#fff; border:none; padding:10px 28px; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; margin:0 6px; }
+        .btn-print { background:var(--admin-nav); color:#fff; border:none; padding:10px 28px; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; margin:0 6px; }
         .btn-back  { background:#f1f5f9; color:#475569; border:none; padding:10px 28px; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; margin:0 6px; }
 
         @media print {

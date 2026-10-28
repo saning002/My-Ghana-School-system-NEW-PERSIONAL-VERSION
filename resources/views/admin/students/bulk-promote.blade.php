@@ -42,7 +42,7 @@
                         Deselect All
                     </button>
                     <button type="submit" :disabled="selectedStudents.length === 0" class="btn-gold inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed">
-                        <i class="fas fa-[#D4A017] fa-level-up-alt"></i> Promote Selected
+                        <i class="fas fa-[var(--brand)] fa-level-up-alt"></i> Promote Selected
                     </button>
                 </div>
             </div>

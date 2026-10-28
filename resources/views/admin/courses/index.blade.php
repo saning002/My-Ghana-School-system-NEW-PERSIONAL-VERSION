@@ -4,15 +4,16 @@
 
 @section('content')
 
-<div class="flex items-center justify-between mb-8">
-    <div>
-        <h2 class="text-2xl font-bold text-gray-900">All Courses</h2>
-        <p class="text-sm text-gray-500 mt-1">{{ $totalCourses }} course{{ $totalCourses !== 1 ? 's' : '' }} across {{ $programs->count() }} program{{ $programs->count() !== 1 ? 's' : '' }}</p>
+<div class="page-hero-banner">
+    <div class="hero-left">
+        <h1><i class="fas fa-book-open mr-2" style="color:var(--primary);"></i>{{ $sidebarLabels['courses'] ?? 'Courses' }}</h1>
+        <p>{{ $totalCourses }} course{{ $totalCourses !== 1 ? 's' : '' }} across {{ $programs->count() }} program{{ $programs->count() !== 1 ? 's' : '' }}</p>
     </div>
-    <a href="{{ route('admin.courses.create') }}"
-       class="inline-flex items-center gap-2 px-6 py-3 bg-[var(--primary)] text-white rounded-xl text-sm font-semibold hover:bg-[var(--primary-dark)] shadow-sm transition-all">
-        <i class="fas fa-plus"></i> Add Course
-    </a>
+    <div class="hero-actions">
+        <a href="{{ route('admin.courses.create') }}" class="btn-primary-action">
+            <i class="fas fa-plus"></i> Add Course
+        </a>
+    </div>
 </div>
 
 @if(session('success'))

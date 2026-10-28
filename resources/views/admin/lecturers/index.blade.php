@@ -4,15 +4,19 @@
 
 @section('content')
 
-<div class="flex items-center justify-between mb-6">
-    <div>
-        <h2 class="text-2xl font-bold text-gray-900">Teachers</h2>
-        <p class="text-sm text-gray-500 mt-1">{{ $lecturers->total() }} teacher{{ $lecturers->total() !== 1 ? 's' : '' }} in the system</p>
+<div class="page-hero-banner">
+    <div class="hero-left">
+        <h1><i class="fas fa-chalkboard-user mr-2" style="color:var(--primary);"></i>{{ $sidebarLabels['teachers'] ?? 'Teachers' }}</h1>
+        <p>{{ $lecturers->total() }} teacher{{ $lecturers->total() !== 1 ? 's' : '' }} in the system</p>
     </div>
-    <a href="{{ route('admin.lecturers.create') }}"
-       class="inline-flex items-center gap-2 px-5 py-2.5 bg-[var(--primary)] text-white rounded-xl text-sm font-semibold hover:bg-[var(--primary-dark)] shadow-sm transition-all">
-        <i class="fas fa-plus"></i> Add Teacher
-    </a>
+    <div class="hero-actions">
+        <a href="{{ route('admin.lecturers.create') }}" class="btn-primary-action">
+            <i class="fas fa-plus"></i> Add Teacher
+        </a>
+        <a href="{{ route('admin.reports.index') }}" class="btn-secondary-action">
+            <i class="fas fa-chart-bar"></i> Reports
+        </a>
+    </div>
 </div>
 
 <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">

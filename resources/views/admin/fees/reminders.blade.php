@@ -5,7 +5,7 @@
 <style>
 /* �"?�"? Page base �"?�"? */
 .rm-hero {
-    background: linear-gradient(135deg, #0f3460 0%, #16213e 100%);
+    background: linear-gradient(135deg, var(--admin-nav) 0%, var(--admin-nav) 100%);
     border-radius: 20px;
     padding: 2rem 2.5rem;
     color: #fff;
@@ -126,7 +126,7 @@
     justify-content: center;
     transition: all .15s;
 }
-.peek-btn:hover { background: #0f3460; color: #fff; }
+.peek-btn:hover { background: var(--admin-nav); color: #fff; }
 
 /* �"?�"? Send buttons �"?�"? */
 .btn-send-sel {
@@ -365,7 +365,7 @@
                     <div class="rm-card-hd" style="background:#f8fafc;">
                         <div class="d-flex align-items-center gap-3">
                             <span style="font-weight:700;font-size:.9rem;">
-                                <span style="background:#0f3460;color:#fff;width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;margin-right:8px;">2</span>
+                                <span style="background:var(--admin-nav);color:#fff;width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;margin-right:8px;">2</span>
                                 Select Students
                             </span>
                             <div class="form-check mb-0 ms-1">
@@ -473,7 +473,7 @@
                     @if($summaries->count())
                     <div style="padding:1.25rem 1.5rem;background:#f8fafc;border-top:1px solid #f1f5f9;">
                         <div style="font-size:.8rem;color:#64748b;margin-bottom:14px;">
-                            <span style="background:#0f3460;color:#fff;width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;margin-right:8px;">3</span>
+                            <span style="background:var(--admin-nav);color:#fff;width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;margin-right:8px;">3</span>
                             <strong>Send</strong> – select students above, pick your channels, then fire.
                         </div>
                         <div class="d-flex gap-3 flex-wrap">
@@ -519,7 +519,7 @@
 
                 <div class="rm-card">
                     <div class="rm-card-hd"
-                        style="background:linear-gradient(135deg,#1e293b,#0f3460);color:#fff;border:none;">
+                        style="background:linear-gradient(135deg,#1e293b,var(--admin-nav));color:#fff;border:none;">
                         <div>
                             <div style="font-weight:700;font-size:.9rem;">
                                 <i class="fas fa-comment-dots me-2" style="color:var(--brand);"></i>Message Preview
@@ -544,7 +544,7 @@
 
                         {{-- Loading --}}
                         <div id="pvLoading" style="display:none;text-align:center;padding:2rem 0;color:#94a3b8;">
-                            <i class="fas fa-spinner fa-spin fa-2x mb-2" style="color:#0f3460;"></i>
+                            <i class="fas fa-spinner fa-spin fa-2x mb-2" style="color:var(--admin-nav);"></i>
                             <div style="font-size:.8rem;margin-top:8px;">Building preview...</div>
                         </div>
 
@@ -580,7 +580,7 @@
 
                             <button type="button" id="pvSendBtn"
                                 onclick="quickSend()"
-                                style="margin-top:1rem;width:100%;background:linear-gradient(135deg,#0f3460,#16213e);color:#fff;border:none;border-radius:12px;padding:11px;font-weight:700;font-size:.875rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity .15s;"
+                                style="margin-top:1rem;width:100%;background:linear-gradient(135deg,var(--admin-nav),var(--admin-nav));color:#fff;border:none;border-radius:12px;padding:11px;font-weight:700;font-size:.875rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity .15s;"
                                 onmouseover="this.style.opacity='.85'"
                                 onmouseout="this.style.opacity='1'">
                                 <i class="fas fa-paper-plane"></i> Send to This Student Only

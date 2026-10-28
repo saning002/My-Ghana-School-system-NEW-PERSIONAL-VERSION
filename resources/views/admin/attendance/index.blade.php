@@ -4,43 +4,65 @@
 
 @section('content')
 
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
-    <div class="card p-4 flex items-center justify-between border-l-4 border-primary-500">
-        <div>
-            <p class="text-sm text-gray-500 font-medium">Total Students</p>
-            <h3 class="text-2xl font-bold text-gray-800">{{ $totalStudents }}</h3>
-        </div>
-        <div class="w-12 h-12 rounded-full bg-primary-50 flex items-center justify-center text-primary-600">
-            <i class="fas fa-users text-xl"></i>
-        </div>
+<div class="page-hero-banner">
+    <div class="hero-left">
+        <h1><i class="fas fa-clipboard-check mr-2" style="color:var(--primary);"></i>Attendance</h1>
+        <p>View and manage student attendance records</p>
     </div>
-    <div class="card p-4 flex items-center justify-between border-l-4 border-emerald-500">
-        <div>
-            <p class="text-sm text-gray-500 font-medium">Total Present Selected Date</p>
-            <h3 class="text-2xl font-bold text-gray-800">{{ $totalPresentToday }}</h3>
-        </div>
-        <div class="w-12 h-12 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600">
-            <i class="fas fa-check-circle text-xl"></i>
-        </div>
+    <div class="hero-actions">
+        <a href="{{ route('admin.attendance.create') }}" class="btn-primary-action">
+            <i class="fas fa-plus"></i> Mark Attendance
+        </a>
+        <a href="{{ route('admin.reports.attendance') }}" class="btn-secondary-action">
+            <i class="fas fa-chart-bar"></i> Reports
+        </a>
+    </div>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-tile">
+        <div class="st-icon stat-icon-brand"><i class="fas fa-users"></i></div>
+        <p class="st-val">{{ $totalStudents }}</p>
+        <p class="st-lbl">Total Students</p>
+    </div>
+    <div class="stat-tile">
+        <div class="st-icon stat-icon-green"><i class="fas fa-check-circle"></i></div>
+        <p class="st-val">{{ $totalPresentToday }}</p>
+        <p class="st-lbl">Present Today</p>
+    </div>
+    <div class="stat-tile">
+        <div class="st-icon stat-icon-red"><i class="fas fa-times-circle"></i></div>
+        <p class="st-val">{{ $totalStudents - $totalPresentToday }}</p>
+        <p class="st-lbl">Absent Today</p>
+    </div>
+    <div class="stat-tile">
+        <div class="st-icon stat-icon-blue"><i class="fas fa-percent"></i></div>
+        <p class="st-val">{{ $totalStudents > 0 ? round(($totalPresentToday/$totalStudents)*100) : 0 }}%</p>
+        <p class="st-lbl">Attendance Rate</p>
     </div>
 </div>
 
 <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-5">
     @foreach($classStats as $stat)
-    <div class="card p-4 border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-        <h4 class="font-bold text-gray-800 mb-2 truncate" title="{{ $stat['program']->name }}">{{ $stat['program']->name }}</h4>
+    <div class="card p-4 border-t-4" style="border-top-color:var(--brand);">
+        <h4 class="font-bold text-gray-800 mb-2 truncate text-sm" title="{{ $stat['program']->name }}">{{ $stat['program']->name }}</h4>
         <div class="flex justify-between items-center text-sm mb-1">
-            <span class="text-gray-500">Total:</span>
-            <span class="font-semibold">{{ $stat['total'] }}</span>
+            <span class="text-gray-500">Total</span>
+            <span class="font-bold text-slate-800">{{ $stat['total'] }}</span>
         </div>
         <div class="flex justify-between items-center text-sm mb-1">
-            <span class="text-emerald-600">Present:</span>
-            <span class="font-semibold text-emerald-700">{{ $stat['present'] }}</span>
+            <span class="text-green-600 font-medium">Present</span>
+            <span class="font-bold text-green-700">{{ $stat['present'] }}</span>
         </div>
         <div class="flex justify-between items-center text-sm">
-            <span class="text-red-500">Absent:</span>
-            <span class="font-semibold text-red-600">{{ $stat['absent'] }}</span>
+            <span class="text-red-500 font-medium">Absent</span>
+            <span class="font-bold text-red-600">{{ $stat['absent'] }}</span>
         </div>
+        @if($stat['total'] > 0)
+        <div class="mt-3 bg-gray-100 rounded-full h-1.5 overflow-hidden">
+            <div class="h-full rounded-full bg-[var(--primary)]" style="width:{{ round(($stat['present']/$stat['total'])*100) }}%"></div>
+        </div>
+        @endif
     </div>
     @endforeach
 </div>

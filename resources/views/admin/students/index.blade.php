@@ -4,6 +4,23 @@
 
 @section('content')
 
+<div class="page-hero-banner">
+    <div class="hero-left">
+        <h1><i class="fas fa-user-graduate mr-2" style="color:var(--primary);"></i>{{ $sidebarLabels['students'] ?? 'Students' }}</h1>
+        <p>All registered students in the system</p>
+    </div>
+    <div class="hero-actions">
+        <a href="{{ route('admin.students.create') }}" class="btn-primary-action">
+            <i class="fas fa-user-plus"></i> Add Student
+        </a>
+        @if(auth()->user()->isSuperAdmin())
+        <a href="{{ route('admin.students.bulk-promotion') }}" class="btn-secondary-action">
+            <i class="fas fa-level-up-alt"></i> Bulk Promote
+        </a>
+        @endif
+    </div>
+</div>
+
 {{-- Bulk action bar --}}
 <div id="bulkBar" class="hidden sticky top-2 z-30 mb-4 flex items-center gap-3 bg-indigo-600 text-white px-5 py-3 rounded-2xl shadow-lg">
     <span class="text-sm font-bold"><span id="bulkCount">0</span> selected</span>

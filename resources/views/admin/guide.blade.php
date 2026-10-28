@@ -6,7 +6,7 @@
 @push('styles')
 <style>
     .guide-hero {
-        background: #0B1121;
+        background: var(--admin-nav);
         border-radius: 1.5rem;
         border: 1px solid rgba(212,160,23,0.15);
         position: relative;
@@ -46,7 +46,7 @@
     }
     .guide-tab:hover { background: #f1f5f9; color: #334155; }
     .guide-tab.active {
-        background: linear-gradient(135deg, #D4A017, #b8860b);
+        background: linear-gradient(135deg, var(--brand), #b8860b);
         color: #fff;
         border-color: rgba(255,255,255,0.2);
         box-shadow: 0 4px 16px -4px rgba(212,160,23,0.5);
@@ -96,7 +96,7 @@
     }
     .section-heading-bar {
         width: 4px; height: 24px; border-radius: 2px;
-        background: linear-gradient(180deg, #D4A017, #b8860b);
+        background: linear-gradient(180deg, var(--brand), #b8860b);
     }
     /* Step flow */
     .step-flow { display: flex; flex-direction: column; gap: 0; }
@@ -108,7 +108,7 @@
     .step-item:last-child .step-line { display: none; }
     .step-num {
         width: 36px; height: 36px; border-radius: 50%;
-        background: linear-gradient(135deg, #D4A017, #b8860b);
+        background: linear-gradient(135deg, var(--brand), #b8860b);
         color: #fff; font-size: 0.8rem; font-weight: 700;
         display: flex; align-items: center; justify-content: center;
         flex-shrink: 0; box-shadow: 0 4px 12px -3px rgba(212,160,23,0.5);
@@ -150,7 +150,7 @@
     .guide-alert-icon { width: 28px; height: 28px; border-radius: 8px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; }
     /* Fee formula card */
     .formula-box {
-        background: #0B1121;
+        background: var(--admin-nav);
         border: 1px solid rgba(212,160,23,0.2);
         border-radius: 1rem;
         padding: 1.25rem 1.5rem;
@@ -166,7 +166,7 @@
         display: flex; align-items: flex-start; gap: 0.6rem;
         padding: 0.5rem 0; font-size: 0.83rem; color: #374151; line-height: 1.5;
     }
-    .tip-dot { width: 7px; height: 7px; border-radius: 50%; background: #D4A017; margin-top: 6px; flex-shrink: 0; }
+    .tip-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--brand); margin-top: 6px; flex-shrink: 0; }
     /* Faq */
     .faq-item details { border-radius: 0.75rem; overflow: hidden; margin-bottom: 0.5rem; }
     .faq-item summary {
@@ -661,7 +661,7 @@
         </p>
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
             @foreach([
-                ['label'=>'EXCELLENT RESULT','range'=>'Avg –� 80','color'=>'#D4A017','bg'=>'rgba(212,160,23,.1)','text'=>'#78520a'],
+                ['label'=>'EXCELLENT RESULT','range'=>'Avg –� 80','color'=>'var(--brand)','bg'=>'rgba(212,160,23,.1)','text'=>'#78520a'],
                 ['label'=>'VERY GOOD RESULT','range'=>'Avg 70–79','color'=>'#3b82f6','bg'=>'rgba(59,130,246,.1)','text'=>'#1d4ed8'],
                 ['label'=>'GOOD RESULT','range'=>'Avg 60–69','color'=>'#06b6d4','bg'=>'rgba(6,182,212,.1)','text'=>'#0e7490'],
                 ['label'=>'CREDIT RESULT','range'=>'Avg 50–59','color'=>'#22c55e','bg'=>'rgba(34,197,94,.1)','text'=>'#15803d'],
@@ -831,7 +831,7 @@
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
-        <div class="feature-card" style="border-top:3px solid #D4A017">
+        <div class="feature-card" style="border-top:3px solid var(--brand)">
             <div class="icon-badge badge-gold mb-3"><i class="fas fa-crown"></i></div>
             <p class="font-bold text-sm text-slate-800 mb-2">Super Admin</p>
             <ul class="space-y-1 text-xs text-slate-600">

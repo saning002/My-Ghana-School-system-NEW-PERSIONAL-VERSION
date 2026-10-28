@@ -7,39 +7,37 @@
 <style>
     .program-card {
         background: white;
-        border-radius: 14px;
-        border: 1px solid rgba(0, 0, 0, 0.05);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border-radius: 1.1rem;
+        border: 1px solid rgba(148,163,184,.15);
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         position: relative;
         overflow: hidden;
+        box-shadow: 0 2px 12px -4px rgba(15,23,42,.07);
     }
-    
     .program-card:hover {
-        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
-        transform: translateY(-4px);
-        border-color: rgba(212, 160, 23, 0.2);
+        box-shadow: 0 14px 28px -8px rgba(15,23,42,.14);
+        transform: translateY(-3px);
+        border-color: var(--primary);
     }
-    
     .program-card::before {
         content: '';
         position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
+        top: 0; left: 0; right: 0;
         height: 3px;
-        background: linear-gradient(90deg, #D4A017, #fbbf24);
+        background: linear-gradient(90deg, var(--brand), var(--primary));
     }
 </style>
 
-<div class="flex items-center justify-between mb-8">
-    <div>
-        <h2 class="text-2xl font-bold text-gray-900">Academic Programs</h2>
-        <p class="text-sm text-gray-500 mt-1">{{ $programs->total() }} program{{ $programs->total() !== 1 ? 's' : '' }} in the system</p>
+<div class="page-hero-banner">
+    <div class="hero-left">
+        <h1><i class="fas fa-graduation-cap mr-2" style="color:var(--primary);"></i>{{ $programLabel ?? 'Programs' }}</h1>
+        <p>Manage academic programs and their course structures</p>
     </div>
-    <a href="{{ route('admin.programs.create') }}"
-       class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[var(--primary)] to-[var(--primary-dark)] text-white rounded-xl text-sm font-semibold hover:from-[var(--primary-dark)] hover:to-[var(--primary-dark)] shadow-lg hover:shadow-xl transition-all">
-        <i class="fas fa-plus"></i> Add Program
-    </a>
+    <div class="hero-actions">
+        <a href="{{ route('admin.programs.create') }}" class="btn-primary-action">
+            <i class="fas fa-plus"></i> Add {{ $programLabelSingular ?? 'Program' }}
+        </a>
+    </div>
 </div>
 
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -64,7 +62,7 @@
         </div>
         <h3 class="text-base font-bold text-gray-900 mb-2 line-clamp-2">{{ $program->name }}</h3>
         <p class="text-xs text-gray-500 mb-4">
-            <i class="fas fa-layers mr-1" style="color: #D4A017;"></i>
+            <i class="fas fa-layers mr-1" style="color: var(--brand);"></i>
             Level {{ $program->sequence }} Â· {{ $program->duration }} months
         </p>
 

@@ -7,7 +7,7 @@
 
     {{-- Profile Header --}}
     <div class="card overflow-hidden border-0 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)]">
-        <div class="px-6 py-8 relative" style="background:linear-gradient(135deg, #0B1121, #1A2642); overflow:hidden;">
+        <div class="px-6 py-8 relative" style="background:linear-gradient(135deg, var(--admin-nav), #1A2642); overflow:hidden;">
             <div class="absolute top-0 right-0 w-64 h-64 bg-[var(--primary-pale)]0 rounded-full blur-[80px] opacity-10 translate-x-1/2 -translate-y-1/2"></div>
             <div class="relative z-10 flex items-center gap-5">
                 <div class="w-20 h-20 rounded-2xl overflow-hidden flex-shrink-0 border-2 border-white/10 shadow-2xl relative group">
@@ -15,7 +15,7 @@
                     @if($student->photo)
                         <img src="{{ filter_var($student->photo, FILTER_VALIDATE_URL) ? $student->photo : route('admin.students.photo', $student) }}" class="w-full h-full object-cover relative z-0" alt="{{ $student->user->full_name }}">
                     @else
-                        <div class="w-full h-full flex items-center justify-center text-white text-3xl font-extrabold relative z-0" style="background:linear-gradient(135deg, #D4A017, #b8860b)">
+                        <div class="w-full h-full flex items-center justify-center text-white text-3xl font-extrabold relative z-0" style="background:linear-gradient(135deg, var(--brand), #b8860b)">
                             {{ strtoupper(substr($student->user->full_name,0,1)) }}
                         </div>
                     @endif
@@ -183,7 +183,7 @@
     {{-- Fees Tab --}}
     <div x-show="tab==='fees'" class="space-y-4">
         <div class="grid grid-cols-3 gap-3">
-            <div class="card p-4 text-center" style="border-top:3px solid #D4A017">
+            <div class="card p-4 text-center" style="border-top:3px solid var(--brand)">
                 <p class="text-xs text-gray-500 mb-1">Total Fees</p>
                 <p class="text-xl font-bold" style="color:var(--primary-text)">GH₵ {{ number_format($fees['total'],2) }}</p>
                 @if(isset($fees['exam_total']))

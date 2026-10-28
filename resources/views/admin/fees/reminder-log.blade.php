@@ -3,7 +3,7 @@
 
 @section('content')
 <style>
-.rl-hero{background:linear-gradient(135deg,#1e293b 0%,#0f3460 100%);border-radius:20px;padding:2rem 2.5rem;color:#fff;margin-bottom:2rem;position:relative;overflow:hidden;}
+.rl-hero{background:linear-gradient(135deg,#1e293b 0%,var(--admin-nav) 100%);border-radius:20px;padding:2rem 2.5rem;color:#fff;margin-bottom:2rem;position:relative;overflow:hidden;}
 .rl-hero::before{content:'';position:absolute;right:-50px;top:-50px;width:220px;height:220px;background:rgba(255,255,255,.04);border-radius:50%;}
 .rl-card{background:#fff;border-radius:16px;border:1px solid #e2e8f0;box-shadow:0 2px 10px rgba(0,0,0,.06);overflow:hidden;}
 .rl-thead th{font-size:.7rem;text-transform:uppercase;letter-spacing:.8px;color:#94a3b8;font-weight:700;padding:10px 16px;background:#f8fafc;border:none;}
@@ -107,7 +107,7 @@
                         <i class="fas fa-paper-plane" style="font-size:2rem;display:block;margin-bottom:12px;opacity:.4;"></i>
                         <div style="font-weight:600;color:#475569;">No reminders sent yet</div>
                         <div style="font-size:.83rem;margin-top:4px;">
-                            Go to <a href="{{ route('admin.fees.reminders.index') }}" style="color:#0f3460;font-weight:700;">Fee Reminders</a> to send your first reminder.
+                            Go to <a href="{{ route('admin.fees.reminders.index') }}" style="color:var(--admin-nav);font-weight:700;">Fee Reminders</a> to send your first reminder.
                         </div>
                     </td>
                 </tr>

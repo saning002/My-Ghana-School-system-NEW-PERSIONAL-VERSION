@@ -19,21 +19,21 @@
         $lecturerCount = $stats['total_lecturers'];
     }
     $cards = [
-        ['label'=> $sidebarLabels['students'] ?? 'Students',    'value'=>$stats['active_students'] ?? 0, 'icon'=>'fa-user-graduate',      'bg'=>'#fef9c3', 'ic'=>'#92680a'],
-        ['label'=> $sidebarLabels['teachers'] ?? 'Teachers',    'value'=>number_format((int) ($lecturerCount ?? 0)), 'icon'=>'fa-chalkboard-teacher', 'bg'=>'#dcfce7', 'ic'=>'#166534'],
-        ['label'=> $sidebarLabels['programs'] ?? 'Programs',    'value'=>$stats['total_programs'] ?? 0,  'icon'=>'fa-graduation-cap',     'bg'=>'#dbeafe', 'ic'=>'#1e40af'],
-        ['label'=> $sidebarLabels['courses']  ?? 'Courses',     'value'=>$stats['total_courses'] ?? 0,   'icon'=>'fa-book-open',          'bg'=>'#fce7f3', 'ic'=>'#9d174d'],
-        ['label'=> $sidebarLabels['attendance'] ?? 'Attendance','value'=>($attendanceRate ?? 0).'%',      'icon'=>'fa-clipboard-check',    'bg'=>'#f3e8ff', 'ic'=>'#6b21a8'],
+        ['label'=> $sidebarLabels['students'] ?? 'Students',    'value'=>$stats['active_students'] ?? 0, 'icon'=>'fa-user-graduate',      'cls'=>'stat-icon-brand'],
+        ['label'=> $sidebarLabels['teachers'] ?? 'Teachers',    'value'=>number_format((int) ($lecturerCount ?? 0)), 'icon'=>'fa-chalkboard-teacher', 'cls'=>'stat-icon-green'],
+        ['label'=> $sidebarLabels['programs'] ?? 'Programs',    'value'=>$stats['total_programs'] ?? 0,  'icon'=>'fa-graduation-cap',     'cls'=>'stat-icon-blue'],
+        ['label'=> $sidebarLabels['courses']  ?? 'Courses',     'value'=>$stats['total_courses'] ?? 0,   'icon'=>'fa-book-open',          'cls'=>'stat-icon-teal'],
+        ['label'=> $sidebarLabels['attendance'] ?? 'Attendance','value'=>($attendanceRate ?? 0).'%',      'icon'=>'fa-clipboard-check',    'cls'=>'stat-icon-purple'],
     ];
     @endphp
     @foreach($cards as $c)
-    <div class="card card-hover p-5 relative overflow-hidden group">
-        <div class="absolute -right-6 -top-6 w-24 h-24 rounded-full opacity-20 group-hover:scale-150 transition-transform duration-300 blur-2xl" style="background:{{ $c['ic'] }}"></div>
-        <div class="w-11 h-11 rounded-2xl flex items-center justify-center mb-3 shadow-sm" style="background:{{ $c['bg'] }}">
-            <i class="fas {{ $c['icon'] }} text-lg" style="color:{{ $c['ic'] }}"></i>
+    <div class="stat-tile card-hover relative overflow-hidden group">
+        <div class="absolute -right-4 -top-4 w-20 h-20 rounded-full opacity-10 group-hover:scale-150 transition-transform duration-300 blur-xl" style="background:currentColor;"></div>
+        <div class="st-icon {{ $c['cls'] }}">
+            <i class="fas {{ $c['icon'] }}"></i>
         </div>
-        <p class="text-3xl font-extrabold text-slate-800 tracking-tight">{{ $c['value'] }}</p>
-        <p class="text-[11px] text-slate-500 mt-1.5 font-semibold uppercase tracking-wider">{{ $c['label'] }}</p>
+        <p class="st-val">{{ $c['value'] }}</p>
+        <p class="st-lbl">{{ $c['label'] }}</p>
     </div>
     @endforeach
 </div>
@@ -236,7 +236,7 @@
             datasets: [{
                 label: 'Students',
                 data: programCounts,
-                backgroundColor: ['#2563eb', '#0B1121', '#D4A017', '#16a34a', '#7c3aed', '#0891b2'],
+                backgroundColor: ['#2563eb', 'var(--admin-nav)', 'var(--brand)', '#16a34a', '#7c3aed', '#0891b2'],
                 borderRadius: 10,
                 borderSkipped: false,
                 barPercentage: 0.8,
@@ -248,7 +248,7 @@
             maintainAspectRatio: false,
             plugins: {
                 legend: { display: false },
-                tooltip: { backgroundColor: '#0B1121', titleColor: '#fff', bodyColor: '#fff', callbacks: { label: ctx => `${ctx.parsed.y} students` } }
+                tooltip: { backgroundColor: 'var(--admin-nav)', titleColor: '#fff', bodyColor: '#fff', callbacks: { label: ctx => `${ctx.parsed.y} students` } }
             },
             scales: {
                 x: { grid: { display: false }, ticks: { color: '#64748b' } },
@@ -263,7 +263,7 @@
             labels: Object.keys(dashboardStatus).map(status => status.charAt(0).toUpperCase() + status.slice(1)),
             datasets: [{
                 data: Object.values(dashboardStatus),
-                backgroundColor: ['#16a34a', '#2563eb', '#D4A017', '#ef4444', '#7c3aed'],
+                backgroundColor: ['#16a34a', '#2563eb', 'var(--brand)', '#ef4444', '#7c3aed'],
                 borderWidth: 2,
                 borderColor: '#fff',
                 hoverOffset: 8,
@@ -275,7 +275,7 @@
             cutout: '72%',
             plugins: {
                 legend: { position: 'bottom', labels: { color: '#475569', padding: 16 } },
-                tooltip: { backgroundColor: '#0B1121', titleColor: '#fff', bodyColor: '#fff', callbacks: { label: ctx => `${ctx.label}: ${ctx.parsed} students` } }
+                tooltip: { backgroundColor: 'var(--admin-nav)', titleColor: '#fff', bodyColor: '#fff', callbacks: { label: ctx => `${ctx.label}: ${ctx.parsed} students` } }
             }
         }
     });

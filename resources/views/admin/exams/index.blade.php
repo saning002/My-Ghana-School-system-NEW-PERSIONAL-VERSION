@@ -4,48 +4,47 @@
 
 @section('content')
 
-<style>
-    .exam-card {
-        background: #fffef8;
-        border-radius: 18px;
-        border: 1px solid rgba(15, 23, 42, 0.06);
-        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        position: relative;
-        overflow: hidden;
-        box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
-    }
-    
-    .exam-card:hover {
-        box-shadow: 0 18px 34px rgba(15, 23, 42, 0.12);
-        transform: translateY(-4px);
-        border-color: rgba(212, 160, 23, 0.25);
-    }
-    
-    .exam-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        background: #D4A017;
-    }
-</style>
-
-<div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
-    <div>
-        <h2 class="text-2xl font-bold text-slate-900">Exams & Results</h2>
-        <p class="text-sm text-slate-500 mt-1">{{ $programs->count() }} program{{ $programs->count() !== 1 ? 's' : '' }} available for scoring</p>
+<div class="page-hero-banner">
+    <div class="hero-left">
+        <h1><i class="fas fa-file-alt mr-2" style="color:var(--primary);"></i>Exams &amp; Results</h1>
+        <p>Enter scores and generate report cards for students</p>
     </div>
-    <div class="flex items-center gap-3">
-        <a href="{{ route('admin.exams.bulk') }}" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-2xl text-sm font-semibold shadow-lg hover:shadow-xl transition-all">
-            <i class="fas fa-file-pdf"></i> Bulk Download
-        </a>
-        <a href="{{ route('admin.exams.create') }}" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[var(--primary)] text-white rounded-2xl text-sm font-semibold hover:bg-[var(--primary-dark)] shadow-sm transition-all">
+    <div class="hero-actions">
+        <a href="{{ route('admin.exams.create') }}" class="btn-primary-action">
             <i class="fas fa-plus"></i> Enter Scores
+        </a>
+        <a href="{{ route('admin.exams.bulk') }}" class="btn-secondary-action">
+            <i class="fas fa-download"></i> Bulk Download
+        </a>
+        <a href="{{ route('admin.exams.sheet') }}" class="btn-secondary-action">
+            <i class="fas fa-table"></i> Exam Sheet
         </a>
     </div>
 </div>
+
+<style>
+    .exam-card {
+        background: #fff;
+        border-radius: 1.1rem;
+        border: 1px solid rgba(148,163,184,.15);
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 2px 12px -4px rgba(15,23,42,.08);
+    }
+    .exam-card:hover {
+        box-shadow: 0 12px 28px -8px rgba(15,23,42,.15);
+        transform: translateY(-3px);
+        border-color: var(--primary);
+    }
+    .exam-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 3px;
+        background: var(--primary);
+    }
+</style>
 
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
     @forelse($programs as $program)
@@ -58,7 +57,7 @@
         </div>
         <h3 class="text-[15px] font-bold text-slate-900 mb-2 leading-tight">{{ $program->name }}</h3>
         <p class="text-sm text-slate-600 mb-3">
-            <i class="fas fa-book-open mr-1.5" style="color: #D4A017;"></i>
+            <i class="fas fa-book-open mr-1.5" style="color: var(--brand);"></i>
             {{ $program->courses_count }} course{{ $program->courses_count !== 1 ? 's' : '' }}
         </p>
         <p class="text-xs text-slate-500 mb-4 pb-4 border-b border-slate-100">

@@ -4,20 +4,25 @@
 
 @section('content')
 
+<div class="page-hero-banner">
+    <div class="hero-left">
+        <h1><i class="fas fa-chart-bar mr-2" style="color:var(--primary);"></i>{{ $sidebarLabels['reports'] ?? 'Reports' }}</h1>
+        <p>Analytics, insights and data exports for your school</p>
+    </div>
+</div>
+
 {{-- Summary --}}
-<div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
+<div class="stats-grid mb-5">
     @foreach([
-        ['label'=>'Total Students','value'=>$summary['total_students'],'icon'=>'fa-user-graduate','bg'=>'#fef9c3','ic'=>'#78520a'],
-        ['label'=>'Graduated',     'value'=>$summary['graduated'],     'icon'=>'fa-graduation-cap','bg'=>'#dbeafe','ic'=>'#1e40af'],
-        ['label'=>'Attendance',    'value'=>$summary['attendance_rate'].'%','icon'=>'fa-clipboard-check','bg'=>'#dcfce7','ic'=>'#166534'],
-        ['label'=>'Outstanding',   'value'=>'GH₵ '.number_format($summary['fees']['outstanding'],0),'icon'=>'fa-coins','bg'=>'#fce7f3','ic'=>'#9d174d'],
+        ['label'=>'Total Students','value'=>$summary['total_students'],'icon'=>'fa-user-graduate','cls'=>'stat-icon-brand'],
+        ['label'=>'Graduated',     'value'=>$summary['graduated'],     'icon'=>'fa-graduation-cap','cls'=>'stat-icon-blue'],
+        ['label'=>'Attendance',    'value'=>$summary['attendance_rate'].'%','icon'=>'fa-clipboard-check','cls'=>'stat-icon-green'],
+        ['label'=>'Outstanding',   'value'=>'GH₵ '.number_format($summary['fees']['outstanding'],0),'icon'=>'fa-coins','cls'=>'stat-icon-red'],
     ] as $c)
-    <div class="card p-4">
-        <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-3" style="background:{{ $c['bg'] }}">
-            <i class="fas {{ $c['icon'] }}" style="color:{{ $c['ic'] }}"></i>
-        </div>
-        <p class="text-2xl font-bold text-ink">{{ $c['value'] }}</p>
-        <p class="text-xs text-gray-500 mt-0.5 font-medium">{{ $c['label'] }}</p>
+    <div class="stat-tile">
+        <div class="st-icon {{ $c['cls'] }}"><i class="fas {{ $c['icon'] }}"></i></div>
+        <p class="st-val">{{ $c['value'] }}</p>
+        <p class="st-lbl">{{ $c['label'] }}</p>
     </div>
     @endforeach
 </div>
@@ -25,21 +30,22 @@
 {{-- Report Links --}}
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-5">
     @foreach([
-        ['href'=>route('admin.reports.students'),   'icon'=>'fa-user-graduate',   'label'=>'Student Report',     'sub'=>'Filter by '.strtolower($programLabelSingular).', status, branch', 'bg'=>'#fef9c3','ic'=>'#78520a'],
-        ['href'=>route('admin.reports.attendance'),  'icon'=>'fa-clipboard-check', 'label'=>'Attendance Report',  'sub'=>'Per student & per course',          'bg'=>'#dcfce7','ic'=>'#166534'],
-        ['href'=>route('admin.reports.financial'),   'icon'=>'fa-coins',           'label'=>'Financial Report',   'sub'=>'Fees, payments & balances',         'bg'=>'#fce7f3','ic'=>'#9d174d'],
-        ['href'=>route('admin.reports.programs'),    'icon'=>'fa-graduation-cap',  'label'=>$programLabelSingular.' Performance','sub'=>'Enrollment & progression stats',    'bg'=>'#dbeafe','ic'=>'#1e40af'],
-        ['href'=>route('admin.reports.courses'),     'icon'=>'fa-book-open',       'label'=>'Course Enrollment',  'sub'=>'Students per course',               'bg'=>'#fef3c7','ic'=>'#92400e'],
+        ['href'=>route('admin.reports.students'),   'icon'=>'fa-user-graduate',   'label'=>'Student Report',              'sub'=>'Filter by '.strtolower($programLabelSingular).', status, branch', 'cls'=>'stat-icon-brand'],
+        ['href'=>route('admin.reports.attendance'),  'icon'=>'fa-clipboard-check', 'label'=>'Attendance Report',           'sub'=>'Per student & per course',          'cls'=>'stat-icon-green'],
+        ['href'=>route('admin.reports.financial'),   'icon'=>'fa-coins',           'label'=>'Financial Report',            'sub'=>'Fees, payments & balances',         'cls'=>'stat-icon-red'],
+        ['href'=>route('admin.reports.programs'),    'icon'=>'fa-graduation-cap',  'label'=>$programLabelSingular.' Performance','sub'=>'Enrollment & progression stats','cls'=>'stat-icon-blue'],
+        ['href'=>route('admin.reports.courses'),     'icon'=>'fa-book-open',       'label'=>'Course Enrollment',           'sub'=>'Students per course',               'cls'=>'stat-icon-teal'],
+        ['href'=>route('admin.reports.hub'),         'icon'=>'fa-chart-pie',       'label'=>'Reports Hub',                 'sub'=>'All reports in one place',          'cls'=>'stat-icon-purple'],
     ] as $r)
-    <a href="{{ $r['href'] }}" class="card card-hover p-5 flex items-center gap-4 active:scale-95 transition-transform">
-        <div class="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0" style="background:{{ $r['ic'] }}">
-            <i class="fas {{ $r['icon'] }} text-white text-lg"></i>
+    <a href="{{ $r['href'] }}" class="card card-hover p-5 flex items-center gap-4 active:scale-95 transition-transform" style="text-decoration:none;">
+        <div class="st-icon {{ $r['cls'] }} flex-shrink-0" style="width:48px;height:48px;border-radius:14px;">
+            <i class="fas {{ $r['icon'] }} text-lg"></i>
         </div>
         <div class="flex-1 min-w-0">
             <p class="text-sm font-bold text-ink">{{ $r['label'] }}</p>
             <p class="text-xs text-gray-400 mt-0.5">{{ $r['sub'] }}</p>
         </div>
-        <i class="fas fa-chevron-right text-gray-300 flex-shrink-0"></i>
+        <i class="fas fa-chevron-right text-gray-300 flex-shrink-0 text-xs"></i>
     </a>
     @endforeach
 </div>

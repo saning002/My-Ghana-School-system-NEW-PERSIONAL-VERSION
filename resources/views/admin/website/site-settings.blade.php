@@ -182,13 +182,13 @@
                     <label class="ws-label">Background Colour</label>
                     <div class="flex items-center gap-3 mt-1">
                         <input type="color" name="hero_bg_solid_color"
-                               value="{{ old('hero_bg_solid_color', $s->hero_bg_solid_color ?? '#0a1f44') }}"
+                               value="{{ old('hero_bg_solid_color', $s->hero_bg_solid_color ?? 'var(--admin-nav)') }}"
                                class="w-12 h-10 rounded-lg border border-gray-300 cursor-pointer p-1">
-                        <input type="text" id="solidColorText" value="{{ old('hero_bg_solid_color', $s->hero_bg_solid_color ?? '#0a1f44') }}"
-                               class="ws-input w-32 font-mono" placeholder="#0a1f44"
+                        <input type="text" id="solidColorText" value="{{ old('hero_bg_solid_color', $s->hero_bg_solid_color ?? 'var(--admin-nav)') }}"
+                               class="ws-input w-32 font-mono" placeholder="var(--admin-nav)"
                                oninput="syncColor(this,'[name=hero_bg_solid_color]')">
                         <div id="solidPreview" class="flex-1 h-10 rounded-xl border border-gray-200"
-                             style="background:{{ $s->hero_bg_solid_color ?? '#0a1f44' }}"></div>
+                             style="background:{{ $s->hero_bg_solid_color ?? 'var(--admin-nav)' }}"></div>
                     </div>
                 </div>
             </div>
@@ -441,7 +441,7 @@
                     <label class="ws-label mb-2">Quick Presets</label>
                     <div class="flex flex-wrap gap-2">
                         @foreach([
-                            ['Navy & Gold',    '#e9a422','#0a1f44','#0891b2','#3a3830','#ffffff','#0a1f44'],
+                            ['Navy & Gold',    '#e9a422','var(--admin-nav)','#0891b2','#3a3830','#ffffff','var(--admin-nav)'],
                             ['Forest Green',   '#22c55e','#14532d','#0ea5e9','#1c1917','#f7fef7','#14532d'],
                             ['Royal Purple',   '#a855f7','#3b0764','#06b6d4','#1e1b4b','#faf5ff','#3b0764'],
                             ['Crimson Red',    '#ef4444','#450a0a','#f97316','#1c1917','#fff5f5','#450a0a'],
@@ -474,8 +474,8 @@
 
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
                     @foreach([
-                        ['theme_adminPrimary','Admin Primary',  'Sidebar highlights & buttons', $tc['adminPrimary'] ?? '#D4A017'],
-                        ['theme_adminNav',    'Admin Sidebar',  'Sidebar background colour',    $tc['adminNav']     ?? '#0B1121'],
+                        ['theme_adminPrimary','Admin Primary',  'Sidebar highlights & buttons', $tc['adminPrimary'] ?? 'var(--brand)'],
+                        ['theme_adminNav',    'Admin Sidebar',  'Sidebar background colour',    $tc['adminNav']     ?? 'var(--admin-nav)'],
                         ['theme_accent',      'Accent / Teal',  'Student portal active states', $tc['accent']       ?? '#0891b2'],
                         ['theme_primary',     'Admin Gold',     'Admin button base colour',     $tc['primary']      ?? '#e9a422'],
                     ] as [$name,$label,$desc,$val])
@@ -498,7 +498,7 @@
                 <div>
                     <label class="ws-label mb-1">Preview</label>
                     <div class="flex rounded-xl overflow-hidden h-8 border border-gray-200">
-                        @foreach(['theme_adminNav'=>($tc['adminNav']??'#0B1121'),'theme_adminPrimary'=>($tc['adminPrimary']??'#D4A017'),'theme_accent'=>($tc['accent']??'#0891b2')] as $n=>$v)
+                        @foreach(['theme_adminNav'=>($tc['adminNav']??'var(--admin-nav)'),'theme_adminPrimary'=>($tc['adminPrimary']??'var(--brand)'),'theme_accent'=>($tc['accent']??'#0891b2')] as $n=>$v)
                         <div class="flex-1" id="atp-{{ $n }}" style="background:{{ $v }}"></div>
                         @endforeach
                     </div>
@@ -514,7 +514,7 @@
                     <label class="ws-label mb-2">Quick Presets</label>
                     <div class="flex flex-wrap gap-2">
                         @foreach([
-                            ['Dark Navy & Gold', '#D4A017','#0B1121','#0891b2','#e9a422'],
+                            ['Dark Navy & Gold', 'var(--brand)','var(--admin-nav)','#0891b2','#e9a422'],
                             ['Dark Green',       '#22c55e','#052e16','#0ea5e9','#16a34a'],
                             ['Dark Purple',      '#a855f7','#2e1065','#06b6d4','#9333ea'],
                             ['Dark Red',         '#ef4444','#27272a','#f97316','#dc2626'],

@@ -141,7 +141,50 @@
         .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
         .input-premium{background:#f8fbff;border:1px solid #dbeafe;border-radius:0.75rem;transition:all .16s;box-shadow:inset 0 2px 4px 0 rgba(15,23,42,.02)}
         .input-premium:focus{background:#fff;border-color:var(--brand-2);box-shadow:0 0 0 4px color-mix(in srgb, var(--brand-2) 14%, transparent),inset 0 1px 2px 0 rgba(15,23,42,.02)}
-        /* ── Dynamic theme utility classes ─────────────────────────────── */
+        /* ── Shared page component utilities ──────────────────────────── */
+        /* Stat cards */
+        .stat-card-brand { background: var(--primary-pale) !important; }
+        .stat-icon-brand { background: var(--primary-pale); color: var(--brand); }
+        .stat-icon-blue  { background: #dbeafe; color: #1e40af; }
+        .stat-icon-green { background: #dcfce7; color: #166534; }
+        .stat-icon-red   { background: #fef2f2; color: #dc2626; }
+        .stat-icon-purple{ background: #f3e8ff; color: #7e22ce; }
+        .stat-icon-teal  { background: #ccfbf1; color: #0f766e; }
+        /* Page hero banner */
+        .page-hero-banner{
+            background:linear-gradient(135deg,var(--admin-nav) 0%,color-mix(in srgb,var(--admin-nav) 75%,#1e3a8a) 100%);
+            border-radius:1.25rem;padding:1.5rem 2rem;margin-bottom:1.5rem;
+            display:flex;align-items:center;justify-content:space-between;gap:1rem;
+            flex-wrap:wrap;position:relative;overflow:hidden;
+        }
+        .page-hero-banner::before{content:'';position:absolute;right:-40px;top:-40px;width:180px;height:180px;background:rgba(255,255,255,.04);border-radius:50%;}
+        .page-hero-banner::after{content:'';position:absolute;right:60px;bottom:-60px;width:120px;height:120px;background:rgba(255,255,255,.03);border-radius:50%;}
+        .page-hero-banner h1{color:#fff;font-size:1.3rem;font-weight:800;margin:0 0 .25rem;letter-spacing:-.02em;}
+        .page-hero-banner p{color:rgba(255,255,255,.5);font-size:.8rem;margin:0;}
+        .page-hero-banner .hero-actions{position:relative;z-index:1;display:flex;gap:.6rem;flex-wrap:wrap;}
+        .page-hero-banner .hero-left{position:relative;z-index:1;}
+        /* Primary action button */
+        .btn-primary-action{
+            display:inline-flex;align-items:center;gap:.5rem;
+            padding:.6rem 1.25rem;border-radius:.75rem;border:none;cursor:pointer;
+            background:var(--primary);color:#fff;font-size:.82rem;font-weight:700;
+            transition:all .15s;text-decoration:none;
+        }
+        .btn-primary-action:hover{background:var(--primary-dark);color:#fff;transform:translateY(-1px);box-shadow:0 6px 16px -4px rgba(0,0,0,.2);}
+        .btn-secondary-action{
+            display:inline-flex;align-items:center;gap:.5rem;
+            padding:.6rem 1.25rem;border-radius:.75rem;border:1px solid rgba(255,255,255,.2);cursor:pointer;
+            background:rgba(255,255,255,.1);color:#fff;font-size:.82rem;font-weight:600;
+            transition:all .15s;text-decoration:none;
+        }
+        .btn-secondary-action:hover{background:rgba(255,255,255,.18);color:#fff;}
+        /* Uniform stat grid */
+        .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1rem;margin-bottom:1.5rem;}
+        .stat-tile{background:#fff;border-radius:1rem;padding:1.1rem 1.25rem;border:1px solid rgba(148,163,184,.15);box-shadow:0 1px 8px -2px rgba(15,23,42,.07);}
+        .stat-tile .st-icon{width:40px;height:40px;border-radius:.75rem;display:flex;align-items:center;justify-content:center;font-size:.9rem;margin-bottom:.75rem;flex-shrink:0;}
+        .stat-tile .st-val{font-size:1.6rem;font-weight:900;color:#1e293b;line-height:1;letter-spacing:-.02em;}
+        .stat-tile .st-lbl{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;margin-top:.35rem;}
+
         .text-brand { color: var(--brand) !important; }
         .bg-brand { background: var(--brand) !important; }
         .text-primary-theme { color: var(--primary) !important; }

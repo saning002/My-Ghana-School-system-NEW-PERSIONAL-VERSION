@@ -4,6 +4,21 @@
 
 @section('content')
 
+<div class="page-hero-banner">
+    <div class="hero-left">
+        <h1><i class="fas fa-coins mr-2" style="color:var(--primary);"></i>{{ $sidebarLabels['fees'] ?? 'Fees & Payments' }}</h1>
+        <p>{{ auth()->user()->isBranchAdmin() ? 'Manage student payments for your branch' : 'Manage program fees and student payments' }}</p>
+    </div>
+    <div class="hero-actions">
+        <a href="{{ route('admin.fees.term.index') }}" class="btn-secondary-action">
+            <i class="fas fa-file-invoice-dollar"></i> Term Ledger
+        </a>
+        <a href="{{ route('admin.reports.financial') }}" class="btn-secondary-action">
+            <i class="fas fa-chart-bar"></i> Reports
+        </a>
+    </div>
+</div>
+
 <style>
     .premium-card {
         background: linear-gradient(135deg, #ffffff 0%, #fffcf5 100%);
@@ -38,7 +53,7 @@
         background: linear-gradient(90deg, currentColor, transparent);
     }
     
-    .summary-card.billed::before { background: linear-gradient(90deg, #D4A017, transparent); }
+    .summary-card.billed::before { background: linear-gradient(90deg, var(--brand), transparent); }
     .summary-card.collected::before { background: linear-gradient(90deg, #16a34a, transparent); }
     .summary-card.outstanding::before { background: linear-gradient(90deg, #dc2626, transparent); }
     
@@ -221,7 +236,7 @@
     <div class="px-5 py-4 border-b flex items-center gap-3"
          style="background:linear-gradient(135deg,{{ $isDaily ? '#f0fdf4,#dcfce7' : ($isWith ? '#eff6ff,#dbeafe' : 'var(--primary-pale),var(--primary-pale)') }})">
         <div class="w-9 h-9 rounded-xl flex items-center justify-center"
-             style="background:{{ $isDaily ? '#16a34a' : ($isWith ? '#3b82f6' : '#D4A017') }}">
+             style="background:{{ $isDaily ? '#16a34a' : ($isWith ? '#3b82f6' : 'var(--brand)') }}">
             <i class="fas {{ $isDaily ? 'fa-calendar-check' : ($isWith ? 'fa-utensils' : 'fa-coins') }} text-white text-sm"></i>
         </div>
         <div>
@@ -346,7 +361,7 @@
 {{-- Summary Cards --}}
 <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
     <div class="summary-card billed">
-        <div style="color: #D4A017;">
+        <div style="color: var(--brand);">
             <div class="summary-icon">
                 <i class="fas fa-file-invoice-dollar"></i>
             </div>
@@ -450,7 +465,7 @@
                 <tr class="hover:bg-gray-50/70 transition-colors">
                     <td class="px-4 py-3 font-semibold text-gray-900">
                         <div class="flex items-center gap-3">
-                            <span class="w-3 h-3 rounded-full" style="background: linear-gradient(135deg, #D4A017, #fbbf24);"></span>
+                            <span class="w-3 h-3 rounded-full" style="background: linear-gradient(135deg, var(--brand), #fbbf24);"></span>
                             {{ $bs['branch']->name }}
                         </div>
                     </td>
@@ -608,7 +623,7 @@
 
 {{-- Student Payment History --}}
 <div class="section-header">
-    <div class="section-header-icon bg-[var(--primary-pale)]" style="color: #D4A017;">
+    <div class="section-header-icon bg-[var(--primary-pale)]" style="color: var(--brand);">
         <i class="fas fa-history"></i>
     </div>
     <div>
@@ -662,16 +677,16 @@
             @endphp
             <div class="student-row">
                 <div class="flex items-start gap-4 mb-3">
-                    <input type="checkbox" name="student_ids[]" value="{{ $student->id }}" class="student-checkbox w-5 h-5 rounded cursor-pointer mt-1" onchange="updateBulkActions()" style="accent-color: #D4A017;">
+                    <input type="checkbox" name="student_ids[]" value="{{ $student->id }}" class="student-checkbox w-5 h-5 rounded cursor-pointer mt-1" onchange="updateBulkActions()" style="accent-color: var(--brand);">
                     
-                    <div class="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm text-white flex-shrink-0" style="background: linear-gradient(135deg, #D4A017, #f59e0b); box-shadow: 0 4px 8px rgba(212, 160, 23, 0.2);">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm text-white flex-shrink-0" style="background: linear-gradient(135deg, var(--brand), #f59e0b); box-shadow: 0 4px 8px rgba(212, 160, 23, 0.2);">
                         {{ strtoupper(substr($student->user->full_name??'?',0,1)) }}
                     </div>
                     
                     <div class="flex-1 min-w-0">
                         <p class="text-sm font-bold text-gray-900 truncate">{{ $student->user->full_name }}</p>
                         <p class="text-xs text-gray-500 mt-0.5">
-                            <i class="fas fa-graduation-cap mr-1" style="color: #D4A017;"></i>
+                            <i class="fas fa-graduation-cap mr-1" style="color: var(--brand);"></i>
                             {{ $student->program->name ?? 'N/A' }}
                         </p>
                         @if(isset($student->customFee) && $student->customFee)

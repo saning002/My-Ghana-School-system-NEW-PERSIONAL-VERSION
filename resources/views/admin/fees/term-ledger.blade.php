@@ -3,7 +3,7 @@
 
 @section('content')
 <style>
-.tl-hero{background:linear-gradient(135deg,#0f3460 0%,#16213e 100%);border-radius:20px;padding:2rem 2.5rem;color:#fff;margin-bottom:2rem;position:relative;overflow:hidden;}
+.tl-hero{background:linear-gradient(135deg,var(--admin-nav) 0%,var(--admin-nav) 100%);border-radius:20px;padding:2rem 2.5rem;color:#fff;margin-bottom:2rem;position:relative;overflow:hidden;}
 .tl-hero::before{content:'';position:absolute;right:-50px;top:-50px;width:250px;height:250px;background:rgba(255,255,255,.04);border-radius:50%;}
 .tl-hero::after{content:'';position:absolute;right:80px;bottom:-70px;width:160px;height:160px;background:rgba(255,255,255,.03);border-radius:50%;}
 .tl-stat{background:#fff;border-radius:14px;padding:1.25rem 1.5rem;border:1px solid #e2e8f0;box-shadow:0 1px 6px rgba(0,0,0,.06);display:flex;align-items:center;gap:1rem;height:100%;}
@@ -253,7 +253,7 @@
 {{-- �"?�"? Reminder Modal �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
 <div id="reminderModal" class="rm-modal-bg" style="display:none;" onclick="if(event.target===this)closeModals()">
     <div class="rm-modal">
-        <div style="background:linear-gradient(135deg,#0f3460,#16213e);padding:1.25rem 1.5rem;color:#fff;display:flex;align-items:center;justify-content:space-between;">
+        <div style="background:linear-gradient(135deg,var(--admin-nav),var(--admin-nav));padding:1.25rem 1.5rem;color:#fff;display:flex;align-items:center;justify-content:space-between;">
             <div>
                 <div style="font-weight:700;font-size:.95rem;"><i class="fas fa-paper-plane me-2" style="color:var(--brand);"></i>Send Fee Reminder</div>
                 <div id="rmStudentName" style="font-size:.78rem;opacity:.6;margin-top:2px;"></div>

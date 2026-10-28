@@ -15,7 +15,7 @@
 
 {{-- Global Summary --}}
 <div class="grid grid-cols-3 gap-3 mb-5 no-print">
-    <div class="card p-4 text-center" style="border-top:3px solid #D4A017">
+    <div class="card p-4 text-center" style="border-top:3px solid var(--brand)">
         <p class="text-xs text-gray-500 mb-1 font-semibold uppercase">Total Billed</p>
         <p class="text-xl font-bold" style="color:var(--primary-text)">GH₵ {{ number_format($global['billed'],2) }}</p>
     </div>

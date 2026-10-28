@@ -3,7 +3,7 @@
 
 @section('content')
 <style>
-.sh-hero{background:linear-gradient(135deg,#0f3460 0%,#16213e 100%);border-radius:20px;padding:2rem 2.5rem;color:#fff;margin-bottom:2rem;position:relative;overflow:hidden;}
+.sh-hero{background:linear-gradient(135deg,var(--admin-nav) 0%,var(--admin-nav) 100%);border-radius:20px;padding:2rem 2.5rem;color:#fff;margin-bottom:2rem;position:relative;overflow:hidden;}
 .sh-hero::before{content:'';position:absolute;right:-50px;top:-50px;width:220px;height:220px;background:rgba(255,255,255,.04);border-radius:50%;}
 .sh-stat{background:#fff;border-radius:14px;padding:1.25rem 1.5rem;border:1px solid #e2e8f0;box-shadow:0 1px 6px rgba(0,0,0,.06);text-align:center;height:100%;}
 .sh-card{background:#fff;border-radius:16px;border:1px solid #e2e8f0;box-shadow:0 2px 10px rgba(0,0,0,.06);overflow:hidden;margin-bottom:1.25rem;}
