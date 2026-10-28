@@ -2,13 +2,29 @@ extends('layouts.app')
 @section('title','Add Student')
 @section('subtitle','Student Admission Form – Royal Fame International School')
 
-@section('content'?'d M Y') }}</span>
+@section('content')
+<div class="max-w-4xl mx-auto" x-data="studentForm()">
+
+    {{-- �"?�"? Header �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
+    <div class="rounded-3xl overflow-hidden mb-5 border border-slate-200 shadow-sm">
+        <div class="bg-gradient-to-r from-slate-800 to-slate-700 px-6 py-5 text-white flex items-center justify-between">
+            <div>
+                <h2 class="text-lg font-extrabold tracking-tight">Student Admission Form</h2>
+                <p class="text-slate-300 text-xs mt-0.5">Complete all required sections – matches the official admission form</p>
+            </div>
+            <div class="hidden sm:flex items-center gap-3 text-xs text-slate-300">
+                <span class="rounded-full bg-white/10 px-3 py-1 font-semibold">Application No: <span class="font-mono text-yellow-300">AUTO</span></span>
+                <span class="rounded-full bg-white/10 px-3 py-1 font-semibold">Date: {{ now()->format('d M Y') }}</span>
             </div>
         </div>
     </div>
 
-    <form method="POST" action="{{ route('admin.students.store'?'S PERSONAL INFORMATION
-        ?.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.? --}}
+    <form method="POST" action="{{ route('admin.students.store') }}" enctype="multipart/form-data" class="space-y-4">
+        @csrf
+
+        {{-- �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.�
+             SECTION A – PUPIL'S PERSONAL INFORMATION
+        �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� --}}
         <div class="card overflow-hidden">
             <div class="section-header bg-slate-800 text-white px-5 py-3 flex items-center gap-3">
                 <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--primary)] text-slate-900 text-xs font-extrabold shrink-0">A</span>
@@ -150,7 +166,32 @@ extends('layouts.app')
                     <div class="border border-slate-200 rounded-xl overflow-hidden divide-y divide-slate-100 bg-white">
                         <template x-for="course in courses" :key="course.id">
                             <label class="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-slate-50">
-                                <input type="checkbox" :name="'courses[]'?'prev_school_name') }}" class="field-input" placeholder="e.g. Accra Academy">
+                                <input type="checkbox" :name="'courses[]'" :value="course.id" x-model="selectedCourses"
+                                    class="w-4 h-4 accent-yellow-500 rounded">
+                                <div>
+                                    <p class="text-sm font-semibold text-slate-800" x-text="course.name"></p>
+                                    <p class="text-xs text-slate-400 font-mono" x-text="course.code"></p>
+                                </div>
+                            </label>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.�
+             SECTION B – PREVIOUS SCHOOL DETAILS
+        �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� --}}
+        <div class="card overflow-hidden">
+            <div class="section-header bg-slate-700 text-white px-5 py-3 flex items-center gap-3">
+                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--primary)] text-slate-900 text-xs font-extrabold shrink-0">B</span>
+                <h3 class="text-sm font-extrabold tracking-wide">SECTION B – PREVIOUS SCHOOL DETAILS</h3>
+            </div>
+            <div class="p-5 space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="field-label">Name of Previous School</label>
+                        <input type="text" name="prev_school_name" value="{{ old('prev_school_name') }}" class="field-input" placeholder="e.g. Accra Academy">
                     </div>
                     <div>
                         <label class="field-label">Address of Previous School</label>
@@ -171,8 +212,16 @@ extends('layouts.app')
                         Previous Academic Reports Attached
                     </label>
                     <label class="flex items-center gap-2 text-sm font-medium text-slate-700 cursor-pointer">
-                        <input type="checkbox" name="transfer_letter_attached" value="1" {{ old('transfer_letter_attached')?'checked':''?'S INFORMATION
-        ?.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.? --}}
+                        <input type="checkbox" name="transfer_letter_attached" value="1" {{ old('transfer_letter_attached')?'checked':'' }} class="rounded accent-yellow-500">
+                        Transfer Letter Attached
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        {{-- �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.�
+             SECTION C – FATHER'S INFORMATION
+        �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� --}}
         <div class="card overflow-hidden">
             <div class="section-header bg-slate-700 text-white px-5 py-3 flex items-center gap-3">
                 <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--primary)] text-slate-900 text-xs font-extrabold shrink-0">C</span>
@@ -197,8 +246,14 @@ extends('layouts.app')
                 </div>
                 <div>
                     <label class="field-label">Telephone Number</label>
-                    <input type="text" name="father_phone" value="{{ old('father_phone'?'S INFORMATION
-        ?.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.??.? --}}
+                    <input type="text" name="father_phone" value="{{ old('father_phone') }}" class="field-input" placeholder="+233 00 000 0000">
+                </div>
+            </div>
+        </div>
+
+        {{-- �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.�
+             SECTION D – MOTHER'S INFORMATION
+        �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� --}}
         <div class="card overflow-hidden">
             <div class="section-header bg-slate-700 text-white px-5 py-3 flex items-center gap-3">
                 <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--primary)] text-slate-900 text-xs font-extrabold shrink-0">D</span>
@@ -223,7 +278,23 @@ extends('layouts.app')
                 </div>
                 <div>
                     <label class="field-label">Telephone Number</label>
-                    <input type="text" name="mother_phone" value="{{ old('mother_phone'?'guardian_name') }}" class="field-input" placeholder="Guardian's full name">
+                    <input type="text" name="mother_phone" value="{{ old('mother_phone') }}" class="field-input" placeholder="+233 00 000 0000">
+                </div>
+            </div>
+        </div>
+
+        {{-- �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.�
+             SECTION E – GUARDIAN INFORMATION (IF APPLICABLE)
+        �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� --}}
+        <div class="card overflow-hidden">
+            <div class="section-header bg-slate-700 text-white px-5 py-3 flex items-center gap-3">
+                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--primary)] text-slate-900 text-xs font-extrabold shrink-0">E</span>
+                <h3 class="text-sm font-extrabold tracking-wide">SECTION E – GUARDIAN INFORMATION <span class="font-normal text-slate-300 text-xs">(if applicable)</span></h3>
+            </div>
+            <div class="p-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="sm:col-span-2">
+                    <label class="field-label">Full Name</label>
+                    <input type="text" name="guardian_name" value="{{ old('guardian_name') }}" class="field-input" placeholder="Guardian's full name">
                 </div>
                 <div>
                     <label class="field-label">Relationship to Child</label>
@@ -239,7 +310,23 @@ extends('layouts.app')
                 </div>
                 <div>
                     <label class="field-label">Telephone Number</label>
-                    <input type="text" name="guardian_phone" value="{{ old('guardian_phone'?'medical_condition') }}" class="field-input" placeholder="e.g. Asthma, Diabetes – or None">
+                    <input type="text" name="guardian_phone" value="{{ old('guardian_phone') }}" class="field-input" placeholder="+233 00 000 0000">
+                </div>
+            </div>
+        </div>
+
+        {{-- �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.�
+             SECTION G – MEDICAL INFORMATION
+        �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� --}}
+        <div class="card overflow-hidden">
+            <div class="section-header bg-red-700 text-white px-5 py-3 flex items-center gap-3">
+                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--primary)] text-slate-900 text-xs font-extrabold shrink-0">G</span>
+                <h3 class="text-sm font-extrabold tracking-wide">SECTION G – MEDICAL INFORMATION</h3>
+            </div>
+            <div class="p-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="field-label">Known Medical Condition</label>
+                    <input type="text" name="medical_condition" value="{{ old('medical_condition') }}" class="field-input" placeholder="e.g. Asthma, Diabetes – or None">
                 </div>
                 <div>
                     <label class="field-label">Blood Group <span class="text-slate-400 font-normal text-xs">(optional)</span></label>
@@ -264,7 +351,23 @@ extends('layouts.app')
                 </div>
                 <div>
                     <label class="field-label">Doctor's Telephone Number</label>
-                    <input type="text" name="doctor_phone" value="{{ old('doctor_phone'?'pickup_name') }}" class="field-input" placeholder="Authorized person's name">
+                    <input type="text" name="doctor_phone" value="{{ old('doctor_phone') }}" class="field-input" placeholder="+233 00 000 0000">
+                </div>
+            </div>
+        </div>
+
+        {{-- �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.�
+             SECTION H – PERSONS AUTHORIZED TO PICK UP THE CHILD
+        �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� --}}
+        <div class="card overflow-hidden">
+            <div class="section-header bg-slate-700 text-white px-5 py-3 flex items-center gap-3">
+                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--primary)] text-slate-900 text-xs font-extrabold shrink-0">H</span>
+                <h3 class="text-sm font-extrabold tracking-wide">SECTION H – PERSONS AUTHORIZED TO PICK UP THE CHILD</h3>
+            </div>
+            <div class="p-5 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                    <label class="field-label">Name</label>
+                    <input type="text" name="pickup_name" value="{{ old('pickup_name') }}" class="field-input" placeholder="Authorized person's name">
                 </div>
                 <div>
                     <label class="field-label">Relationship</label>
@@ -272,7 +375,23 @@ extends('layouts.app')
                 </div>
                 <div>
                     <label class="field-label">Telephone Number</label>
-                    <input type="text" name="pickup_phone" value="{{ old('pickup_phone'?'admission_fee_paid',  'Admission Fee Paid'],
+                    <input type="text" name="pickup_phone" value="{{ old('pickup_phone') }}" class="field-input" placeholder="+233 00 000 0000">
+                </div>
+            </div>
+        </div>
+
+        {{-- �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.�
+             SECTION I – SCHOOL CONTRIBUTION STATUS
+        �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� --}}
+        <div class="card overflow-hidden">
+            <div class="section-header bg-slate-700 text-white px-5 py-3 flex items-center gap-3">
+                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--primary)] text-slate-900 text-xs font-extrabold shrink-0">I</span>
+                <h3 class="text-sm font-extrabold tracking-wide">SECTION I – SCHOOL CONTRIBUTION STATUS</h3>
+            </div>
+            <div class="p-5">
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    @foreach([
+                        ['admission_fee_paid',  'Admission Fee Paid'],
                         ['furniture_fee_paid',  'Furniture Support Paid'],
                         ['toiletries_paid',     'Toiletries Paid / Provided'],
                         ['uniform_paid',        'Uniforms Paid'],
@@ -284,7 +403,34 @@ extends('layouts.app')
                                 <input type="radio" name="{{ $name }}" value="1" {{ old($name)==='1'?'checked':'' }} class="accent-emerald-500"> Yes
                             </label>
                             <label class="flex items-center gap-1.5 text-sm font-medium text-slate-700 cursor-pointer">
-                                <input type="radio" name="{{ $name }}" value="0" {{ old($name,'0')==='0'?'checked':''?'consent_guardian_name') }}" class="field-input" placeholder="Signing parent or guardian name">
+                                <input type="radio" name="{{ $name }}" value="0" {{ old($name,'0')==='0'?'checked':'' }} class="accent-red-400"> No
+                            </label>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+
+        {{-- �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.�
+             SECTION J – CONSENT AND DECLARATION
+        �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� --}}
+        <div class="card overflow-hidden">
+            <div class="section-header bg-slate-800 text-white px-5 py-3 flex items-center gap-3">
+                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--primary)] text-slate-900 text-xs font-extrabold shrink-0">J</span>
+                <h3 class="text-sm font-extrabold tracking-wide">SECTION J – CONSENT AND DECLARATION</h3>
+            </div>
+            <div class="p-5 space-y-4">
+                <div class="rounded-xl border border-slate-200 bg-slate-50 p-4 text-xs text-slate-600 leading-relaxed space-y-1.5">
+                    <p>I / We certify that the information provided in this form is true and accurate to the best of my/our knowledge.</p>
+                    <p>I / We agree to cooperate with the school and abide by the rules, regulations, and policies of Royal Fame International School.</p>
+                    <p>I / We authorize the school to seek emergency medical attention for my/our child when necessary.</p>
+                    <p>I / We accept to pay any amount that my/our ward is expected to pay as in tuition / feeding, exams fees, and any other expenses.</p>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="field-label">Parent / Guardian Name</label>
+                        <input type="text" name="consent_guardian_name" value="{{ old('consent_guardian_name') }}" class="field-input" placeholder="Signing parent or guardian name">
                     </div>
                     <div>
                         <label class="field-label">Date of Signing</label>
@@ -292,7 +438,28 @@ extends('layouts.app')
                     </div>
                 </div>
                 <label class="flex items-start gap-3 cursor-pointer">
-                    <input type="checkbox" name="consent_signed" value="1" {{ old('consent_signed')?'checked':''?'student_id') }}" readonly
+                    <input type="checkbox" name="consent_signed" value="1" {{ old('consent_signed')?'checked':'' }}
+                        class="mt-0.5 rounded accent-yellow-500 w-4 h-4 shrink-0">
+                    <span class="text-sm font-semibold text-slate-700">I confirm the parent/guardian has signed the consent declaration on the physical form.</span>
+                </label>
+            </div>
+        </div>
+
+        {{-- �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.�
+             SYSTEM / PORTAL DETAILS (for admin use)
+        �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� --}}
+        <div class="card overflow-hidden">
+            <div class="section-header bg-indigo-700 text-white px-5 py-3 flex items-center gap-3">
+                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--primary)] text-slate-900 text-xs font-extrabold shrink-0">
+                    <i class="fas fa-cog text-[10px]"></i>
+                </span>
+                <h3 class="text-sm font-extrabold tracking-wide">FOR OFFICIAL USE – SYSTEM &amp; PORTAL DETAILS</h3>
+            </div>
+            <div class="p-5 space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="field-label">Student ID</label>
+                        <input type="text" name="student_id" id="student-id-field" value="{{ old('student_id') }}" readonly
                             class="field-input bg-slate-50 text-slate-500 cursor-not-allowed"
                             placeholder="Auto-generated on save">
                         <p class="text-[11px] text-slate-400 mt-1">
@@ -302,7 +469,22 @@ extends('layouts.app')
                     </div>
                     <div>
                         <label class="field-label">School Branch *</label>
-                        <div x-data="branchCombo({{ json_encode($branches->map(fn($b)=>['id'=>$b->id,'name'=>$b->name,'code'=>$b->code ?? ''])) }}, '{{ old('church_branch_id') }}', '{{ old('branch_new') }}'?'' : query.trim()">
+                        <div x-data="branchCombo({{ json_encode($branches->map(fn($b)=>['id'=>$b->id,'name'=>$b->name,'code'=>$b->code ?? ''])) }}, '{{ old('church_branch_id') }}', '{{ old('branch_new') }}')"
+                             class="relative">
+                            <input type="text"
+                                x-model="query"
+                                @focus="open=true"
+                                @input="open=true; filterList()"
+                                @keydown.escape="open=false"
+                                @keydown.arrow-down.prevent="highlight=Math.min(highlight+1,filtered.length-1)"
+                                @keydown.arrow-up.prevent="highlight=Math.max(highlight-1,0)"
+                                @keydown.enter.prevent="selectHighlighted()"
+                                @blur="delayClose()"
+                                class="field-input"
+                                placeholder="Search or type new branch name–�"
+                                autocomplete="off" required>
+                            <input type="hidden" name="church_branch_id" :value="selectedId" id="branch-id-hidden">
+                            <input type="hidden" name="branch_new"       :value="selectedId ? '' : query.trim()">
                             <div x-show="open && filtered.length > 0" x-cloak
                                 class="absolute z-50 mt-1 w-full bg-white border border-slate-200 rounded-xl shadow-lg overflow-hidden max-h-48 overflow-y-auto">
                                 <template x-for="(item, idx) in filtered" :key="item.id ?? item.name">
@@ -375,7 +557,31 @@ extends('layouts.app')
                     </div>
                     <div>
                         <label class="field-label">Signal</label>
-                        <input type="text" name="signal" value="{{ old('signal','H+R=P'?'admin.students.index') }}"
+                        <input type="text" name="signal" value="{{ old('signal','H+R=P') }}" class="field-input">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- �"?�"? Errors �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
+        @if($errors->any())
+        <div class="rounded-xl bg-red-50 border border-red-200 p-4">
+            <p class="text-sm font-bold text-red-700 mb-2"><i class="fas fa-circle-exclamation mr-1"></i> Please fix the following errors:</p>
+            <ul class="list-disc list-inside space-y-1">
+                @foreach($errors->all() as $error)
+                <li class="text-xs text-red-600">{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+        @endif
+
+        {{-- �"?�"? Submit �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
+        <div class="flex flex-col sm:flex-row gap-3 pb-6">
+            <button type="submit"
+                class="btn-gold flex-1 sm:flex-none px-8 py-3.5 rounded-2xl text-[14px] font-bold shadow-[0_4px_14px_0_rgba(212,160,23,0.39)] active:scale-95 flex items-center justify-center gap-2">
+                <i class="fas fa-user-plus text-sm"></i> Register Student
+            </button>
+            <a href="{{ route('admin.students.index') }}"
                class="flex-1 sm:flex-none px-8 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-2xl text-[14px] font-bold transition-colors text-center active:scale-95">
                 Cancel
             </a>

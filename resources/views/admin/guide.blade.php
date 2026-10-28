@@ -553,7 +553,82 @@ extends('layouts.app')
 </div>
 
 {{-- ========== PANEL: GRADING ========== --}}
-<div class="guide-panel" x-show="activeTab === 'grading'?' Grade A1 –' GPoint <span class="hl">4.0</span> – Credits <span class="hl">3</span> = <span class="hl">12.0</span><br>
+<div class="guide-panel" x-show="activeTab === 'grading'" id="panel-grading">
+    <div class="section-heading">
+        <div class="section-heading-bar"></div>
+        <h2 class="text-base font-bold text-slate-800">Grading Scale, SGPA & Class Rankings</h2>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5">
+        <div class="feature-card">
+            <p class="font-bold text-sm text-slate-800 mb-4 flex items-center gap-2">
+                <i class="fas fa-star text-[var(--brand)]"></i> Official Grading Scale
+            </p>
+            <div class="grade-row" style="background:rgba(212,160,23,0.07)">
+                <div class="grade-badge" style="background:var(--brand);color:#fff">A1</div>
+                <div class="flex-1">
+                    <p class="text-xs font-bold text-slate-700">Distinction</p>
+                    <p class="text-xs text-slate-500">Score –� 80</p>
+                </div>
+                <div class="grade-gp">4.0</div>
+                <div class="text-xs font-bold text-[var(--primary-text)] px-2 py-1 rounded-lg" style="background:rgba(212,160,23,.12)">A1</div>
+            </div>
+            <div class="grade-row">
+                <div class="grade-badge" style="background:#3b82f6;color:#fff">A2</div>
+                <div class="flex-1">
+                    <p class="text-xs font-bold text-slate-700">Upper Division</p>
+                    <p class="text-xs text-slate-500">Score 70 – 79</p>
+                </div>
+                <div class="grade-gp">3.7</div>
+                <div class="text-xs font-bold text-blue-700 px-2 py-1 rounded-lg" style="background:rgba(59,130,246,.12)">A2</div>
+            </div>
+            <div class="grade-row">
+                <div class="grade-badge" style="background:#06b6d4;color:#fff">A3</div>
+                <div class="flex-1">
+                    <p class="text-xs font-bold text-slate-700">Lower Division</p>
+                    <p class="text-xs text-slate-500">Score 60 – 69</p>
+                </div>
+                <div class="grade-gp">3.3</div>
+                <div class="text-xs font-bold text-cyan-700 px-2 py-1 rounded-lg" style="background:rgba(6,182,212,.12)">A3</div>
+            </div>
+            <div class="grade-row">
+                <div class="grade-badge" style="background:#22c55e;color:#fff">B1</div>
+                <div class="flex-1">
+                    <p class="text-xs font-bold text-slate-700">Credit</p>
+                    <p class="text-xs text-slate-500">Score 50 – 59</p>
+                </div>
+                <div class="grade-gp">3.0</div>
+                <div class="text-xs font-bold text-green-700 px-2 py-1 rounded-lg" style="background:rgba(34,197,94,.12)">B1</div>
+            </div>
+            <div class="grade-row">
+                <div class="grade-badge" style="background:var(--primary);color:#fff">B2</div>
+                <div class="flex-1">
+                    <p class="text-xs font-bold text-slate-700">Pass</p>
+                    <p class="text-xs text-slate-500">Score 40 – 49</p>
+                </div>
+                <div class="grade-gp">2.0</div>
+                <div class="text-xs font-bold text-[var(--primary-text)] px-2 py-1 rounded-lg" style="background:rgba(245,158,11,.12)">B2</div>
+            </div>
+            <div class="grade-row">
+                <div class="grade-badge" style="background:#ef4444;color:#fff">F</div>
+                <div class="flex-1">
+                    <p class="text-xs font-bold text-slate-700">Fail</p>
+                    <p class="text-xs text-slate-500">Score below 40</p>
+                </div>
+                <div class="grade-gp">0.0</div>
+                <div class="text-xs font-bold text-red-700 px-2 py-1 rounded-lg" style="background:rgba(239,68,68,.12)">F</div>
+            </div>
+            <p class="text-xs text-slate-400 text-center mt-3">Overall average –� 40 = Promoted | Below 40 = Repeat Program</p>
+        </div>
+
+        <div>
+            <div class="feature-card mb-4">
+                <p class="font-bold text-sm text-slate-800 mb-3 flex items-center gap-2">
+                    <i class="fas fa-calculator text-green-500"></i> How SGPA is Calculated
+                </p>
+                <div class="formula-box mb-3">
+                    <span class="comment">-- Example: 3 courses</span><br>
+                    Course A: <span class="hl">Score 85</span> –' Grade A1 –' GPoint <span class="hl">4.0</span> – Credits <span class="hl">3</span> = <span class="hl">12.0</span><br>
                     Course B: <span class="hl">Score 72</span> –' Grade A2 –' GPoint <span class="hl">3.7</span> – Credits <span class="hl">3</span> = <span class="hl">11.1</span><br>
                     Course C: <span class="hl">Score 55</span> –' Grade B1 –' GPoint <span class="hl">3.0</span> – Credits <span class="hl">3</span> = <span class="hl">9.0</span><br>
                     <br>
@@ -586,7 +661,7 @@ extends('layouts.app')
         </p>
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
             @foreach([
-                ['label'=>'EXCELLENT RESULT','range'=>'?','color'=>'#D4A017','bg'=>'rgba(212,160,23,.1)','text'=>'#78520a'],
+                ['label'=>'EXCELLENT RESULT','range'=>'Avg –� 80','color'=>'#D4A017','bg'=>'rgba(212,160,23,.1)','text'=>'#78520a'],
                 ['label'=>'VERY GOOD RESULT','range'=>'Avg 70–79','color'=>'#3b82f6','bg'=>'rgba(59,130,246,.1)','text'=>'#1d4ed8'],
                 ['label'=>'GOOD RESULT','range'=>'Avg 60–69','color'=>'#06b6d4','bg'=>'rgba(6,182,212,.1)','text'=>'#0e7490'],
                 ['label'=>'CREDIT RESULT','range'=>'Avg 50–59','color'=>'#22c55e','bg'=>'rgba(34,197,94,.1)','text'=>'#15803d'],
@@ -617,7 +692,35 @@ extends('layouts.app')
             <div class="step-flow">
                 <div class="step-item">
                     <div class="relative"><div class="step-num">1</div><div class="step-connector"></div></div>
-                    <div class="pt-1"><p class="text-sm font-semibold text-slate-700">Set Program Fees</p><p class="text-xs text-slate-500 mt-0.5">Go to Fees & Payments –'?' 800 = 300</span>
+                    <div class="pt-1"><p class="text-sm font-semibold text-slate-700">Set Program Fees</p><p class="text-xs text-slate-500 mt-0.5">Go to Fees & Payments –' Set Fee. Select a program and enter the <strong>Tuition Fee</strong> and <strong>Exam Fee</strong> separately. Both are billed when a student is in or has passed through that program.</p></div>
+                </div>
+                <div class="step-item">
+                    <div class="relative"><div class="step-num">2</div><div class="step-connector"></div></div>
+                    <div class="pt-1"><p class="text-sm font-semibold text-slate-700">Record Payments</p><p class="text-xs text-slate-500 mt-0.5">Search a student and enter the payment amount and date. Payments are cumulative – enter multiple installments separately.</p></div>
+                </div>
+                <div class="step-item">
+                    <div class="relative"><div class="step-num">3</div></div>
+                    <div class="pt-1"><p class="text-sm font-semibold text-slate-700">Balance Auto-Calculated</p><p class="text-xs text-slate-500 mt-0.5">The system totals all fees from every program the student has ever enrolled in (using promotion history), deducts total payments, and shows the outstanding balance.</p></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="feature-card">
+            <p class="font-bold text-sm text-slate-800 mb-3 flex items-center gap-2">
+                <i class="fas fa-function text-blue-500"></i> Fee Calculation Formula
+            </p>
+            <div class="formula-box mb-3">
+                <span class="comment">-- Programs a student went through:</span><br>
+                Program 1 Fee = Tuition <span class="hl">500</span> + Exam <span class="hl">50</span> = <span class="hl">550</span><br>
+                Program 2 Fee = Tuition <span class="hl">500</span> + Exam <span class="hl">50</span> = <span class="hl">550</span><br>
+                <br>
+                <span class="comment">-- Total Billed:</span><br>
+                Total = <span class="hl">550 + 550 = 1,100</span><br>
+                <br>
+                <span class="comment">-- Payments made:</span><br>
+                Paid = <span class="hl">800</span><br>
+                <br>
+                <span class="hl">Balance = 1,100 �^' 800 = 300</span>
             </div>
             <div class="guide-alert mb-0" style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2)">
                 <div class="guide-alert-icon" style="background:rgba(245,158,11,0.15);color:var(--primary-dark)"><i class="fas fa-info-circle"></i></div>
@@ -792,7 +895,29 @@ extends('layouts.app')
             <p class="text-[var(--primary-text)] text-xs leading-relaxed">
                 Three major improvements have been added: <strong>(1)</strong> Scores are now split into a separate <em>Quiz</em> score and <em>Exam</em> score per course.
                 <strong>(2)</strong> You can freely set the percentage weight each one carries (e.g. Quiz 30% + Exam 70%) and change it any time.
-                <strong>(3)</strong> A brand-new <strong>Bulk Download & Print</strong> page lets you generate all students'?' Enter Scores</p>
+                <strong>(3)</strong> A brand-new <strong>Bulk Download & Print</strong> page lets you generate all students' report cards in a single PDF with one click.
+                The report card date now also shows the month/year the exam was <em>taken</em>, not the download date.
+            </p>
+        </div>
+    </div>
+
+    {{-- �"?�"? SECTION 1: Quiz + Exam Scores �"?�"? --}}
+    <div class="mb-6">
+        <div class="section-heading">
+            <div class="section-heading-bar" style="background:linear-gradient(180deg,#3b82f6,#1d4ed8)"></div>
+            <h3 class="text-sm font-bold text-slate-700">1. Quiz Score + Exam Score (Per Course)</h3>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+            <div class="feature-card">
+                <p class="font-bold text-sm text-slate-800 mb-3 flex items-center gap-2">
+                    <i class="fas fa-pen text-blue-500"></i> Single Student Entry
+                </p>
+                <div class="step-flow">
+                    <div class="step-item">
+                        <div class="relative"><div class="step-num">1</div><div class="step-connector"></div></div>
+                        <div class="pt-1">
+                            <p class="text-sm font-semibold text-slate-700">Go to Exams &amp; Results –' Enter Scores</p>
                             <p class="text-xs text-slate-500 mt-0.5">Select the program, then search for and select the student.</p>
                         </div>
                     </div>
@@ -875,7 +1000,7 @@ extends('layouts.app')
         </div>
     </div>
 
-    {{-- ?"??"? SECTION 2: Adjustable Percentages ?"??"? --}}
+    {{-- �"?�"? SECTION 2: Adjustable Percentages �"?�"? --}}
     <div class="mb-6">
         <div class="section-heading">
             <div class="section-heading-bar" style="background:linear-gradient(180deg,#7c3aed,#6d28d9)"></div>
@@ -938,7 +1063,73 @@ extends('layouts.app')
             <div class="guide-alert-icon" style="background:rgba(168,85,247,0.15);color:#7c3aed"><i class="fas fa-exclamation-circle"></i></div>
             <div>
                 <p class="font-semibold text-sm text-purple-800 mb-0.5">Important – Percentages are global, not per-program</p>
-                <p class="text-purple-700 text-xs">Changing the percentage affects every program and every student'?'s <strong>photo</strong> appears if one was uploaded, otherwise their initials show in a placeholder box.</span></div>
+                <p class="text-purple-700 text-xs">Changing the percentage affects every program and every student's aggregate. The raw quiz and exam scores are always preserved – only the display and grading formula changes. You can safely adjust and re-adjust without losing any data.</p>
+            </div>
+        </div>
+    </div>
+
+    {{-- �"?�"? SECTION 3: Bulk Download & Print �"?�"? --}}
+    <div class="mb-6">
+        <div class="section-heading">
+            <div class="section-heading-bar" style="background:linear-gradient(180deg,#dc2626,#b91c1c)"></div>
+            <h3 class="text-sm font-bold text-slate-700">3. Bulk Report Card Download &amp; Print</h3>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+            <div class="feature-card">
+                <p class="font-bold text-sm text-slate-800 mb-3 flex items-center gap-2">
+                    <i class="fas fa-file-pdf text-red-500"></i> How to Bulk Download
+                </p>
+                <div class="step-flow">
+                    <div class="step-item">
+                        <div class="relative"><div class="step-num">1</div><div class="step-connector"></div></div>
+                        <div class="pt-1">
+                            <p class="text-sm font-semibold text-slate-700">Click "Bulk Download" on the Exams page</p>
+                            <p class="text-xs text-slate-500 mt-0.5">The red <strong>Bulk Download</strong> button is at the top-right of the Exams &amp; Results index page, next to "Enter Scores".</p>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="relative"><div class="step-num">2</div><div class="step-connector"></div></div>
+                        <div class="pt-1">
+                            <p class="text-sm font-semibold text-slate-700">Step 1 – Pick Program &amp; Attempt</p>
+                            <p class="text-xs text-slate-500 mt-0.5">Select the program from the dropdown. The attempt dropdown shows only attempts that already have scores. Pick the one you want (e.g. Attempt 1) and click <strong>Load Students</strong>.</p>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="relative"><div class="step-num">3</div><div class="step-connector"></div></div>
+                        <div class="pt-1">
+                            <p class="text-sm font-semibold text-slate-700">Step 2 – Select Students</p>
+                            <p class="text-xs text-slate-500 mt-0.5">
+                                Only students who have scores for that attempt appear in the list. You can:
+                                <br>–� Click <strong>Select All</strong> to tick everyone
+                                <br>–� Use the <strong>filter box</strong> to search by name or student ID
+                                <br>–� Tick/untick individual students
+                                <br>The counter at the top right shows how many are selected.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="relative"><div class="step-num">4</div></div>
+                        <div class="pt-1">
+                            <p class="text-sm font-semibold text-slate-700">Step 3 – Download or Print</p>
+                            <p class="text-xs text-slate-500 mt-0.5">
+                                Click <strong>Download PDF</strong> to save a multi-page PDF (one page = one report card) to your device.
+                                <br>Click <strong>Print Report Cards</strong> to open the PDF in a new browser tab, then use <kbd class="bg-gray-100 px-1 rounded">Ctrl+P</kbd> (or <kbd class="bg-gray-100 px-1 rounded">�O~P</kbd> on Mac) to print all cards at once.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <div class="feature-card">
+                    <p class="font-bold text-sm text-slate-800 mb-2 flex items-center gap-2">
+                        <i class="fas fa-info-circle text-blue-500"></i> What the Bulk PDF Contains
+                    </p>
+                    <div class="space-y-1.5 text-xs text-slate-600">
+                        <div class="tip-item"><div class="tip-dot"></div><span>Each student gets their own <strong>full-page report card</strong>, identical to the individual PDF download.</span></div>
+                        <div class="tip-item"><div class="tip-dot"></div><span>Cards are separated by page breaks – print them and simply cut or distribute individually.</span></div>
+                        <div class="tip-item"><div class="tip-dot"></div><span>The student's <strong>photo</strong> appears if one was uploaded, otherwise their initials show in a placeholder box.</span></div>
                         <div class="tip-item"><div class="tip-dot"></div><span>The date on each card shows the month/year <strong>the exam was taken</strong>, not today's date.</span></div>
                         <div class="tip-item"><div class="tip-dot"></div><span>Class positions are <strong>not printed</strong> on the report cards for student privacy.</span></div>
                         <div class="tip-item"><div class="tip-dot"></div><span>If a student is selected but has no scores for that attempt, they are <strong>silently skipped</strong> – no error.</span></div>
@@ -947,7 +1138,58 @@ extends('layouts.app')
 
                 <div class="feature-card">
                     <p class="font-bold text-sm text-slate-800 mb-2 flex items-center gap-2">
-                        <i class="fas fa-print text-gray-600"></i> Download vs. Print – What'?'faq'" id="panel-faq">
+                        <i class="fas fa-print text-gray-600"></i> Download vs. Print – What's the Difference?
+                    </p>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div class="p-3 rounded-xl text-center" style="background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.2)">
+                            <i class="fas fa-file-pdf text-red-600 text-xl mb-1 block"></i>
+                            <p class="text-xs font-bold text-red-700">Download PDF</p>
+                            <p class="text-xs text-red-600 mt-1">Saves the file to your device. Good for keeping a digital record or sharing via email/WhatsApp.</p>
+                        </div>
+                        <div class="p-3 rounded-xl text-center" style="background:rgba(55,65,81,0.07);border:1px solid rgba(55,65,81,0.2)">
+                            <i class="fas fa-print text-gray-700 text-xl mb-1 block"></i>
+                            <p class="text-xs font-bold text-gray-700">Print</p>
+                            <p class="text-xs text-gray-600 mt-1">Opens the PDF inline in a new tab. Press Ctrl+P to send directly to your printer. Good for physical copies.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- �"?�"? SECTION 4: Report Card Date �"?�"? --}}
+    <div class="mb-4">
+        <div class="section-heading">
+            <div class="section-heading-bar" style="background:linear-gradient(180deg,#0891b2,#0e7490)"></div>
+            <h3 class="text-sm font-bold text-slate-700">4. Correct Date on Report Cards</h3>
+        </div>
+
+        <div class="feature-card">
+            <p class="font-bold text-sm text-slate-800 mb-3 flex items-center gap-2">
+                <i class="fas fa-calendar-alt text-cyan-500"></i> The Date Now Reflects When the Exam Was Taken
+            </p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="p-4 rounded-xl" style="background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.2)">
+                    <p class="text-xs font-bold text-red-700 mb-1"><i class="fas fa-times-circle mr-1"></i> Old Behaviour (Removed)</p>
+                    <p class="text-xs text-red-600">Every time a report card was downloaded or printed, it showed <strong>the current month and year</strong> – meaning a report card downloaded in July would show "JULY 2026" even if the exam was taken in February.</p>
+                </div>
+                <div class="p-4 rounded-xl" style="background:rgba(34,197,94,0.07);border:1px solid rgba(34,197,94,0.2)">
+                    <p class="text-xs font-bold text-green-700 mb-1"><i class="fas fa-check-circle mr-1"></i> New Behaviour (Current)</p>
+                    <p class="text-xs text-green-600">The date on the report card shows the <strong>month and year the exam scores were originally entered</strong>. Downloading the same report card three months later still shows the original exam date.</p>
+                </div>
+            </div>
+            <div class="guide-alert mt-3 mb-0" style="background:rgba(6,182,212,0.07);border:1px solid rgba(6,182,212,0.2)">
+                <div class="guide-alert-icon" style="background:rgba(6,182,212,0.15);color:#0891b2"><i class="fas fa-lightbulb"></i></div>
+                <div>
+                    <p class="text-cyan-700 text-xs">The date is derived from when the first score for that student/program/attempt was saved to the database. It applies to both individual downloads and bulk PDF downloads.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- ========== PANEL: FAQ ========== --}}
+<div class="guide-panel" x-show="activeTab === 'faq'" id="panel-faq">
     <div class="section-heading">
         <div class="section-heading-bar"></div>
         <h2 class="text-base font-bold text-slate-800">Frequently Asked Questions</h2>

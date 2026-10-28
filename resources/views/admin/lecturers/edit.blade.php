@@ -12,7 +12,32 @@ extends('layouts.app')
     </div>
 
     <form method="POST" action="{{ route('admin.lecturers.update', $lecturer) }}" enctype="multipart/form-data" class="space-y-6">
-        @csrf @method('PUT'?'photo')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+        @csrf @method('PUT')
+
+        {{-- �"?�"? Personal Information �"?�"? --}}
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-100 bg-[var(--primary-pale)]">
+                <h3 class="text-sm font-bold text-[var(--primary-text)] flex items-center gap-2">
+                    <i class="fas fa-user-tie text-[var(--brand)]"></i> Personal Information
+                </h3>
+            </div>
+            <div class="px-6 py-6 grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                {{-- Photo --}}
+                <div class="md:col-span-2 flex items-start gap-6">
+                    <div id="photo-preview" class="w-24 h-24 rounded-2xl overflow-hidden border-2 border-gray-200 flex-shrink-0 bg-gray-100 flex items-center justify-center">
+                        @if($lecturer->photo_url)
+                            <img src="{{ $lecturer->photo_url }}" alt="{{ $lecturer->full_name }}" class="w-full h-full object-cover">
+                        @else
+                            <span class="text-3xl font-bold text-gray-400">{{ strtoupper(substr($lecturer->full_name, 0, 1)) }}</span>
+                        @endif
+                    </div>
+                    <div class="flex-1">
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Profile Photo</label>
+                        <input type="file" name="photo" accept="image/*" onchange="previewPhoto(this)"
+                               class="w-full text-sm text-gray-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:font-semibold file:bg-[var(--primary-pale)] file:text-[var(--primary-text)] hover:file:bg-[var(--primary-pale)]">
+                        <p class="text-xs text-gray-400 mt-1">Leave blank to keep current photo · JPG, PNG or WebP · max 3 MB</p>
+                        @error('photo')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
                     </div>
                 </div>
 
@@ -93,8 +118,68 @@ extends('layouts.app')
                 <div class="md:col-span-2">
                     <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Short Bio</label>
                     <textarea name="bio" rows="3"
-                              class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)] resize-none">{{ old('bio'?'assignments'))
-                                            ? isset(old('assignments'?'admin.lecturers.show', $lecturer) }}"
+                              class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)] resize-none">{{ old('bio', $lecturer->bio) }}</textarea>
+                </div>
+            </div>
+        </div>
+
+        {{-- �"?�"? Course Assignments �"?�"? --}}
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-100 bg-blue-50">
+                <h3 class="text-sm font-bold text-blue-900 flex items-center gap-2">
+                    <i class="fas fa-book-open text-blue-600"></i> Course Assignments
+                    <span class="text-xs font-normal text-blue-500 ml-1">– Tick the courses this teacher handles</span>
+                </h3>
+            </div>
+            <div class="px-6 py-6 space-y-6">
+                @forelse($programs as $program)
+                <div>
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="w-5 h-5 rounded-full bg-[var(--primary-pale)]0 text-white text-[10px] font-bold flex items-center justify-center flex-shrink-0">
+                            {{ $program->sequence }}
+                        </span>
+                        <p class="text-sm font-bold text-gray-800">{{ $program->name }}</p>
+                        <button type="button" onclick="toggleProgram({{ $program->id }}, true)"
+                                class="ml-auto text-[10px] font-semibold text-blue-600 hover:underline">All</button>
+                        <button type="button" onclick="toggleProgram({{ $program->id }}, false)"
+                                class="text-[10px] font-semibold text-gray-400 hover:underline">None</button>
+                    </div>
+                    @if($program->courses->isEmpty())
+                        <p class="text-xs text-gray-400 italic ml-7">No courses in this program yet.</p>
+                    @else
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 ml-7" id="program-{{ $program->id }}">
+                            @foreach($program->courses as $course)
+                            <label class="flex items-center gap-3 p-3 rounded-xl border border-gray-100 hover:border-blue-200 hover:bg-blue-50/40 cursor-pointer transition-colors">
+                                <input type="checkbox"
+                                       name="assignments[{{ $course->id }}]"
+                                       value="1"
+                                       data-program="{{ $program->id }}"
+                                       class="w-4 h-4 rounded text-blue-600 border-gray-300 focus:ring-blue-400"
+                                       @if(is_array(old('assignments'))
+                                            ? isset(old('assignments')[$course->id])
+                                            : in_array($course->id, $assignedCourseIds)) checked @endif>
+                                <div class="min-w-0">
+                                    <p class="text-sm font-semibold text-gray-800 truncate">{{ $course->name }}</p>
+                                    <p class="text-xs text-gray-400 font-mono">{{ $course->code }}</p>
+                                </div>
+                            </label>
+                            @endforeach
+                        </div>
+                    @endif
+                </div>
+                @empty
+                <p class="text-sm text-gray-400 text-center py-4">No programs configured.</p>
+                @endforelse
+            </div>
+        </div>
+
+        {{-- �"?�"? Submit �"?�"? --}}
+        <div class="flex items-center gap-3">
+            <button type="submit"
+                    class="px-7 py-3 bg-[var(--primary)] hover:bg-[var(--primary-dark)] text-white rounded-xl text-sm font-semibold shadow-sm transition-all">
+                <i class="fas fa-save mr-2"></i> Save Changes
+            </button>
+            <a href="{{ route('admin.lecturers.show', $lecturer) }}"
                class="px-7 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-sm font-semibold transition-colors">
                 Cancel
             </a>

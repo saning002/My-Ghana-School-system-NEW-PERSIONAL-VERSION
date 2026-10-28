@@ -48,7 +48,21 @@ extends('layouts.app')
             <p class="text-[10px] font-bold uppercase tracking-wider text-white/70">{{ $k[0] }}</p>
             <i class="fas {{ $k['icon'] }} text-white/50 text-sm"></i>
         </div>
-        <p class="text-2xl font-extrabold">{{ $k['val'?'exemptionListPanel').classList.toggle('hidden')"
+        <p class="text-2xl font-extrabold">{{ $k['val'] }}</p>
+    </div>
+    @endforeach
+</div>
+
+{{-- �"?�"? Exemptions & Custom Fees Management �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
+<div class="rounded-2xl border border-[var(--brand)] bg-[var(--primary-pale)]/30 shadow-sm overflow-hidden">
+    <div class="flex items-center justify-between px-5 py-4 border-b border-[var(--primary-pale)] bg-[var(--primary-pale)]">
+        <div>
+            <h3 class="text-sm font-extrabold text-amber-900">
+                <i class="fas fa-graduation-cap text-[var(--brand)] mr-1.5"></i>Exemptions &amp; Scholarship Students
+            </h3>
+            <p class="text-xs text-[var(--primary-text)] mt-0.5">Set students who are fully exempt (pay GH₵ 0) or on partial daily fees</p>
+        </div>
+        <button type="button" onclick="document.getElementById('exemptionListPanel').classList.toggle('hidden')"
             class="inline-flex items-center gap-1.5 rounded-xl bg-amber-600 hover:bg-[var(--primary-pale)]0 text-white text-xs font-bold px-3 py-2 shadow transition-all active:scale-95">
             <i class="fas fa-list text-[10px]"></i> View / Manage
         </button>
@@ -254,7 +268,22 @@ extends('layouts.app')
                 @if($isExempted)
                 <span class="shrink-0 rounded-full px-2.5 py-0.5 text-[10px] font-extrabold
                     {{ $isFull ? 'bg-[var(--primary-pale)] text-[var(--primary-text)]' : 'bg-blue-100 text-blue-800' }}">
-                    {{ $isFull ? 'Full Exempt' : 'Partial GH₵'?'{{ $today }}')"
+                    {{ $isFull ? 'Full Exempt' : 'Partial GH₵'.number_format($effectiveRate,2) }}
+                    @if($exemption->reason)
+                        <span class="font-normal opacity-70">· {{ Str::limit($exemption->reason,20) }}</span>
+                    @endif
+                </span>
+                @endif
+
+                {{-- Paid / unpaid status --}}
+                @if($hasPaid)
+                <div class="shrink-0 flex items-center gap-1.5">
+                    <span class="rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-extrabold px-2.5 py-0.5">
+                        �o" GH₵{{ number_format($paid[$student->id]->amount,2) }}
+                    </span>
+                    {{-- Use JS-based unmark to avoid nested form issue --}}
+                    <button type="button"
+                        onclick="unmarkFee({{ $student->id }}, '{{ $today }}')"
                         class="text-[10px] font-bold text-red-400 hover:text-red-600 transition-colors">
                         Unmark
                     </button>

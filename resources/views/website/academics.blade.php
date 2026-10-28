@@ -18,7 +18,7 @@
 .prog-detail-text{font-size:.9rem;color:var(--gray-600);line-height:1.75;margin-bottom:16px;}
 .prog-features{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;}
 .prog-feature-tag{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;background:#f0f4ff;color:#3b4f8a;border-radius:100px;font-size:.75rem;font-weight:600;}
-.prog-feature-tag::before{content:'?';color:#2e7d32;font-weight:700;}
+.prog-feature-tag::before{content:'�o"';color:#2e7d32;font-weight:700;}
 .prog-empty{text-align:center;padding:80px 0;color:var(--gray-400);}
 .prog-empty i{font-size:3rem;display:block;margin-bottom:16px;}
 .admin-note{background:#fef9c3;border:1px solid #fde68a;border-radius:12px;padding:16px 20px;margin-bottom:32px;display:flex;align-items:center;gap:12px;font-size:.9rem;color:#78520a;}
@@ -68,7 +68,7 @@
             <img src="{{ filter_var($prog->image_path, FILTER_VALIDATE_URL) ? $prog->image_path : img_url() }}"
                  alt="{{ $prog->name }}" class="prog-img">
           @else
-            <div class="prog-emoji">{{ $prog->icon ?? '?' }}</div>
+            <div class="prog-emoji">{{ $prog->icon ?? '�YZ"' }}</div>
           @endif
           <div class="prog-sidebar-name">{{ $prog->name }}</div>
           @if(!empty($prog->age_range) && $prog->age_range !== 'All Ages')

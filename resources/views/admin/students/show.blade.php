@@ -84,7 +84,15 @@ extends('layouts.app')
                     <i class="fas fa-key text-xs"></i> Reset Password
                 </button>
             </form>
-            <a href="{{ route('admin.students.index'?'info'=>'Personal Info','reports'=>'Report Cards','attendance'=>'Attendance','fees'=>'Fees'] as $key=>$label)
+            <a href="{{ route('admin.students.index') }}" class="flex items-center gap-2 px-5 py-2.5 bg-white text-slate-600 hover:text-slate-900 border border-slate-200 hover:border-slate-300 rounded-xl text-[13px] font-bold shadow-sm transition-all hover:-translate-y-0.5">
+                –� Back to List
+            </a>
+        </div>
+    </div>
+
+    {{-- Tabs --}}
+    <div class="flex gap-1 p-1 rounded-2xl bg-slate-100 border border-slate-200/60 shadow-inner overflow-x-auto">
+        @foreach(['info'=>'Personal Info','reports'=>'Report Cards','attendance'=>'Attendance','fees'=>'Fees'] as $key=>$label)
         <button @click="tab='{{ $key }}'"
                 :class="tab==='{{ $key }}' ? 'bg-white text-slate-800 shadow-sm border-slate-200/60' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50'"
                 class="flex-1 min-w-[120px] py-2.5 rounded-xl text-[13px] font-bold transition-all border border-transparent tracking-tight">

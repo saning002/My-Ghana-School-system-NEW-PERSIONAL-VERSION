@@ -7,7 +7,19 @@ extends('layouts.app')
 
 @if(session('success'))
 <div class="rounded-2xl bg-emerald-50 border border-emerald-200 px-5 py-3 text-sm font-semibold text-emerald-800 flex items-center gap-2">
-    <i class="fas fa-check-circle text-emerald-500"></i> {{ session('success'?'program_id')==$p->id?'selected':'' }}>{{ $p->name }}</option>
+    <i class="fas fa-check-circle text-emerald-500"></i> {{ session('success') }}
+</div>
+@endif
+
+{{-- �"?�"? Filters �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
+<div class="card p-5">
+    <form method="GET" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 items-end">
+        <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Program</label>
+            <select name="program_id" onchange="this.form.submit()" class="field-input w-full">
+                <option value="">All Programs</option>
+                @foreach($programs as $p)
+                <option value="{{ $p->id }}" {{ request('program_id')==$p->id?'selected':'' }}>{{ $p->name }}</option>
                 @endforeach
             </select>
         </div>
@@ -46,11 +58,61 @@ extends('layouts.app')
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Type</label>
             <select name="document_type" onchange="this.form.submit()" class="field-input w-full">
                 <option value="">All Types</option>
-                <option value="pdf"  {{ request('document_type')==='pdf' ?'selected':''?'document_type')==='word'?'selected':''?'program_id','course_id','lecturer_id','academic_year','term','document_type']))
+                <option value="pdf"  {{ request('document_type')==='pdf' ?'selected':'' }}>�Y"" PDF</option>
+                <option value="word" {{ request('document_type')==='word'?'selected':'' }}>�Y"� Word</option>
+            </select>
+        </div>
+    </form>
+    @if(request()->hasAny(['program_id','course_id','lecturer_id','academic_year','term','document_type']))
     <div class="mt-3">
-        <a href="{{ route('admin.exam-questions.index'?'program_id'), fn($q)=>$q->where('program_id',request('program_id')))->where('document_type','pdf')->count();
+        <a href="{{ route('admin.exam-questions.index') }}" class="text-xs font-bold text-slate-500 hover:text-red-500 transition-colors">
+            <i class="fas fa-times mr-1"></i> Clear filters
+        </a>
+    </div>
+    @endif
+</div>
+
+{{-- �"?�"? Stats bar �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+    @php
+        $total    = $documents->total();
+        $pdfs     = \App\Models\ExamQuestion::when(request('program_id'), fn($q)=>$q->where('program_id',request('program_id')))->where('document_type','pdf')->count();
         $words    = \App\Models\ExamQuestion::when(request('program_id'), fn($q)=>$q->where('program_id',request('program_id')))->where('document_type','word')->count();
-        $approved = \App\Models\ExamQuestion::where('is_approved'?' Question Upload</strong> section.</p>
+        $approved = \App\Models\ExamQuestion::where('is_approved',true)->count();
+    @endphp
+    <div class="card p-4 text-center">
+        <p class="text-2xl font-extrabold text-slate-800">{{ $total }}</p>
+        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mt-0.5">Total Docs</p>
+    </div>
+    <div class="card p-4 text-center">
+        <p class="text-2xl font-extrabold text-red-600">{{ $pdfs }}</p>
+        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mt-0.5">PDF Files</p>
+    </div>
+    <div class="card p-4 text-center">
+        <p class="text-2xl font-extrabold text-blue-600">{{ $words }}</p>
+        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mt-0.5">Word Files</p>
+    </div>
+    <div class="card p-4 text-center">
+        <p class="text-2xl font-extrabold text-emerald-600">{{ $approved }}</p>
+        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mt-0.5">Approved</p>
+    </div>
+</div>
+
+{{-- �"?�"? Documents list �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
+<div class="card overflow-hidden">
+    <div class="px-5 py-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
+        <h3 class="text-sm font-extrabold text-slate-800 flex items-center gap-2">
+            <i class="fas fa-folder-open text-slate-400"></i>
+            Exam Question Documents
+            <span class="rounded-full bg-slate-200 text-slate-600 text-[10px] font-bold px-2 py-0.5">{{ $documents->total() }}</span>
+        </h3>
+    </div>
+
+    @if($documents->isEmpty())
+    <div class="py-16 text-center text-slate-400">
+        <i class="fas fa-file-circle-question text-4xl mb-3 block"></i>
+        <p class="text-sm font-semibold">No exam question documents uploaded yet.</p>
+        <p class="text-xs text-slate-400 mt-1">Teachers upload documents from their <strong>Exams –' Question Upload</strong> section.</p>
     </div>
     @else
 

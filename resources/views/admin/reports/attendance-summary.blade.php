@@ -24,7 +24,7 @@ extends('layouts.app')
                 @foreach($sessions as $sess)
                     @foreach($sess->periods as $p)
                     <option value="{{ $p->id }}" {{ request('period_id')==$p->id?'selected':'' }}>
-                        {{ $p->full_label }}{{ $p->is_active?'?':'' }}
+                        {{ $p->full_label }}{{ $p->is_active?' �~.':'' }}
                     </option>
                     @endforeach
                 @endforeach

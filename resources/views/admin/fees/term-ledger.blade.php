@@ -230,7 +230,39 @@ extends('layouts.app')
                             </button>
                             @endif
                             <button class="action-btn" style="background:#f0fdf4;color:#16a34a;" title="Record payment"
-                                onclick="openPaymentModal({{ $s['student']->id }}, '{{ addslashes($s['student']->user?->full_name) }}', {{ $selectedSession?->id ?? 'null'?'admin.fees.reminders.send') }}" id="reminderForm">
+                                onclick="openPaymentModal({{ $s['student']->id }}, '{{ addslashes($s['student']->user?->full_name) }}', {{ $selectedSession?->id ?? 'null' }})">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="7" style="text-align:center;padding:3.5rem;color:#94a3b8;">
+                        <i class="fas fa-inbox" style="font-size:2rem;display:block;margin-bottom:10px;"></i>
+                        No students found for this session and filter.
+                    </td>
+                </tr>
+                @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{{-- �"?�"? Reminder Modal �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
+<div id="reminderModal" class="rm-modal-bg" style="display:none;" onclick="if(event.target===this)closeModals()">
+    <div class="rm-modal">
+        <div style="background:linear-gradient(135deg,#0f3460,#16213e);padding:1.25rem 1.5rem;color:#fff;display:flex;align-items:center;justify-content:space-between;">
+            <div>
+                <div style="font-weight:700;font-size:.95rem;"><i class="fas fa-paper-plane me-2" style="color:var(--brand);"></i>Send Fee Reminder</div>
+                <div id="rmStudentName" style="font-size:.78rem;opacity:.6;margin-top:2px;"></div>
+            </div>
+            <button onclick="closeModals()" style="background:rgba(255,255,255,.1);border:none;color:#fff;width:30px;height:30px;border-radius:8px;cursor:pointer;">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <form method="POST" action="{{ route('admin.fees.reminders.send') }}" id="reminderForm">
             @csrf
             <input type="hidden" name="mode" value="selected">
             <input type="hidden" name="session_id" id="rmSessionId">
@@ -250,7 +282,60 @@ extends('layouts.app')
                             <input type="checkbox" name="channels[]" value="whatsapp" id="rmChWa" style="display:none;">
                             <i class="fab fa-whatsapp" style="color:#25d366;"></i> WhatsApp
                         </div>
-                        <div class="ch-pill" id="rmPillMail" onclick="toggleRmCh('mail'?'admin.fees.term.payment') }}">
+                        <div class="ch-pill" id="rmPillMail" onclick="toggleRmCh('mail',this)">
+                            <input type="checkbox" name="channels[]" value="email" id="rmChEmail" style="display:none;">
+                            <i class="fas fa-envelope" style="color:#3b82f6;"></i> Email
+                        </div>
+                    </div>
+                    <div id="rmChWarn" style="display:none;font-size:.78rem;color:#dc2626;margin-top:6px;">
+                        <i class="fas fa-exclamation-circle me-1"></i>Select at least one channel
+                    </div>
+                </div>
+
+                {{-- Message preview / edit --}}
+                <div>
+                    <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.8px;color:#94a3b8;font-weight:700;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
+                        <span><i class="fas fa-mobile-alt me-1"></i> Message (Editable)</span>
+                        <span style="text-transform:none;letter-spacing:0;font-weight:400;color:#3b82f6;cursor:pointer;" onclick="resetRmMsg()">
+                            <i class="fas fa-undo me-1"></i>Reset
+                        </span>
+                    </div>
+                    <div id="rmPreviewLoading" style="text-align:center;padding:1.5rem;color:#94a3b8;">
+                        <i class="fas fa-spinner fa-spin"></i> Loading preview...
+                    </div>
+                    <textarea id="rmPreviewBox" rows="8"
+                        style="display:none;width:100%;background:#f0f9ff;border:1px solid #bae6fd;border-radius:12px;padding:1rem;font-size:.82rem;line-height:1.75;color:#0c4a6e;resize:vertical;font-family:inherit;"
+                        placeholder="Message will appear here..."></textarea>
+                </div>
+            </div>
+
+            <div style="padding:1rem 1.5rem;background:#f8fafc;border-top:1px solid #f1f5f9;display:flex;gap:10px;justify-content:flex-end;">
+                <button type="button" onclick="closeModals()"
+                    style="background:#e2e8f0;border:none;border-radius:10px;padding:10px 20px;font-weight:600;font-size:.875rem;cursor:pointer;">
+                    Cancel
+                </button>
+                <button type="submit" onclick="return submitRmForm()"
+                    style="background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;border:none;border-radius:10px;padding:10px 24px;font-weight:700;font-size:.875rem;cursor:pointer;display:flex;align-items:center;gap:8px;">
+                    <i class="fas fa-paper-plane"></i> Send Reminder
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{-- �"?�"? Payment Modal �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
+<div id="paymentModal" class="rm-modal-bg" style="display:none;" onclick="if(event.target===this)closeModals()">
+    <div class="rm-modal">
+        <div style="background:linear-gradient(135deg,#16a34a,#15803d);padding:1.25rem 1.5rem;color:#fff;display:flex;align-items:center;justify-content:space-between;">
+            <div>
+                <div style="font-weight:700;font-size:.95rem;"><i class="fas fa-plus me-2"></i>Record Payment</div>
+                <div id="pmStudentName" style="font-size:.78rem;opacity:.6;margin-top:2px;"></div>
+            </div>
+            <button onclick="closeModals()" style="background:rgba(255,255,255,.1);border:none;color:#fff;width:30px;height:30px;border-radius:8px;cursor:pointer;">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <form method="POST" action="{{ route('admin.fees.term.payment') }}">
             @csrf
             <input type="hidden" name="student_id" id="pmStudentId">
             <input type="hidden" name="session_id" id="pmSessionId">
@@ -303,11 +388,22 @@ extends('layouts.app')
     </div>
 </div>
 
-@push('scripts'?'rmChSms', wa:'rmChWa', mail:'rmChEmail'};
+@push('scripts')
+<script>
+// �"?�"? Channel toggles for reminder modal �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?
+const rmCh = {sms:false, wa:false, mail:false};
+function toggleRmCh(key, pill) {
+    rmCh[key] = !rmCh[key];
+    const cbMap = {sms:'rmChSms', wa:'rmChWa', mail:'rmChEmail'};
     const clMap = {sms:'on-sms', wa:'on-wa', mail:'on-mail'};
     document.getElementById(cbMap[key]).checked = rmCh[key];
     pill.classList.toggle(clMap[key], rmCh[key]);
-    document.getElementById('rmChWarn').style.display = 'none'?'';
+    document.getElementById('rmChWarn').style.display = 'none';
+}
+function anyRmCh() { return Object.values(rmCh).some(Boolean); }
+
+// �"?�"? Reminder modal �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?
+let rmOrigMsg = '';
 function openReminderModal(studentId, sessionId, name) {
     document.getElementById('rmStudentId').value = studentId;
     document.getElementById('rmSessionId').value = sessionId;
@@ -337,7 +433,12 @@ function submitRmForm() {
         return false;
     }
     document.getElementById('rmCustomMsg').value = document.getElementById('rmPreviewBox').value;
-    return confirm('Send this reminder to the student?'?'pmStudentId').value  = studentId;
+    return confirm('Send this reminder to the student?');
+}
+
+// �"?�"? Payment modal �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?
+function openPaymentModal(studentId, name, sessionId) {
+    document.getElementById('pmStudentId').value  = studentId;
     document.getElementById('pmSessionId').value  = sessionId || '';
     document.getElementById('pmStudentName').textContent = name;
     document.getElementById('paymentModal').style.display = 'flex';
