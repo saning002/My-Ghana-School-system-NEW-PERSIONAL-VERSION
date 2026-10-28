@@ -1556,6 +1556,39 @@ Route::get('/debug/test-save-settings', function (\Illuminate\Http\Request $requ
 // ── Go-Live Health Check ──────────────────────────────────────────────────
 Route::get('/health-check', [\App\Http\Controllers\HealthCheckController::class, 'check'])->middleware('web');
 
+// ── Clear all caches (view, config, route, opcache) ───────────────────────
+Route::get('/setup/clear-cache', function () {
+    $results = [];
+
+    try { \Illuminate\Support\Facades\Artisan::call('view:clear');   $results[] = '✅ View cache cleared'; } catch (\Throwable $e) { $results[] = '⚠️ view:clear — ' . $e->getMessage(); }
+    try { \Illuminate\Support\Facades\Artisan::call('cache:clear');  $results[] = '✅ App cache cleared'; } catch (\Throwable $e) { $results[] = '⚠️ cache:clear — ' . $e->getMessage(); }
+    try { \Illuminate\Support\Facades\Artisan::call('config:clear'); $results[] = '✅ Config cache cleared'; } catch (\Throwable $e) { $results[] = '⚠️ config:clear — ' . $e->getMessage(); }
+    try { \Illuminate\Support\Facades\Artisan::call('route:clear');  $results[] = '✅ Route cache cleared'; } catch (\Throwable $e) { $results[] = '⚠️ route:clear — ' . $e->getMessage(); }
+
+    // Also manually wipe the compiled views folder
+    try {
+        $viewPath = storage_path('framework/views');
+        $wiped = 0;
+        foreach (glob($viewPath . '/*.php') as $file) {
+            @unlink($file);
+            $wiped++;
+        }
+        $results[] = "✅ Wiped $wiped compiled view files from storage/framework/views";
+    } catch (\Throwable $e) {
+        $results[] = '⚠️ Manual wipe — ' . $e->getMessage();
+    }
+
+    // Re-warm the view cache immediately
+    try { \Illuminate\Support\Facades\Artisan::call('view:cache'); $results[] = '✅ View cache re-warmed'; } catch (\Throwable $e) { $results[] = '⚠️ view:cache — ' . $e->getMessage(); }
+
+    return response(
+        '<pre style="font-family:monospace;padding:20px;background:#0f172a;color:#94a3b8;min-height:100vh;">'
+        . implode("\n", $results)
+        . "\n\n<span style='color:#4ade80;font-weight:bold;'>Done. Now visit the school website to confirm it renders correctly.</span>"
+        . '</pre>'
+    );
+})->middleware('web');
+
 // ── Setup: run central DB migration + seed module features ───────────────
 // Hit: /setup/run-migrations-and-seed
 // This adds modules_json + theme_json to tenants table and seeds all 18 modules.
