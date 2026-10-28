@@ -208,7 +208,7 @@
     }
 </style>
 
-{{-- â•â• FEE MODE TOGGLE â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
+{{-- �.��.� FEE MODE TOGGLE �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� --}}
 @php
     $feeMode   = $feeMode   ?? 'program_fees';
     $dailyRate = $dailyRate ?? 5;
@@ -228,14 +228,14 @@
             <h3 class="text-sm font-bold" style="color:{{ $isDaily ? '#166534' : ($isWith ? '#1e3a8a' : '#78520a') }}">
                 Fee Mode:
                 <span class="ml-1">
-                    @if($isDaily) âš¡ Daily Fees
-                    @elseif($isWith) ðŸ½ï¸ Program + Feeding Fees
-                    @else ðŸ“‹ Program / Term Fees
+                    @if($isDaily) �s� Daily Fees
+                    @elseif($isWith) �Y��️ Program + Feeding Fees
+                    @else �Y"< Program / Term Fees
                     @endif
                 </span>
             </h3>
             <p class="text-xs mt-0.5" style="color:{{ $isDaily ? '#166534aa' : ($isWith ? '#1e3a8aaa' : '#78520aaa') }}">
-                @if($isDaily) Students are charged GHâ‚µ {{ $dailyRate }} per school day.
+                @if($isDaily) Students are charged GH₵ {{ $dailyRate }} per school day.
                 @elseif($isWith) Tuition + Feeding fee billed separately per term.
                 @else Students are charged a lump fee per program / term.
                 @endif
@@ -246,7 +246,7 @@
         @csrf
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-start">
 
-            {{-- Mode selector â€” 3 options --}}
+            {{-- Mode selector �?" 3 options --}}
             <div class="sm:col-span-2 lg:col-span-2">
                 <label class="block text-xs font-bold uppercase tracking-wide text-gray-600 mb-2">Fee Collection Mode</label>
                 <div class="grid grid-cols-3 gap-2">
@@ -279,8 +279,8 @@
                     </label>
                 </div>
                 <div class="mt-2 p-2.5 rounded-lg text-[11px] text-gray-500 bg-gray-50 border border-gray-100">
-                    <strong>Program Fees:</strong> One lump fee per term (e.g. GHS 500/term) Â·
-                    <strong>Program + Feeding:</strong> Tuition fee + separate feeding fee per term Â·
+                    <strong>Program Fees:</strong> One lump fee per term (e.g. GHS 500/term) ·
+                    <strong>Program + Feeding:</strong> Tuition fee + separate feeding fee per term ·
                     <strong>Daily Fees:</strong> Charged per school day attended
                 </div>
             </div>
@@ -288,11 +288,11 @@
             {{-- Daily rate (shown for daily mode) --}}
             <div id="dailyRateGroup" class="{{ $isDaily ? '' : 'opacity-40 pointer-events-none' }}">
                 <label class="block text-xs font-bold uppercase tracking-wide text-gray-600 mb-2">
-                    Daily Rate (GHâ‚µ)
+                    Daily Rate (GH₵)
                     <span class="font-normal text-gray-400 normal-case ml-1">Daily mode only</span>
                 </label>
                 <div class="flex items-center gap-2 border border-gray-200 rounded-xl px-3 py-2.5 bg-white focus-within:ring-2 focus-within:ring-emerald-400">
-                    <span class="text-gray-500 font-bold text-sm">GHâ‚µ</span>
+                    <span class="text-gray-500 font-bold text-sm">GH₵</span>
                     <input type="number" name="daily_fee_rate" min="0" max="9999" step="0.01"
                            value="{{ $dailyRate }}"
                            class="flex-1 border-0 p-0 text-sm font-bold text-gray-800 focus:ring-0 focus:outline-none bg-transparent">
@@ -310,7 +310,7 @@
                 @if($isDaily)
                 <a href="{{ route('admin.daily-fees.index') }}"
                    class="w-full text-center py-2.5 rounded-xl text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition-colors">
-                    <i class="fas fa-external-link-alt mr-1"></i> Go to Daily Fees â†’
+                    <i class="fas fa-external-link-alt mr-1"></i> Go to Daily Fees �?'
                 </a>
                 @endif
             </div>
@@ -318,7 +318,7 @@
     </form>
 </div>
 
-{{-- â•â• FEEDING FEE INFO (shown only in program_fees_with_feeding mode) â•â•â•â•â•â•â• --}}
+{{-- �.��.� FEEDING FEE INFO (shown only in program_fees_with_feeding mode) �.��.��.��.��.��.��.� --}}
 @if($isWith)
 <div class="rounded-xl border border-blue-200 bg-blue-50 p-4 mb-6 flex items-start gap-3">
     <i class="fas fa-info-circle text-blue-500 mt-0.5"></i>
@@ -326,17 +326,17 @@
         <strong>Feeding Fee Mode active.</strong>
         Set a <strong>Feeding Fee</strong> per program in the "Program Fees" section below.
         Each student's term bill will show <em>Tuition Fee</em> + <em>Feeding Fee</em> as separate line items.
-        Students can pay either or both â€” the system tracks balances for each separately in the total.
+        Students can pay either or both �?" the system tracks balances for each separately in the total.
     </div>
 </div>
 @endif
 
-{{-- â•â• NOTE: If daily fees mode is active, program fees below are ignored â•â•â•â• --}}
+{{-- �.��.� NOTE: If daily fees mode is active, program fees below are ignored �.��.��.��.� --}}
 @if($feeMode === 'daily_fees')
 <div class="flex items-start gap-3 px-4 py-3 rounded-2xl bg-emerald-50 border border-emerald-200 mb-4">
     <i class="fas fa-info-circle text-emerald-500 mt-0.5 shrink-0"></i>
     <p class="text-xs text-emerald-800 leading-relaxed">
-        <strong>Daily Fees mode is active.</strong> Students are charged <strong>GHâ‚µ {{ number_format($dailyRate,2) }}</strong> per school day.
+        <strong>Daily Fees mode is active.</strong> Students are charged <strong>GH₵ {{ number_format($dailyRate,2) }}</strong> per school day.
         Use the <a href="{{ route('admin.daily-fees.index') }}" class="underline font-bold">Daily Fees</a> page to mark who paid each day, manage scholarships/exemptions, and view reports.
         Program fees below are not used for billing in this mode.
     </p>
@@ -351,7 +351,7 @@
                 <i class="fas fa-file-invoice-dollar"></i>
             </div>
             <p class="summary-label" style="color: #78520a;">{{ auth()->user()->isBranchAdmin() ? 'Branch' : 'Total' }} Billed</p>
-            <p class="summary-amount" style="color: #78520a;">GHâ‚µ {{ number_format($global['billed'],2) }}</p>
+            <p class="summary-amount" style="color: #78520a;">GH₵ {{ number_format($global['billed'],2) }}</p>
         </div>
     </div>
     <div class="summary-card collected">
@@ -360,7 +360,7 @@
                 <i class="fas fa-check-circle"></i>
             </div>
             <p class="summary-label" style="color: #166534;">{{ auth()->user()->isBranchAdmin() ? 'Branch' : 'Total' }} Collected</p>
-            <p class="summary-amount" style="color: #166534;">GHâ‚µ {{ number_format($global['collected'],2) }}</p>
+            <p class="summary-amount" style="color: #166534;">GH₵ {{ number_format($global['collected'],2) }}</p>
         </div>
     </div>
     <div class="summary-card outstanding">
@@ -369,7 +369,7 @@
                 <i class="fas fa-exclamation-circle"></i>
             </div>
             <p class="summary-label" style="color: #991b1b;">{{ auth()->user()->isBranchAdmin() ? 'Branch' : 'Total' }} Outstanding</p>
-            <p class="summary-amount" style="color: #991b1b;">GHâ‚µ {{ number_format($global['outstanding'],2) }}</p>
+            <p class="summary-amount" style="color: #991b1b;">GH₵ {{ number_format($global['outstanding'],2) }}</p>
         </div>
     </div>
 </div>
@@ -454,10 +454,10 @@
                             {{ $bs['branch']->name }}
                         </div>
                     </td>
-                    <td class="px-4 py-3 text-gray-600 font-medium">{{ $bs['branch']->location ?? 'â€”' }}</td>
-                    <td class="px-4 py-3 text-gray-900 font-semibold text-right">GHâ‚µ {{ number_format($bs['summary']['billed'], 2) }}</td>
-                    <td class="px-4 py-3 text-green-700 font-semibold text-right">GHâ‚µ {{ number_format($bs['summary']['collected'], 2) }}</td>
-                    <td class="px-4 py-3 text-red-700 font-bold text-right">GHâ‚µ {{ number_format($bs['summary']['outstanding'], 2) }}</td>
+                    <td class="px-4 py-3 text-gray-600 font-medium">{{ $bs['branch']->location ?? '�?"' }}</td>
+                    <td class="px-4 py-3 text-gray-900 font-semibold text-right">GH₵ {{ number_format($bs['summary']['billed'], 2) }}</td>
+                    <td class="px-4 py-3 text-green-700 font-semibold text-right">GH₵ {{ number_format($bs['summary']['collected'], 2) }}</td>
+                    <td class="px-4 py-3 text-red-700 font-bold text-right">GH₵ {{ number_format($bs['summary']['outstanding'], 2) }}</td>
                 </tr>
                 @endforeach
             </tbody>
@@ -567,21 +567,21 @@
         <input type="hidden" name="student_ids[]" value="">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
             <div class="input-field">
-                <label class="block text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wide">Program Fee (GHâ‚µ) *</label>
+                <label class="block text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wide">Program Fee (GH₵) *</label>
                 <input type="number" name="amount" step="0.01" min="0" required
                     class="w-full px-4 py-3 border-1.5 border-blue-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                     placeholder="0.00">
             </div>
             <div class="input-field">
-                <label class="block text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wide">Exam Fee (GHâ‚µ)</label>
+                <label class="block text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wide">Exam Fee (GH₵)</label>
                 <input type="number" name="exam_fee" step="0.01" min="0"
                     class="w-full px-4 py-3 border border-blue-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                     placeholder="0.00">
             </div>
             <div class="input-field {{ $isWith ? '' : 'opacity-40' }}" id="feedingFeeGroup">
                 <label class="block text-xs font-semibold mb-2 uppercase tracking-wide {{ $isWith ? 'text-blue-700' : 'text-gray-400' }}">
-                    Feeding Fee (GHâ‚µ)
-                    @if($isWith)<span class="text-[10px] text-blue-500 normal-case ml-1">â€” feeding mode</span>@endif
+                    Feeding Fee (GH₵)
+                    @if($isWith)<span class="text-[10px] text-blue-500 normal-case ml-1">�?" feeding mode</span>@endif
                 </label>
                 <input type="number" name="feeding_fee" step="0.01" min="0"
                     class="w-full px-4 py-3 border rounded-xl text-sm focus:outline-none focus:ring-2 bg-white {{ $isWith ? 'border-blue-300 focus:ring-blue-500' : 'border-gray-200 cursor-not-allowed' }}"
@@ -602,7 +602,7 @@
                 <i class="fas fa-times mr-2"></i> Clear
             </button>
         </div>
-        <p class="text-xs text-gray-600 text-center italic">âœ“ Select students above Â· âœ“ Enter amounts Â· âœ“ Click Set Custom Fee</p>
+        <p class="text-xs text-gray-600 text-center italic">�o" Select students above · �o" Enter amounts · �o" Click Set Custom Fee</p>
     </form>
 </div>
 
@@ -626,8 +626,8 @@
                     <h3 class="text-base font-bold" style="color:var(--primary-text);">
                         <i class="fas fa-list mr-2"></i>Student Records
                     </h3>
-                    <p class="text-xs text-[var(--primary-text)] mt-1">{{ $students->total() }} total student(s) Â· Page {{ $students->currentPage() }} of {{ $students->lastPage() }}</p>
-                    <p class="text-xs text-gray-600 mt-1">Select students by ticking the checkbox on the left of each row, or use â€œSelect all on this pageâ€.</p>
+                    <p class="text-xs text-[var(--primary-text)] mt-1">{{ $students->total() }} total student(s) · Page {{ $students->currentPage() }} of {{ $students->lastPage() }}</p>
+                    <p class="text-xs text-gray-600 mt-1">Select students by ticking the checkbox on the left of each row, or use �?oSelect all on this page�?�.</p>
                 </div>
                 <div id="bulk-actions" class="hidden flex items-center gap-2 flex-wrap justify-end">
                     <button type="button" onclick="selectAllVisibleStudents()" class="premium-btn px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-semibold hover:bg-blue-700 flex items-center gap-1.5">
@@ -684,9 +684,9 @@
                     <div class="text-right flex-shrink-0 min-w-max">
                         <p class="text-xs text-gray-500 font-semibold">Balance Due</p>
                         <p class="text-lg font-bold {{ $balance > 0 ? 'text-red-600' : 'text-green-600' }}">
-                            GHâ‚µ {{ number_format($balance, 2) }}
+                            GH₵ {{ number_format($balance, 2) }}
                         </p>
-                        <p class="text-xs text-gray-400 mt-1">{{ $paid > 0 ? 'Paid: GHâ‚µ ' . number_format($paid, 2) : 'No payments' }}</p>
+                        <p class="text-xs text-gray-400 mt-1">{{ $paid > 0 ? 'Paid: GH₵ ' . number_format($paid, 2) : 'No payments' }}</p>
                     </div>
                     
                     {{-- Action Buttons --}}
@@ -722,11 +722,11 @@
                     <div class="payment-item">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-xs font-bold text-[var(--primary-text)]">GHâ‚µ {{ number_format($payment->amount_paid, 2) }}</p>
+                                <p class="text-xs font-bold text-[var(--primary-text)]">GH₵ {{ number_format($payment->amount_paid, 2) }}</p>
                                 <p class="text-xs text-[var(--primary-text)] mt-0.5">
                                     <i class="fas fa-calendar mr-1"></i>{{ $payment->payment_date->format('M d, Y') }}
                                     @if($payment->notes)
-                                    <span class="ml-1.5">Â·</span> <span class="ml-1.5 italic">{{ $payment->notes }}</span>
+                                    <span class="ml-1.5">·</span> <span class="ml-1.5 italic">{{ $payment->notes }}</span>
                                     @endif
                                 </p>
                             </div>
@@ -835,12 +835,12 @@ function openSetFeeModal(studentId, fullName, currentAmount, currentExamFee, cur
                 <form method="POST" action="{{ route('admin.fees.set-student', '') }}/${studentId}" class="p-6 space-y-4">
                     @csrf
                     <div class="input-field">
-                        <label class="block text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wide">Program Fee (GHâ‚µ) *</label>
+                        <label class="block text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wide">Program Fee (GH₵) *</label>
                         <input type="number" name="amount" step="0.01" min="0" required value="${currentAmount}"
                             class="w-full px-4 py-3 border border-blue-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
                     </div>
                     <div class="input-field">
-                        <label class="block text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wide">Exam Fee (GHâ‚µ)</label>
+                        <label class="block text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wide">Exam Fee (GH₵)</label>
                         <input type="number" name="exam_fee" step="0.01" min="0" value="${currentExamFee}"
                             class="w-full px-4 py-3 border border-blue-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
                     </div>

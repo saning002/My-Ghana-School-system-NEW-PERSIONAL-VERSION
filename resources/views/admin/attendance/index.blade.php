@@ -111,16 +111,16 @@
                                 {{ strtoupper(substr($att->student->user->full_name ?? '?', 0, 1)) }}
                             </div>
                             <div>
-                                <p class="text-sm font-semibold text-gray-800">{{ $att->student->user->full_name ?? 'â€”' }}</p>
+                                <p class="text-sm font-semibold text-gray-800">{{ $att->student->user->full_name ?? '�?"' }}</p>
                                 <p class="text-xs text-gray-400 font-mono">{{ $att->student->student_id ?? '' }}</p>
                             </div>
                         </div>
                     </td>
                     <td class="px-6 py-4 text-sm text-gray-600">
-                        <span class="font-mono text-xs bg-[var(--primary-pale)] text-[var(--primary-text)] px-2 py-1 rounded-lg">{{ $att->course->code ?? 'â€”' }}</span>
+                        <span class="font-mono text-xs bg-[var(--primary-pale)] text-[var(--primary-text)] px-2 py-1 rounded-lg">{{ $att->course->code ?? '�?"' }}</span>
                     </td>
-                    <td class="px-6 py-4 text-sm text-gray-600">{{ $att->student->program->name ?? 'â€”' }}</td>
-                    <td class="px-6 py-4 text-sm text-gray-600">{{ $att->academicPeriod->month ?? 'â€”' }}</td>
+                    <td class="px-6 py-4 text-sm text-gray-600">{{ $att->student->program->name ?? '�?"' }}</td>
+                    <td class="px-6 py-4 text-sm text-gray-600">{{ $att->academicPeriod->month ?? '�?"' }}</td>
                     <td class="px-6 py-4 text-sm text-gray-600">{{ \Carbon\Carbon::parse($att->date)->format('M d, Y') }}</td>
                     <td class="px-6 py-4">
                         <span class="text-xs px-2.5 py-1 rounded-full font-semibold

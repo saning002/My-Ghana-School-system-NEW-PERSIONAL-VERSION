@@ -111,8 +111,8 @@
                 <i class="fas {{ $att->status==='present'?'fa-check text-emerald-600':'fa-times text-red-500' }} text-xs"></i>
             </div>
             <div class="flex-1 min-w-0">
-                <p class="text-sm font-semibold text-gray-800 truncate">{{ $att->student->user->full_name??'â€”' }}</p>
-                <p class="text-xs text-gray-400">{{ $att->course->code??'â€”' }} Â· {{ \Carbon\Carbon::parse($att->date)->format('M d, Y') }}</p>
+                <p class="text-sm font-semibold text-gray-800 truncate">{{ $att->student->user->full_name??'�?"' }}</p>
+                <p class="text-xs text-gray-400">{{ $att->course->code??'�?"' }} · {{ \Carbon\Carbon::parse($att->date)->format('M d, Y') }}</p>
             </div>
             <span class="text-xs px-2 py-1 rounded-full font-semibold flex-shrink-0 {{ $att->status==='present'?'bg-emerald-100 text-emerald-700':'bg-red-100 text-red-600' }}">
                 {{ ucfirst($att->status) }}
@@ -138,9 +138,9 @@
             <tbody class="divide-y divide-gray-50">
                 @forelse($attendances as $att)
                 <tr class="hover:bg-gray-50/50">
-                    <td class="px-6 py-4 text-sm font-semibold text-gray-800">{{ $att->student->user->full_name??'â€”' }}</td>
-                    <td class="px-6 py-4 text-sm text-gray-600"><span class="font-mono text-xs bg-gray-100 px-2 py-1 rounded">{{ $att->course->code??'â€”' }}</span></td>
-                    <td class="px-6 py-4 text-sm text-gray-600">{{ $att->academicPeriod->month??'â€”' }}</td>
+                    <td class="px-6 py-4 text-sm font-semibold text-gray-800">{{ $att->student->user->full_name??'�?"' }}</td>
+                    <td class="px-6 py-4 text-sm text-gray-600"><span class="font-mono text-xs bg-gray-100 px-2 py-1 rounded">{{ $att->course->code??'�?"' }}</span></td>
+                    <td class="px-6 py-4 text-sm text-gray-600">{{ $att->academicPeriod->month??'�?"' }}</td>
                     <td class="px-6 py-4 text-sm text-gray-600">{{ \Carbon\Carbon::parse($att->date)->format('M d, Y') }}</td>
                     <td class="px-6 py-4">
                         <span class="text-xs px-2.5 py-1 rounded-full font-semibold {{ $att->status==='present'?'bg-emerald-100 text-emerald-700':'bg-red-100 text-red-600' }}">

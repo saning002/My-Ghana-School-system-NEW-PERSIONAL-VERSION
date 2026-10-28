@@ -5,7 +5,7 @@
 @section('content')
 <div class="space-y-6">
 
-{{-- â”€â”€ Active Period Banner â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
+{{-- �"?�"? Active Period Banner �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
 @if($activePeriod)
 <div class="rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shadow-lg shadow-emerald-200">
     <div class="flex items-center gap-3 text-white">
@@ -35,7 +35,7 @@
 </div>
 @endif
 
-{{-- â”€â”€ Flash messages â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
+{{-- �"?�"? Flash messages �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
 @if(session('success'))
 <div class="rounded-2xl bg-emerald-50 border border-emerald-200 px-5 py-3 flex items-center gap-3">
     <i class="fas fa-circle-check text-emerald-500"></i>
@@ -51,7 +51,7 @@
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-    {{-- â”€â”€ Create Form â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
+    {{-- �"?�"? Create Form �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
     <div class="glass-card p-6 self-start rounded-2xl border border-slate-200 bg-white shadow-sm">
         <h3 class="text-base font-extrabold text-slate-900 mb-0.5">Create New Session</h3>
         <p class="text-xs text-slate-500 mb-5">Periods are auto-generated based on the mode you choose.</p>
@@ -60,7 +60,7 @@
             @csrf
             @if($errors->any())
             <div class="rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-xs text-red-700">
-                @foreach($errors->all() as $e)<div>â€¢ {{ $e }}</div>@endforeach
+                @foreach($errors->all() as $e)<div>�?� {{ $e }}</div>@endforeach
             </div>
             @endif
 
@@ -104,7 +104,7 @@
         </form>
     </div>
 
-    {{-- â”€â”€ Quick Stats â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
+    {{-- �"?�"? Quick Stats �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
     <div class="lg:col-span-2 space-y-4">
         <div class="grid grid-cols-3 gap-4">
             <div class="rounded-2xl border border-slate-200 bg-white p-4 text-center shadow-sm">
@@ -116,7 +116,7 @@
                 <p class="text-xs text-slate-500 mt-1">Total Periods</p>
             </div>
             <div class="rounded-2xl border border-slate-200 bg-white p-4 text-center shadow-sm">
-                <p class="text-lg font-extrabold text-slate-900">{{ $sessions->first()?->year ?? 'â€”' }}</p>
+                <p class="text-lg font-extrabold text-slate-900">{{ $sessions->first()?->year ?? '�?"' }}</p>
                 <p class="text-xs text-slate-500 mt-1">Latest</p>
             </div>
         </div>
@@ -132,7 +132,7 @@
     </div>
 </div>
 
-{{-- â”€â”€ Sessions List â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
+{{-- �"?�"? Sessions List �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
 @forelse($sessions as $session)
 <div class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
     {{-- Session header --}}
@@ -167,7 +167,7 @@
         @if($session->periods->isEmpty())
             <p class="text-xs text-red-500 text-center py-2">
                 <i class="fas fa-exclamation-triangle mr-1"></i>
-                No periods â€” delete and recreate this session.
+                No periods �?" delete and recreate this session.
             </p>
         @else
         <div class="grid grid-cols-1 sm:grid-cols-2 {{ $session->mode === 'term' ? 'lg:grid-cols-3' : 'lg:grid-cols-2' }} gap-3">
@@ -182,7 +182,7 @@
                         <p class="text-sm font-extrabold {{ $isActive ? 'text-emerald-800' : 'text-slate-800' }}">
                             {{ $period->name ?: $period->month }}
                         </p>
-                        <p class="text-[11px] text-slate-400 mt-0.5">{{ $session->year }} Â· ID #{{ $period->id }}</p>
+                        <p class="text-[11px] text-slate-400 mt-0.5">{{ $session->year }} · ID #{{ $period->id }}</p>
                     </div>
                     @if($isActive)
                     <span class="shrink-0 inline-flex items-center gap-1 rounded-full bg-emerald-500 text-white text-[10px] font-extrabold px-2.5 py-1 uppercase tracking-wider">

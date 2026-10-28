@@ -3,7 +3,7 @@
 
 @section('content')
 <style>
-/* â”€â”€ Page base â”€â”€ */
+/* �"?�"? Page base �"?�"? */
 .rm-hero {
     background: linear-gradient(135deg, #0f3460 0%, #16213e 100%);
     border-radius: 20px;
@@ -30,7 +30,7 @@
     border-radius: 50%;
 }
 
-/* â”€â”€ Stat cards â”€â”€ */
+/* �"?�"? Stat cards �"?�"? */
 .rm-stat {
     background: #fff;
     border-radius: 14px;
@@ -52,7 +52,7 @@
     flex-shrink: 0;
 }
 
-/* â”€â”€ Cards â”€â”€ */
+/* �"?�"? Cards �"?�"? */
 .rm-card {
     background: #fff;
     border-radius: 16px;
@@ -69,7 +69,7 @@
     justify-content: space-between;
 }
 
-/* â”€â”€ Channel pills â”€â”€ */
+/* �"?�"? Channel pills �"?�"? */
 .ch-pill {
     display: inline-flex;
     align-items: center;
@@ -90,7 +90,7 @@
 .ch-pill.on-wa   { border-color: #25d366; background: #f0fdf4; color: #15803d; }
 .ch-pill.on-mail { border-color: #3b82f6; background: #eff6ff; color: #1d4ed8; }
 
-/* â”€â”€ Table â”€â”€ */
+/* �"?�"? Table �"?�"? */
 .rm-thead th {
     font-size: .7rem;
     text-transform: uppercase;
@@ -128,7 +128,7 @@
 }
 .peek-btn:hover { background: #0f3460; color: #fff; }
 
-/* â”€â”€ Send buttons â”€â”€ */
+/* �"?�"? Send buttons �"?�"? */
 .btn-send-sel {
     background: linear-gradient(135deg, #f59e0b, #d97706);
     color: #fff !important;
@@ -159,7 +159,7 @@
 }
 .btn-send-all:hover { opacity: .9; transform: translateY(-1px); }
 
-/* â”€â”€ Preview panel â”€â”€ */
+/* �"?�"? Preview panel �"?�"? */
 .preview-bubble {
     background: #f0f9ff;
     border: 1px solid #bae6fd;
@@ -175,7 +175,7 @@
 
 <div class="container-fluid py-4" style="max-width:1400px;">
 
-    {{-- â”€â”€ Hero â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
+    {{-- �"?�"? Hero �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
     <div class="rm-hero">
         <div style="position:relative;z-index:1;" class="d-flex align-items-center justify-content-between flex-wrap gap-3">
             <div>
@@ -186,7 +186,7 @@
                     <i class="fas fa-paper-plane me-2" style="color:var(--brand);"></i>Fee Reminders
                 </h3>
                 <p style="opacity:.65;font-size:.875rem;margin:0;">
-                    Each message is auto-personalised with the student's own balance â€” no copy-pasting needed.
+                    Each message is auto-personalised with the student's own balance �?" no copy-pasting needed.
                 </p>
             </div>
             <div class="d-flex gap-2 flex-wrap">
@@ -202,7 +202,7 @@
         </div>
     </div>
 
-    {{-- â”€â”€ Alerts â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
+    {{-- �"?�"? Alerts �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
     @if(session('success'))
     <div class="alert alert-dismissible fade show mb-4"
          style="border-radius:12px;border:none;background:#f0fdf4;color:#166534;border-left:4px solid #16a34a;">
@@ -225,7 +225,7 @@
     </div>
     @endif
 
-    {{-- â”€â”€ Stats â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
+    {{-- �"?�"? Stats �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
     @php
         $msgCredits = null;
         try { $msgCredits = \App\Models\MessagingCredit::forTenant(session('tenant_id', 0)); } catch(\Throwable $e) {}
@@ -285,7 +285,7 @@
 
     <div class="row g-4">
 
-        {{-- â”€â”€ LEFT COLUMN â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
+        {{-- �"?�"? LEFT COLUMN �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
         <div class="col-lg-8">
 
             {{-- Session picker --}}
@@ -400,7 +400,7 @@
                             @php
                                 $phone = $s['student']->user?->phone ?? $s['student']->guardian_phone ?? null;
                                 $email = $s['student']->user?->email ?? $s['student']->guardian_email ?? null;
-                                $name  = $s['student']->user?->full_name ?? 'â€”';
+                                $name  = $s['student']->user?->full_name ?? '�?"';
                             @endphp
                             <tr class="rm-row" id="row-{{ $s['student']->id }}"
                                 onclick="toggleRow({{ $s['student']->id }})">
@@ -422,7 +422,7 @@
                                         </span>
                                         @if($s['student']->program?->name)
                                         <span style="font-size:.72rem;color:#94a3b8;margin-left:4px;">
-                                            Â· {{ $s['student']->program->name }}
+                                            · {{ $s['student']->program->name }}
                                         </span>
                                         @endif
                                     </div>
@@ -474,7 +474,7 @@
                     <div style="padding:1.25rem 1.5rem;background:#f8fafc;border-top:1px solid #f1f5f9;">
                         <div style="font-size:.8rem;color:#64748b;margin-bottom:14px;">
                             <span style="background:#0f3460;color:#fff;width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;margin-right:8px;">3</span>
-                            <strong>Send</strong> â€” select students above, pick your channels, then fire.
+                            <strong>Send</strong> �?" select students above, pick your channels, then fire.
                         </div>
                         <div class="d-flex gap-3 flex-wrap">
                             <button type="submit" class="btn-send-sel"
@@ -498,7 +498,7 @@
             </form>
         </div>
 
-        {{-- â”€â”€ RIGHT COLUMN: Preview panel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
+        {{-- �"?�"? RIGHT COLUMN: Preview panel �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
         <div class="col-lg-4">
             <div style="position:sticky;top:20px;">
 
@@ -600,7 +600,7 @@
 
 @push('scripts')
 <script>
-// â”€â”€ Channel toggles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// �"?�"? Channel toggles �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?
 const chActive = { sms: false, wa: false, mail: false };
 function toggleCh(key, pill) {
     chActive[key] = !chActive[key];
@@ -616,7 +616,7 @@ function toggleCh(key, pill) {
 }
 function anyChannel() { return Object.values(chActive).some(Boolean); }
 
-// â”€â”€ Row selection â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// �"?�"? Row selection �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?
 function toggleRow(id) {
     const cb = document.getElementById('cb-' + id);
     cb.checked = !cb.checked;
@@ -642,7 +642,7 @@ function recount() {
     document.getElementById('selBadge').textContent   = n;
 }
 
-// â”€â”€ Validation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// �"?�"? Validation �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?
 function validate() {
     if (!anyChannel()) {
         document.getElementById('chWarnText').style.display = 'inline';
@@ -661,7 +661,7 @@ function validateAll() {
     return confirm('Send reminders to ALL ' + total + ' owing student(s)?');
 }
 
-// â”€â”€ Preview â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// �"?�"? Preview �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?
 let originalMsg = '';
 
 function loadPreview(studentId, sessionId, name) {
@@ -702,7 +702,7 @@ function resetMsg() {
     document.getElementById('pvMsg').value = originalMsg;
 }
 
-// â”€â”€ Quick send one student â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// �"?�"? Quick send one student �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?
 function quickSend() {
     if (!anyChannel()) {
         alert('Please select at least one channel (SMS, WhatsApp, or Email) first.');

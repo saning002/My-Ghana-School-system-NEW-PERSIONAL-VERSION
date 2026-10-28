@@ -26,7 +26,7 @@
         <p class="text-sm font-bold text-[var(--primary-text)]">Database migration required</p>
         <p class="text-xs text-[var(--primary-text)] mt-1 leading-relaxed">
             The daily fees tables haven't been created yet on your live database.<br>
-            Go to <strong>Render â†’ your service â†’ Shell</strong> and run:<br>
+            Go to <strong>Render �?' your service �?' Shell</strong> and run:<br>
             <code class="bg-[var(--primary-pale)] px-2 py-0.5 rounded font-mono mt-1 inline-block">php artisan migrate</code>
         </p>
     </div>
@@ -41,7 +41,7 @@
         ['Paid Today', 'val'=>$summary['paid'],                                  'bg'=>'from-emerald-500 to-teal-600',  'icon'=>'fa-check-circle'],
         ['Exempted',   'val'=>$summary['exempted'],                              'bg'=>'from-amber-500 to-orange-500',  'icon'=>'fa-graduation-cap'],
         ['Unpaid',     'val'=>$summary['unpaid'],                                'bg'=>'from-rose-500 to-red-600',      'icon'=>'fa-exclamation-circle'],
-        ['Collected',  'val'=>'GHâ‚µ '.number_format($summary['total_collected'],2),'bg'=>'from-blue-500 to-cyan-600',   'icon'=>'fa-coins'],
+        ['Collected',  'val'=>'GH₵ '.number_format($summary['total_collected'],2),'bg'=>'from-blue-500 to-cyan-600',   'icon'=>'fa-coins'],
     ] as $k)
     <div class="rounded-2xl bg-gradient-to-br {{ $k['bg'] }} p-4 text-white shadow-sm">
         <div class="flex items-center justify-between mb-2">
@@ -53,14 +53,14 @@
     @endforeach
 </div>
 
-{{-- â”€â”€ Exemptions & Custom Fees Management â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
+{{-- �"?�"? Exemptions & Custom Fees Management �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
 <div class="rounded-2xl border border-[var(--brand)] bg-[var(--primary-pale)]/30 shadow-sm overflow-hidden">
     <div class="flex items-center justify-between px-5 py-4 border-b border-[var(--primary-pale)] bg-[var(--primary-pale)]">
         <div>
             <h3 class="text-sm font-extrabold text-amber-900">
                 <i class="fas fa-graduation-cap text-[var(--brand)] mr-1.5"></i>Exemptions &amp; Scholarship Students
             </h3>
-            <p class="text-xs text-[var(--primary-text)] mt-0.5">Set students who are fully exempt (pay GHâ‚µ 0) or on partial daily fees</p>
+            <p class="text-xs text-[var(--primary-text)] mt-0.5">Set students who are fully exempt (pay GH₵ 0) or on partial daily fees</p>
         </div>
         <button type="button" onclick="document.getElementById('exemptionListPanel').classList.toggle('hidden')"
             class="inline-flex items-center gap-1.5 rounded-xl bg-amber-600 hover:bg-[var(--primary-pale)]0 text-white text-xs font-bold px-3 py-2 shadow transition-all active:scale-95">
@@ -91,11 +91,11 @@
                     </div>
                     <span class="rounded-full text-[10px] font-extrabold px-2.5 py-0.5
                         {{ $ex->isFull() ? 'bg-[var(--primary-pale)] text-[var(--primary-text)]' : 'bg-blue-100 text-blue-800' }}">
-                        {{ $ex->isFull() ? 'Full Exempt' : 'GHâ‚µ'.number_format($ex->daily_override,2).'/day' }}
+                        {{ $ex->isFull() ? 'Full Exempt' : 'GH₵'.number_format($ex->daily_override,2).'/day' }}
                     </span>
                     <span class="text-[10px] text-slate-500">
                         {{ ucfirst($ex->exemption_type) }}
-                        @if($ex->reason) Â· {{ \Illuminate\Support\Str::limit($ex->reason,25) }}@endif
+                        @if($ex->reason) · {{ \Illuminate\Support\Str::limit($ex->reason,25) }}@endif
                     </span>
                     @if($ex->valid_until)
                     <span class="text-[10px] text-slate-400">Until {{ $ex->valid_until->format('M d, Y') }}</span>
@@ -125,9 +125,9 @@
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wide text-slate-600 mb-1">Student *</label>
                     <select name="student_id" required class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
-                        <option value="">â€” Select student â€”</option>
+                        <option value="">�?" Select student �?"</option>
                         @foreach($students as $s)
-                        <option value="{{ $s->id }}">{{ $s->student_id }} â€” {{ $s->user->full_name }}</option>
+                        <option value="{{ $s->id }}">{{ $s->student_id }} �?" {{ $s->user->full_name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -145,7 +145,7 @@
                         <span class="text-slate-400 font-normal normal-case">(blank = full exempt)</span>
                     </label>
                     <div class="flex items-center gap-1 border border-slate-200 bg-white rounded-xl px-3 py-2.5 focus-within:ring-2 focus-within:ring-amber-400">
-                        <span class="text-slate-400 text-sm font-bold shrink-0">GHâ‚µ</span>
+                        <span class="text-slate-400 text-sm font-bold shrink-0">GH₵</span>
                         <input type="number" name="daily_override" min="0" step="0.01" placeholder="0.00"
                             class="flex-1 border-0 p-0 text-sm font-semibold focus:ring-0 focus:outline-none bg-transparent">
                     </div>
@@ -227,7 +227,7 @@
                     <h3 class="text-sm font-extrabold text-slate-800">
                         {{ \Carbon\Carbon::parse($today)->format('l, F j Y') }}
                     </h3>
-                    <p class="text-xs text-slate-500">Daily Rate: <strong class="text-indigo-700">GHâ‚µ {{ number_format($dailyRate,2) }}</strong> per student</p>
+                    <p class="text-xs text-slate-500">Daily Rate: <strong class="text-indigo-700">GH₵ {{ number_format($dailyRate,2) }}</strong> per student</p>
                 </div>
             </div>
             <button type="submit"
@@ -268,9 +268,9 @@
                 @if($isExempted)
                 <span class="shrink-0 rounded-full px-2.5 py-0.5 text-[10px] font-extrabold
                     {{ $isFull ? 'bg-[var(--primary-pale)] text-[var(--primary-text)]' : 'bg-blue-100 text-blue-800' }}">
-                    {{ $isFull ? 'Full Exempt' : 'Partial GHâ‚µ'.number_format($effectiveRate,2) }}
+                    {{ $isFull ? 'Full Exempt' : 'Partial GH₵'.number_format($effectiveRate,2) }}
                     @if($exemption->reason)
-                        <span class="font-normal opacity-70">Â· {{ Str::limit($exemption->reason,20) }}</span>
+                        <span class="font-normal opacity-70">· {{ Str::limit($exemption->reason,20) }}</span>
                     @endif
                 </span>
                 @endif
@@ -279,7 +279,7 @@
                 @if($hasPaid)
                 <div class="shrink-0 flex items-center gap-1.5">
                     <span class="rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-extrabold px-2.5 py-0.5">
-                        âœ“ GHâ‚µ{{ number_format($paid[$student->id]->amount,2) }}
+                        �o" GH₵{{ number_format($paid[$student->id]->amount,2) }}
                     </span>
                     {{-- Use JS-based unmark to avoid nested form issue --}}
                     <button type="button"
@@ -315,7 +315,7 @@
 
 </div>{{-- end .space-y-5 --}}
 
-{{-- Hidden unmark form â€” outside all other forms to avoid nesting --}}
+{{-- Hidden unmark form �?" outside all other forms to avoid nesting --}}
 <form id="unmarkForm" method="POST" action="{{ route('admin.daily-fees.unmark') }}" style="display:none">
     @csrf
     <input type="hidden" name="student_id" id="unmarkStudentId">
@@ -346,7 +346,7 @@
             <div>
                 <label class="block text-xs font-bold uppercase tracking-wide text-slate-600 mb-1">
                     Daily Override Amount
-                    <span class="text-slate-400 font-normal normal-case">(leave blank = full exemption, pays GHâ‚µ 0)</span>
+                    <span class="text-slate-400 font-normal normal-case">(leave blank = full exemption, pays GH₵ 0)</span>
                 </label>
                 <input type="number" name="daily_override" min="0" step="0.01" placeholder="e.g. 2.00"
                     class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
@@ -408,7 +408,7 @@ function unmarkFee(studentId, date) {
 function openExemption(id, name) {
     document.getElementById('exemptionStudentId').value = id;
     document.getElementById('removeExemptionStudentId').value = id;
-    document.getElementById('exemptionModalTitle').textContent = 'Exemption â€” ' + name;
+    document.getElementById('exemptionModalTitle').textContent = 'Exemption �?" ' + name;
     document.getElementById('exemptionModal').classList.remove('hidden');
     document.getElementById('exemptionModal').classList.add('flex');
 }

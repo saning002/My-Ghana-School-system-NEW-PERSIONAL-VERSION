@@ -22,7 +22,7 @@
             <select name="student_id" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
                 <option value="">-- Select Student --</option>
                 @foreach($students as $s)
-                <option value="{{ $s->id }}" {{ request('student_id')==$s->id?'selected':'' }}>{{ $s->student_id }} â€” {{ $s->user->full_name }}</option>
+                <option value="{{ $s->id }}" {{ request('student_id')==$s->id?'selected':'' }}>{{ $s->student_id }} �?" {{ $s->user->full_name }}</option>
                 @endforeach
             </select>
         </div>
@@ -63,9 +63,9 @@
     ];
     @endphp
     @foreach([
-        ['label'=>'Total Billed', 'val'=>'GHâ‚µ '.number_format($feesDisplay['billed'],2),   'bg'=>'from-blue-500 to-cyan-600'],
-        ['label'=>'Total Paid',   'val'=>'GHâ‚µ '.number_format($feesDisplay['paid'],2),     'bg'=>'from-emerald-500 to-teal-600'],
-        ['label'=>'Balance',      'val'=>'GHâ‚µ '.number_format($feesDisplay['balance'],2),  'bg'=>($feesDisplay['balance'])>0?'from-red-500 to-rose-600':'from-emerald-500 to-teal-600'],
+        ['label'=>'Total Billed', 'val'=>'GH₵ '.number_format($feesDisplay['billed'],2),   'bg'=>'from-blue-500 to-cyan-600'],
+        ['label'=>'Total Paid',   'val'=>'GH₵ '.number_format($feesDisplay['paid'],2),     'bg'=>'from-emerald-500 to-teal-600'],
+        ['label'=>'Balance',      'val'=>'GH₵ '.number_format($feesDisplay['balance'],2),  'bg'=>($feesDisplay['balance'])>0?'from-red-500 to-rose-600':'from-emerald-500 to-teal-600'],
     ] as $k)
     <div class="rounded-2xl bg-gradient-to-br {{ $k['bg'] }} p-4 text-white shadow-sm text-center">
         <p class="text-[10px] font-bold uppercase tracking-wider text-white/70 mb-1">{{ $k['label'] }}</p>
@@ -94,7 +94,7 @@
                 <tr class="hover:bg-slate-50">
                     <td class="px-5 py-3 text-slate-500 text-xs">{{ \Carbon\Carbon::parse($pay->created_at)->format('M d, Y') }}</td>
                     <td class="px-5 py-3 font-medium text-slate-700">{{ $pay->description ?? 'School Fees Payment' }}</td>
-                    <td class="px-4 py-3 text-right font-bold text-emerald-700">GHâ‚µ {{ number_format($pay->amount,2) }}</td>
+                    <td class="px-4 py-3 text-right font-bold text-emerald-700">GH₵ {{ number_format($pay->amount,2) }}</td>
                 </tr>
                 @endforeach
             </tbody>

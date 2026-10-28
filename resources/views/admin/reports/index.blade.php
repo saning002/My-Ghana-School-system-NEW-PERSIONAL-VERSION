@@ -10,7 +10,7 @@
         ['label'=>'Total Students','value'=>$summary['total_students'],'icon'=>'fa-user-graduate','bg'=>'#fef9c3','ic'=>'#78520a'],
         ['label'=>'Graduated',     'value'=>$summary['graduated'],     'icon'=>'fa-graduation-cap','bg'=>'#dbeafe','ic'=>'#1e40af'],
         ['label'=>'Attendance',    'value'=>$summary['attendance_rate'].'%','icon'=>'fa-clipboard-check','bg'=>'#dcfce7','ic'=>'#166534'],
-        ['label'=>'Outstanding',   'value'=>'GHâ‚µ '.number_format($summary['fees']['outstanding'],0),'icon'=>'fa-coins','bg'=>'#fce7f3','ic'=>'#9d174d'],
+        ['label'=>'Outstanding',   'value'=>'GH₵ '.number_format($summary['fees']['outstanding'],0),'icon'=>'fa-coins','bg'=>'#fce7f3','ic'=>'#9d174d'],
     ] as $c)
     <div class="card p-4">
         <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-3" style="background:{{ $c['bg'] }}">
@@ -152,7 +152,7 @@
         }
     });
 
-    // Chart 2: Student Status Distribution (doughnut â€” shows real data)
+    // Chart 2: Student Status Distribution (doughnut �?" shows real data)
     createChart(document.getElementById('reports-fees-chart'), {
         type: 'doughnut',
         data: {

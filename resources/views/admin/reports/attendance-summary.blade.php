@@ -24,7 +24,7 @@
                 @foreach($sessions as $sess)
                     @foreach($sess->periods as $p)
                     <option value="{{ $p->id }}" {{ request('period_id')==$p->id?'selected':'' }}>
-                        {{ $p->full_label }}{{ $p->is_active?' â˜…':'' }}
+                        {{ $p->full_label }}{{ $p->is_active?' �~.':'' }}
                     </option>
                     @endforeach
                 @endforeach
@@ -56,7 +56,7 @@
 <div class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
     <div class="flex items-center justify-between px-5 py-4 border-b border-slate-100 bg-slate-50">
         <h3 class="text-sm font-extrabold text-slate-800">
-            {{ $data['program']->name }} â€” {{ $data['period']?->full_label ?? 'All Periods' }}
+            {{ $data['program']->name }} �?" {{ $data['period']?->full_label ?? 'All Periods' }}
         </h3>
         <a href="{{ route('admin.reports.attendance-summary.pdf', request()->query()) }}"
            class="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-4 py-2 shadow transition-all active:scale-95">

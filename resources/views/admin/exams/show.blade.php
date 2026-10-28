@@ -1,11 +1,11 @@
 @extends('layouts.app')
 @section('title', 'Report Card')
-@section('subtitle', $student->user->full_name . ' â€” ' . $program->name)
+@section('subtitle', $student->user->full_name . ' �?" ' . $program->name)
 
 @section('content')
 <div class="max-w-3xl mx-auto">
 
-    {{-- â”€â”€ Action Bar â”€â”€ --}}
+    {{-- �"?�"? Action Bar �"?�"? --}}
     <div class="flex flex-wrap items-center gap-3 mb-6">
         <a href="{{ route('admin.exams.pdf', [$student, $program]) }}?attempt={{ $currentAttempt }}" target="_blank"
            class="btn-gold inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold shadow-sm">
@@ -24,10 +24,10 @@
            class="inline-flex items-center gap-2 px-4 py-2.5 bg-white border border-[var(--brand)] text-gray-700 rounded-xl text-sm font-semibold transition-colors hover:bg-[var(--primary-pale)]">
             <i class="fas fa-pen" style="color:var(--primary-text)"></i> Edit Scores
         </a>
-        <a href="{{ route('admin.exams.index') }}" class="ml-auto text-sm text-gray-500 hover:text-gray-700 font-medium">â† Back</a>
+        <a href="{{ route('admin.exams.index') }}" class="ml-auto text-sm text-gray-500 hover:text-gray-700 font-medium">�?� Back</a>
     </div>
 
-    {{-- â”€â”€ Attempt Tabs â”€â”€ --}}
+    {{-- �"?�"? Attempt Tabs �"?�"? --}}
     @if($attempts->count() > 1)
     <div class="flex flex-wrap items-center gap-2 mb-5">
         <span class="text-xs font-semibold text-gray-500 mr-1">Attempt:</span>
@@ -59,14 +59,14 @@
     </div>
     @else
 
-    {{-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-         REPORT CARD â€” physical card replica
-    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
+    {{-- �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.�
+         REPORT CARD �?" physical card replica
+    �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� --}}
     <div id="report-card"
          class="overflow-hidden rounded-lg shadow-xl print:shadow-none print:rounded-none"
          style="background:#FFD700;border:2.5px solid #000;font-family:Arial,sans-serif">
 
-        {{-- â”€â”€ TOP HEADER â”€â”€ --}}
+        {{-- �"?�"? TOP HEADER �"?�"? --}}
         <div style="padding:16px 20px 0">
             <table style="width:100%;border-collapse:collapse">
                 <tr>
@@ -95,10 +95,10 @@
             </table>
         </div>
 
-        {{-- â”€â”€ THICK DIVIDER â”€â”€ --}}
+        {{-- �"?�"? THICK DIVIDER �"?�"? --}}
         <div style="border-top:3px solid #000;margin:12px 20px 0"></div>
 
-        {{-- â”€â”€ TRANSCRIPT TITLE â”€â”€ --}}
+        {{-- �"?�"? TRANSCRIPT TITLE �"?�"? --}}
         <div style="padding:8px 20px 0;text-align:center">
             <div style="font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:0.5px;color:#000;margin-bottom:2px">
                 Academic Transcript Result Sheet
@@ -111,7 +111,7 @@
             </div>
         </div>
 
-        {{-- â”€â”€ STUDENT INFO â”€â”€ --}}
+        {{-- �"?�"? STUDENT INFO �"?�"? --}}
         <div style="padding:0 20px 8px">
             <table style="width:100%;border-collapse:collapse;margin-bottom:4px">
                 <tr>
@@ -132,7 +132,7 @@
             <div style="font-size:12px;font-weight:700;margin-bottom:10px">
                 <span style="font-weight:900;text-transform:uppercase">Campus: </span>
                 <span style="display:inline-block;border-bottom:1.5px solid #000;min-width:300px;padding:0 4px 1px;font-weight:700;text-transform:uppercase">
-                    {{ strtoupper($student->churchBranch?->name ?? 'â€”') }}
+                    {{ strtoupper($student->churchBranch?->name ?? '�?"') }}
                 </span>
             </div>
             <div style="text-align:center;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:0.3px;color:#000;margin-bottom:1px">
@@ -143,7 +143,7 @@
             </div>
         </div>
 
-        {{-- â”€â”€ SCORES TABLE â”€â”€ --}}
+        {{-- �"?�"? SCORES TABLE �"?�"? --}}
         <div style="padding:0 20px">
             <table style="width:100%;border-collapse:collapse;border:2px solid #000">
                 <thead>
@@ -180,14 +180,14 @@
             </table>
         </div>
 
-        {{-- â”€â”€ FOOTER â”€â”€ --}}
+        {{-- �"?�"? FOOTER �"?�"? --}}
         <div style="border-top:3px solid #000;margin:12px 20px 0;padding:10px 0 18px">
             <table style="width:100%;border-collapse:collapse">
                 <tr>
                     {{-- LEFT: Grading Scale --}}
                     <td style="width:36%;vertical-align:top;padding-right:16px">
                         <div style="font-size:11px;font-weight:900;text-decoration:underline;text-transform:uppercase;margin-bottom:5px;color:#000">Scale of Grading:</div>
-                        @foreach(['A1 = 80â€“100 (Distinction)','A2 = 70â€“79 (Upper Division)','A3 = 60â€“69 (Lower Division)','B1 = 50â€“59 (Credit)','B2 = 40â€“49 (Pass)','F  = 0â€“39  (Fail)'] as $g)
+                        @foreach(['A1 = 80�?"100 (Distinction)','A2 = 70�?"79 (Upper Division)','A3 = 60�?"69 (Lower Division)','B1 = 50�?"59 (Credit)','B2 = 40�?"49 (Pass)','F  = 0�?"39  (Fail)'] as $g)
                         <div style="font-size:11px;font-weight:700;color:#000;margin-bottom:3px">{{ $g }}</div>
                         @endforeach
                     </td>

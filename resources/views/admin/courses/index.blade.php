@@ -101,7 +101,7 @@
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 hidden md:table-cell">
-                                        <span class="text-gray-500 text-xs line-clamp-1">{{ $course->description ?? 'â€”' }}</span>
+                                        <span class="text-gray-500 text-xs line-clamp-1">{{ $course->description ?? '�?"' }}</span>
                                     </td>
                                     <td class="px-6 py-4 text-center">
                                         <span class="inline-flex items-center gap-1 text-xs font-semibold text-gray-600">

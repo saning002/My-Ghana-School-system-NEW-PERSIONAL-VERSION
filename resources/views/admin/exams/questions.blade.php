@@ -11,7 +11,7 @@
 </div>
 @endif
 
-{{-- â”€â”€ Filters â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
+{{-- �"?�"? Filters �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
 <div class="card p-5">
     <form method="GET" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 items-end">
         <div>
@@ -58,8 +58,8 @@
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Type</label>
             <select name="document_type" onchange="this.form.submit()" class="field-input w-full">
                 <option value="">All Types</option>
-                <option value="pdf"  {{ request('document_type')==='pdf' ?'selected':'' }}>ðŸ“„ PDF</option>
-                <option value="word" {{ request('document_type')==='word'?'selected':'' }}>ðŸ“ Word</option>
+                <option value="pdf"  {{ request('document_type')==='pdf' ?'selected':'' }}>�Y"" PDF</option>
+                <option value="word" {{ request('document_type')==='word'?'selected':'' }}>�Y"� Word</option>
             </select>
         </div>
     </form>
@@ -72,7 +72,7 @@
     @endif
 </div>
 
-{{-- â”€â”€ Stats bar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
+{{-- �"?�"? Stats bar �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
     @php
         $total    = $documents->total();
@@ -98,7 +98,7 @@
     </div>
 </div>
 
-{{-- â”€â”€ Documents list â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
+{{-- �"?�"? Documents list �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
 <div class="card overflow-hidden">
     <div class="px-5 py-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
         <h3 class="text-sm font-extrabold text-slate-800 flex items-center gap-2">
@@ -112,7 +112,7 @@
     <div class="py-16 text-center text-slate-400">
         <i class="fas fa-file-circle-question text-4xl mb-3 block"></i>
         <p class="text-sm font-semibold">No exam question documents uploaded yet.</p>
-        <p class="text-xs text-slate-400 mt-1">Teachers upload documents from their <strong>Exams â†’ Question Upload</strong> section.</p>
+        <p class="text-xs text-slate-400 mt-1">Teachers upload documents from their <strong>Exams �?' Question Upload</strong> section.</p>
     </div>
     @else
 
@@ -163,9 +163,9 @@
                             </form>
                         </div>
                     </td>
-                    <td class="px-4 py-3 text-xs font-semibold text-slate-700">{{ $doc->course->name ?? 'â€”' }}</td>
-                    <td class="px-4 py-3 text-xs text-slate-600">{{ $doc->program->name ?? 'â€”' }}</td>
-                    <td class="px-4 py-3 text-xs text-slate-600">{{ $doc->lecturer->full_name ?? 'â€”' }}</td>
+                    <td class="px-4 py-3 text-xs font-semibold text-slate-700">{{ $doc->course->name ?? '�?"' }}</td>
+                    <td class="px-4 py-3 text-xs text-slate-600">{{ $doc->program->name ?? '�?"' }}</td>
+                    <td class="px-4 py-3 text-xs text-slate-600">{{ $doc->lecturer->full_name ?? '�?"' }}</td>
                     <td class="px-4 py-3 text-xs text-slate-600">
                         {{ $doc->academic_year }}
                         @if($doc->term)<br><span class="text-slate-400">{{ $doc->term }}</span>@endif
@@ -240,8 +240,8 @@
                 <div class="flex items-start justify-between gap-2">
                     <div>
                         <p class="text-sm font-bold text-slate-800">{{ $doc->title }}</p>
-                        <p class="text-xs text-slate-500 mt-0.5">{{ $doc->course->name ?? 'â€”' }} Â· {{ $doc->program->name ?? 'â€”' }}</p>
-                        <p class="text-xs text-slate-400">{{ $doc->lecturer->full_name ?? 'â€”' }} Â· {{ $doc->academic_year }}</p>
+                        <p class="text-xs text-slate-500 mt-0.5">{{ $doc->course->name ?? '�?"' }} · {{ $doc->program->name ?? '�?"' }}</p>
+                        <p class="text-xs text-slate-400">{{ $doc->lecturer->full_name ?? '�?"' }} · {{ $doc->academic_year }}</p>
                     </div>
                     @if($doc->is_approved)
                     <span class="shrink-0 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-0.5">Approved</span>

@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Fee History â€” ' . ($student->user?->full_name ?? 'Student'))
+@section('title', 'Fee History �?" ' . ($student->user?->full_name ?? 'Student'))
 
 @section('content')
 <style>
@@ -141,12 +141,12 @@
                         <div style="font-size:.9rem;font-weight:700;color:#1e293b;">GHS {{ number_format($p->amount_paid, 2) }}</div>
                         <div style="font-size:.72rem;color:#94a3b8;margin-top:2px;">
                             <i class="fas fa-calendar me-1"></i>{{ \Carbon\Carbon::parse($p->payment_date)->format('d M Y') }}
-                            &nbsp;Â·&nbsp;{{ ucfirst(str_replace('_', ' ', $p->payment_method ?? 'cash')) }}
+                            &nbsp;·&nbsp;{{ ucfirst(str_replace('_', ' ', $p->payment_method ?? 'cash')) }}
                             @if($p->receipt_number)
-                                &nbsp;Â·&nbsp;<code style="font-size:.68rem;background:#e2e8f0;padding:1px 5px;border-radius:4px;">{{ $p->receipt_number }}</code>
+                                &nbsp;·&nbsp;<code style="font-size:.68rem;background:#e2e8f0;padding:1px 5px;border-radius:4px;">{{ $p->receipt_number }}</code>
                             @endif
                             @if($p->notes)
-                                &nbsp;Â·&nbsp;<span style="font-style:italic;">{{ $p->notes }}</span>
+                                &nbsp;·&nbsp;<span style="font-style:italic;">{{ $p->notes }}</span>
                             @endif
                         </div>
                     </div>

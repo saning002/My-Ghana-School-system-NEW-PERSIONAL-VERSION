@@ -50,7 +50,7 @@
         <form method="POST" action="{{ route('admin.portal-settings.toggle') }}" class="px-6 py-6 space-y-8">
             @csrf
 
-            {{-- â”€â”€ 1. Student Portal Section â”€â”€ --}}
+            {{-- �"?�"? 1. Student Portal Section �"?�"? --}}
             <div class="space-y-4 pb-6 border-b border-gray-100">
                 <h4 class="text-sm font-bold text-gray-800 flex items-center gap-2">
                     <i class="fas fa-user-graduate text-blue-600"></i> Student Portal Access
@@ -99,7 +99,7 @@
                 </div>
             </div>
 
-            {{-- â”€â”€ 2. Teachers Portal Section â”€â”€ --}}
+            {{-- �"?�"? 2. Teachers Portal Section �"?�"? --}}
             <div class="space-y-4">
                 <h4 class="text-sm font-bold text-gray-800 flex items-center gap-2">
                     <i class="fas fa-chalkboard-user text-purple-600"></i> Teachers Portal Access
@@ -148,7 +148,7 @@
                 </div>
             </div>
 
-            {{-- â”€â”€ 3. Teacher Feature Permissions â”€â”€ --}}
+            {{-- �"?�"? 3. Teacher Feature Permissions �"?�"? --}}
             <div class="space-y-4 pt-6 border-t border-gray-100">
                 <div class="flex items-start justify-between">
                     <div>
@@ -182,7 +182,7 @@
                         <div>
                             <p class="text-sm font-bold text-gray-800">{{ $label }}</p>
                             <p class="text-[10px] font-semibold mt-0.5 {{ $isOn ? 'text-emerald-600' : 'text-red-500' }}">
-                                {{ $isOn ? 'âœ… Currently ON' : 'âŒ Currently OFF' }}
+                                {{ $isOn ? '�o. Currently ON' : '�O Currently OFF' }}
                             </p>
                         </div>
                     </label>
@@ -202,7 +202,7 @@
         </form>
     </div>
 
-    {{-- â”€â”€ Report Card Orientation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
+    {{-- �"?�"? Report Card Orientation �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
     <div class="card overflow-hidden">
         <div class="px-6 py-4 border-b border-slate-100" style="background:var(--primary-pale)">
             <h3 class="text-sm font-bold" style="color:var(--primary-text)">
@@ -244,7 +244,7 @@
                             </div>
                             <div>
                                 <p class="font-bold text-gray-800 text-sm">Landscape (A4)</p>
-                                <p class="text-xs text-gray-500">Wider â€” two columns side by side</p>
+                                <p class="text-xs text-gray-500">Wider �?" two columns side by side</p>
                             </div>
                         </div>
                     </label>
@@ -259,7 +259,7 @@
                             </div>
                             <div>
                                 <p class="font-bold text-gray-800 text-sm">Portrait (A4)</p>
-                                <p class="text-xs text-gray-500">Taller â€” traditional page layout</p>
+                                <p class="text-xs text-gray-500">Taller �?" traditional page layout</p>
                             </div>
                         </div>
                     </label>
@@ -278,7 +278,7 @@
     {{-- Portal Links --}}
     <div class="space-y-4">
         <h3 class="text-sm font-bold text-gray-800">
-            <i class="fas fa-link mr-2 text-gray-500"></i>All Portal URLs â€” Share with staff
+            <i class="fas fa-link mr-2 text-gray-500"></i>All Portal URLs �?" Share with staff
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
@@ -414,7 +414,7 @@
                 </p>
                 <a href="{{ route('admin.staff-portal-users.index') }}"
                    class="inline-flex items-center gap-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-4 py-2.5 transition-all active:scale-95">
-                    <i class="fas fa-cog text-[10px]"></i> Manage Staff Portal Accounts â†’
+                    <i class="fas fa-cog text-[10px]"></i> Manage Staff Portal Accounts �?'
                 </a>
             </div>
         </div>

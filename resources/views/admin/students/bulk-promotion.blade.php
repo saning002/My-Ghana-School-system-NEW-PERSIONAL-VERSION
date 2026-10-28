@@ -97,7 +97,7 @@
                                         <input type="checkbox" name="student_ids[]" value="{{ $student->id }}" x-model.number="selectedIds" form="bulkRepeatForm" class="hidden">
                                     </td>
                                     <td class="p-4 font-mono font-medium text-slate-800">{{ $student->student_id }}</td>
-                                    <td class="p-4 font-semibold text-slate-900">{{ $student->user->full_name ?? 'â€”' }}</td>
+                                    <td class="p-4 font-semibold text-slate-900">{{ $student->user->full_name ?? '�?"' }}</td>
                                     <td class="p-4">
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold {{ $student->status === 'active' ? 'bg-emerald-100 text-emerald-800' : 'bg-[var(--primary-pale)] text-[var(--primary-text)]' }}">
                                             {{ ucfirst($student->status) }}
@@ -107,7 +107,7 @@
                                         <form method="POST" action="{{ route('admin.students.promote', $student) }}" class="inline-block">
                                             @csrf
                                             <button type="submit" class="px-3 py-1.5 rounded-lg bg-[var(--primary-pale)] hover:bg-[var(--primary-pale)] text-[var(--primary-text)] text-xs font-bold transition-colors">
-                                                Promote â†’
+                                                Promote �?'
                                             </button>
                                         </form>
                                     </td>

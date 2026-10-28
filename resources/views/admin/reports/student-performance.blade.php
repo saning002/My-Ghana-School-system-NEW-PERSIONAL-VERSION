@@ -29,13 +29,13 @@
                 <option value="">-- Select student --</option>
                 @foreach($students as $s)
                 <option value="{{ $s->id }}" {{ request('student_id')==$s->id?'selected':'' }}>
-                    {{ $s->student_id }} â€” {{ $s->user->full_name }}
+                    {{ $s->student_id }} �?" {{ $s->user->full_name }}
                 </option>
                 @endforeach
                 @if($students->isEmpty())
                     @foreach(\App\Models\Student::with('user')->forExams()->orderBy('student_id')->get() as $s)
                     <option value="{{ $s->id }}" {{ request('student_id')==$s->id?'selected':'' }}>
-                        {{ $s->student_id }} â€” {{ $s->user->full_name }}
+                        {{ $s->student_id }} �?" {{ $s->user->full_name }}
                     </option>
                     @endforeach
                 @endif

@@ -235,11 +235,11 @@
                         </div>
                     </div>
                     <div>
-                        <label class="ws-label">Gradient Angle: <span id="angleValue">{{ old('hero_gradient_angle', $s->hero_gradient_angle ?? 150) }}Â°</span></label>
+                        <label class="ws-label">Gradient Angle: <span id="angleValue">{{ old('hero_gradient_angle', $s->hero_gradient_angle ?? 150) }}°</span></label>
                         <input type="range" name="hero_gradient_angle" min="0" max="360"
                                value="{{ old('hero_gradient_angle', $s->hero_gradient_angle ?? 150) }}"
                                class="w-full mt-2 accent-orange-500"
-                               oninput="document.getElementById('angleValue').textContent=this.value+'Â°';updateGradientPreview()">
+                               oninput="document.getElementById('angleValue').textContent=this.value+'°';updateGradientPreview()">
                     </div>
                     <div>
                         <label class="ws-label">Live Preview</label>
@@ -277,11 +277,11 @@
                         </div>
                     </div>
                     <div>
-                        <label class="ws-label">Angle: <span id="glassAngleValue">{{ old('hero_gradient_angle', $s->hero_gradient_angle ?? 135) }}Â°</span></label>
+                        <label class="ws-label">Angle: <span id="glassAngleValue">{{ old('hero_gradient_angle', $s->hero_gradient_angle ?? 135) }}°</span></label>
                         <input type="range" name="hero_gradient_angle" min="0" max="360"
                                value="{{ old('hero_gradient_angle', $s->hero_gradient_angle ?? 135) }}"
                                class="w-full mt-2 accent-orange-500"
-                               oninput="document.getElementById('glassAngleValue').textContent=this.value+'Â°'">
+                               oninput="document.getElementById('glassAngleValue').textContent=this.value+'°'">
                     </div>
                 </div>
             </div>
@@ -300,7 +300,7 @@
 
                     {{-- Option A: paste a URL (works without Cloudinary, survives redeploys) --}}
                     <div>
-                        <label class="ws-label">Image URL <span class="normal-case font-normal text-gray-400">(recommended â€” paste any public image URL)</span></label>
+                        <label class="ws-label">Image URL <span class="normal-case font-normal text-gray-400">(recommended �?" paste any public image URL)</span></label>
                         <input type="url" name="hero_bg_image_url"
                                value="{{ old('hero_bg_image_url', filter_var($s->hero_bg_image ?? '', FILTER_VALIDATE_URL) ? $s->hero_bg_image : '') }}"
                                placeholder="https://example.com/your-school-hero.jpg"
@@ -318,23 +318,24 @@
 
                     {{-- Option B: file upload (requires Cloudinary or persistent disk) --}}
                     <div>
-                        <label class="ws-label">Upload Image File <span class="normal-case font-normal text-gray-400">(JPG, PNG, WebP â€” max 8MB â€” requires Cloudinary)</span></label>
+                        <label class="ws-label">Upload Image File <span class="normal-case font-normal text-gray-400">(JPG, PNG, WebP �?" max 8MB �?" requires Cloudinary)</span></label>
                         <input type="file" name="hero_bg_image" accept="image/jpeg,image/png,image/jpg,image/webp"
                                class="mt-1 text-sm text-gray-600 block">
                         @if(!config('cloudinary.cloud_name'))
                         <p class="text-[10px] text-orange-500 mt-1">
                             <i class="fas fa-exclamation-triangle mr-1"></i>
-                            Cloudinary not configured â€” uploaded files will be lost on next server restart. Use a URL instead.
+                            Cloudinary not configured �?" uploaded files will be lost on next server restart. Use a URL instead.
                         </p>
                         @endif
                     </div>
 
                     <div>
                         <label class="ws-label">Dark Overlay Opacity: <span id="overlayValue">{{ old('hero_overlay_opacity', $s->hero_overlay_opacity ?? 40) }}%</span></label>
-                        <input type="range" name="hero_overlay_opacity" min="0" max="90"
+                        <input type="hidden" name="hero_overlay_opacity" id="heroOverlayHidden" value="{{ old('hero_overlay_opacity', $s->hero_overlay_opacity ?? 40) }}">
+                        <input type="range" min="0" max="90"
                                value="{{ old('hero_overlay_opacity', $s->hero_overlay_opacity ?? 40) }}"
                                class="w-full mt-2 accent-orange-500"
-                               oninput="document.getElementById('overlayValue').textContent=this.value+'%'">
+                               oninput="document.getElementById('overlayValue').textContent=this.value+'%';document.getElementById('heroOverlayHidden').value=this.value">
                         <p class="text-[10px] text-gray-400 mt-1">Increase to darken image and make text more readable</p>
                     </div>
                 </div>
@@ -352,10 +353,10 @@
                     </div>
                     <div>
                         <label class="ws-label">Dark Overlay Opacity: <span id="videoOverlayValue">{{ old('hero_overlay_opacity', $s->hero_overlay_opacity ?? 45) }}%</span></label>
-                        <input type="range" name="hero_overlay_opacity" min="0" max="90"
+                        <input type="range" min="0" max="90"
                                value="{{ old('hero_overlay_opacity', $s->hero_overlay_opacity ?? 45) }}"
                                class="w-full mt-2 accent-orange-500"
-                               oninput="document.getElementById('videoOverlayValue').textContent=this.value+'%'">
+                               oninput="document.getElementById('videoOverlayValue').textContent=this.value+'%';document.getElementById('heroOverlayHidden').value=this.value">
                     </div>
                 </div>
             </div>
@@ -384,12 +385,12 @@
             $wtc = $s->websiteTheme ?? \App\Models\Website\SiteSetting::defaultWebsiteTheme();
             @endphp
 
-            {{-- â”€â”€ WEBSITE THEME â”€â”€ --}}
+            {{-- �"?�"? WEBSITE THEME �"?�"? --}}
             <div class="rounded-xl border border-blue-200 bg-blue-50/40 p-4 space-y-4">
                 <div class="flex items-center justify-between">
                     <div>
                         <h4 class="text-xs font-bold uppercase tracking-wider text-blue-800">Public Website Colors</h4>
-                        <p class="text-[10px] text-blue-500 mt-0.5">Only affects the public-facing website â€” homepage, about, admissions, etc.</p>
+                        <p class="text-[10px] text-blue-500 mt-0.5">Only affects the public-facing website �?" homepage, about, admissions, etc.</p>
                     </div>
                     <span class="text-[10px] bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-semibold">Website only</span>
                 </div>
@@ -461,12 +462,12 @@
                 </div>
             </div>
 
-            {{-- â”€â”€ ADMIN THEME â”€â”€ --}}
+            {{-- �"?�"? ADMIN THEME �"?�"? --}}
             <div class="rounded-xl border border-slate-200 bg-slate-50/50 p-4 space-y-4">
                 <div class="flex items-center justify-between">
                     <div>
                         <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700">Admin Panel Colors</h4>
-                        <p class="text-[10px] text-slate-500 mt-0.5">Only affects the admin dashboard sidebar and buttons â€” not the public website.</p>
+                        <p class="text-[10px] text-slate-500 mt-0.5">Only affects the admin dashboard sidebar and buttons �?" not the public website.</p>
                     </div>
                     <span class="text-[10px] bg-slate-200 text-slate-700 px-2 py-1 rounded-full font-semibold">Admin only</span>
                 </div>
@@ -803,7 +804,7 @@
             </div>
             <div>
                 <label class="ws-label">Office Hours</label>
-                <input type="text" name="office_hours" value="{{ old('office_hours',$s->office_hours ?? 'Mon â€“ Fri: 7:00 AM â€“ 5:00 PM') }}" class="ws-input">
+                <input type="text" name="office_hours" value="{{ old('office_hours',$s->office_hours ?? 'Mon �?" Fri: 7:00 AM �?" 5:00 PM') }}" class="ws-input">
             </div>
             <div>
                 <label class="ws-label">Contact Form Subjects (one per line)</label>
@@ -889,7 +890,7 @@
                     </div>
                     <div>
                         <label class="ws-label">Footer Office Hours</label>
-                        <input type="text" name="footer_office_hours" value="{{ old('footer_office_hours',$s->footer_office_hours ?? $s->office_hours ?? 'Monâ€“Fri: 7:00 AM â€“ 5:00 PM') }}" class="ws-input">
+                        <input type="text" name="footer_office_hours" value="{{ old('footer_office_hours',$s->footer_office_hours ?? $s->office_hours ?? 'Mon�?"Fri: 7:00 AM �?" 5:00 PM') }}" class="ws-input">
                     </div>
                 </div>
             </div>
@@ -990,14 +991,14 @@ function wsTab(id) {
     localStorage.setItem('wsActiveTab', id);
 }
 
-// â”€â”€ Hero background type switcher â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// �"?�"? Hero background type switcher �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?
 function heroShowBgPanel(type) {
     document.querySelectorAll('.hero-bg-panel').forEach(p => p.classList.add('hidden'));
     const panel = document.getElementById('heroBg-' + type);
     if (panel) panel.classList.remove('hidden');
 }
 
-// â”€â”€ Sync colour picker â†” text input â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// �"?�"? Sync colour picker �?" text input �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?
 function syncColorInput(textInput) {
     const val = textInput.value.trim();
     const pickerName = textInput.dataset.picker;
@@ -1008,7 +1009,7 @@ function syncColorInput(textInput) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Sync all colour pickers â†’ text inputs on picker change
+    // Sync all colour pickers �?' text inputs on picker change
     document.querySelectorAll('input[type="color"]').forEach(picker => {
         const textInput = picker.parentElement.querySelector('input[type="text"]');
         if (textInput) {
@@ -1032,7 +1033,7 @@ document.addEventListener('DOMContentLoaded', function() {
     wsTab(localStorage.getItem('wsActiveTab') || 'identity');
 });
 
-// â”€â”€ Gradient live preview â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// �"?�"? Gradient live preview �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?
 function updateGradientPreview() {
     const from  = document.querySelector('[name="hero_gradient_from"]')?.value || '#050d22';
     const via   = document.querySelector('[name="hero_gradient_via"]')?.value || '';
@@ -1043,7 +1044,7 @@ function updateGradientPreview() {
     if (preview) preview.style.background = `linear-gradient(${angle}deg,${from}${viaStop},${to})`;
 }
 
-// â”€â”€ Website theme preview â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// �"?�"? Website theme preview �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?
 function updateWebsitePreview() {
     const map = {
         'wt_primary':   'wtp-wt_primary',
@@ -1059,7 +1060,7 @@ function updateWebsitePreview() {
     });
 }
 
-// â”€â”€ Admin theme preview â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// �"?�"? Admin theme preview �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?
 function updateAdminPreview() {
     const map = {
         'theme_adminNav':     'atp-theme_adminNav',
@@ -1073,7 +1074,7 @@ function updateAdminPreview() {
     });
 }
 
-// â”€â”€ Apply website preset â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// �"?�"? Apply website preset �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?
 function applyWebsitePreset(primary, secondary, accent, text, bg, navBg) {
     const values = { wt_primary:primary, wt_secondary:secondary, wt_accent:accent, wt_text:text, wt_bg:bg, wt_navBg:navBg };
     Object.entries(values).forEach(([name, val]) => {
@@ -1085,7 +1086,7 @@ function applyWebsitePreset(primary, secondary, accent, text, bg, navBg) {
     updateWebsitePreview();
 }
 
-// â”€â”€ Apply admin preset â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// �"?�"? Apply admin preset �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?
 function applyAdminPreset(adminPrimary, adminNav, accent, primary) {
     const values = { theme_adminPrimary:adminPrimary, theme_adminNav:adminNav, theme_accent:accent, theme_primary:primary };
     Object.entries(values).forEach(([name, val]) => {

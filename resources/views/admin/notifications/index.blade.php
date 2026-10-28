@@ -5,7 +5,7 @@
 @section('content')
 <div class="grid grid-cols-1 lg:grid-cols-5 gap-5">
 
-    {{-- â”€â”€ SEND FORM â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
+    {{-- �"?�"? SEND FORM �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
     <div class="lg:col-span-2">
         <div class="card overflow-hidden sticky top-20"
              x-data="{
@@ -22,11 +22,11 @@
 
                 @if($errors->any())
                 <div class="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-xs text-red-700 space-y-1">
-                    @foreach($errors->all() as $e)<div>â€¢ {{ $e }}</div>@endforeach
+                    @foreach($errors->all() as $e)<div>�?� {{ $e }}</div>@endforeach
                 </div>
                 @endif
 
-                {{-- â”€â”€ Step 1: Who to notify â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
+                {{-- �"?�"? Step 1: Who to notify �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
                 <div>
                     <label class="block text-xs font-semibold text-gray-600 mb-2">Notify *</label>
                     <div class="grid grid-cols-2 gap-2">
@@ -57,7 +57,7 @@
                     </div>
                 </div>
 
-                {{-- â”€â”€ Step 2: Audience scope â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
+                {{-- �"?�"? Step 2: Audience scope �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
                 <div>
                     <label class="block text-xs font-semibold text-gray-600 mb-2">Send To *</label>
                     <div class="grid grid-cols-2 gap-2">
@@ -97,7 +97,7 @@
                         <label class="block text-xs font-semibold text-gray-600 mb-1">Select Teacher *</label>
                         <select name="lecturer_id"
                                 class="w-full px-4 py-3 border border-[var(--brand)] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 bg-white">
-                            <option value="">â€” Choose a teacher â€”</option>
+                            <option value="">�?" Choose a teacher �?"</option>
                             @foreach($lecturers as $lecturer)
                             <option value="{{ $lecturer->id }}" {{ old('lecturer_id') == $lecturer->id ? 'selected' : '' }}>
                                 {{ $lecturer->full_name }}
@@ -107,20 +107,20 @@
                     </div>
                 </div>
 
-                {{-- â”€â”€ Type â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
+                {{-- �"?�"? Type �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
                 <div>
                     <label class="block text-xs font-semibold text-gray-600 mb-2">Notification Type *</label>
                     <select name="type" required
                             class="w-full px-4 py-3 border border-[var(--brand)] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
-                        <option value="general">ðŸ“¢ General Announcement</option>
-                        <option value="fee">ðŸ’° Fee Reminder</option>
-                        <option value="emergency">ðŸš¨ Emergency Alert</option>
-                        <option value="result">ðŸ“‹ Result Notice</option>
-                        <option value="attendance">ðŸ“… Attendance Notice</option>
+                        <option value="general">�Y"� General Announcement</option>
+                        <option value="fee">�Y'� Fee Reminder</option>
+                        <option value="emergency">�Ys� Emergency Alert</option>
+                        <option value="result">�Y"< Result Notice</option>
+                        <option value="attendance">�Y". Attendance Notice</option>
                     </select>
                 </div>
 
-                {{-- â”€â”€ Title â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
+                {{-- �"?�"? Title �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
                 <div>
                     <label class="block text-xs font-semibold text-gray-600 mb-2">Title *</label>
                     <input type="text" name="title" value="{{ old('title') }}" required
@@ -128,7 +128,7 @@
                            placeholder="e.g. Important Announcement">
                 </div>
 
-                {{-- â”€â”€ Message â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
+                {{-- �"?�"? Message �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
                 <div>
                     <label class="block text-xs font-semibold text-gray-600 mb-2">Message *</label>
                     <textarea name="message" rows="4" required
@@ -143,7 +143,7 @@
         </div>
     </div>
 
-    {{-- â”€â”€ NOTIFICATIONS LIST â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
+    {{-- �"?�"? NOTIFICATIONS LIST �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
     <div class="lg:col-span-3">
         <div class="flex items-center justify-between mb-4">
             <h3 class="text-sm font-bold text-gray-700">
@@ -212,7 +212,7 @@
                         <div class="flex items-center justify-between">
                             <p class="text-xs text-gray-400">
                                 <i class="fas fa-clock mr-1"></i>
-                                {{ $notif->created_at->diffForHumans() }} â€” by {{ $notif->sender->full_name ?? 'Admin' }}
+                                {{ $notif->created_at->diffForHumans() }} �?" by {{ $notif->sender->full_name ?? 'Admin' }}
                             </p>
                             <form method="POST" action="{{ route('admin.notifications.destroy', $notif) }}"
                                   onsubmit="return confirm('Delete this notification?')">

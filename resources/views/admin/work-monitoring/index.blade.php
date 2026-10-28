@@ -17,7 +17,7 @@
 </div>
 @endif
 
-{{-- â”€â”€ STATS OVERVIEW â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
+{{-- �"?�"? STATS OVERVIEW �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
     @php
         $totalLogs = $allLogs->count();
@@ -43,7 +43,7 @@
     </div>
 </div>
 
-{{-- â”€â”€ FILTERS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
+{{-- �"?�"? FILTERS �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
 <div class="card p-4">
     <form method="GET" class="flex flex-wrap gap-3 items-end">
         <div class="flex-1 min-w-[150px]">
@@ -82,7 +82,7 @@
     </form>
 </div>
 
-{{-- â”€â”€ ALL RECENT LOG ENTRIES (always visible) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
+{{-- �"?�"? ALL RECENT LOG ENTRIES (always visible) �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
 <div class="card overflow-hidden">
     <div class="px-5 py-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
         <h3 class="text-sm font-extrabold text-slate-800 flex items-center gap-2">
@@ -123,7 +123,7 @@
                             <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-400 to-yellow-600 flex items-center justify-center text-white text-[10px] font-extrabold shrink-0">
                                 {{ strtoupper(substr($log->lecturer?->full_name ?? '?', 0, 1)) }}
                             </div>
-                            <span class="text-xs font-semibold text-slate-700">{{ $log->lecturer?->full_name ?? 'â€”' }}</span>
+                            <span class="text-xs font-semibold text-slate-700">{{ $log->lecturer?->full_name ?? '�?"' }}</span>
                         </div>
                     </td>
                     <td class="px-4 py-3">
@@ -141,8 +141,8 @@
                             </span>
                         @endif
                     </td>
-                    <td class="px-4 py-3 text-xs font-bold text-slate-800">{{ $log->course?->name ?? 'â€”' }}</td>
-                    <td class="px-4 py-3 text-xs text-slate-600">{{ $log->program?->name ?? 'â€”' }}</td>
+                    <td class="px-4 py-3 text-xs font-bold text-slate-800">{{ $log->course?->name ?? '�?"' }}</td>
+                    <td class="px-4 py-3 text-xs text-slate-600">{{ $log->program?->name ?? '�?"' }}</td>
                     <td class="px-4 py-3">
                         <p class="text-xs font-semibold text-slate-800">{{ $log->title }}</p>
                         @if(!empty($log->topic_covered))
@@ -209,7 +209,7 @@
     @endif
 </div>
 
-{{-- â”€â”€ PER-TEACHER PROGRESS (collapsible) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
+{{-- �"?�"? PER-TEACHER PROGRESS (collapsible) �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
 <div class="card overflow-hidden">
     <button type="button" onclick="togglePanel('teacher-progress')"
         class="w-full flex items-center justify-between px-5 py-4 bg-slate-50 hover:bg-slate-100 transition-colors text-left border-b border-slate-100">
@@ -264,7 +264,7 @@
                         <div class="flex items-center justify-between mb-2">
                             <p class="text-xs font-bold text-slate-700 truncate">{{ $a->course->name }}</p>
                             @if($allMet)
-                            <span class="text-[9px] font-bold text-emerald-600 bg-emerald-100 px-1.5 py-0.5 rounded-full">âœ“ Done</span>
+                            <span class="text-[9px] font-bold text-emerald-600 bg-emerald-100 px-1.5 py-0.5 rounded-full">�o" Done</span>
                             @else
                             <span class="text-[9px] font-bold text-[var(--brand)] bg-[var(--primary-pale)] px-1.5 py-0.5 rounded-full">In Progress</span>
                             @endif
@@ -301,7 +301,7 @@
     </div>
 </div>
 
-{{-- â”€â”€ SUBJECT EXPECTATIONS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
+{{-- �"?�"? SUBJECT EXPECTATIONS �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
 <div class="card overflow-hidden">
     <button type="button" onclick="togglePanel('exp-panel')"
         class="w-full flex items-center justify-between px-5 py-4 bg-slate-50 hover:bg-slate-100 transition-colors text-left border-b border-slate-100">
@@ -371,7 +371,7 @@ function togglePanel(id) {
     if (icon) icon.style.transform = el.classList.contains('hidden') ? '' : 'rotate(180deg)';
 }
 
-// â”€â”€ Work Log Detail Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// �"?�"? Work Log Detail Modal �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?
 function showLogDetail(url) {
     const modal = document.getElementById('logDetailModal');
     const body  = document.getElementById('logDetailBody');
@@ -474,7 +474,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLogDeta
 </script>
 @endpush
 
-{{-- â”€â”€ Work Log Detail Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
+{{-- �"?�"? Work Log Detail Modal �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
 <div id="logDetailModal"
      class="hidden fixed inset-0 z-50 flex items-center justify-center p-4"
      onclick="if(event.target===this)closeLogDetail()">

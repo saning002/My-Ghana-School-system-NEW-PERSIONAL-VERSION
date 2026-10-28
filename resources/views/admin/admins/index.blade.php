@@ -59,7 +59,7 @@
                         </div>
                     </td>
                     <td class="px-6 py-4 text-sm text-gray-600">
-                        <i class="fas fa-phone text-[var(--brand)] mr-2"></i>{{ $admin->phone ?? 'â€”' }}
+                        <i class="fas fa-phone text-[var(--brand)] mr-2"></i>{{ $admin->phone ?? '�?"' }}
                     </td>
                     <td class="px-6 py-4">
                         @if($admin->branch)

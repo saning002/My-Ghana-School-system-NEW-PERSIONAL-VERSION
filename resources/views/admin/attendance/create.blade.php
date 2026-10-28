@@ -11,7 +11,7 @@
     <div class="card overflow-hidden mb-5">
         <div class="px-5 py-4 border-b border-[var(--primary-pale)]" style="background:var(--primary-pale)">
             <h2 class="text-sm font-bold" style="color:var(--primary-text)">
-                <i class="fas fa-filter mr-2"></i>Step 1 â€” Select Program
+                <i class="fas fa-filter mr-2"></i>Step 1 �?" Select Program
             </h2>
         </div>
         <div class="px-5 py-5">
@@ -37,7 +37,7 @@
         <div class="px-5 py-4 border-b border-[var(--primary-pale)]" style="background:var(--primary-pale)">
             <div class="flex items-center justify-between">
                 <h2 class="text-sm font-bold" style="color:var(--primary-text)">
-                    <i class="fas fa-search mr-2"></i>Step 2 â€” Search &amp; Load Students
+                    <i class="fas fa-search mr-2"></i>Step 2 �?" Search &amp; Load Students
                 </h2>
                 <span class="text-xs text-gray-500" x-show="students.length > 0">
                     <span x-text="students.length"></span> student<span x-show="students.length !== 1">s</span> loaded
@@ -137,7 +137,7 @@
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
                         <h3 class="text-sm font-bold" style="color:var(--primary-text)">
-                            <i class="fas fa-clipboard-check mr-2"></i>Step 3 â€” Mark Attendance
+                            <i class="fas fa-clipboard-check mr-2"></i>Step 3 �?" Mark Attendance
                         </h3>
                         <p class="text-xs text-gray-500 mt-0.5">
                             <span x-text="students.length"></span> student<span x-show="students.length !== 1">s</span> listed

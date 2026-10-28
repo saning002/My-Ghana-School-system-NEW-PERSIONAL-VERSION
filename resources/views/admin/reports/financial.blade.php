@@ -17,15 +17,15 @@
 <div class="grid grid-cols-3 gap-3 mb-5 no-print">
     <div class="card p-4 text-center" style="border-top:3px solid #D4A017">
         <p class="text-xs text-gray-500 mb-1 font-semibold uppercase">Total Billed</p>
-        <p class="text-xl font-bold" style="color:var(--primary-text)">GHâ‚µ {{ number_format($global['billed'],2) }}</p>
+        <p class="text-xl font-bold" style="color:var(--primary-text)">GH₵ {{ number_format($global['billed'],2) }}</p>
     </div>
     <div class="card p-4 text-center" style="border-top:3px solid #16a34a">
         <p class="text-xs text-gray-500 mb-1 font-semibold uppercase">Collected</p>
-        <p class="text-xl font-bold text-green-700">GHâ‚µ {{ number_format($global['collected'],2) }}</p>
+        <p class="text-xl font-bold text-green-700">GH₵ {{ number_format($global['collected'],2) }}</p>
     </div>
     <div class="card p-4 text-center" style="border-top:3px solid #dc2626">
         <p class="text-xs text-gray-500 mb-1 font-semibold uppercase">Outstanding</p>
-        <p class="text-xl font-bold text-red-600">GHâ‚µ {{ number_format($global['outstanding'],2) }}</p>
+        <p class="text-xl font-bold text-red-600">GH₵ {{ number_format($global['outstanding'],2) }}</p>
     </div>
 </div>
 
@@ -83,10 +83,10 @@
                         <p class="text-sm font-semibold text-ink">{{ $row['student']->user->full_name }}</p>
                         <p class="text-xs text-gray-400 font-mono">{{ $row['student']->student_id }}</p>
                     </td>
-                    <td class="px-5 py-4 text-sm text-gray-600">{{ $row['student']->program->name??'â€”' }}</td>
-                    <td class="px-5 py-4 text-sm font-semibold text-right" style="color:var(--primary-text)">GHâ‚µ {{ number_format($row['total'],2) }}</td>
-                    <td class="px-5 py-4 text-sm font-semibold text-right text-green-700">GHâ‚µ {{ number_format($row['paid'],2) }}</td>
-                    <td class="px-5 py-4 text-sm font-bold text-right {{ $row['balance']>0?'text-red-600':'text-green-600' }}">GHâ‚µ {{ number_format($row['balance'],2) }}</td>
+                    <td class="px-5 py-4 text-sm text-gray-600">{{ $row['student']->program->name??'�?"' }}</td>
+                    <td class="px-5 py-4 text-sm font-semibold text-right" style="color:var(--primary-text)">GH₵ {{ number_format($row['total'],2) }}</td>
+                    <td class="px-5 py-4 text-sm font-semibold text-right text-green-700">GH₵ {{ number_format($row['paid'],2) }}</td>
+                    <td class="px-5 py-4 text-sm font-bold text-right {{ $row['balance']>0?'text-red-600':'text-green-600' }}">GH₵ {{ number_format($row['balance'],2) }}</td>
                 </tr>
                 @empty
                 <tr><td colspan="5" class="px-5 py-12 text-center text-gray-400 text-sm">No records found.</td></tr>

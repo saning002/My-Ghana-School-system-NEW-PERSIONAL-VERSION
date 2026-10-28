@@ -14,7 +14,7 @@
     <form method="POST" action="{{ route('admin.lecturers.update', $lecturer) }}" enctype="multipart/form-data" class="space-y-6">
         @csrf @method('PUT')
 
-        {{-- â”€â”€ Personal Information â”€â”€ --}}
+        {{-- �"?�"? Personal Information �"?�"? --}}
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-100 bg-[var(--primary-pale)]">
                 <h3 class="text-sm font-bold text-[var(--primary-text)] flex items-center gap-2">
@@ -36,7 +36,7 @@
                         <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Profile Photo</label>
                         <input type="file" name="photo" accept="image/*" onchange="previewPhoto(this)"
                                class="w-full text-sm text-gray-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:font-semibold file:bg-[var(--primary-pale)] file:text-[var(--primary-text)] hover:file:bg-[var(--primary-pale)]">
-                        <p class="text-xs text-gray-400 mt-1">Leave blank to keep current photo Â· JPG, PNG or WebP Â· max 3 MB</p>
+                        <p class="text-xs text-gray-400 mt-1">Leave blank to keep current photo · JPG, PNG or WebP · max 3 MB</p>
                         @error('photo')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
                     </div>
                 </div>
@@ -85,7 +85,7 @@
                 <div>
                     <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Gender</label>
                     <select name="gender" class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)] bg-white">
-                        <option value="">â€” Select â€”</option>
+                        <option value="">�?" Select �?"</option>
                         <option value="male"   {{ old('gender', $lecturer->gender) === 'male'   ? 'selected' : '' }}>Male</option>
                         <option value="female" {{ old('gender', $lecturer->gender) === 'female' ? 'selected' : '' }}>Female</option>
                         <option value="other"  {{ old('gender', $lecturer->gender) === 'other'  ? 'selected' : '' }}>Other</option>
@@ -123,12 +123,12 @@
             </div>
         </div>
 
-        {{-- â”€â”€ Course Assignments â”€â”€ --}}
+        {{-- �"?�"? Course Assignments �"?�"? --}}
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-100 bg-blue-50">
                 <h3 class="text-sm font-bold text-blue-900 flex items-center gap-2">
                     <i class="fas fa-book-open text-blue-600"></i> Course Assignments
-                    <span class="text-xs font-normal text-blue-500 ml-1">â€” Tick the courses this teacher handles</span>
+                    <span class="text-xs font-normal text-blue-500 ml-1">�?" Tick the courses this teacher handles</span>
                 </h3>
             </div>
             <div class="px-6 py-6 space-y-6">
@@ -173,7 +173,7 @@
             </div>
         </div>
 
-        {{-- â”€â”€ Submit â”€â”€ --}}
+        {{-- �"?�"? Submit �"?�"? --}}
         <div class="flex items-center gap-3">
             <button type="submit"
                     class="px-7 py-3 bg-[var(--primary)] hover:bg-[var(--primary-dark)] text-white rounded-xl text-sm font-semibold shadow-sm transition-all">

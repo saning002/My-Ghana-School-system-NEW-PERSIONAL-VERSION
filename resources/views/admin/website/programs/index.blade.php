@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('title','Website Programs')
-@section('subtitle','Programs shown on the public /academics page â€” add, edit, reorder, toggle visibility')
+@section('subtitle','Programs shown on the public /academics page �?" add, edit, reorder, toggle visibility')
 
 @section('content')
 <div class="space-y-5">
@@ -21,7 +21,7 @@
     <div>
         <h2 class="text-sm font-extrabold text-slate-800">Academic Programs</h2>
         <p class="text-xs text-slate-500 mt-0.5">
-            {{ $programs->count() }} program(s) configured Â·
+            {{ $programs->count() }} program(s) configured ·
             <a href="{{ wu('academics') }}" target="_blank" class="text-indigo-600 font-semibold hover:underline">
                 <i class="fas fa-external-link-alt text-[9px] mr-0.5"></i>View on website
             </a>
@@ -109,7 +109,7 @@
                          alt="{{ $prog->name }}"
                          class="w-full h-20 object-cover rounded-lg mb-2">
                 @else
-                    <span class="text-4xl mb-2">{{ $prog->icon ?? 'ðŸŽ“' }}</span>
+                    <span class="text-4xl mb-2">{{ $prog->icon ?? '�YZ"' }}</span>
                 @endif
                 <span class="text-white text-[10px] font-bold text-center leading-tight">{{ $prog->name }}</span>
                 @if($prog->age_range && $prog->age_range !== 'All Ages')
@@ -144,7 +144,7 @@
                 @if(!empty($prog->features) && count((array)$prog->features) > 0)
                 <div class="flex flex-wrap gap-1 mb-2">
                     @foreach(array_slice((array)$prog->features, 0, 4) as $feat)
-                    <span class="text-[9px] font-bold bg-indigo-50 text-indigo-700 px-1.5 py-0.5 rounded-full">âœ“ {{ $feat }}</span>
+                    <span class="text-[9px] font-bold bg-indigo-50 text-indigo-700 px-1.5 py-0.5 rounded-full">�o" {{ $feat }}</span>
                     @endforeach
                     @if(count((array)$prog->features) > 4)
                     <span class="text-[9px] text-slate-400">+{{ count((array)$prog->features) - 4 }} more</span>
@@ -210,11 +210,11 @@
     <div>
         <p class="text-sm font-bold text-indigo-800 mb-1">Customize the Academics Page Text</p>
         <p class="text-xs text-indigo-600 mb-2">
-            Change the hero title, section heading, card section labels (Curriculum, Highlights, Schedule), button texts, and the bottom enrollment banner from Website Settings â†’ Academics Tab.
+            Change the hero title, section heading, card section labels (Curriculum, Highlights, Schedule), button texts, and the bottom enrollment banner from Website Settings �?' Academics Tab.
         </p>
         <a href="{{ route('admin.website.site-settings') }}"
            class="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-700 bg-indigo-100 hover:bg-indigo-200 px-3 py-1.5 rounded-lg transition-colors">
-            <i class="fas fa-external-link-alt text-[9px]"></i> Open Site Settings â†’ Academics Tab
+            <i class="fas fa-external-link-alt text-[9px]"></i> Open Site Settings �?' Academics Tab
         </a>
     </div>
 </div>

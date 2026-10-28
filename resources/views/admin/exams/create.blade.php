@@ -5,10 +5,10 @@
 @section('content')
 <div class="max-w-3xl mx-auto">
 
-    {{-- â”€â”€ Step 1: Select Program â”€â”€ --}}
+    {{-- �"?�"? Step 1: Select Program �"?�"? --}}
     <div class="card overflow-hidden mb-5">
         <div class="px-5 py-4 border-b border-[var(--primary-pale)]" style="background:var(--primary-pale)">
-            <h2 class="text-base font-bold" style="color:var(--primary-text)">Step 1 â€” Select Program</h2>
+            <h2 class="text-base font-bold" style="color:var(--primary-text)">Step 1 �?" Select Program</h2>
         </div>
         <div class="px-5 py-5">
             <form method="GET" action="{{ route('admin.exams.create') }}">
@@ -16,7 +16,7 @@
                 <div class="flex gap-3">
                     <select name="program_id" required
                         class="flex-1 px-4 py-3 border border-[var(--brand)] rounded-xl text-sm focus:outline-none focus:ring-2 bg-white">
-                        <option value="">Select programâ€¦</option>
+                        <option value="">Select program�?�</option>
                         @foreach($programs as $prog)
                             <option value="{{ $prog->id }}"
                                 {{ $selectedProgram && $selectedProgram->id == $prog->id ? 'selected' : '' }}>
@@ -32,12 +32,12 @@
         </div>
     </div>
 
-    {{-- â”€â”€ Step 2: Select Student â”€â”€ --}}
+    {{-- �"?�"? Step 2: Select Student �"?�"? --}}
     @if($selectedProgram)
     <div class="card overflow-hidden mb-5">
         <div class="px-5 py-4 border-b border-[var(--primary-pale)]" style="background:var(--primary-pale)">
             <h2 class="text-base font-bold" style="color:var(--primary-text)">
-                Step 2 â€” Select Student
+                Step 2 �?" Select Student
                 <span class="font-normal text-xs ml-2 opacity-70">{{ $selectedProgram->name }}</span>
             </h2>
         </div>
@@ -50,7 +50,7 @@
 
                     {{-- Search box --}}
                     <label class="block text-xs font-semibold text-gray-600 mb-1.5">Search by name or ID</label>
-                    <input type="text" id="student-search" placeholder="Type name or student IDâ€¦"
+                    <input type="text" id="student-search" placeholder="Type name or student ID�?�"
                         class="w-full px-4 py-3 border border-[var(--brand)] rounded-xl text-sm focus:outline-none focus:ring-2 bg-white mb-3"
                         autocomplete="off">
 
@@ -59,13 +59,13 @@
                     <div class="flex gap-3">
                         <select name="student_id" id="student-select" required
                             class="flex-1 px-4 py-3 border border-[var(--brand)] rounded-xl text-sm focus:outline-none focus:ring-2 bg-white">
-                            <option value="">Select studentâ€¦</option>
+                            <option value="">Select student�?�</option>
                             @foreach($students as $stu)
                                 <option value="{{ $stu->id }}"
                                     data-name="{{ strtolower($stu->user?->full_name ?? '') }}"
                                     data-sid="{{ strtolower($stu->student_id) }}"
                                     {{ $selectedStudent && $selectedStudent->id == $stu->id ? 'selected' : '' }}>
-                                    {{ $stu->user?->full_name ?? 'â€”' }} ({{ $stu->student_id }})
+                                    {{ $stu->user?->full_name ?? '�?"' }} ({{ $stu->student_id }})
                                 </option>
                             @endforeach
                         </select>
@@ -89,7 +89,7 @@
                         const q = this.value.trim().toLowerCase();
 
                         if (!q) {
-                            // Reset â€” show all options, hide results box
+                            // Reset �?" show all options, hide results box
                             allOptions.forEach(o => o.hidden = false);
                             resultsBox.innerHTML = '';
                             resultsBox.classList.add('hidden');
@@ -137,7 +137,7 @@
     </div>
     @endif
 
-    {{-- â”€â”€ Step 3: Enter Scores â”€â”€ --}}
+    {{-- �"?�"? Step 3: Enter Scores �"?�"? --}}
     @if($selectedProgram && $selectedStudent)
         @if($courses->isEmpty())
             <div class="card p-8 text-center">
@@ -178,13 +178,13 @@
                     <div class="px-5 py-4 border-b border-[var(--primary-pale)] flex items-center justify-between" style="background:var(--primary-pale)">
                         <div>
                             <h3 class="text-sm font-bold" style="color:var(--primary-text)">
-                                Step 3 â€” Enter Scores
+                                Step 3 �?" Enter Scores
                                 <span class="ml-2 px-2 py-0.5 rounded-full text-xs font-bold" style="background:var(--primary-pale);color:var(--primary-text)">
                                     Attempt {{ $currentAttempt }}
                                 </span>
                             </h3>
                             <p class="text-xs text-gray-500 mt-0.5">
-                                {{ $selectedStudent->user?->full_name ?? 'â€”' }} &mdash; {{ $selectedProgram->name }}
+                                {{ $selectedStudent->user?->full_name ?? '�?"' }} &mdash; {{ $selectedProgram->name }}
                             </p>
                         </div>
                         <div class="text-right">
@@ -212,7 +212,7 @@
                     @if($isPreCollegeFinal)
                     <div class="px-5 py-3 bg-[var(--primary-pale)] border-b border-[var(--primary-pale)] text-xs text-[var(--primary-text)] flex items-center gap-2">
                         <i class="fas fa-info-circle"></i>
-                        Pre-College attempt 1 scores are final marks out of 100. Enter only the Score column â€” quiz weighting does not apply.
+                        Pre-College attempt 1 scores are final marks out of 100. Enter only the Score column �?" quiz weighting does not apply.
                     </div>
                     @endif
 
@@ -274,12 +274,12 @@
                                                 oninput="calcRow({{ $i }})"
                                                 class="w-16 px-1 py-2 border rounded-lg text-xs text-center focus:outline-none focus:ring-1 bg-white"
                                                 style="border-color:{{ $col['color'] }}40"
-                                                placeholder="â€”">
+                                                placeholder="�?"">
                                         </td>
                                         @endforeach
                                         {{-- Computed class score (read-only) --}}
                                         <td class="px-2 py-3 text-center" style="background:#eff6ff">
-                                            <span id="classScore_{{ $i }}" class="font-bold text-sm text-blue-700">â€”</span>
+                                            <span id="classScore_{{ $i }}" class="font-bold text-sm text-blue-700">�?"</span>
                                             {{-- Hidden field to submit the class score as sba_score --}}
                                             <input type="hidden" name="scores[{{ $i }}][sba_score]" id="sbaHidden_{{ $i }}" value="">
                                         </td>
@@ -295,11 +295,11 @@
                                                 min="0" max="100" step="0.5"
                                                 oninput="calcRow({{ $i }})"
                                                 class="w-full px-2 py-2 border border-orange-200 rounded-lg text-sm text-center focus:outline-none focus:ring-2 focus:ring-orange-300 bg-white"
-                                                placeholder="â€”">
+                                                placeholder="�?"">
                                         </td>
                                         {{-- Live aggregate --}}
                                         <td class="px-3 py-3 text-center">
-                                            <span id="agg_{{ $i }}" class="font-bold text-sm text-gray-700">â€”</span>
+                                            <span id="agg_{{ $i }}" class="font-bold text-sm text-gray-700">�?"</span>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -339,7 +339,7 @@
                     subSum += el ? (parseFloat(el.value) || 0) : 0;
                 });
 
-                // Class Score = (subSum / totalSubWeight) Ã— sbaPct
+                // Class Score = (subSum / totalSubWeight) �- sbaPct
                 var classScore = totalSubW > 0 ? (subSum / totalSubW) * sbaPct : 0;
 
                 // Update the displayed class score
@@ -350,7 +350,7 @@
                 var hid = document.getElementById('sbaHidden_' + i);
                 if (hid) hid.value = classScore.toFixed(2);
 
-                // Aggregate = classScore + examScore Ã— (examPct/100)
+                // Aggregate = classScore + examScore �- (examPct/100)
                 var exam = parseFloat(document.getElementById('exam_' + i)?.value) || 0;
                 var agg  = classScore + (exam * examPct / 100);
                 var el   = document.getElementById('agg_' + i);

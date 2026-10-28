@@ -5,7 +5,7 @@
 @section('content')
 <div class="max-w-4xl mx-auto space-y-6">
 
-    {{-- â”€â”€ Back + Actions â”€â”€ --}}
+    {{-- �"?�"? Back + Actions �"?�"? --}}
     <div class="flex items-center justify-between">
         <a href="{{ route('admin.lecturers.index') }}" class="text-sm text-gray-500 hover:text-gray-700 font-medium flex items-center gap-1">
             <i class="fas fa-arrow-left text-xs"></i> Back to Teachers
@@ -26,7 +26,7 @@
         </div>
     </div>
 
-    {{-- â”€â”€ Profile Card â”€â”€ --}}
+    {{-- �"?�"? Profile Card �"?�"? --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="bg-gradient-to-r from-[var(--primary)] to-[var(--primary-dark)] h-24 relative">
             <div class="absolute -bottom-10 left-6">
@@ -105,7 +105,7 @@
         </div>
     </div>
 
-    {{-- â”€â”€ Course Assignments â”€â”€ --}}
+    {{-- �"?�"? Course Assignments �"?�"? --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-blue-100/40 flex items-center justify-between">
             <h3 class="text-sm font-bold text-blue-900 flex items-center gap-2">
@@ -149,7 +149,7 @@
                                 <i class="fas fa-book"></i>
                             </div>
                             <div class="min-w-0">
-                                <p class="text-sm font-semibold text-gray-800 truncate">{{ $assignment->course->name ?? 'â€”' }}</p>
+                                <p class="text-sm font-semibold text-gray-800 truncate">{{ $assignment->course->name ?? '�?"' }}</p>
                                 <p class="text-xs text-gray-400 font-mono">{{ $assignment->course->code ?? '' }}</p>
                             </div>
                         </div>

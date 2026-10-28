@@ -146,7 +146,7 @@
             </div>
             <div class="bg-gray-50 rounded-lg px-3 py-2">
                 <p class="text-xs text-gray-400 mb-0.5">Program</p>
-                <p class="text-xs font-semibold text-gray-700 truncate">{{ $student->program->name??'â€”' }}</p>
+                <p class="text-xs font-semibold text-gray-700 truncate">{{ $student->program->name??'�?"' }}</p>
             </div>
         </div>
         <div class="flex gap-2" onclick="event.stopPropagation()">
@@ -227,7 +227,7 @@
                         <p class="text-[12px] text-slate-500 mt-0.5">{{ $student->user->email }}</p>
                     </td>
                     <td class="px-6 py-4">
-                        <p class="text-[13px] font-semibold text-slate-700 max-w-xs truncate">{{ $student->program->name??'â€”' }}</p>
+                        <p class="text-[13px] font-semibold text-slate-700 max-w-xs truncate">{{ $student->program->name??'�?"' }}</p>
                     </td>
                     <td class="px-6 py-4">
                         <span class="text-[11px] px-2.5 py-1 rounded-full font-bold uppercase tracking-wider
@@ -279,7 +279,7 @@
 <div class="mt-4 lg:hidden">{{ $students->links() }}</div>
 @endif
 
-{{-- â”€â”€ BULK IMPORT MODAL (includes program selector to avoid the temp-file error) â”€â”€ --}}
+{{-- �"?�"? BULK IMPORT MODAL (includes program selector to avoid the temp-file error) �"?�"? --}}
 <div id="bulkImportModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
     <div class="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden" onclick="event.stopPropagation()">
         <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50">
@@ -311,7 +311,7 @@
                     </label>
                     <select name="default_program_id"
                         class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)]">
-                        <option value="">â€” Auto-detect from file â€”</option>
+                        <option value="">�?" Auto-detect from file �?"</option>
                         @foreach(\App\Models\Program::orderBy('sequence')->get() as $prog)
                         <option value="{{ $prog->id }}">{{ $prog->name }}</option>
                         @endforeach

@@ -1,4 +1,4 @@
-﻿@extends('website.layout')
+?@extends('website.layout')
 @section('page_title','Welcome')
 @section('meta_description', $site->tagline ?? 'A nurturing, joyful environment where every child thrives.')
 
@@ -41,7 +41,7 @@ if ($heroBgType === 'solid') {
     $heroBg = 'background:' . $themeSecondary . ';'; // dark fallback shown while video loads
     $overlayOp = $rawOpacity > 0 ? $rawOpacity / 100 : 0.45;
 } else {
-    // Default — use the school's theme secondary/navBg colours
+    // Default - use the school's theme secondary/navBg colours
     $heroBg = 'background:linear-gradient(150deg,' . $themeSecondary . ' 0%,' . $themeNavBg . ' 45%,' . $themeNavBg . ' 100%);';
 }
 if ($heroLayout === 'centered') {
@@ -65,7 +65,7 @@ if ($heroLayout === 'centered') {
     $showStats = true; $showCtasBool = true;
 }
 @endphp
-/* â”€â”€ Hero â”€â”€ */
+/* �"?�"? Hero �"?�"? */
 .hero{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden;{{ $heroBg }}}
 .hero-video{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);min-width:100%;min-height:100%;width:auto;height:auto;object-fit:cover;z-index:0;}
 /* YouTube iframe needs different sizing */
@@ -127,7 +127,7 @@ iframe.hero-video{width:100vw;height:56.25vw;min-height:100vh;min-width:177.78vh
 .why-card h3{font-size:1.05rem;font-weight:800;color:var(--navy);margin-bottom:10px;}
 .why-card p{font-size:.9rem;color:var(--gray-500);line-height:1.75;}
 
-/* â”€â”€ Programs â”€â”€ */
+/* �"?�"? Programs �"?�"? */
 .prog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(256px,1fr));gap:24px;}
 .prog-card{border-radius:var(--r-xl);overflow:hidden;box-shadow:var(--shadow-sm);border:1px solid var(--gray-200);background:var(--white);transition:var(--trans);}
 .prog-card:hover{transform:translateY(-5px);box-shadow:var(--shadow-lg);border-color:transparent;}
@@ -139,7 +139,7 @@ iframe.hero-video{width:100vw;height:56.25vw;min-height:100vh;min-width:177.78vh
 .prog-body{padding:20px 26px 24px;}
 .prog-body p{font-size:.9rem;color:var(--gray-500);line-height:1.75;margin-bottom:16px;}
 
-/* â”€â”€ Testimonials â”€â”€ */
+/* �"?�"? Testimonials �"?�"? */
 .testi-section{background:linear-gradient(160deg,var(--navy) 0%,var(--nav-bg) 100%);}
 .testi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:20px;}
 .testi-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:26px;transition:var(--trans);}
@@ -152,7 +152,7 @@ iframe.hero-video{width:100vw;height:56.25vw;min-height:100vh;min-width:177.78vh
 .testi-name{font-size:.88rem;font-weight:700;color:#fff;}
 .testi-role{font-size:.75rem;color:rgba(255,255,255,.4);margin-top:2px;}
 
-/* â”€â”€ Blog â”€â”€ */
+/* �"?�"? Blog �"?�"? */
 .blog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:24px;}
 .blog-card{border-radius:var(--r-xl);overflow:hidden;background:var(--white);box-shadow:var(--shadow-sm);border:1px solid var(--gray-200);transition:var(--trans);}
 .blog-card:hover{transform:translateY(-5px);box-shadow:var(--shadow-lg);border-color:transparent;}
@@ -166,7 +166,7 @@ iframe.hero-video{width:100vw;height:56.25vw;min-height:100vh;min-width:177.78vh
 .blog-link{font-size:.82rem;font-weight:700;color:var(--gold-dark);display:inline-flex;align-items:center;gap:5px;transition:var(--trans);}
 .blog-link:hover{gap:9px;}
 
-/* â”€â”€ CTA banner â”€â”€ */
+/* �"?�"? CTA banner �"?�"? */
 .cta-banner{background:linear-gradient(135deg,var(--gold) 0%,var(--gold-dark) 100%);padding:88px 0;text-align:center;position:relative;overflow:hidden;}
 .cta-banner::before{content:'';position:absolute;top:-60px;left:-60px;width:280px;height:280px;border-radius:50%;background:rgba(255,255,255,.07);}
 .cta-banner::after{content:'';position:absolute;bottom:-80px;right:-40px;width:360px;height:360px;border-radius:50%;background:rgba(255,255,255,.06);}
@@ -181,7 +181,7 @@ iframe.hero-video{width:100vw;height:56.25vw;min-height:100vh;min-width:177.78vh
 
 @section('content')
 
-{{-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• HERO â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
+{{-- �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� HERO �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� --}}
 <section class="hero">
     @if($heroBgType === 'video' && $site->hero_bg_video_url)
         @php
@@ -239,7 +239,7 @@ iframe.hero-video{width:100vw;height:56.25vw;min-height:100vh;min-width:177.78vh
             @endif
         </div>
 
-        {{-- Right panel â€” split layout only --}}
+        {{-- Right panel �?" split layout only --}}
         <div class="hero-panel">
             <div class="hero-card">
                 <div class="hero-card-label">{{ $site->hero_panel_title ?? 'World-Class Education' }}</div>
@@ -255,7 +255,7 @@ iframe.hero-video{width:100vw;height:56.25vw;min-height:100vh;min-width:177.78vh
     </div>
 </section>
 
-{{-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• WHY CHOOSE US â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
+{{-- �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� WHY CHOOSE US �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� --}}
 @php
 $whyFeatures = $site->why_features ?? [
     ['icon'=>'fa-heart','title'=>'Child-Centred Care','desc'=>'Every decision we make puts your child\'s wellbeing and happiness first.'],
@@ -285,10 +285,10 @@ $whyFeatures = $site->why_features ?? [
   </div>
 </section>
 
-{{-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• PROGRAMS â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
-{{-- Programs section removed from home page â€” programs are shown on /academics --}}
+{{-- �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� PROGRAMS �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� --}}
+{{-- Programs section removed from home page �?" programs are shown on /academics --}}
 
-{{-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• TESTIMONIALS â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
+{{-- �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� TESTIMONIALS �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� --}}
 @if($testimonials->count())
 <section class="section testi-section">
   <div class="container">
@@ -300,7 +300,7 @@ $whyFeatures = $site->why_features ?? [
     <div class="testi-grid">
       @foreach($testimonials as $t)
       <div class="testi-card reveal">
-        <div class="testi-stars">{{ str_repeat('â˜…', $t->rating) }}{{ str_repeat('â˜†', 5 - $t->rating) }}</div>
+        <div class="testi-stars">{{ str_repeat('�~.', $t->rating) }}{{ str_repeat('�~?', 5 - $t->rating) }}</div>
         <p class="testi-text">"{{ $t->message }}"</p>
         <div class="testi-author">
           <div class="testi-avatar">{{ strtoupper(substr($t->parent_name,0,1)) }}</div>
@@ -316,7 +316,7 @@ $whyFeatures = $site->why_features ?? [
 </section>
 @endif
 
-{{-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• BLOG â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
+{{-- �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� BLOG �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� --}}
 @if($posts->count())
 <section class="section">
   <div class="container">
@@ -332,7 +332,7 @@ $whyFeatures = $site->why_features ?? [
           @if($post->featured_image_path)
             <img src="{{ img_url() }}" alt="{{ $post->title }}">
           @else
-            ðŸ“°
+            �Y"�
           @endif
         </div>
         <div class="blog-body">
@@ -348,7 +348,7 @@ $whyFeatures = $site->why_features ?? [
 </section>
 @endif
 
-{{-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• EVENTS â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
+{{-- �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� EVENTS �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� --}}
 @if($events->count())
 <section class="section" style="background:var(--off-white);">
   <div class="container">
@@ -364,11 +364,11 @@ $whyFeatures = $site->why_features ?? [
           @if($event->image_path)
             <img src="{{ img_url() }}" alt="{{ $event->title }}">
           @else
-            ðŸ“…
+            �Y".
           @endif
         </div>
         <div class="blog-body">
-          <div class="blog-date">{{ \Carbon\Carbon::parse($event->date)->format('M d, Y') }}{{ $event->time ? ' Â· ' . $event->time : '' }}</div>
+          <div class="blog-date">{{ \Carbon\Carbon::parse($event->date)->format('M d, Y') }}{{ $event->time ? ' · ' . $event->time : '' }}</div>
           <h3>{{ $event->title }}</h3>
           <p>{{ Str::limit($event->description, 100) }}</p>
           @if($event->location)<p style="font-size:.8rem;color:var(--gold-dark);"><i class="fas fa-map-marker-alt"></i> {{ $event->location }}</p>@endif
@@ -380,11 +380,11 @@ $whyFeatures = $site->why_features ?? [
 </section>
 @endif
 
-{{-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• CTA â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
+{{-- �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� CTA �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� --}}
 <section class="cta-banner">
   <div class="container cta-banner-inner">
     <h2>{{ $site->cta_title ?? 'Ready to Join Our Family?' }}</h2>
-    <p>{{ $site->cta_subtitle ?? 'Applications are open. Spots are limited â€” secure your child\'s place today.' }}</p>
+    <p>{{ $site->cta_subtitle ?? 'Applications are open. Spots are limited �?" secure your child\'s place today.' }}</p>
     <div class="cta-banner-btns">
       <a href="{{ wu('apply') }}" class="btn btn-navy btn-lg">
         <i class="fas fa-file-alt"></i> Apply Now

@@ -18,7 +18,7 @@
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Program *</label>
             <select name="program_id" onchange="this.form.submit()"
                 class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)]">
-                <option value="">â€” Select Program â€”</option>
+                <option value="">�?" Select Program �?"</option>
                 @foreach($programs as $p)
                 <option value="{{ $p->id }}" {{ request('program_id')==$p->id?'selected':'' }}>{{ $p->name }}</option>
                 @endforeach
@@ -49,8 +49,8 @@
 <div class="card overflow-hidden">
     <div class="px-5 py-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
         <div>
-            <h3 class="text-sm font-extrabold text-slate-800">{{ $selectedProgram->name }} â€” Attempt {{ $selectedAttempt }}</h3>
-            <p class="text-xs text-slate-500 mt-0.5">{{ $students->count() }} students Â· Click a row to fill in their report</p>
+            <h3 class="text-sm font-extrabold text-slate-800">{{ $selectedProgram->name }} �?" Attempt {{ $selectedAttempt }}</h3>
+            <p class="text-xs text-slate-500 mt-0.5">{{ $students->count() }} students · Click a row to fill in their report</p>
         </div>
         <span class="text-xs text-slate-400">
             {{ $reports->count() }} of {{ $students->count() }} reports filled

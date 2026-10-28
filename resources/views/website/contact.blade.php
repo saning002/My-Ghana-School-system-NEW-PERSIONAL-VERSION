@@ -1,6 +1,6 @@
-﻿@extends('website.layout')
+?@extends('website.layout')
 @section('page_title','Contact')
-@section('meta_description','Contact '.($site->site_name ?? 'our school').' â€” we\'d love to hear from you.')
+@section('meta_description','Contact '.($site->site_name ?? 'our school').' �?" we\'d love to hear from you.')
 
 @section('extra_css')
 .contact-layout{display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:start;}
@@ -58,7 +58,7 @@
         @if(isset($site) && $site->contact_email)
         <div class="ci-item"><div class="ci-icon"><i class="fas fa-envelope"></i></div><div><div class="ci-label">Email</div><div class="ci-value"><a href="mailto:{{ $site->contact_email }}">{{ $site->contact_email }}</a></div></div></div>
         @endif
-        <div class="ci-item"><i class="fas fa-clock"></i></div><div><div class="ci-label">Office Hours</div><div class="ci-value">{{ $site->office_hours ?? 'Mon â€“ Fri: 7:00 AM â€“ 5:00 PM' }}</div></div>
+        <div class="ci-item"><i class="fas fa-clock"></i></div><div><div class="ci-label">Office Hours</div><div class="ci-value">{{ $site->office_hours ?? 'Mon �?" Fri: 7:00 AM �?" 5:00 PM' }}</div></div>
         <div class="map-area">
           @if(isset($site) && $site->map_embed_url)
             {!! $site->map_embed_url !!}
@@ -73,7 +73,7 @@
         <form method="POST" action="{{ wu('contact') }}" novalidate>
           @csrf
           @if($errors->any())
-          <div class="form-err">@foreach($errors->all() as $e)<div>â€¢ {{ $e }}</div>@endforeach</div>
+          <div class="form-err">@foreach($errors->all() as $e)<div>�?� {{ $e }}</div>@endforeach</div>
           @endif
           <div class="form-row">
             <div class="field"><label>Your Name *</label><input type="text" name="name" value="{{ old('name') }}" required></div>
@@ -83,14 +83,14 @@
             <div class="field"><label>Phone Number</label><input type="tel" name="phone" value="{{ old('phone') }}"></div>
             <div class="field"><label>Subject *</label>
               <select name="subject" required>
-                <option value="">Select a subjectâ€¦</option>
+                <option value="">Select a subject�?�</option>
                 @foreach($site->contact_subjects ?? ['General Inquiry','Admissions','Programs','Fees & Payments','Other'] as $s)
                 <option value="{{ $s }}" {{ old('subject')===$s ? 'selected':'' }}>{{ $s }}</option>
                 @endforeach
               </select>
             </div>
           </div>
-          <div class="field"><label>Your Message *</label><textarea name="message" rows="5" required placeholder="Write your message hereâ€¦">{{ old('message') }}</textarea></div>
+          <div class="field"><label>Your Message *</label><textarea name="message" rows="5" required placeholder="Write your message here�?�">{{ old('message') }}</textarea></div>
           <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:14px;">
             <i class="fas fa-paper-plane"></i> Send Message
           </button>

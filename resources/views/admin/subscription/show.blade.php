@@ -17,7 +17,7 @@
     </div>
     @endif
 
-    {{-- â”€â”€ SUBSCRIPTION CARD â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
+    {{-- �"?�"? SUBSCRIPTION CARD �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
     <div class="card border-0 shadow-sm mb-4" style="border-radius:16px;overflow:hidden;">
         <div style="background:linear-gradient(135deg,#0f3460,#16213e);padding:1.75rem;color:#fff;">
             <h5 class="fw-bold mb-0"><i class="fas fa-shield-alt me-2"></i> Platform Subscription</h5>
@@ -92,14 +92,14 @@
                     <i class="fas fa-credit-card me-2"></i> Renew Subscription via Paystack
                 </a>
                 <div style="font-size:0.75rem;color:#94a3b8;margin-top:0.5rem;">
-                    Card Â· Mobile Money Â· Bank Transfer
+                    Card · Mobile Money · Bank Transfer
                 </div>
             </div>
             @endif
         </div>
     </div>
 
-    {{-- â”€â”€ MESSAGING CREDITS CARD â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
+    {{-- �"?�"? MESSAGING CREDITS CARD �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
     <div class="card border-0 shadow-sm mb-4" style="border-radius:16px;overflow:hidden;">
         <div style="background:linear-gradient(135deg,#1a1a2e,#0f3460);padding:1.5rem;color:#fff;">
             <h5 class="fw-bold mb-0"><i class="fas fa-sms me-2"></i> Messaging Credits</h5>
@@ -118,7 +118,7 @@
                             <i class="fas fa-sms me-1"></i> SMS Credits
                         </div>
                         @if(($msgCredits ?? null)?->sms_credits == 0)
-                            <small style="color:#ef4444;font-size:0.72rem;">No credits â€” top up below</small>
+                            <small style="color:#ef4444;font-size:0.72rem;">No credits �?" top up below</small>
                         @elseif(($msgCredits ?? null)?->sms_credits < 20)
                             <small style="color:var(--brand);font-size:0.72rem;">Running low</small>
                         @endif
@@ -133,7 +133,7 @@
                             <i class="fab fa-whatsapp me-1"></i> WhatsApp Credits
                         </div>
                         @if(($msgCredits ?? null)?->whatsapp_credits == 0)
-                            <small style="color:#ef4444;font-size:0.72rem;">No credits â€” top up below</small>
+                            <small style="color:#ef4444;font-size:0.72rem;">No credits �?" top up below</small>
                         @elseif(($msgCredits ?? null)?->whatsapp_credits < 10)
                             <small style="color:var(--brand);font-size:0.72rem;">Running low</small>
                         @endif
@@ -184,7 +184,7 @@
                     <span id="buyBtnText">Select a package to continue</span>
                 </button>
                 <div style="text-align:center;font-size:0.72rem;color:#94a3b8;margin-top:0.5rem;">
-                    Secured by Paystack Â· Card Â· Mobile Money Â· Bank Transfer
+                    Secured by Paystack · Card · Mobile Money · Bank Transfer
                 </div>
             </form>
             @else
@@ -203,7 +203,7 @@
         </div>
     </div>
 
-    {{-- â”€â”€ RECENT SUBSCRIPTION PAYMENTS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
+    {{-- �"?�"? RECENT SUBSCRIPTION PAYMENTS �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
     <div class="card border-0 shadow-sm" style="border-radius:16px;overflow:hidden;">
         <div class="card-header bg-white py-3" style="border-bottom:1px solid #f1f5f9;">
             <strong><i class="fas fa-receipt me-2"></i> Recent Subscription Payments</strong>

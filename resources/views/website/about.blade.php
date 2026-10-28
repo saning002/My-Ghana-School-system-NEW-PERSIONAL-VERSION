@@ -1,6 +1,6 @@
-﻿@extends('website.layout')
+?@extends('website.layout')
 @section('page_title','About Us')
-@section('meta_description','Learn about '.($site->site_name ?? 'our school').' â€” our mission, vision, history and dedicated team.')
+@section('meta_description','Learn about '.($site->site_name ?? 'our school').' �?" our mission, vision, history and dedicated team.')
 
 @section('extra_css')
 /* Mission/Vision */
@@ -76,12 +76,12 @@
     </div>
     <div class="mv-grid reveal">
       <div class="mv-card">
-        <div class="mv-icon">ðŸŽ¯</div>
+        <div class="mv-icon">�YZ�</div>
         <h3>Our Mission</h3>
-        <p>{{ $site->mission ?? 'To provide a safe, nurturing, and stimulating learning environment that fosters the holistic development of every child â€” intellectually, emotionally, socially, and physically â€” through innovative, play-based education.' }}</p>
+        <p>{{ $site->mission ?? 'To provide a safe, nurturing, and stimulating learning environment that fosters the holistic development of every child �?" intellectually, emotionally, socially, and physically �?" through innovative, play-based education.' }}</p>
       </div>
       <div class="mv-card">
-        <div class="mv-icon">ðŸŒŸ</div>
+        <div class="mv-icon">�YOY</div>
         <h3>Our Vision</h3>
         <p>{{ $site->vision ?? 'To be the leading early childhood institution in the community, recognized for excellence in education, holistic child development, and building the foundation for lifelong learning and leadership.' }}</p>
       </div>
@@ -132,12 +132,12 @@
     <div class="values-grid">
       @php
       $coreValues = $site->core_values ?? [
-        ['emoji'=>'ðŸŒŸ','title'=>'Excellence','desc'=>'We strive for the highest standards in every aspect of education and school life.'],
-        ['emoji'=>'ðŸ¤','title'=>'Respect','desc'=>'Every child, parent, and staff member is treated with dignity, empathy, and genuine care.'],
-        ['emoji'=>'ðŸ’¡','title'=>'Innovation','desc'=>'We embrace modern, research-based teaching methods that make learning exciting.'],
-        ['emoji'=>'ðŸŒ±','title'=>'Growth','desc'=>'We celebrate every milestone and nurture each child\'s potential at their own pace.'],
-        ['emoji'=>'ðŸ›¡ï¸','title'=>'Safety','desc'=>'The physical and emotional safety of every child is our absolute top priority.'],
-        ['emoji'=>'ðŸ¤—','title'=>'Community','desc'=>'We build strong partnerships with families and the wider community.'],
+        ['emoji'=>'�YOY','title'=>'Excellence','desc'=>'We strive for the highest standards in every aspect of education and school life.'],
+        ['emoji'=>'�Y��','title'=>'Respect','desc'=>'Every child, parent, and staff member is treated with dignity, empathy, and genuine care.'],
+        ['emoji'=>'�Y'�','title'=>'Innovation','desc'=>'We embrace modern, research-based teaching methods that make learning exciting.'],
+        ['emoji'=>'�YO�','title'=>'Growth','desc'=>'We celebrate every milestone and nurture each child\'s potential at their own pace.'],
+        ['emoji'=>'�Y>�️','title'=>'Safety','desc'=>'The physical and emotional safety of every child is our absolute top priority.'],
+        ['emoji'=>'�Y�-','title'=>'Community','desc'=>'We build strong partnerships with families and the wider community.'],
       ];
       @endphp
       @foreach($coreValues as $v)

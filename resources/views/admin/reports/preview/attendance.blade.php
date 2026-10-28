@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Attendance Report â€” KMC</title>
+    <title>Attendance Report �?" KMC</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
@@ -57,10 +57,10 @@
         <tbody>
             @foreach($attendances as $i => $att)
             <tr class="{{ $i % 2 === 0 ? 'bg-white' : 'bg-[var(--primary-pale)]' }}">
-                <td class="border border-gray-200 px-3 py-2 font-semibold">{{ $att->student->user->full_name ?? 'â€”' }}</td>
-                <td class="border border-gray-200 px-3 py-2 font-mono text-xs">{{ $att->student->student_id ?? 'â€”' }}</td>
-                <td class="border border-gray-200 px-3 py-2">{{ $att->course->code ?? 'â€”' }} â€” {{ $att->course->name ?? '' }}</td>
-                <td class="border border-gray-200 px-3 py-2">{{ $att->academicPeriod->month ?? 'â€”' }}</td>
+                <td class="border border-gray-200 px-3 py-2 font-semibold">{{ $att->student->user->full_name ?? '�?"' }}</td>
+                <td class="border border-gray-200 px-3 py-2 font-mono text-xs">{{ $att->student->student_id ?? '�?"' }}</td>
+                <td class="border border-gray-200 px-3 py-2">{{ $att->course->code ?? '�?"' }} �?" {{ $att->course->name ?? '' }}</td>
+                <td class="border border-gray-200 px-3 py-2">{{ $att->academicPeriod->month ?? '�?"' }}</td>
                 <td class="border border-gray-200 px-3 py-2">{{ \Carbon\Carbon::parse($att->date)->format('M d, Y') }}</td>
                 <td class="border border-gray-200 px-3 py-2">
                     <span class="px-2 py-0.5 rounded-full text-xs font-semibold {{ $att->status==='present'?'bg-emerald-100 text-emerald-700':'bg-red-100 text-red-600' }}">
@@ -74,7 +74,7 @@
     @endif
 
     <div class="mt-6 pt-4 border-t text-xs text-gray-400 text-center no-print">
-        {{ $schoolName ?? 'School' }} {{ $schoolSubtitle ? ' â€” '.$schoolSubtitle : '' }} â€” Confidential Report
+        {{ $schoolName ?? 'School' }} {{ $schoolSubtitle ? ' �?" '.$schoolSubtitle : '' }} �?" Confidential Report
     </div>
 </body>
 </html>

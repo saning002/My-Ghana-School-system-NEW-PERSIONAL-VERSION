@@ -11,7 +11,7 @@
 </div>
 @endif
 
-{{-- â”€â”€ Hero â”€â”€ --}}
+{{-- �"?�"? Hero �"?�"? --}}
 <div class="rounded-3xl overflow-hidden relative" style="background:linear-gradient(135deg,#0d0a2e 0%,#2d2480 40%,#5647d6 75%,#a395f5 100%)">
     <div class="absolute inset-0 pointer-events-none">
         <div class="absolute -top-16 -right-16 h-64 w-64 rounded-full bg-white/4 blur-3xl"></div>
@@ -32,7 +32,7 @@
                     ['val'=>$summary['total_students'], 'label'=>'Students',   'icon'=>'fa-user-graduate'],
                     ['val'=>$summary['total_programs'],  'label'=>'Programs',   'icon'=>'fa-graduation-cap'],
                     ['val'=>$summary['attendance_rate'].'%','label'=>'Attendance','icon'=>'fa-clipboard-check'],
-                    ['val'=>'GHâ‚µ'.number_format($summary['fees']['outstanding']??0,0),'label'=>'Outstanding','icon'=>'fa-coins'],
+                    ['val'=>'GH₵'.number_format($summary['fees']['outstanding']??0,0),'label'=>'Outstanding','icon'=>'fa-coins'],
                 ] as $s)
                 <div class="rounded-2xl bg-white/10 border border-white/15 px-4 py-3 text-white">
                     <p class="text-xl font-extrabold leading-none">{{ $s['val'] }}</p>
@@ -52,14 +52,14 @@
             @endif
             <div class="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/15 px-4 py-1.5 text-xs font-bold text-white/70">
                 <i class="fas fa-check-circle text-emerald-400"></i> {{ $completeCount }} marks complete
-                &nbsp;Â·&nbsp;
+                &nbsp;·&nbsp;
                 <i class="fas fa-clock text-[var(--brand)]"></i> {{ $pendingCount }} pending
             </div>
         </div>
     </div>
 </div>
 
-{{-- â”€â”€ Report Categories â”€â”€ --}}
+{{-- �"?�"? Report Categories �"?�"? --}}
 @php
 $categories = [
     [

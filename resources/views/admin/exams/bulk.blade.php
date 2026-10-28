@@ -5,7 +5,7 @@
 @section('content')
 <div class="max-w-4xl mx-auto space-y-6">
 
-    {{-- â”€â”€ Header â”€â”€ --}}
+    {{-- �"?�"? Header �"?�"? --}}
     <div class="flex items-center justify-between">
         <div>
             <h2 class="text-xl font-bold text-gray-900 flex items-center gap-2">
@@ -18,7 +18,7 @@
         </a>
     </div>
 
-    {{-- â”€â”€ Step 1: Program + Attempt picker â”€â”€ --}}
+    {{-- �"?�"? Step 1: Program + Attempt picker �"?�"? --}}
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <h3 class="font-semibold text-gray-800 mb-4 flex items-center gap-2">
             <span class="w-6 h-6 rounded-full bg-[var(--primary)] text-white text-xs font-bold flex items-center justify-center">1</span>
@@ -29,7 +29,7 @@
                 <label class="block text-xs font-semibold text-gray-600 mb-1">Program</label>
                 <select name="program_id" required
                     class="w-full rounded-lg border-gray-300 shadow-sm focus:border-[var(--brand)] focus:ring-[var(--brand)] text-sm">
-                    <option value="">â€” Choose program â€”</option>
+                    <option value="">�?" Choose program �?"</option>
                     @foreach($programs as $prog)
                         <option value="{{ $prog->id }}" {{ ($selectedProgram?->id == $prog->id) ? 'selected' : '' }}>
                             {{ $prog->name }}
@@ -69,7 +69,7 @@
     </div>
 
     @if($selectedProgram && $students->isNotEmpty())
-    {{-- â”€â”€ Step 2: Student selector â”€â”€ --}}
+    {{-- �"?�"? Step 2: Student selector �"?�"? --}}
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <h3 class="font-semibold text-gray-800 mb-1 flex items-center gap-2">
             <span class="w-6 h-6 rounded-full bg-[var(--primary)] text-white text-xs font-bold flex items-center justify-center">2</span>
@@ -79,7 +79,7 @@
             </span>
         </h3>
         <p class="text-xs text-gray-500 mb-4 ml-8">
-            Showing students with scores for <strong>{{ $selectedProgram->name }}</strong> â€” Attempt {{ $currentAttempt }}
+            Showing students with scores for <strong>{{ $selectedProgram->name }}</strong> �?" Attempt {{ $currentAttempt }}
         </p>
 
         {{-- Select all / deselect all --}}
@@ -93,7 +93,7 @@
                 <i class="fas fa-times mr-1"></i> Deselect All
             </button>
             {{-- Search --}}
-            <input type="text" id="student-filter" placeholder="Filter by name or IDâ€¦"
+            <input type="text" id="student-filter" placeholder="Filter by name or ID�?�"
                 oninput="filterStudents(this.value)"
                 class="ml-auto w-52 px-3 py-1.5 text-xs rounded-lg border border-gray-200 focus:outline-none focus:ring-1 focus:ring-yellow-300 bg-white">
         </div>
@@ -108,7 +108,7 @@
                     class="student-checkbox w-4 h-4 rounded text-[var(--brand)] border-gray-300 focus:ring-[var(--brand)]"
                     onchange="updateCount()">
                 <div class="flex-1 min-w-0">
-                    <p class="text-sm font-semibold text-gray-800 truncate">{{ $student->user->full_name ?? 'â€”' }}</p>
+                    <p class="text-sm font-semibold text-gray-800 truncate">{{ $student->user->full_name ?? '�?"' }}</p>
                     <p class="text-xs text-gray-500 font-mono">{{ $student->student_id }}</p>
                 </div>
                 <i class="fas fa-check text-[var(--brand)] text-xs opacity-0 check-icon"></i>
@@ -117,7 +117,7 @@
         </div>
     </div>
 
-    {{-- â”€â”€ Step 3: Actions â”€â”€ --}}
+    {{-- �"?�"? Step 3: Actions �"?�"? --}}
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <h3 class="font-semibold text-gray-800 mb-4 flex items-center gap-2">
             <span class="w-6 h-6 rounded-full bg-[var(--primary)] text-white text-xs font-bold flex items-center justify-center">3</span>
@@ -152,7 +152,7 @@
 
         <p class="text-xs text-gray-400 mt-3">
             <i class="fas fa-info-circle mr-1"></i>
-            "Print" opens the multi-page PDF in a new tab â€” use your browser's print dialog (Ctrl+P / âŒ˜+P) to print all cards.
+            "Print" opens the multi-page PDF in a new tab �?" use your browser's print dialog (Ctrl+P / �O~+P) to print all cards.
         </p>
     </div>
 
@@ -168,7 +168,7 @@
     @elseif($selectedProgram && $students->isEmpty())
     <div class="bg-[var(--primary-pale)] text-[var(--primary-text)] border border-[var(--brand)] rounded-xl p-5 flex items-center gap-3">
         <i class="fas fa-exclamation-triangle text-[var(--brand)] text-xl"></i>
-        <p class="text-sm font-medium">No students have scores for <strong>{{ $selectedProgram->name }}</strong> â€” Attempt {{ $currentAttempt }}.</p>
+        <p class="text-sm font-medium">No students have scores for <strong>{{ $selectedProgram->name }}</strong> �?" Attempt {{ $currentAttempt }}.</p>
     </div>
     @endif
 

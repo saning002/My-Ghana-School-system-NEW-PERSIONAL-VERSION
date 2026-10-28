@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Financial Report â€” KMC</title>
+    <title>Financial Report �?" KMC</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
@@ -40,15 +40,15 @@
     <div class="grid grid-cols-3 gap-4 mb-6 no-print">
         <div class="border rounded-xl p-4 text-center" style="border-color:var(--brand)">
             <p class="text-xs text-gray-500 mb-1">Total Billed</p>
-            <p class="text-xl font-bold" style="color:var(--primary-text)">GHâ‚µ {{ number_format($global['billed'],2) }}</p>
+            <p class="text-xl font-bold" style="color:var(--primary-text)">GH₵ {{ number_format($global['billed'],2) }}</p>
         </div>
         <div class="border border-green-300 rounded-xl p-4 text-center">
             <p class="text-xs text-gray-500 mb-1">Collected</p>
-            <p class="text-xl font-bold text-green-700">GHâ‚µ {{ number_format($global['collected'],2) }}</p>
+            <p class="text-xl font-bold text-green-700">GH₵ {{ number_format($global['collected'],2) }}</p>
         </div>
         <div class="border border-red-300 rounded-xl p-4 text-center">
             <p class="text-xs text-gray-500 mb-1">Outstanding</p>
-            <p class="text-xl font-bold text-red-600">GHâ‚µ {{ number_format($global['outstanding'],2) }}</p>
+            <p class="text-xl font-bold text-red-600">GH₵ {{ number_format($global['outstanding'],2) }}</p>
         </div>
     </div>
 
@@ -74,11 +74,11 @@
             @foreach($studentFees as $i => $row)
             <tr class="{{ $i % 2 === 0 ? 'bg-white' : 'bg-[var(--primary-pale)]' }}">
                 <td class="border border-gray-200 px-3 py-2 font-mono text-xs">{{ $row['student']->student_id }}</td>
-                <td class="border border-gray-200 px-3 py-2 font-semibold">{{ $row['student']->user->full_name ?? 'â€”' }}</td>
-                <td class="border border-gray-200 px-3 py-2">{{ $row['student']->program->name ?? 'â€”' }}</td>
-                <td class="border border-gray-200 px-3 py-2 text-right">GHâ‚µ {{ number_format($row['total'],2) }}</td>
-                <td class="border border-gray-200 px-3 py-2 text-right text-green-700 font-semibold">GHâ‚µ {{ number_format($row['paid'],2) }}</td>
-                <td class="border border-gray-200 px-3 py-2 text-right font-bold {{ $row['balance']>0?'text-red-600':'text-green-600' }}">GHâ‚µ {{ number_format($row['balance'],2) }}</td>
+                <td class="border border-gray-200 px-3 py-2 font-semibold">{{ $row['student']->user->full_name ?? '�?"' }}</td>
+                <td class="border border-gray-200 px-3 py-2">{{ $row['student']->program->name ?? '�?"' }}</td>
+                <td class="border border-gray-200 px-3 py-2 text-right">GH₵ {{ number_format($row['total'],2) }}</td>
+                <td class="border border-gray-200 px-3 py-2 text-right text-green-700 font-semibold">GH₵ {{ number_format($row['paid'],2) }}</td>
+                <td class="border border-gray-200 px-3 py-2 text-right font-bold {{ $row['balance']>0?'text-red-600':'text-green-600' }}">GH₵ {{ number_format($row['balance'],2) }}</td>
             </tr>
             @endforeach
         </tbody>
@@ -86,7 +86,7 @@
     @endif
 
     <div class="mt-6 pt-4 border-t text-xs text-gray-400 text-center no-print">
-        {{ $schoolName ?? 'School' }} {{ $schoolSubtitle ? ' â€” '.$schoolSubtitle : '' }} â€” Confidential Report
+        {{ $schoolName ?? 'School' }} {{ $schoolSubtitle ? ' �?" '.$schoolSubtitle : '' }} �?" Confidential Report
     </div>
 </body>
 </html>

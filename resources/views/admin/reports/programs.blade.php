@@ -44,9 +44,9 @@
         <div class="px-5 py-4 border-b border-gray-50 flex items-center justify-between">
             <div>
                 <h3 class="text-sm font-bold text-gray-800">{{ $program->name }}</h3>
-                <p class="text-xs text-gray-400 mt-0.5">{{ $program->duration }} months Â· {{ $program->courses->count() }} courses</p>
+                <p class="text-xs text-gray-400 mt-0.5">{{ $program->duration }} months · {{ $program->courses->count() }} courses</p>
             </div>
-            <a href="{{ route('admin.programs.show',$program) }}" class="text-xs text-primary-600 font-semibold">View â†’</a>
+            <a href="{{ route('admin.programs.show',$program) }}" class="text-xs text-primary-600 font-semibold">View �?'</a>
         </div>
 
         {{-- Stats --}}
@@ -76,7 +76,7 @@
                 @forelse($program->courses as $course)
                 <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg text-xs font-semibold">
                     <span class="font-mono">{{ $course->code }}</span>
-                    <span class="text-blue-400">Â·</span>
+                    <span class="text-blue-400">·</span>
                     {{ $course->name }}
                 </span>
                 @empty

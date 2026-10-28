@@ -1,6 +1,6 @@
-﻿@extends('website.layout')
+?@extends('website.layout')
 @section('page_title','Gallery')
-@section('meta_description','Photo gallery of '.($site->site_name ?? 'our school').' â€” see life at our school.')
+@section('meta_description','Photo gallery of '.($site->site_name ?? 'our school').' �?" see life at our school.')
 
 @section('extra_css')
 .filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:36px;}
