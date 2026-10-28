@@ -1,4 +1,4 @@
-extends('layouts.app')
+@extends('layouts.app')
 @section('title','Student Reports')
 @section('subtitle','Manage conduct, attitude and personality ratings per student')
 

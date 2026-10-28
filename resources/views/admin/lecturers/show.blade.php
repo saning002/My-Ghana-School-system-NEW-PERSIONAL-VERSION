@@ -1,4 +1,4 @@
-extends('layouts.app')
+@extends('layouts.app')
 @section('title', $lecturer->full_name)
 @section('subtitle', 'Teacher profile and course assignments')
 

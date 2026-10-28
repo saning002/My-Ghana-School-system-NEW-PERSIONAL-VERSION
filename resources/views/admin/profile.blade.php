@@ -1,4 +1,4 @@
-extends('layouts.app')
+@extends('layouts.app')
 @section('title', 'My Profile')
 @section('subtitle', 'Update your details and change your password')
 

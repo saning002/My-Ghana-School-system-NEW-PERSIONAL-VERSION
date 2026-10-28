@@ -1,4 +1,4 @@
-extends('layouts.app')
+@extends('layouts.app')
 @section('title','Website Settings')
 @section('subtitle','Fully customise every text, section and detail on the public website')
 @section('content')

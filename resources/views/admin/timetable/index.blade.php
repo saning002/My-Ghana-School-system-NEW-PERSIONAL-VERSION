@@ -1,4 +1,4 @@
-extends('layouts.app')
+@extends('layouts.app')
 @section('title','Timetable')
 @section('subtitle', $date->isToday() ? "Today's Timetable – " . $date->format('l, F j') : $date->format('l, F j Y') . ' Timetable')
 

@@ -1,4 +1,4 @@
-extends('layouts.app')
+@extends('layouts.app')
 @section('title','Financial Report')
 @section('subtitle','Fees, payments and outstanding balances')
 

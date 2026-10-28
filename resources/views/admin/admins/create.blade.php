@@ -1,4 +1,4 @@
-extends('layouts.app')
+@extends('layouts.app')
 @section('title', 'Add Administrator')
 @section('subtitle', 'Register a new administrator for the system')
 

@@ -1,4 +1,4 @@
-extends('layouts.app')
+@extends('layouts.app')
 @section('title', 'Bulk Report Cards')
 @section('subtitle', 'Download or print report cards for multiple students at once')
 

@@ -1,4 +1,4 @@
-extends('layouts.app')
+@extends('layouts.app')
 @section('title','Student Profile')
 @section('subtitle', $student->user->full_name)
 

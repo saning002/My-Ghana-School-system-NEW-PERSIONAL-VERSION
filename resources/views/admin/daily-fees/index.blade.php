@@ -1,4 +1,4 @@
-extends('layouts.app')
+@extends('layouts.app')
 @section('title','Daily Fees')
 @section('subtitle','Mark student daily fee payments, manage exemptions and scholarships')
 

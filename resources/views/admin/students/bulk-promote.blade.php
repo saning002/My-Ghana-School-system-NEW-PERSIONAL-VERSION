@@ -1,4 +1,4 @@
-extends('layouts.app')
+@extends('layouts.app')
 @section('title', 'Bulk Student Promotion')
 @section('subtitle', 'Promote students to their next program in bulk')
 

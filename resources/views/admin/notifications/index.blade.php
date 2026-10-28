@@ -1,4 +1,4 @@
-extends('layouts.app')
+@extends('layouts.app')
 @section('title','Notification Center')
 @section('subtitle','Send alerts and messages to students and teachers')
 

@@ -1,4 +1,4 @@
-extends('layouts.app')
+@extends('layouts.app')
 @section('title', 'Mark Attendance')
 @section('subtitle', 'Select a program, search students, and mark attendance')
 

@@ -1,4 +1,4 @@
-extends('student.layout')
+@extends('student.layout')
 @section('title', 'Pay Fees Online')
 
 @section('content')

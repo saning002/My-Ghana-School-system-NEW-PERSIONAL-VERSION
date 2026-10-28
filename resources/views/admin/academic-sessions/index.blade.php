@@ -1,4 +1,4 @@
-extends('layouts.app')
+@extends('layouts.app')
 @section('title', 'Academic Sessions')
 @section('subtitle', 'Manage academic years, semester/term periods, and the active period')
 

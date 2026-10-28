@@ -1,4 +1,4 @@
-extends('layouts.app')
+@extends('layouts.app')
 @section('title', 'Add Branch')
 @section('subtitle', 'Create a new ministry branch')
 

@@ -1,4 +1,4 @@
-extends('layouts.app')
+@extends('layouts.app')
 @section('title','Staff Portals')
 @section('subtitle','Manage Accountant, Headmaster, Headteacher, Deputy Head and Secretary portal accounts')
 

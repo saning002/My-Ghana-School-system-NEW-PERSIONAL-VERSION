@@ -1,4 +1,4 @@
-extends('layouts.app')
+@extends('layouts.app')
 
 @section('header')
 <div class="flex items-center justify-between">

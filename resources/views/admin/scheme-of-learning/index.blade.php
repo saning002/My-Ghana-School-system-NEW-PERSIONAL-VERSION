@@ -1,4 +1,4 @@
-extends('layouts.app')
+@extends('layouts.app')
 @section('title','Scheme of Learning')
 @section('subtitle','Weekly teaching plan per course and program')
 

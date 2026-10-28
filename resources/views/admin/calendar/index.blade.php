@@ -1,4 +1,4 @@
-extends('layouts.app')
+@extends('layouts.app')
 @section('title','School Calendar')
 @section('subtitle','Manage school events, holidays and term dates')
 

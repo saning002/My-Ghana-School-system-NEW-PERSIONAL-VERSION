@@ -1,4 +1,4 @@
-extends('layouts.app')
+@extends('layouts.app')
 @section('title','Blog Posts')
 @section('subtitle','Manage website blog posts')
 

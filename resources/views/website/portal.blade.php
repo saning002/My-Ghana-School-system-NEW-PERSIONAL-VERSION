@@ -1,4 +1,4 @@
-extends('website.layout')
+@extends('website.layout')
 @section('page_title','School Portals')
 @section('meta_description','Access the '.($site->site_name ?? 'School').' admin, teacher and student portals.')
 

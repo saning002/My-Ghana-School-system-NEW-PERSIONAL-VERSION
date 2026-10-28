@@ -1,4 +1,4 @@
-extends('layouts.app')
+@extends('layouts.app')
 @section('title', 'Add Teacher')
 @section('subtitle', 'Register a new teacher with personal info and course assignments')
 

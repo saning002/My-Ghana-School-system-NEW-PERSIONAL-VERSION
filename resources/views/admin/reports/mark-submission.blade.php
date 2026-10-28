@@ -1,4 +1,4 @@
-extends('layouts.app')
+@extends('layouts.app')
 @section('title','Mark Submission Status')
 @section('subtitle','Track which teachers have submitted scores for the current period')
 

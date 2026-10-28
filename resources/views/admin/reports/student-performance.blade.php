@@ -1,4 +1,4 @@
-extends('layouts.app')
+@extends('layouts.app')
 @section('title','Student Performance')
 @section('subtitle','Academic trend across all programs and attempts')
 

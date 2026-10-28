@@ -1,4 +1,4 @@
-extends('layouts.app')
+@extends('layouts.app')
 @section('title','Academic Transcript')
 @section('subtitle','Full academic history across all programs and attempts')
 

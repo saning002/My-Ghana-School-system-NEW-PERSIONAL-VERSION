@@ -1,4 +1,4 @@
-extends('layouts.app')
+@extends('layouts.app')
 @section('title','Fee Statement')
 @section('subtitle','Charges, payments and outstanding balance per student')
 

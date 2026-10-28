@@ -1,4 +1,4 @@
-extends('layouts.app')
+@extends('layouts.app')
 @section('title','Class Teacher Assignments')
 @section('subtitle','Assign one teacher to manage each class – they take daily register for all subjects')
 

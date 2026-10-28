@@ -1,4 +1,4 @@
-extends('layouts.app')
+@extends('layouts.app')
 @section('title','Add Student')
 @section('subtitle','Student Admission Form – Royal Fame International School')
 

@@ -132,12 +132,12 @@
     <div class="values-grid">
       @php
       $coreValues = $site->core_values ?? [
-        ['emoji'=>'*'],
-        ['emoji'=>'*'],
-        ['emoji'=>'*'],
-        ['emoji'=>'*'],
-        ['emoji'=>'*'],
-        ['emoji'=>'*'],
+        ['emoji'=>'★','title'=>'Excellence','desc'=>'We strive for the highest standards in every aspect of education and school life.'],
+        ['emoji'=>'♥','title'=>'Respect','desc'=>'Every child, parent, and staff member is treated with dignity, empathy, and genuine care.'],
+        ['emoji'=>'✦','title'=>'Innovation','desc'=>'We embrace modern, research-based teaching methods that make learning exciting.'],
+        ['emoji'=>'↑','title'=>'Growth','desc'=>'We celebrate every milestone and nurture each child\'s potential at their own pace.'],
+        ['emoji'=>'✓','title'=>'Safety','desc'=>'The physical and emotional safety of every child is our absolute top priority.'],
+        ['emoji'=>'◎','title'=>'Community','desc'=>'We build strong partnerships with families and the wider community.'],
       ];
       @endphp
       @foreach($coreValues as $v)

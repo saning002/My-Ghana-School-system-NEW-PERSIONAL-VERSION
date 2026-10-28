@@ -1,4 +1,4 @@
-extends('layouts.app')
+@extends('layouts.app')
 @section('title','Website Programs')
 @section('subtitle','Programs shown on the public /academics page – add, edit, reorder, toggle visibility')
 

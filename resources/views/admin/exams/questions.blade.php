@@ -1,4 +1,4 @@
-extends('layouts.app')
+@extends('layouts.app')
 @section('title','Exam Questions')
 @section('subtitle','Review exam question documents uploaded by teachers')
 

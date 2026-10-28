@@ -1,4 +1,4 @@
-extends('layouts.app')
+@extends('layouts.app')
 @section('title', $programLabelSingular.' Report')
 @section('subtitle', 'Enrollment and course breakdown per '.strtolower($programLabelSingular))
 

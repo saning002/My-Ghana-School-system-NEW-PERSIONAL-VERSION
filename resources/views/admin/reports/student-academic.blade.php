@@ -1,4 +1,4 @@
-extends('layouts.app')
+@extends('layouts.app')
 @section('title','Student Academic Report')
 @section('subtitle','Individual report card with attendance, grades and ranking')
 

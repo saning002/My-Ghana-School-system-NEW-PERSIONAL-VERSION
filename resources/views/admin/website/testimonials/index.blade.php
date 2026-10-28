@@ -1,4 +1,4 @@
-extends('layouts.app')
+@extends('layouts.app')
 @section('title','Testimonials')
 @section('subtitle','Manage parent testimonials shown on the home page')
 

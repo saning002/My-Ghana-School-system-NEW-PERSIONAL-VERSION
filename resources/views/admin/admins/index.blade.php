@@ -1,4 +1,4 @@
-extends('layouts.app')
+@extends('layouts.app')
 @section('title', 'System Administrators')
 @section('subtitle', 'Manage global and branch-scoped administrators')
 

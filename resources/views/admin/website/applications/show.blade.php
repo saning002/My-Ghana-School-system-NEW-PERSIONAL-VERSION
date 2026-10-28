@@ -1,4 +1,4 @@
-extends('layouts.app')
+@extends('layouts.app')
 @section('title', 'Application – '.$application->child_full_name)
 
 @section('content')

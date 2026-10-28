@@ -1,4 +1,4 @@
-extends('layouts.app')
+@extends('layouts.app')
 @section('title','Gallery')
 @section('subtitle','Manage website photo gallery')
 

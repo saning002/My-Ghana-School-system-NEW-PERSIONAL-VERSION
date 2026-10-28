@@ -1,4 +1,4 @@
-extends('layouts.app')
+@extends('layouts.app')
 
 @section('title', 'Admin Guide')
 @section('subtitle', 'System Reference & Explainer for Administrators')

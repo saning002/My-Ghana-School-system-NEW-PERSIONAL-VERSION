@@ -1,4 +1,4 @@
-extends('layouts.app')
+@extends('layouts.app')
 @section('title', 'Portals Management')
 @section('subtitle', 'Manage student and teacher portal access')
 

@@ -1,4 +1,4 @@
-extends('layouts.app')
+@extends('layouts.app')
 @section('title','Class Performance Report')
 @section('subtitle','Average, rankings, subject breakdown and pass/fail rates')
 

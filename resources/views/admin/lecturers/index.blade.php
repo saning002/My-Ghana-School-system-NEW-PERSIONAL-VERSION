@@ -1,4 +1,4 @@
-extends('layouts.app')
+@extends('layouts.app')
 @section('title', 'Teachers')
 @section('subtitle', 'Manage teachers, their personal info, and course assignments')
 

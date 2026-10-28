@@ -1,4 +1,4 @@
-extends('layouts.app')
+@extends('layouts.app')
 @section('title', $member ? 'Edit Staff Member' : 'Add Staff Member')
 
 @section('content')

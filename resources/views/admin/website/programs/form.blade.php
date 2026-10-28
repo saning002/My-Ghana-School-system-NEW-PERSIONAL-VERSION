@@ -1,4 +1,4 @@
-extends('layouts.app')
+@extends('layouts.app')
 @section('title', $program ? 'Edit Program Card' : 'Add Program Card')
 @section('subtitle', 'This card will appear on the public website Academics page')
 

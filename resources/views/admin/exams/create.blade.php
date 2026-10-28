@@ -1,4 +1,4 @@
-extends('layouts.app')
+@extends('layouts.app')
 @section('title','Enter Exam Scores')
 @section('subtitle','Record class scores and exam scores per student')
 

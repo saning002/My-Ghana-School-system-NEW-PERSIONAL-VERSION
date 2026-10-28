@@ -1,4 +1,4 @@
-extends('layouts.app')
+@extends('layouts.app')
 @section('title', 'Bulk Promotion & Repeat')
 @section('subtitle', 'Filter by program to promote or repeat students')
 

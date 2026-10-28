@@ -1,4 +1,4 @@
-extends('layouts.app')
+@extends('layouts.app')
 @section('title', 'Fee History – ' . ($student->user?->full_name ?? 'Student'))
 
 @section('content')

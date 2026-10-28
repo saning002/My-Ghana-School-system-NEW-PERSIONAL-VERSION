@@ -1,4 +1,4 @@
-extends('layouts.app')
+@extends('layouts.app')
 @section('title','Attendance Summary')
 @section('subtitle','Present, absent and attendance percentage per student per period')
 

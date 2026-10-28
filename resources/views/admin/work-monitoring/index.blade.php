@@ -1,4 +1,4 @@
-extends('layouts.app')
+@extends('layouts.app')
 @section('title', 'Teacher Work Monitoring')
 @section('subtitle', 'Monitor all teacher work log entries and subject progress')
 

@@ -1,4 +1,4 @@
-extends('layouts.app')
+@extends('layouts.app')
 @section('title','Fees & Payments')
 @section('subtitle', auth()->user()->isBranchAdmin() ? 'Manage student payments for ' . (auth()->user()->branch->name ?? 'your branch') : 'Manage program fees and student payments across branches')
 
