@@ -45,6 +45,14 @@ return Application::configure(basePath: dirname(__DIR__))
             'owner.auth'   => \App\Http\Middleware\EnsureOwnerAuth::class,
             'tenant'       => \App\Http\Middleware\TenantMiddleware::class,
             'feature'      => \App\Http\Middleware\FeatureMiddleware::class,
+            'buffer'       => \App\Http\Middleware\BufferOutput::class,
+        ]);
+
+        // Add output buffering to the global web middleware stack
+        // This runs on ALL web requests — captures full response before sending
+        // so Neon DB cold-start latency never causes a partial HTML flash
+        $middleware->web(append: [
+            \App\Http\Middleware\BufferOutput::class,
         ]);
 
         // Exclude Paystack webhook from CSRF — Paystack sends raw POST with no token

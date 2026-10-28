@@ -62,6 +62,18 @@ class TenantMiddleware
         // Switch database connection to this tenant's DB
         $this->switchDatabase($tenant);
 
+        // ── Pre-warm the Neon DB connection immediately after switching ───────
+        // Neon's serverless Postgres takes ~300-700ms for the first query after
+        // a cold start or idle period. By explicitly pinging here — before ANY
+        // Blade rendering starts — the connection is established while PHP is
+        // still building the response in memory. The browser sees nothing until
+        // the full page is ready, eliminating the white DOCTYPE flash.
+        try {
+            DB::connection('tenant')->getPdo();
+        } catch (\Throwable $e) {
+            // Connection failed — already handled by the try/catch below
+        }
+
         // Share tenant with all Blade views
         view()->share('currentTenant', $tenant);
 
@@ -148,27 +160,30 @@ class TenantMiddleware
             view()->share('programLabelSingular', $programLabelSingular);
 
             // ── Pre-compute admin theme CSS variables ─────────────────────────
-            // Doing this in middleware means zero DB work during Blade rendering.
-            // Uses the same single cached query above — no extra DB hit.
             $themeCacheKey = 'tenant_theme_' . $tenant->slug;
             $adminTheme = \Illuminate\Support\Facades\Cache::remember($themeCacheKey, 300, function () use ($tenant) {
                 $defaults = \App\Models\Website\SiteSetting::defaultTheme();
+
+                // Start with owner panel override as base (lowest priority)
+                $base = !empty($tenant->theme_json)
+                    ? array_merge($defaults, $tenant->theme_json)
+                    : $defaults;
+
+                // School's own site_settings theme wins over everything
                 try {
                     $row = DB::connection('tenant')->table('site_settings')->first(['theme_colors']);
                     if ($row && $row->theme_colors) {
                         $saved = is_array($row->theme_colors)
                             ? $row->theme_colors
                             : (json_decode($row->theme_colors, true) ?? []);
-                        return array_merge($defaults, $saved);
+                        if (!empty($saved)) {
+                            return array_merge($base, $saved);
+                        }
                     }
                 } catch (\Throwable $e) {}
-                return $defaults;
-            });
 
-            // Owner panel theme_json overrides everything
-            if (!empty($tenant->theme_json)) {
-                $adminTheme = array_merge($adminTheme, $tenant->theme_json);
-            }
+                return $base;
+            });
 
             view()->share('__adminTheme', $adminTheme);
         } catch (\Throwable $e) {
