@@ -1,19 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    {{-- PAGE LOADER: covers white flash while DB/scripts load --}}
+    {{-- BRANDED PAGE LOADER ─────────────────────────────────────────────────
+         Shows school name + spinner while Neon DB warms up.
+         Pure inline CSS/JS — renders in <1ms, no external deps.
+         Removed instantly when DOMContentLoaded fires. --}}
+    @php
+        $__loaderBg   = $__adminTheme['adminNav']     ?? '#0B1121';
+        $__loaderGold = $__adminTheme['adminPrimary'] ?? '#D4A017';
+        $__loaderRing = $__loaderGold . '33'; // 20% opacity version
+    @endphp
     <style>
-        #_pl{position:fixed;inset:0;z-index:99999;background:#0B1121;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .3s ease,visibility .3s ease}
+        #_pl{
+            position:fixed;inset:0;z-index:99999;
+            display:flex;flex-direction:column;align-items:center;justify-content:center;
+            background:{{ $__loaderBg }};
+            transition:opacity .35s ease,visibility .35s ease;
+        }
         #_pl.out{opacity:0;visibility:hidden;pointer-events:none}
-        #_pl .ring{width:46px;height:46px;border:3px solid rgba(212,160,23,.2);border-top-color:#D4A017;border-radius:50%;animation:_spin .65s linear infinite}
-        #_pl .lbl{margin-top:16px;font:600 13px/1 system-ui,sans-serif;color:rgba(255,255,255,.4);letter-spacing:.05em}
+        #_pl .pl-logo{
+            width:64px;height:64px;border-radius:18px;
+            background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);
+            display:flex;align-items:center;justify-content:center;
+            font-size:1.6rem;font-weight:800;color:{{ $__loaderGold }};
+            font-family:system-ui,sans-serif;
+            margin-bottom:20px;
+        }
+        #_pl .pl-name{
+            font:700 18px/1.2 system-ui,sans-serif;
+            color:#fff;letter-spacing:-.01em;
+            margin-bottom:6px;text-align:center;max-width:280px;
+        }
+        #_pl .pl-sub{
+            font:500 12px/1 system-ui,sans-serif;
+            color:rgba(255,255,255,.35);letter-spacing:.06em;
+            text-transform:uppercase;margin-bottom:32px;
+        }
+        #_pl .pl-ring{
+            width:38px;height:38px;
+            border:3px solid {{ $__loaderRing }};
+            border-top-color:{{ $__loaderGold }};
+            border-radius:50%;
+            animation:_spin .7s linear infinite;
+        }
         @keyframes _spin{to{transform:rotate(360deg)}}
     </style>
     <script>
         (function(){
-            function hide(){var l=document.getElementById('_pl');if(l){l.classList.add('out');setTimeout(function(){if(l.parentNode)l.parentNode.removeChild(l)},350)}}
+            function hide(){
+                var l=document.getElementById('_pl');
+                if(l){l.classList.add('out');setTimeout(function(){if(l&&l.parentNode)l.parentNode.removeChild(l);},380);}
+            }
             document.addEventListener('DOMContentLoaded',hide);
-            setTimeout(hide,5000);
+            setTimeout(hide,8000); // hard fallback
         })();
     </script>
     <meta charset="UTF-8">
@@ -139,7 +178,17 @@
     @stack('styles')
 </head>
 <body x-data="{drawerOpen:false}" class="bg-surface" @keydown.escape.window="drawerOpen=false">
-<div id="_pl"><div class="ring"></div><div class="lbl">Loading...</div></div>
+<div id="_pl">
+    @if(!empty($siteLogoUrl))
+    <img src="{{ $siteLogoUrl }}" alt="{{ $schoolName ?? 'School' }}"
+         style="width:60px;height:60px;object-fit:contain;border-radius:14px;margin-bottom:18px;background:rgba(255,255,255,.08);padding:8px;">
+    @else
+    <div class="pl-logo">{{ strtoupper(substr($schoolName ?? 'S', 0, 1)) }}</div>
+    @endif
+    <div class="pl-name">{{ $schoolName ?? 'School Management' }}</div>
+    <div class="pl-sub">{{ $schoolSubtitle ?? 'Admin Panel' }}</div>
+    <div class="pl-ring"></div>
+</div>
 
 {{-- Mobile menu scrim: only while drawer is open (avoids stray full-screen overlays) --}}
 <div x-show="drawerOpen" x-cloak x-transition.opacity.duration.200ms
