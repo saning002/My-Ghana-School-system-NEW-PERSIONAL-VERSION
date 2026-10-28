@@ -29,188 +29,7 @@ extends('layouts.app')
     }
     
     .summary-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 3px;
-        background: linear-gradient(90deg, currentColor, transparent);
-    }
-    
-    .summary-card.billed::before { background: linear-gradient(90deg, #D4A017, transparent); }
-    .summary-card.collected::before { background: linear-gradient(90deg, #16a34a, transparent); }
-    .summary-card.outstanding::before { background: linear-gradient(90deg, #dc2626, transparent); }
-    
-    .summary-icon {
-        font-size: 22px;
-        margin-bottom: 8px;
-        opacity: 0.8;
-    }
-    
-    .summary-label {
-        font-size: 12px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-bottom: 8px;
-    }
-    
-    .summary-amount {
-        font-size: 22px;
-        font-weight: 700;
-        line-height: 1.2;
-    }
-    
-    .premium-btn {
-        position: relative;
-        overflow: hidden;
-        transition: all 0.3s ease;
-        font-weight: 600;
-        letter-spacing: 0.5px;
-    }
-    
-    .premium-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-    }
-    
-    .premium-btn:active {
-        transform: translateY(0);
-    }
-    
-    .section-header {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 16px;
-    }
-    
-    .section-header-icon {
-        font-size: 24px;
-        width: 40px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 12px;
-    }
-    
-    .section-header h2 {
-        font-size: 18px;
-        font-weight: 700;
-        margin: 0;
-    }
-    
-    .section-header p {
-        font-size: 13px;
-        color: #6b7280;
-        margin: 0;
-    }
-    
-    .student-row {
-        transition: all 0.18s ease;
-        border-radius: 10px;
-        padding: 10px;
-        margin-bottom: 8px;
-        background: white;
-        border: 1px solid rgba(0, 0, 0, 0.05);
-    }
-    
-    .student-row:hover {
-        background: #f9fafb;
-        border-color: rgba(0, 0, 0, 0.1);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    }
-    
-    .action-btn {
-        width: 36px;
-        height: 36px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 10px;
-        border: none;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        font-size: 14px;
-    }
-    
-    .action-btn:hover {
-        transform: scale(1.1);
-    }
-    
-    .modal-overlay {
-        animation: fadeIn 0.2s ease;
-    }
-    
-    .modal-content {
-        animation: slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-    
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
-    
-    @keyframes slideUp {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-    
-    .input-field {
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .input-field input,
-    .input-field select {
-        background: white;
-        border: 1.5px solid #e5e7eb;
-        transition: all 0.3s ease;
-    }
-    
-    .input-field input:focus,
-    .input-field select:focus {
-        border-color: currentColor;
-        box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.04);
-    }
-    
-    .badge-custom {
-        display: inline-block;
-        padding: 6px 12px;
-        border-radius: 8px;
-        font-size: 11px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        background: linear-gradient(135deg, #dbeafe, #bfdbfe);
-        color: #1e40af;
-    }
-    
-    .payment-item {
-        padding: 12px;
-        background: linear-gradient(135deg, #fef3c7, #fde68a);
-        border-radius: 10px;
-        transition: all 0.2s ease;
-        border: 1px solid rgba(217, 119, 6, 0.1);
-    }
-    
-    .payment-item:hover {
-        background: linear-gradient(135deg, #fde68a, #fcd34d);
-        transform: translateX(4px);
-    }
-</style>
-
-{{-- �.��.� FEE MODE TOGGLE �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� --}}
-@php
-    $feeMode   = $feeMode   ?? 'program_fees';
+        content: ''?'program_fees';
     $dailyRate = $dailyRate ?? 5;
     $isWith    = $feeMode === 'program_fees_with_feeding';
     $isDaily   = $feeMode === 'daily_fees';
@@ -225,16 +44,7 @@ extends('layouts.app')
             <i class="fas {{ $isDaily ? 'fa-calendar-check' : ($isWith ? 'fa-utensils' : 'fa-coins') }} text-white text-sm"></i>
         </div>
         <div>
-            <h3 class="text-sm font-bold" style="color:{{ $isDaily ? '#166534' : ($isWith ? '#1e3a8a' : '#78520a') }}">
-                Fee Mode:
-                <span class="ml-1">
-                    @if($isDaily) �s� Daily Fees
-                    @elseif($isWith) �Y��️ Program + Feeding Fees
-                    @else �Y"< Program / Term Fees
-                    @endif
-                </span>
-            </h3>
-            <p class="text-xs mt-0.5" style="color:{{ $isDaily ? '#166534aa' : ($isWith ? '#1e3a8aaa' : '#78520aaa') }}">
+            <h3 class="text-sm font-bold" style="color:{{ $isDaily ? '#166534' : ($isWith ? '#1e3a8a' : '#78520a'?'#166534aa' : ($isWith ? '#1e3a8aaa' : '#78520aaa') }}">
                 @if($isDaily) Students are charged GH₵ {{ $dailyRate }} per school day.
                 @elseif($isWith) Tuition + Feeding fee billed separately per term.
                 @else Students are charged a lump fee per program / term.
@@ -310,28 +120,13 @@ extends('layouts.app')
                 @if($isDaily)
                 <a href="{{ route('admin.daily-fees.index') }}"
                    class="w-full text-center py-2.5 rounded-xl text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition-colors">
-                    <i class="fas fa-external-link-alt mr-1"></i> Go to Daily Fees –'
-                </a>
-                @endif
-            </div>
-        </div>
-    </form>
-</div>
-
-{{-- �.��.� FEEDING FEE INFO (shown only in program_fees_with_feeding mode) �.��.��.��.��.��.��.� --}}
-@if($isWith)
-<div class="rounded-xl border border-blue-200 bg-blue-50 p-4 mb-6 flex items-start gap-3">
-    <i class="fas fa-info-circle text-blue-500 mt-0.5"></i>
-    <div class="text-sm text-blue-800">
-        <strong>Feeding Fee Mode active.</strong>
-        Set a <strong>Feeding Fee</strong> per program in the "Program Fees" section below.
-        Each student's term bill will show <em>Tuition Fee</em> + <em>Feeding Fee</em> as separate line items.
+                    <i class="fas fa-external-link-alt mr-1"></i> Go to Daily Fees –'?'s term bill will show <em>Tuition Fee</em> + <em>Feeding Fee</em> as separate line items.
         Students can pay either or both – the system tracks balances for each separately in the total.
     </div>
 </div>
 @endif
 
-{{-- �.��.� NOTE: If daily fees mode is active, program fees below are ignored �.��.��.��.� --}}
+{{-- ?.??.? NOTE: If daily fees mode is active, program fees below are ignored ?.??.??.??.? --}}
 @if($feeMode === 'daily_fees')
 <div class="flex items-start gap-3 px-4 py-3 rounded-2xl bg-emerald-50 border border-emerald-200 mb-4">
     <i class="fas fa-info-circle text-emerald-500 mt-0.5 shrink-0"></i>
@@ -585,56 +380,7 @@ extends('layouts.app')
                 </label>
                 <input type="number" name="feeding_fee" step="0.01" min="0"
                     class="w-full px-4 py-3 border rounded-xl text-sm focus:outline-none focus:ring-2 bg-white {{ $isWith ? 'border-blue-300 focus:ring-blue-500' : 'border-gray-200 cursor-not-allowed' }}"
-                    placeholder="0.00" {{ $isWith ? '' : 'disabled' }}>
-            </div>
-            <div class="input-field">
-                <label class="block text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wide">Notes</label>
-                <input type="text" name="notes"
-                    class="w-full px-4 py-3 border border-blue-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                    placeholder="Scholarship, Sponsor...">
-            </div>
-        </div>
-        <div class="flex gap-2">
-            <button type="button" onclick="submitCustomFeeForm()" class="flex-1 premium-btn px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl text-sm hover:from-blue-700 hover:to-blue-800">
-                <i class="fas fa-dollar-sign mr-2"></i> Set Custom Fee
-            </button>
-            <button type="button" onclick="clearCustomFeeForm()" class="px-4 py-3 premium-btn bg-gray-200 text-gray-700 rounded-xl text-sm hover:bg-gray-300">
-                <i class="fas fa-times mr-2"></i> Clear
-            </button>
-        </div>
-        <p class="text-xs text-gray-600 text-center italic">�o" Select students above · �o" Enter amounts · �o" Click Set Custom Fee</p>
-    </form>
-</div>
-
-{{-- Student Payment History --}}
-<div class="section-header">
-    <div class="section-header-icon bg-[var(--primary-pale)]" style="color: #D4A017;">
-        <i class="fas fa-history"></i>
-    </div>
-    <div>
-        <h2>Student Payment History</h2>
-        <p>View and manage fees for all enrolled students</p>
-    </div>
-</div>
-
-<form id="bulk-reset-form" method="POST" action="{{ route('admin.fees.reset-bulk') }}">
-    @csrf
-    <div class="premium-card overflow-hidden mb-6">
-        <div class="px-4 py-4" style="background: linear-gradient(135deg, #fef9c3, #fef3c7); border-bottom: 1px solid rgba(217, 119, 6, 0.1);">
-            <div class="flex items-center justify-between gap-4">
-                <div>
-                    <h3 class="text-base font-bold" style="color:var(--primary-text);">
-                        <i class="fas fa-list mr-2"></i>Student Records
-                    </h3>
-                    <p class="text-xs text-[var(--primary-text)] mt-1">{{ $students->total() }} total student(s) · Page {{ $students->currentPage() }} of {{ $students->lastPage() }}</p>
-                    <p class="text-xs text-gray-600 mt-1">Select students by ticking the checkbox on the left of each row, or use –oSelect all on this page–�.</p>
-                </div>
-                <div id="bulk-actions" class="hidden flex items-center gap-2 flex-wrap justify-end">
-                    <button type="button" onclick="selectAllVisibleStudents()" class="premium-btn px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-semibold hover:bg-blue-700 flex items-center gap-1.5">
-                        <i class="fas fa-check-square"></i> Select all
-                    </button>
-                    <span id="selected-count" class="text-xs font-bold text-gray-700 bg-gray-100 px-3 py-1.5 rounded-lg">0 selected</span>
-                    <button type="button" onclick="document.getElementById('bulk-reset-form').submit()" class="premium-btn px-4 py-2 bg-red-600 text-white rounded-xl text-xs font-semibold hover:bg-red-700 flex items-center gap-1.5">
+                    placeholder="0.00" {{ $isWith ? '' : 'disabled'?'admin.fees.reset-bulk'?'bulk-reset-form').submit()" class="premium-btn px-4 py-2 bg-red-600 text-white rounded-xl text-xs font-semibold hover:bg-red-700 flex items-center gap-1.5">
                         <i class="fas fa-redo-alt"></i> Reset
                     </button>
                     <button type="button" onclick="document.querySelectorAll('input[name=\"student_ids[]\"]:checked').forEach(cb => cb.checked = false); updateBulkActions();" class="premium-btn px-4 py-2 bg-gray-300 text-gray-700 rounded-xl text-xs font-semibold hover:bg-gray-400">

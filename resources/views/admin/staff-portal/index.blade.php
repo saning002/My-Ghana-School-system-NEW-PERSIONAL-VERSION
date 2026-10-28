@@ -53,115 +53,7 @@ $permGroups = [
     'Work Monitoring'        => ['work_logs','work_logs_manage','work_logs_comment'],
     'Promotions'             => ['promotions','promotions_manage'],
     'Academic Sessions'      => ['academic_sessions','academic_sessions_manage'],
-    'Settings'               => ['settings','settings_manage'],
-];
-$allPerms = \App\Models\StaffPortalUser::$allPermissions;
-$defaults = \App\Models\StaffPortalUser::$defaultPermissions;
-@endphp
-
-<div class="grid grid-cols-1 xl:grid-cols-5 gap-5">
-
-    {{-- �"?�"? Create form �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
-    <div class="xl:col-span-2 rounded-2xl border border-slate-200 bg-white shadow-sm p-5 self-start">
-        <h3 class="text-sm font-extrabold text-slate-800 mb-1">
-            <i class="fas fa-user-plus text-violet-500 mr-1.5"></i>Create Account
-        </h3>
-        <p class="text-[11px] text-slate-400 mb-4">All permissions are ON by default. Uncheck any you want to restrict.</p>
-
-        <form method="POST" action="{{ route('admin.staff-portal-users.store') }}" class="space-y-3">
-            @csrf
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wide text-slate-600 mb-1">Full Name *</label>
-                    <input type="text" name="full_name" required placeholder="e.g. Mr. Kofi Mensah"
-                        class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wide text-slate-600 mb-1">Role *</label>
-                    <select name="role" required class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400">
-                        @foreach(\App\Models\StaffPortalUser::$roleLabels as $v => $l)
-                        <option value="{{ $v }}">{{ $l }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wide text-slate-600 mb-1">Email *</label>
-                    <input type="email" name="email" required
-                        class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wide text-slate-600 mb-1">Phone</label>
-                    <input type="text" name="phone" placeholder="Optional"
-                        class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400">
-                </div>
-                <div class="sm:col-span-2">
-                    <label class="block text-xs font-bold uppercase tracking-wide text-slate-600 mb-1">Password *</label>
-                    <input type="password" name="password" required minlength="6"
-                        class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400">
-                </div>
-            </div>
-
-            {{-- Permissions grouped --}}
-            <div>
-                <div class="flex items-center justify-between mb-2">
-                    <label class="text-xs font-bold uppercase tracking-wide text-slate-600">Permissions</label>
-                    <div class="flex gap-2">
-                        <button type="button" onclick="setAllNew(true)"
-                            class="text-[10px] font-bold text-violet-600 hover:text-violet-800 px-2 py-1 bg-violet-50 rounded-lg">�o" All ON</button>
-                        <button type="button" onclick="setAllNew(false)"
-                            class="text-[10px] font-bold text-slate-500 hover:text-slate-700 px-2 py-1 bg-slate-100 rounded-lg">�o- All OFF</button>
-                    </div>
-                </div>
-                <div class="space-y-2 max-h-[400px] overflow-y-auto pr-1" id="new-perm-container">
-                    @foreach($permGroups as $groupName => $groupKeys)
-                    <div class="rounded-xl border border-slate-200 overflow-hidden">
-                        <div class="flex items-center justify-between bg-slate-50 px-3 py-2 border-b border-slate-100 cursor-pointer"
-                             onclick="toggleGroup(this)">
-                            <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-600">{{ $groupName }}</span>
-                            <div class="flex items-center gap-2">
-                                <button type="button" onclick="event.stopPropagation(); setGroup(this, true)"
-                                    class="text-[9px] font-bold text-violet-500 hover:text-violet-700">All</button>
-                                <button type="button" onclick="event.stopPropagation(); setGroup(this, false)"
-                                    class="text-[9px] font-bold text-slate-400 hover:text-slate-600">None</button>
-                                <i class="fas fa-chevron-down text-[9px] text-slate-400 transition-transform group-chev"></i>
-                            </div>
-                        </div>
-                        <div class="p-2 space-y-1 group-perms">
-                            @foreach($groupKeys as $perm)
-                            @if(isset($allPerms[$perm]))
-                            <label class="flex items-center gap-2 cursor-pointer text-xs font-medium text-slate-700 hover:text-slate-900 px-1 py-0.5 rounded hover:bg-slate-50">
-                                <input type="checkbox" name="permissions[]" value="{{ $perm }}"
-                                    {{ in_array($perm, $defaults) ? 'checked' : '' }}
-                                    class="new-perm-chk rounded accent-violet-600 w-3.5 h-3.5 shrink-0">
-                                <span>{{ $allPerms[$perm] }}</span>
-                                @if(in_array($perm, $defaults))
-                                <span class="ml-auto text-[9px] font-bold text-emerald-500 bg-emerald-50 px-1.5 py-0.5 rounded-full">DEFAULT</span>
-                                @endif
-                            </label>
-                            @endif
-                            @endforeach
-                        </div>
-                    </div>
-                    @endforeach
-                </div>
-            </div>
-
-            <button type="submit"
-                class="w-full rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white text-sm font-bold py-2.5 shadow transition-all active:scale-95">
-                <i class="fas fa-plus mr-1"></i> Create Account
-            </button>
-        </form>
-    </div>
-
-    {{-- �"?�"? Existing accounts �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
-    <div class="xl:col-span-3 space-y-4">
-        <h3 class="text-sm font-extrabold text-slate-800">
-            <i class="fas fa-users text-violet-400 mr-1.5"></i>Existing Accounts ({{ $staffUsers->count() }})
-        </h3>
-
-        @forelse($staffUsers as $user)
-        @php
-            $roleColors = ['accountant'=>'bg-[var(--primary-pale)] text-[var(--primary-text)]','headmaster'=>'bg-indigo-100 text-indigo-800','headteacher'=>'bg-emerald-100 text-emerald-800','deputy'=>'bg-blue-100 text-blue-800','secretary'=>'bg-pink-100 text-pink-800'];
+    'Settings'               => ['settings','settings_manage'?'admin.staff-portal-users.store'?'checked' : ''?'accountant'=>'bg-[var(--primary-pale)] text-[var(--primary-text)]','headmaster'=>'bg-indigo-100 text-indigo-800','headteacher'=>'bg-emerald-100 text-emerald-800','deputy'=>'bg-blue-100 text-blue-800','secretary'=>'bg-pink-100 text-pink-800'];
             $rc = $roleColors[$user->role] ?? 'bg-slate-100 text-slate-700';
             $userPerms = $user->permission_list;
         @endphp
@@ -186,30 +78,7 @@ $defaults = \App\Models\StaffPortalUser::$defaultPermissions;
                     @endif
                     <button @click="expanded = !expanded"
                         class="ml-1 w-8 h-8 flex items-center justify-center rounded-lg bg-white border border-slate-200 text-slate-500 hover:text-violet-600 hover:border-violet-300 transition-colors">
-                        <i class="fas text-xs" :class="expanded ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
-                    </button>
-                </div>
-            </div>
-
-            {{-- Permissions summary (always visible) --}}
-            <div class="px-5 py-3 border-b border-slate-100">
-                <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">
-                    Permissions ({{ count($userPerms) }} / {{ count($allPerms) }} active)
-                </p>
-                <div class="flex flex-wrap gap-1">
-                    @forelse($userPerms as $p)
-                    <span class="rounded-full bg-violet-100 text-violet-800 text-[10px] font-bold px-2 py-0.5">
-                        {{ $allPerms[$p] ?? $p }}
-                    </span>
-                    @empty
-                    <span class="text-xs text-red-400 font-semibold italic">�s� No permissions – this account cannot access anything</span>
-                    @endforelse
-                </div>
-            </div>
-
-            {{-- Edit form (expandable) --}}
-            <div x-show="expanded" x-cloak class="px-5 py-4">
-                <form method="POST" action="{{ route('admin.staff-portal-users.update', $user) }}" class="space-y-3">
+                        <i class="fas text-xs" :class="expanded ? 'fa-chevron-up' : 'fa-chevron-down'?'admin.staff-portal-users.update', $user) }}" class="space-y-3">
                     @csrf @method('PUT')
 
                     <div class="grid grid-cols-2 gap-2">
@@ -232,25 +101,7 @@ $defaults = \App\Models\StaffPortalUser::$defaultPermissions;
                         <div class="flex items-center justify-between mb-2">
                             <p class="text-[11px] font-bold uppercase tracking-wide text-slate-500">Permissions</p>
                             <div class="flex gap-2">
-                                <button type="button" onclick="setAllEdit('edit-{{ $user->id }}', true)"
-                                    class="text-[10px] font-bold text-violet-600 hover:text-violet-800 px-2 py-1 bg-violet-50 rounded-lg">�o" All ON</button>
-                                <button type="button" onclick="setAllEdit('edit-{{ $user->id }}', false)"
-                                    class="text-[10px] font-bold text-slate-500 hover:text-slate-700 px-2 py-1 bg-slate-100 rounded-lg">�o- All OFF</button>
-                            </div>
-                        </div>
-                        <div class="space-y-1.5 max-h-[360px] overflow-y-auto pr-1" id="edit-{{ $user->id }}">
-                            @foreach($permGroups as $groupName => $groupKeys)
-                            <div class="rounded-xl border border-slate-200 overflow-hidden">
-                                <div class="flex items-center justify-between bg-slate-50 px-3 py-1.5 border-b border-slate-100 cursor-pointer" onclick="toggleGroup(this)">
-                                    <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-600">{{ $groupName }}</span>
-                                    <i class="fas fa-chevron-down text-[8px] text-slate-400 group-chev"></i>
-                                </div>
-                                <div class="p-2 grid grid-cols-2 gap-x-3 gap-y-0.5 group-perms">
-                                    @foreach($groupKeys as $perm)
-                                    @if(isset($allPerms[$perm]))
-                                    <label class="flex items-center gap-1.5 cursor-pointer text-[11px] font-medium text-slate-600 hover:text-slate-900 py-0.5">
-                                        <input type="checkbox" name="permissions[]" value="{{ $perm }}"
-                                            {{ in_array($perm, $userPerms) ? 'checked' : '' }}
+                                <button type="button" onclick="setAllEdit('edit-{{ $user->id }}'?'edit-{{ $user->id }}'?'checked' : '' }}
                                             class="rounded accent-violet-600 w-3 h-3 shrink-0">
                                         <span class="leading-tight">{{ $allPerms[$perm] }}</span>
                                     </label>

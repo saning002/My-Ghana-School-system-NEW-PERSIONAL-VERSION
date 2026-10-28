@@ -2,67 +2,7 @@ extends('layouts.app')
 @section('title','Enter Exam Scores')
 @section('subtitle','Record class scores and exam scores per student')
 
-@section('content')
-<div class="max-w-3xl mx-auto">
-
-    {{-- �"?�"? Step 1: Select Program �"?�"? --}}
-    <div class="card overflow-hidden mb-5">
-        <div class="px-5 py-4 border-b border-[var(--primary-pale)]" style="background:var(--primary-pale)">
-            <h2 class="text-base font-bold" style="color:var(--primary-text)">Step 1 – Select Program</h2>
-        </div>
-        <div class="px-5 py-5">
-            <form method="GET" action="{{ route('admin.exams.create') }}">
-                <label class="block text-xs font-semibold text-gray-600 mb-1.5">Program *</label>
-                <div class="flex gap-3">
-                    <select name="program_id" required
-                        class="flex-1 px-4 py-3 border border-[var(--brand)] rounded-xl text-sm focus:outline-none focus:ring-2 bg-white">
-                        <option value="">Select program–�</option>
-                        @foreach($programs as $prog)
-                            <option value="{{ $prog->id }}"
-                                {{ $selectedProgram && $selectedProgram->id == $prog->id ? 'selected' : '' }}>
-                                {{ $prog->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                    <button type="submit" class="btn-gold px-5 py-3 rounded-xl text-sm font-semibold">
-                        Select
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    {{-- �"?�"? Step 2: Select Student �"?�"? --}}
-    @if($selectedProgram)
-    <div class="card overflow-hidden mb-5">
-        <div class="px-5 py-4 border-b border-[var(--primary-pale)]" style="background:var(--primary-pale)">
-            <h2 class="text-base font-bold" style="color:var(--primary-text)">
-                Step 2 – Select Student
-                <span class="font-normal text-xs ml-2 opacity-70">{{ $selectedProgram->name }}</span>
-            </h2>
-        </div>
-        <div class="px-5 py-5">
-            @if($students->isEmpty())
-                <p class="text-sm text-gray-400 text-center py-4">No students enrolled in this program yet.</p>
-            @else
-                <form method="GET" action="{{ route('admin.exams.create') }}" id="student-form">
-                    <input type="hidden" name="program_id" value="{{ $selectedProgram->id }}">
-
-                    {{-- Search box --}}
-                    <label class="block text-xs font-semibold text-gray-600 mb-1.5">Search by name or ID</label>
-                    <input type="text" id="student-search" placeholder="Type name or student ID–�"
-                        class="w-full px-4 py-3 border border-[var(--brand)] rounded-xl text-sm focus:outline-none focus:ring-2 bg-white mb-3"
-                        autocomplete="off">
-
-                    {{-- Student select --}}
-                    <label class="block text-xs font-semibold text-gray-600 mb-1.5">Student *</label>
-                    <div class="flex gap-3">
-                        <select name="student_id" id="student-select" required
-                            class="flex-1 px-4 py-3 border border-[var(--brand)] rounded-xl text-sm focus:outline-none focus:ring-2 bg-white">
-                            <option value="">Select student–�</option>
-                            @foreach($students as $stu)
-                                <option value="{{ $stu->id }}"
-                                    data-name="{{ strtolower($stu->user?->full_name ?? '') }}"
+@section('content'?'admin.exams.create'?'selected' : ''?'admin.exams.create'?'') }}"
                                     data-sid="{{ strtolower($stu->student_id) }}"
                                     {{ $selectedStudent && $selectedStudent->id == $stu->id ? 'selected' : '' }}>
                                     {{ $stu->user?->full_name ?? '–' }} ({{ $stu->student_id }})
@@ -128,30 +68,7 @@ extends('layouts.app')
                         resultsBox.classList.add('hidden');
                         allOptions.forEach(o => { o.hidden = false; });
                         // Auto-submit the form
-                        document.getElementById('student-form').submit();
-                    };
-                })();
-                </script>
-            @endif
-        </div>
-    </div>
-    @endif
-
-    {{-- �"?�"? Step 3: Enter Scores �"?�"? --}}
-    @if($selectedProgram && $selectedStudent)
-        @if($courses->isEmpty())
-            <div class="card p-8 text-center">
-                <i class="fas fa-book-open text-gray-200 text-4xl mb-3 block"></i>
-                <p class="text-gray-400 text-sm">No courses found for <strong>{{ $selectedProgram->name }}</strong>. Add courses first.</p>
-            </div>
-        @else
-            {{-- Attempt selector --}}
-            @if($attempts->count() > 0)
-            <div class="card overflow-hidden mb-4">
-                <div class="px-5 py-4 flex flex-wrap items-center gap-3" style="background:var(--primary-pale)">
-                    <span class="text-xs font-semibold text-gray-600">Attempt:</span>
-                    @foreach($attempts as $att)
-                        <a href="{{ route('admin.exams.create', ['program_id' => $selectedProgram->id, 'student_id' => $selectedStudent->id, 'attempt' => $att]) }}"
+                        document.getElementById('student-form'?'admin.exams.create', ['program_id' => $selectedProgram->id, 'student_id' => $selectedStudent->id, 'attempt' => $att]) }}"
                            class="px-4 py-1.5 rounded-full text-xs font-bold border transition-colors
                                   {{ $att == $currentAttempt ? 'border-amber-500 text-[var(--primary-text)]' : 'border-[var(--brand)] text-gray-500 bg-white hover:bg-[var(--primary-pale)]' }}"
                            style="{{ $att == $currentAttempt ? 'background:var(--primary-pale)' : '' }}">

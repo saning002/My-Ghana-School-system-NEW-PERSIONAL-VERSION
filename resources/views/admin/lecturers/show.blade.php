@@ -2,12 +2,7 @@ extends('layouts.app')
 @section('title', $lecturer->full_name)
 @section('subtitle', 'Teacher profile and course assignments')
 
-@section('content')
-<div class="max-w-4xl mx-auto space-y-6">
-
-    {{-- �"?�"? Back + Actions �"?�"? --}}
-    <div class="flex items-center justify-between">
-        <a href="{{ route('admin.lecturers.index') }}" class="text-sm text-gray-500 hover:text-gray-700 font-medium flex items-center gap-1">
+@section('content'?'admin.lecturers.index') }}" class="text-sm text-gray-500 hover:text-gray-700 font-medium flex items-center gap-1">
             <i class="fas fa-arrow-left text-xs"></i> Back to Teachers
         </a>
         <div class="flex items-center gap-2">
@@ -17,66 +12,7 @@ extends('layouts.app')
             </a>
             <form method="POST" action="{{ route('admin.lecturers.destroy', $lecturer) }}"
                   onsubmit="return confirm('Remove {{ addslashes($lecturer->full_name) }} permanently?')">
-                @csrf @method('DELETE')
-                <button type="submit"
-                    class="inline-flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-xl text-sm font-semibold transition-colors border border-red-200">
-                    <i class="fas fa-trash"></i> Remove
-                </button>
-            </form>
-        </div>
-    </div>
-
-    {{-- �"?�"? Profile Card �"?�"? --}}
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        <div class="bg-gradient-to-r from-[var(--primary)] to-[var(--primary-dark)] h-24 relative">
-            <div class="absolute -bottom-10 left-6">
-                @if($lecturer->photo_url)
-                    <img src="{{ $lecturer->photo_url }}" alt="{{ $lecturer->full_name }}"
-                         class="w-20 h-20 rounded-2xl object-cover border-4 border-white shadow-md">
-                @else
-                    <div class="w-20 h-20 rounded-2xl bg-white flex items-center justify-center border-4 border-white shadow-md">
-                        <span class="text-3xl font-bold text-[var(--brand)]">{{ strtoupper(substr($lecturer->full_name, 0, 1)) }}</span>
-                    </div>
-                @endif
-            </div>
-        </div>
-        <div class="pt-14 px-6 pb-6">
-            <div class="flex flex-wrap items-start justify-between gap-2">
-                <div>
-                    <h2 class="text-xl font-bold text-gray-900">{{ $lecturer->full_name }}</h2>
-                    @if($lecturer->qualification)
-                        <p class="text-sm text-blue-600 font-semibold mt-0.5">{{ $lecturer->qualification }}</p>
-                    @endif
-                </div>
-                <span class="text-xs px-3 py-1 bg-[var(--primary-pale)] text-[var(--primary-text)] border border-[var(--brand)] rounded-full font-semibold">
-                    <i class="fas fa-chalkboard-user mr-1"></i> Teacher
-                </span>
-            </div>
-
-            @if($lecturer->bio)
-                <p class="mt-3 text-sm text-gray-600 leading-relaxed border-l-4 border-[var(--brand)] pl-3">
-                    {{ $lecturer->bio }}
-                </p>
-            @endif
-
-            {{-- Personal details grid --}}
-            <div class="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                @if($lecturer->email)
-                <div class="flex items-center gap-2 text-sm text-gray-600 bg-gray-50 rounded-xl px-3 py-2">
-                    <i class="fas fa-envelope text-[var(--brand)] w-4 text-center flex-shrink-0"></i>
-                    <span class="truncate">{{ $lecturer->email }}</span>
-                </div>
-                @endif
-                @if($lecturer->phone)
-                <div class="flex items-center gap-2 text-sm text-gray-600 bg-gray-50 rounded-xl px-3 py-2">
-                    <i class="fas fa-phone text-[var(--brand)] w-4 text-center flex-shrink-0"></i>
-                    {{ $lecturer->phone }}
-                </div>
-                @endif
-                @if($lecturer->date_of_birth)
-                <div class="flex items-center gap-2 text-sm text-gray-600 bg-gray-50 rounded-xl px-3 py-2">
-                    <i class="fas fa-birthday-cake text-[var(--brand)] w-4 text-center flex-shrink-0"></i>
-                    {{ $lecturer->date_of_birth->format('d M Y') }}
+                @csrf @method('DELETE'?'d M Y') }}
                 </div>
                 @endif
                 @if($lecturer->gender)
@@ -99,21 +35,7 @@ extends('layouts.app')
                 @endif
                 <div class="flex items-center gap-2 text-sm text-gray-600 bg-gray-50 rounded-xl px-3 py-2">
                     <i class="fas fa-calendar-plus text-[var(--brand)] w-4 text-center flex-shrink-0"></i>
-                    Joined {{ $lecturer->created_at->format('M Y') }}
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {{-- �"?�"? Course Assignments �"?�"? --}}
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        <div class="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-blue-100/40 flex items-center justify-between">
-            <h3 class="text-sm font-bold text-blue-900 flex items-center gap-2">
-                <i class="fas fa-book-open text-blue-600"></i> Course Assignments
-            </h3>
-            @php $totalCourses = $assignments->flatten()->count(); @endphp
-            <span class="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-semibold">
-                {{ $totalCourses }} course{{ $totalCourses !== 1 ? 's' : '' }}
+                    Joined {{ $lecturer->created_at->format('M Y'?'s' : '' }}
             </span>
         </div>
 

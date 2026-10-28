@@ -7,63 +7,14 @@ extends('layouts.app')
 
 @if(session('error'))
 <div class="rounded-2xl bg-[var(--primary-pale)] border border-[var(--brand)] px-5 py-3 text-sm font-semibold text-[var(--primary-text)] flex items-center gap-2">
-    <i class="fas fa-exclamation-triangle text-[var(--brand)]"></i> {{ session('error') }}
-</div>
-@endif
-
-{{-- �"?�"? Hero �"?�"? --}}
-<div class="rounded-3xl overflow-hidden relative" style="background:linear-gradient(135deg,#0d0a2e 0%,#2d2480 40%,#5647d6 75%,#a395f5 100%)">
-    <div class="absolute inset-0 pointer-events-none">
-        <div class="absolute -top-16 -right-16 h-64 w-64 rounded-full bg-white/4 blur-3xl"></div>
-        <div class="absolute -bottom-12 -left-12 h-48 w-48 rounded-full bg-indigo-300/10 blur-2xl"></div>
-        <div class="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-yellow-400/50 to-transparent"></div>
-    </div>
-    <div class="relative z-10 p-7 lg:p-10">
-        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-            <div class="space-y-2">
-                <div class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3.5 py-1 text-[11px] font-bold uppercase tracking-widest text-indigo-200">
-                    <i class="fas fa-chart-bar text-yellow-300 text-[10px]"></i> Reports & Analytics
-                </div>
-                <h1 class="text-3xl lg:text-4xl font-extrabold text-white tracking-tight">Reports Hub</h1>
-                <p class="text-sm text-indigo-200">All school reports, statements, and analytics in one place.</p>
-            </div>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                @foreach([
-                    ['val'=>$summary['total_students'], 'label'=>'Students',   'icon'=>'fa-user-graduate'],
+    <i class="fas fa-exclamation-triangle text-[var(--brand)]"></i> {{ session('error'?'val'=>$summary['total_students'], 'label'=>'Students',   'icon'=>'fa-user-graduate'],
                     ['val'=>$summary['total_programs'],  'label'=>'Programs',   'icon'=>'fa-graduation-cap'],
                     ['val'=>$summary['attendance_rate'].'%','label'=>'Attendance','icon'=>'fa-clipboard-check'],
                     ['val'=>'GH₵'.number_format($summary['fees']['outstanding']??0,0),'label'=>'Outstanding','icon'=>'fa-coins'],
                 ] as $s)
                 <div class="rounded-2xl bg-white/10 border border-white/15 px-4 py-3 text-white">
                     <p class="text-xl font-extrabold leading-none">{{ $s['val'] }}</p>
-                    <p class="text-[10px] font-bold uppercase tracking-wider text-white/55 mt-1">{{ $s['label'] }}</p>
-                </div>
-                @endforeach
-            </div>
-        </div>
-
-        {{-- Active period + submission status --}}
-        <div class="mt-6 flex flex-wrap gap-3">
-            @if($activePeriod)
-            <div class="inline-flex items-center gap-2 rounded-full bg-emerald-500/20 border border-emerald-400/30 px-4 py-1.5 text-xs font-bold text-emerald-200">
-                <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                Active: {{ $activePeriod->full_label }}
-            </div>
-            @endif
-            <div class="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/15 px-4 py-1.5 text-xs font-bold text-white/70">
-                <i class="fas fa-check-circle text-emerald-400"></i> {{ $completeCount }} marks complete
-                &nbsp;·&nbsp;
-                <i class="fas fa-clock text-[var(--brand)]"></i> {{ $pendingCount }} pending
-            </div>
-        </div>
-    </div>
-</div>
-
-{{-- �"?�"? Report Categories �"?�"? --}}
-@php
-$categories = [
-    [
-        'title' => 'Academic Reports',
+                    <p class="text-[10px] font-bold uppercase tracking-wider text-white/55 mt-1">{{ $s['label'?'title' => 'Academic Reports',
         'icon'  => 'fa-graduation-cap',
         'color' => 'from-indigo-500 to-violet-600',
         'badge' => 'bg-indigo-50 text-indigo-700',

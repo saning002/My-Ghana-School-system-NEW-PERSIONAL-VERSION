@@ -356,48 +356,7 @@ extends('layouts.app')
                         <input type="range" min="0" max="90"
                                value="{{ old('hero_overlay_opacity', $s->hero_overlay_opacity ?? 45) }}"
                                class="w-full mt-2 accent-orange-500"
-                               oninput="document.getElementById('videoOverlayValue').textContent=this.value+'%';document.getElementById('heroOverlayHidden').value=this.value">
-                    </div>
-                </div>
-            </div>
-
-            {{-- Default panel (informational only) --}}
-            <div id="heroBg-default" class="hero-bg-panel">
-                <div class="rounded-xl border border-gray-200 bg-gray-50 p-4">
-                    <p class="text-sm text-gray-500 flex items-center gap-2">
-                        <i class="fas fa-info-circle text-gray-400"></i>
-                        Using the default navy gradient background. Select another type above to customise.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {{-- Theme Colors --}}
-    <div class="card overflow-hidden">
-        <div class="px-5 py-4 border-b bg-rose-50 flex items-center gap-2">
-            <i class="fas fa-palette text-rose-500"></i>
-            <h3 class="text-sm font-bold text-rose-900">Theme Colors</h3>
-        </div>
-        <div class="px-5 py-5 space-y-6">
-            @php
-            $tc  = $s->theme ?? \App\Models\Website\SiteSetting::defaultTheme();
-            $wtc = $s->websiteTheme ?? \App\Models\Website\SiteSetting::defaultWebsiteTheme();
-            @endphp
-
-            {{-- �"?�"? WEBSITE THEME �"?�"? --}}
-            <div class="rounded-xl border border-blue-200 bg-blue-50/40 p-4 space-y-4">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h4 class="text-xs font-bold uppercase tracking-wider text-blue-800">Public Website Colors</h4>
-                        <p class="text-[10px] text-blue-500 mt-0.5">Only affects the public-facing website – homepage, about, admissions, etc.</p>
-                    </div>
-                    <span class="text-[10px] bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-semibold">Website only</span>
-                </div>
-
-                <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                    @foreach([
-                        ['wt_primary',  'Primary (Gold)',   'Buttons, highlights, links',        $wtc['primary']],
+                               oninput="document.getElementById('videoOverlayValue').textContent=this.value+'%';document.getElementById('heroOverlayHidden'?'wt_primary',  'Primary (Gold)',   'Buttons, highlights, links',        $wtc['primary']],
                         ['wt_secondary','Secondary (Navy)', 'Headings, hero backgrounds, cards',  $wtc['secondary']],
                         ['wt_accent',   'Accent',          'Badges, active states, icons',        $wtc['accent']],
                         ['wt_text',     'Body Text',       'Main paragraph text colour',          $wtc['text']],
@@ -451,30 +410,7 @@ extends('layouts.app')
                             ['Emerald Fresh',  '#10b981','#064e3b','#3b82f6','#1c2520','#ecfdf5','#064e3b'],
                         ] as [$pn,$pp,$ps,$pa,$pt,$pb,$pnb])
                         <button type="button"
-                                onclick="applyWebsitePreset('{{ $pp }}','{{ $ps }}','{{ $pa }}','{{ $pt }}','{{ $pb }}','{{ $pnb }}')"
-                                class="px-3 py-1.5 rounded-lg text-xs font-semibold border border-gray-200 hover:border-blue-400 transition-colors bg-white flex items-center gap-1.5">
-                            <span class="w-3 h-3 rounded-full" style="background:{{ $pp }}"></span>
-                            <span class="w-3 h-3 rounded-full" style="background:{{ $ps }}"></span>
-                            {{ $pn }}
-                        </button>
-                        @endforeach
-                    </div>
-                </div>
-            </div>
-
-            {{-- �"?�"? ADMIN THEME �"?�"? --}}
-            <div class="rounded-xl border border-slate-200 bg-slate-50/50 p-4 space-y-4">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700">Admin Panel Colors</h4>
-                        <p class="text-[10px] text-slate-500 mt-0.5">Only affects the admin dashboard sidebar and buttons – not the public website.</p>
-                    </div>
-                    <span class="text-[10px] bg-slate-200 text-slate-700 px-2 py-1 rounded-full font-semibold">Admin only</span>
-                </div>
-
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                    @foreach([
-                        ['theme_adminPrimary','Admin Primary',  'Sidebar highlights & buttons', $tc['adminPrimary'] ?? '#D4A017'],
+                                onclick="applyWebsitePreset('{{ $pp }}','{{ $ps }}','{{ $pa }}','{{ $pt }}','{{ $pb }}','{{ $pnb }}'?'theme_adminPrimary','Admin Primary',  'Sidebar highlights & buttons', $tc['adminPrimary'] ?? '#D4A017'],
                         ['theme_adminNav',    'Admin Sidebar',  'Sidebar background colour',    $tc['adminNav']     ?? '#0B1121'],
                         ['theme_accent',      'Accent / Teal',  'Student portal active states', $tc['accent']       ?? '#0891b2'],
                         ['theme_primary',     'Admin Gold',     'Admin button base colour',     $tc['primary']      ?? '#e9a422'],
@@ -988,22 +924,9 @@ function wsTab(id) {
         document.getElementById('ws-'+t)?.classList.toggle('hidden', t !== id);
         document.getElementById('wsbtn-'+t)?.classList.toggle('active', t === id);
     });
-    localStorage.setItem('wsActiveTab', id);
-}
-
-// �"?�"? Hero background type switcher �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?
-function heroShowBgPanel(type) {
-    document.querySelectorAll('.hero-bg-panel').forEach(p => p.classList.add('hidden'));
+    localStorage.setItem('wsActiveTab'?'.hero-bg-panel').forEach(p => p.classList.add('hidden'));
     const panel = document.getElementById('heroBg-' + type);
-    if (panel) panel.classList.remove('hidden');
-}
-
-// �"?�"? Sync colour picker – text input �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?
-function syncColorInput(textInput) {
-    const val = textInput.value.trim();
-    const pickerName = textInput.dataset.picker;
-    if (pickerName && /^#[0-9A-Fa-f]{6}$/.test(val)) {
-        const picker = document.querySelector('[name="' + pickerName + '"]');
+    if (panel) panel.classList.remove('hidden'?'[name="' + pickerName + '"]');
         if (picker) picker.value = val;
     }
 }
@@ -1030,67 +953,25 @@ document.addEventListener('DOMContentLoaded', function() {
     updateWebsitePreview();
     updateAdminPreview();
 
-    wsTab(localStorage.getItem('wsActiveTab') || 'identity');
-});
-
-// �"?�"? Gradient live preview �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?
-function updateGradientPreview() {
-    const from  = document.querySelector('[name="hero_gradient_from"]')?.value || '#050d22';
+    wsTab(localStorage.getItem('wsActiveTab') || 'identity'?'[name="hero_gradient_from"]')?.value || '#050d22';
     const via   = document.querySelector('[name="hero_gradient_via"]')?.value || '';
     const to    = document.querySelector('[name="hero_gradient_to"]')?.value || '#122859';
     const angle = document.querySelector('[name="hero_gradient_angle"]')?.value || 150;
     const viaStop = via && /^#[0-9A-Fa-f]{6}$/.test(via) ? ',' + via : '';
-    const preview = document.getElementById('gradientPreview');
-    if (preview) preview.style.background = `linear-gradient(${angle}deg,${from}${viaStop},${to})`;
-}
-
-// �"?�"? Website theme preview �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?
-function updateWebsitePreview() {
-    const map = {
-        'wt_primary':   'wtp-wt_primary',
+    const preview = document.getElementById('gradientPreview'?'wt_primary':   'wtp-wt_primary',
         'wt_secondary': 'wtp-wt_secondary',
         'wt_accent':    'wtp-wt_accent',
         'wt_navBg':     'wtp-wt_navBg',
         'wt_bg':        'wtp-wt_bg',
     };
     Object.entries(map).forEach(([name, id]) => {
-        const picker = document.querySelector('[name="' + name + '"]');
-        const el = document.getElementById(id);
-        if (picker && el) el.style.background = picker.value;
-    });
-}
-
-// �"?�"? Admin theme preview �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?
-function updateAdminPreview() {
-    const map = {
-        'theme_adminNav':     'atp-theme_adminNav',
+        const picker = document.querySelector('[name="' + name + '"]'?'theme_adminNav':     'atp-theme_adminNav',
         'theme_adminPrimary': 'atp-theme_adminPrimary',
         'theme_accent':       'atp-theme_accent',
     };
     Object.entries(map).forEach(([name, id]) => {
-        const picker = document.querySelector('[name="' + name + '"]');
-        const el = document.getElementById(id);
-        if (picker && el) el.style.background = picker.value;
-    });
-}
-
-// �"?�"? Apply website preset �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?
-function applyWebsitePreset(primary, secondary, accent, text, bg, navBg) {
-    const values = { wt_primary:primary, wt_secondary:secondary, wt_accent:accent, wt_text:text, wt_bg:bg, wt_navBg:navBg };
-    Object.entries(values).forEach(([name, val]) => {
-        const picker = document.querySelector('[name="' + name + '"]');
-        const textInput = picker?.parentElement?.querySelector('input[type="text"]');
-        if (picker) picker.value = val;
-        if (textInput) textInput.value = val;
-    });
-    updateWebsitePreview();
-}
-
-// �"?�"? Apply admin preset �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?
-function applyAdminPreset(adminPrimary, adminNav, accent, primary) {
-    const values = { theme_adminPrimary:adminPrimary, theme_adminNav:adminNav, theme_accent:accent, theme_primary:primary };
-    Object.entries(values).forEach(([name, val]) => {
-        const picker = document.querySelector('[name="' + name + '"]');
+        const picker = document.querySelector('[name="' + name + '"]'?'[name="' + name + '"]');
+        const textInput = picker?.parentElement?.querySelector('input[type="text"]'?'[name="' + name + '"]');
         const textInput = picker?.parentElement?.querySelector('input[type="text"]');
         if (picker) picker.value = val;
         if (textInput) textInput.value = val;

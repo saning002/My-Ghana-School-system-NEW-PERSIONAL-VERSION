@@ -270,21 +270,7 @@ extends('layouts.app')
     </div>
     @if($students->hasPages())
     <div class="px-6 py-4 border-t border-slate-100 bg-slate-50/50">
-        {{ $students->links('pagination::tailwind') }}
-    </div>
-    @endif
-</div>
-
-@if($students->hasPages())
-<div class="mt-4 lg:hidden">{{ $students->links() }}</div>
-@endif
-
-{{-- �"?�"? BULK IMPORT MODAL (includes program selector to avoid the temp-file error) �"?�"? --}}
-<div id="bulkImportModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-    <div class="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden" onclick="event.stopPropagation()">
-        <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50">
-            <h3 class="text-base font-extrabold text-slate-800">Bulk Import Students</h3>
-            <button type="button" onclick="document.getElementById('bulkImportModal').classList.add('hidden')"
+        {{ $students->links('pagination::tailwind'?'bulkImportModal').classList.add('hidden')"
                 class="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-200 text-slate-500 hover:bg-slate-300 transition-colors">
                 <i class="fas fa-times text-sm"></i>
             </button>

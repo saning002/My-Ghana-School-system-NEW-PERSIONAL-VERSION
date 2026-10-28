@@ -208,11 +208,7 @@ extends('layouts.app')
                             @keydown.arrow-up.prevent="highlight=Math.max(highlight-1,0)"
                             @keydown.enter.prevent="selectHighlighted()"
                             @blur="delayClose()"
-                            class="input-premium w-full px-4 py-3 text-[14px] {{ $errors->has('church_branch_id') ? 'border-red-500 bg-red-50' : '' }}"
-                            placeholder="Search or type new branch name–�"
-                            autocomplete="off">
-                        <input type="hidden" name="church_branch_id" :value="selectedId">
-                        <input type="hidden" name="branch_new"       :value="selectedId ? '' : query.trim()">
+                            class="input-premium w-full px-4 py-3 text-[14px] {{ $errors->has('church_branch_id') ? 'border-red-500 bg-red-50' : ''?'' : query.trim()">
                         <div x-show="open && filtered.length > 0" x-cloak
                             class="absolute z-50 mt-1 w-full bg-white border border-slate-200 rounded-xl shadow-lg overflow-hidden max-h-52 overflow-y-auto">
                             <template x-for="(item, idx) in filtered" :key="item.id ?? item.name">

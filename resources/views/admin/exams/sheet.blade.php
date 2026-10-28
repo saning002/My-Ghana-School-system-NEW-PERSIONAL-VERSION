@@ -185,21 +185,7 @@ extends('layouts.app')
                         <h3 class="font-bold text-gray-800 mb-2 flex items-center gap-2"><i class="fas fa-upload text-blue-600"></i> Upload Filled Excel Sheet</h3>
                         <p class="text-sm text-gray-600 mb-4">Upload the filled Excel template to bulk save quiz and exam scores.</p>
                     </div>
-                    <form action="{{ route('admin.exams.sheet.import') }}" method="POST" enctype="multipart/form-data" class="flex gap-2">
-                        @csrf
-                        <input type="hidden" name="program_id" value="{{ $selectedProgram->id }}">
-                        <input type="hidden" name="attempt" value="{{ $currentAttempt }}">
-                        <input type="file" name="sheet_file" accept=".xlsx,.xls,.csv" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" required>
-                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition-colors flex items-center justify-center gap-2 whitespace-nowrap">
-                            <i class="fas fa-cloud-upload-alt"></i> Upload
-                        </button>
-                    </form>
-                </div>
-            </div>
-
-            {{-- �"?�"? SBA Download Card �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6"
-                 x-data="{ selectAll: true, selectedStudents: {{ json_encode($students->pluck('id')->values()) }} }">
+                    <form action="{{ route('admin.exams.sheet.import'?'id')->values()) }} }">
                 <h3 class="font-bold text-gray-800 mb-1 flex items-center gap-2">
                     <i class="fas fa-file-download text-teal-600"></i> Download SBA Scores
                 </h3>

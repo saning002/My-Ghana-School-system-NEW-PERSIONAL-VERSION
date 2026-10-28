@@ -13,46 +13,9 @@ extends('layouts.app')
 @endif
 @if(session('error'))
 <div class="rounded-2xl bg-red-50 border border-red-200 px-5 py-3 text-sm font-semibold text-red-800 flex items-center gap-2">
-    <i class="fas fa-exclamation-circle text-red-500"></i> {{ session('error') }}
-</div>
-@endif
-
-{{-- �"?�"? STATS OVERVIEW �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
-<div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-    @php
-        $totalLogs = $allLogs->count();
-        $cwLogs    = $allLogs->where('type','classwork')->count();
+    <i class="fas fa-exclamation-circle text-red-500"></i> {{ session('error'?'type','classwork')->count();
         $hwLogs    = $allLogs->where('type','homework')->count();
-        $testLogs  = $allLogs->where('type','monthly_test')->count();
-    @endphp
-    <div class="card p-4 text-center">
-        <p class="text-2xl font-extrabold text-slate-800">{{ $totalLogs }}</p>
-        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mt-0.5">Total Logs</p>
-    </div>
-    <div class="card p-4 text-center">
-        <p class="text-2xl font-extrabold text-purple-600">{{ $cwLogs }}</p>
-        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mt-0.5">Classwork</p>
-    </div>
-    <div class="card p-4 text-center">
-        <p class="text-2xl font-extrabold text-[var(--brand)]">{{ $hwLogs }}</p>
-        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mt-0.5">Homework</p>
-    </div>
-    <div class="card p-4 text-center">
-        <p class="text-2xl font-extrabold text-rose-600">{{ $testLogs }}</p>
-        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mt-0.5">Tests</p>
-    </div>
-</div>
-
-{{-- �"?�"? FILTERS �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
-<div class="card p-4">
-    <form method="GET" class="flex flex-wrap gap-3 items-end">
-        <div class="flex-1 min-w-[150px]">
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Teacher</label>
-            <select name="lecturer_id" onchange="this.form.submit()"
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)]">
-                <option value="">All Teachers</option>
-                @foreach($lecturers as $l)
-                <option value="{{ $l->id }}" {{ ($filterLecturer ?? '') == $l->id ? 'selected' : '' }}>
+        $testLogs  = $allLogs->where('type','monthly_test'?'') == $l->id ? 'selected' : '' }}>
                     {{ $l->full_name }}
                 </option>
                 @endforeach
@@ -74,49 +37,7 @@ extends('layouts.app')
                 class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)]">
         </div>
         @if(($filterLecturer ?? '') || ($filterType ?? '') || ($filterDate ?? ''))
-        <a href="{{ route('admin.work-monitoring.index') }}"
-           class="px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-600 text-sm font-bold transition-colors">
-            Clear
-        </a>
-        @endif
-    </form>
-</div>
-
-{{-- �"?�"? ALL RECENT LOG ENTRIES (always visible) �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
-<div class="card overflow-hidden">
-    <div class="px-5 py-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
-        <h3 class="text-sm font-extrabold text-slate-800 flex items-center gap-2">
-            <i class="fas fa-list-ul text-[var(--brand)]"></i>
-            All Work Log Entries
-            <span class="rounded-full bg-slate-200 text-slate-600 text-[10px] font-bold px-2 py-0.5">{{ $allLogs->count() }}</span>
-        </h3>
-    </div>
-
-    @if($allLogs->isEmpty())
-    <div class="py-14 text-center text-slate-400">
-        <i class="fas fa-clipboard-list text-4xl mb-3 block"></i>
-        <p class="text-sm font-semibold">No work log entries yet.</p>
-        <p class="text-xs mt-1">Teachers submit logs from their portal under <strong>Work Logs</strong>.</p>
-    </div>
-    @else
-    <div class="overflow-x-auto">
-        <table class="w-full text-sm">
-            <thead>
-                <tr class="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 border-b border-slate-100 bg-slate-50">
-                    <th class="px-4 py-3 text-left">Date</th>
-                    <th class="px-4 py-3 text-left">Teacher</th>
-                    <th class="px-4 py-3 text-left">Type</th>
-                    <th class="px-4 py-3 text-left">Subject</th>
-                    <th class="px-4 py-3 text-left">Class</th>
-                    <th class="px-4 py-3 text-left">Title / Topic</th>
-                    <th class="px-4 py-3 text-right">Actions</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-50">
-                @foreach($allLogs as $log)
-                <tr class="hover:bg-[var(--primary-pale)]/20 transition-colors" x-data="{ showComment: false }">
-                    <td class="px-4 py-3 text-xs font-bold text-slate-600 whitespace-nowrap">
-                        {{ $log->date instanceof \Carbon\Carbon ? $log->date->format('M d, Y') : \Carbon\Carbon::parse($log->date)->format('M d, Y') }}
+        <a href="{{ route('admin.work-monitoring.index'?'M d, Y') : \Carbon\Carbon::parse($log->date)->format('M d, Y') }}
                     </td>
                     <td class="px-4 py-3">
                         <div class="flex items-center gap-2">
@@ -193,25 +114,7 @@ extends('layouts.app')
                             </button>
                             <form method="POST" action="{{ route('admin.work-monitoring.log.destroy', $log) }}"
                                   onsubmit="return confirm('Delete this log entry?')">
-                                @csrf @method('DELETE')
-                                <button type="submit"
-                                    class="w-7 h-7 flex items-center justify-center rounded-lg bg-red-50 text-red-400 hover:bg-red-100 transition-colors">
-                                    <i class="fas fa-trash text-[9px]"></i>
-                                </button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
-    @endif
-</div>
-
-{{-- �"?�"? PER-TEACHER PROGRESS (collapsible) �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
-<div class="card overflow-hidden">
-    <button type="button" onclick="togglePanel('teacher-progress')"
+                                @csrf @method('DELETE'?'teacher-progress')"
         class="w-full flex items-center justify-between px-5 py-4 bg-slate-50 hover:bg-slate-100 transition-colors text-left border-b border-slate-100">
         <div class="flex items-center gap-3">
             <div class="w-8 h-8 rounded-xl bg-[var(--primary-pale)] flex items-center justify-center">
@@ -260,17 +163,7 @@ extends('layouts.app')
                         $tsPct = $expTs > 0 ? min(100, round($stat['monthly_test']/$expTs*100)) : 100;
                         $allMet = $stat['classwork']>=$expCw && $stat['homework']>=$expHw && $stat['monthly_test']>=$expTs;
                     @endphp
-                    <div class="rounded-xl border {{ $allMet ? 'border-emerald-200 bg-emerald-50/30' : 'border-slate-200 bg-white' }} p-3">
-                        <div class="flex items-center justify-between mb-2">
-                            <p class="text-xs font-bold text-slate-700 truncate">{{ $a->course->name }}</p>
-                            @if($allMet)
-                            <span class="text-[9px] font-bold text-emerald-600 bg-emerald-100 px-1.5 py-0.5 rounded-full">�o" Done</span>
-                            @else
-                            <span class="text-[9px] font-bold text-[var(--brand)] bg-[var(--primary-pale)] px-1.5 py-0.5 rounded-full">In Progress</span>
-                            @endif
-                        </div>
-                        @foreach([
-                            ['CW', $stat['classwork'], $expCw, $cwPct, '#a855f6'],
+                    <div class="rounded-xl border {{ $allMet ? 'border-emerald-200 bg-emerald-50/30' : 'border-slate-200 bg-white'?'CW', $stat['classwork'], $expCw, $cwPct, '#a855f6'],
                             ['HW', $stat['homework'],  $expHw, $hwPct, '#f59e0b'],
                             ['T',  $stat['monthly_test'],$expTs,$tsPct,'#f43f5e'],
                         ] as [$lbl, $done, $exp, $pct, $col])
@@ -279,31 +172,7 @@ extends('layouts.app')
                             <div class="flex-1 h-1.5 rounded-full bg-slate-200 overflow-hidden">
                                 <div class="h-full rounded-full" style="width:{{ $pct }}%;background:{{ $col }}"></div>
                             </div>
-                            <span class="text-[10px] font-bold {{ $done>=$exp?'text-emerald-600':'text-slate-500' }} w-8 text-right">
-                                {{ $done }}/{{ $exp }}
-                            </span>
-                        </div>
-                        @endforeach
-                    </div>
-                    @endforeach
-                </div>
-                @else
-                <p class="text-xs text-slate-400 italic">No course assignments yet.</p>
-                @endif
-            </div>
-            @empty
-            <div class="py-10 text-center text-slate-400">
-                <i class="fas fa-users-slash text-2xl mb-2 block"></i>
-                <p class="text-sm font-semibold">No teachers found.</p>
-            </div>
-            @endforelse
-        </div>
-    </div>
-</div>
-
-{{-- �"?�"? SUBJECT EXPECTATIONS �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
-<div class="card overflow-hidden">
-    <button type="button" onclick="togglePanel('exp-panel')"
+                            <span class="text-[10px] font-bold {{ $done>=$exp?'text-emerald-600':'text-slate-500'?'exp-panel')"
         class="w-full flex items-center justify-between px-5 py-4 bg-slate-50 hover:bg-slate-100 transition-colors text-left border-b border-slate-100">
         <div class="flex items-center gap-3">
             <div class="w-8 h-8 rounded-xl bg-indigo-100 flex items-center justify-center">
@@ -368,12 +237,7 @@ function togglePanel(id) {
     const el   = document.getElementById(id);
     const icon = document.getElementById(id + '-icon');
     el.classList.toggle('hidden');
-    if (icon) icon.style.transform = el.classList.contains('hidden') ? '' : 'rotate(180deg)';
-}
-
-// �"?�"? Work Log Detail Modal �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?
-function showLogDetail(url) {
-    const modal = document.getElementById('logDetailModal');
+    if (icon) icon.style.transform = el.classList.contains('hidden') ? '' : 'rotate(180deg)'?'logDetailModal');
     const body  = document.getElementById('logDetailBody');
     const spin  = document.getElementById('logDetailSpinner');
 
@@ -474,7 +338,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLogDeta
 </script>
 @endpush
 
-{{-- �"?�"? Work Log Detail Modal �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
+{{-- ?"??"? Work Log Detail Modal ?"??"??"??"??"??"??"??"??"??"??"??"??"??"??"??"??"??"??"??"??"??"??"??"??"??"??"??"??"??"??"??"??"??"??"??"??"??"??"??"??"??"??"??"??"? --}}
 <div id="logDetailModal"
      class="hidden fixed inset-0 z-50 flex items-center justify-center p-4"
      onclick="if(event.target===this)closeLogDetail()">

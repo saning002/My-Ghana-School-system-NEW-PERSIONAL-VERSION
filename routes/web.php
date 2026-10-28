@@ -1143,9 +1143,9 @@ Route::prefix('school')->name('school.website.')->middleware('web')->group(funct
     Route::get('/{slug}/website/about',        function ($slug) use ($boot) { $boot($slug); return app(\App\Http\Controllers\WebsiteController::class)->about(); })->name('about');
     Route::get('/{slug}/website/academics',    function ($slug) use ($boot) { $boot($slug); return app(\App\Http\Controllers\WebsiteController::class)->academics(); })->name('academics');
     Route::get('/{slug}/website/admissions',   function ($slug) use ($boot) { $boot($slug); return app(\App\Http\Controllers\WebsiteController::class)->admissions(); })->name('admissions');
-    Route::get('/{slug}/website/gallery',      function ($slug) use ($boot) { $boot($slug); return app(\App\Http\Controllers\WebsiteController::class)->gallery(); })->name('gallery');
-    Route::get('/{slug}/website/events',       function ($slug) use ($boot) { $boot($slug); return app(\App\Http\Controllers\WebsiteController::class)->events(); })->name('events');
-    Route::get('/{slug}/website/blog',         function ($slug) use ($boot) { $boot($slug); return app(\App\Http\Controllers\WebsiteController::class)->blog(); })->name('blog');
+    Route::get('/{slug}/website/gallery',      function ($slug, \Illuminate\Http\Request $r) use ($boot) { $boot($slug); return app(\App\Http\Controllers\WebsiteController::class)->gallery($r); })->name('gallery');
+    Route::get('/{slug}/website/events',       function ($slug, \Illuminate\Http\Request $r) use ($boot) { $boot($slug); return app(\App\Http\Controllers\WebsiteController::class)->events($r); })->name('events');
+    Route::get('/{slug}/website/blog',         function ($slug, \Illuminate\Http\Request $r) use ($boot) { $boot($slug); return app(\App\Http\Controllers\WebsiteController::class)->blog($r); })->name('blog');
     Route::get('/{slug}/website/staff',        function ($slug) use ($boot) { $boot($slug); return app(\App\Http\Controllers\WebsiteController::class)->staff(); })->name('staff');
     Route::get('/{slug}/website/contact',      function ($slug) use ($boot) { $boot($slug); return app(\App\Http\Controllers\WebsiteController::class)->contact(); })->name('contact');
     Route::post('/{slug}/website/contact',     function ($slug, \Illuminate\Http\Request $r) use ($boot) { $boot($slug); return app(\App\Http\Controllers\WebsiteController::class)->contactSubmit($r); })->name('contact.submit');

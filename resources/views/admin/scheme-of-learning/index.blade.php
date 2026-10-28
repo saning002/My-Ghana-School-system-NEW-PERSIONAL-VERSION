@@ -3,19 +3,7 @@ extends('layouts.app')
 @section('subtitle','Weekly teaching plan per course and program')
 
 @section('content')
-<div class="space-y-5" x-data="{ mode: '{{ request('mode','entries') }}' }">
-
-{{-- �"?�"? Filters �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
-<div class="card p-5">
-    <form method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
-        <input type="hidden" name="mode" :value="mode">
-        <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Program *</label>
-            <select name="program_id" onchange="this.form.submit()"
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)]">
-                <option value="">– Select Program –</option>
-                @foreach($programs as $p)
-                <option value="{{ $p->id }}" {{ request('program_id')==$p->id?'selected':'' }}>{{ $p->name }}</option>
+<div class="space-y-5" x-data="{ mode: '{{ request('mode','entries') }}'?'program_id')==$p->id?'selected':'' }}>{{ $p->name }}</option>
                 @endforeach
             </select>
         </div>
@@ -26,10 +14,7 @@ extends('layouts.app')
                 {{ !$selectedProgram?'disabled':'' }}>
                 <option value="">– Select Course –</option>
                 @if($selectedProgram)
-                <option value="all" {{ request('course_id')==='all'?'selected':'' }}>�Y"s All Courses</option>
-                @endif
-                @foreach($courses as $c)
-                <option value="{{ $c->id }}" {{ request('course_id')==$c->id?'selected':'' }}>{{ $c->name }}</option>
+                <option value="all" {{ request('course_id')==='all'?'selected':''?'course_id')==$c->id?'selected':'' }}>{{ $c->name }}</option>
                 @endforeach
             </select>
         </div>
@@ -45,18 +30,7 @@ extends('layouts.app')
         {{-- Term filter (optional) --}}
         <div>
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Term / Semester</label>
-            <input type="text" name="term" value="{{ request('term') }}" placeholder="e.g. Term 1"
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)]"
-                onchange="this.form.submit()">
-        </div>
-    </form>
-</div>
-
-@if($selectedProgram && ($selectedCourse || $isAllCourses))
-
-{{-- �"?�"? Dual-Mode Tab Bar �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
-<div class="flex gap-1 p-1 rounded-2xl bg-slate-100 border border-slate-200 shadow-inner">
-    <button @click="mode='entries'"
+            <input type="text" name="term" value="{{ request('term'?'entries'"
         :class="mode==='entries'
             ? 'bg-white text-slate-900 shadow border border-slate-200/70'
             : 'text-slate-500 hover:text-slate-700 hover:bg-white/50'"
@@ -74,17 +48,7 @@ extends('layouts.app')
         class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold transition-all">
         <i class="fas fa-file-pdf text-xs text-red-500"></i>
         <span>Upload Full PDF</span>
-        @php $hasPdf = $entries->whereNotNull('pdf_path')->first(); @endphp
-        @if($hasPdf)
-        <span class="ml-1 rounded-full bg-red-100 text-red-700 text-[10px] font-extrabold px-2 py-0.5">PDF</span>
-        @endif
-    </button>
-</div>
-
-{{-- �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.�
-     MODE A – CREATE ENTRIES (weekly topic-by-topic plan)
-     �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� --}}
-<div x-show="mode==='entries'" x-cloak>
+        @php $hasPdf = $entries->whereNotNull('pdf_path'?'entries'" x-cloak>
     <div class="card overflow-hidden">
         <div class="flex items-center justify-between px-5 py-4 border-b bg-slate-50">
             <div>
@@ -196,28 +160,7 @@ extends('layouts.app')
                                 </a>
                                 <form method="POST" action="{{ route('admin.scheme-of-learning.destroy', $entry) }}"
                                       onsubmit="return confirm('Delete week {{ $entry->week_number }} entry?')">
-                                    @csrf @method('DELETE')
-                                    <button class="w-7 h-7 flex items-center justify-center rounded-lg bg-slate-100 text-slate-500 hover:bg-red-50 hover:text-red-600 transition-colors">
-                                        <i class="fas fa-trash text-[10px]"></i>
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-        @endif
-    </div>
-</div>
-
-{{-- �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.�
-     MODE B – UPLOAD FULL PDF SCHEME
-     Admin uploads one PDF that covers the entire term/year scheme.
-     Lecturers view and download it from their portal.
-     �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� --}}
-<div x-show="mode==='pdf'" x-cloak>
+                                    @csrf @method('DELETE'?'pdf'" x-cloak>
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
 
         {{-- Upload panel --}}
@@ -383,7 +326,7 @@ function updatePdfLabel(input) {
     const label = document.getElementById('pdf-file-label');
     if (input.files && input.files[0]) {
         const size = (input.files[0].size / 1024 / 1024).toFixed(2);
-        label.textContent = '�o" ' + input.files[0].name + ' (' + size + ' MB)';
+        label.textContent = '?' + input.files[0].name + ' (' + size + ' MB)';
         label.classList.remove('hidden');
     }
 }

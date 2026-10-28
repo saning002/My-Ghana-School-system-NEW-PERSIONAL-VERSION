@@ -109,7 +109,7 @@ extends('layouts.app')
                          alt="{{ $prog->name }}"
                          class="w-full h-20 object-cover rounded-lg mb-2">
                 @else
-                    <span class="text-4xl mb-2">{{ $prog->icon ?? '�YZ"' }}</span>
+                    <span class="text-4xl mb-2">{{ $prog->icon ?? '?' }}</span>
                 @endif
                 <span class="text-white text-[10px] font-bold text-center leading-tight">{{ $prog->name }}</span>
                 @if($prog->age_range && $prog->age_range !== 'All Ages')
@@ -134,45 +134,7 @@ extends('layouts.app')
                         </p>
                     </div>
                     <span class="shrink-0 text-[10px] font-bold px-2 py-0.5 rounded-full {{ $prog->is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500' }}">
-                        {{ $prog->is_active ? 'Visible' : 'Hidden' }}
-                    </span>
-                </div>
-
-                <p class="text-xs text-slate-600 line-clamp-2 mb-2">{{ Str::limit($prog->description, 120) }}</p>
-
-                {{-- Feature tags --}}
-                @if(!empty($prog->features) && count((array)$prog->features) > 0)
-                <div class="flex flex-wrap gap-1 mb-2">
-                    @foreach(array_slice((array)$prog->features, 0, 4) as $feat)
-                    <span class="text-[9px] font-bold bg-indigo-50 text-indigo-700 px-1.5 py-0.5 rounded-full">�o" {{ $feat }}</span>
-                    @endforeach
-                    @if(count((array)$prog->features) > 4)
-                    <span class="text-[9px] text-slate-400">+{{ count((array)$prog->features) - 4 }} more</span>
-                    @endif
-                </div>
-                @endif
-
-                {{-- Info pills --}}
-                <div class="flex flex-wrap gap-2 text-[10px] text-slate-500 font-semibold">
-                    @if($prog->curriculum)
-                    <span class="flex items-center gap-1"><i class="fas fa-book-open text-[8px] text-blue-400"></i> Curriculum set</span>
-                    @endif
-                    @if($prog->schedule)
-                    <span class="flex items-center gap-1"><i class="fas fa-clock text-[8px] text-green-400"></i> Schedule set</span>
-                    @endif
-                    @if($prog->highlights)
-                    <span class="flex items-center gap-1"><i class="fas fa-star text-[8px] text-[var(--brand)]"></i> Highlights set</span>
-                    @endif
-                    @if(!$prog->curriculum && !$prog->description)
-                    <span class="flex items-center gap-1 text-red-400"><i class="fas fa-exclamation-circle text-[8px]"></i> Needs full details</span>
-                    @endif
-                </div>
-            </div>
-        </div>
-
-        {{-- Action bar --}}
-        <div class="flex items-center gap-2 px-4 py-2.5 bg-slate-50 border-t border-slate-100">
-            <a href="{{ route('admin.website.programs.edit', $prog) }}"
+                        {{ $prog->is_active ? 'Visible' : 'Hidden'?'admin.website.programs.edit', $prog) }}"
                class="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 text-xs font-bold hover:border-yellow-400 hover:text-[var(--primary-text)] hover:bg-[var(--primary-pale)] transition-colors">
                 <i class="fas fa-pen text-[9px]"></i> Edit Card Text & Details
             </a>

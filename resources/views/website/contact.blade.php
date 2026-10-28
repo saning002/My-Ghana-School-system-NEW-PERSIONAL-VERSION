@@ -70,27 +70,12 @@
 
       <div class="contact-form-panel reveal reveal-delay-1">
         <h3>Send Us a Message</h3>
-        <form method="POST" action="{{ wu('contact') }}" novalidate>
-          @csrf
-          @if($errors->any())
-          <div class="form-err">@foreach($errors->all() as $e)<div>–� {{ $e }}</div>@endforeach</div>
-          @endif
-          <div class="form-row">
-            <div class="field"><label>Your Name *</label><input type="text" name="name" value="{{ old('name') }}" required></div>
+        <form method="POST" action="{{ wu('contact'?'name') }}" required></div>
             <div class="field"><label>Email Address *</label><input type="email" name="email" value="{{ old('email') }}" required></div>
           </div>
           <div class="form-row">
-            <div class="field"><label>Phone Number</label><input type="tel" name="phone" value="{{ old('phone') }}"></div>
-            <div class="field"><label>Subject *</label>
-              <select name="subject" required>
-                <option value="">Select a subject–�</option>
-                @foreach($site->contact_subjects ?? ['General Inquiry','Admissions','Programs','Fees & Payments','Other'] as $s)
-                <option value="{{ $s }}" {{ old('subject')===$s ? 'selected':'' }}>{{ $s }}</option>
-                @endforeach
-              </select>
-            </div>
-          </div>
-          <div class="field"><label>Your Message *</label><textarea name="message" rows="5" required placeholder="Write your message here–�">{{ old('message') }}</textarea></div>
+            <div class="field"><label>Phone Number</label><input type="tel" name="phone" value="{{ old('phone'?'General Inquiry','Admissions','Programs','Fees & Payments','Other'] as $s)
+                <option value="{{ $s }}" {{ old('subject')===$s ? 'selected':''?'message') }}</textarea></div>
           <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:14px;">
             <i class="fas fa-paper-plane"></i> Send Message
           </button>

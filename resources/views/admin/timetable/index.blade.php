@@ -86,15 +86,7 @@ extends('layouts.app')
             <label class="block text-xs font-bold uppercase tracking-wide text-slate-600 mb-1">Teacher</label>
             <select name="lecturer_id" class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400" onchange="this.form.submit()">
                 <option value="">All Teachers</option>
-                @foreach($lecturers as $l)<option value="{{ $l->id }}" {{ request('lecturer_id')==$l->id?'selected':'' }}>{{ $l->full_name }}</option>@endforeach
-            </select>
-        </div>
-    </form>
-</div>
-
-<div class="grid grid-cols-1 xl:grid-cols-3 gap-5">
-
-    {{-- �"?�"? TODAY'S LESSONS (primary) �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
+                @foreach($lecturers as $l)<option value="{{ $l->id }}" {{ request('lecturer_id')==$l->id?'selected':''?'S LESSONS (primary) ?"??"??"??"??"??"??"??"??"??"??"??"??"??"??"??"??"??"??"??"??"??"??"??"??"??"??"??"??"??"??"??"??"??"??"??"? --}}
     <div class="xl:col-span-2 space-y-3">
         <h2 class="text-sm font-extrabold text-slate-800">
             <i class="fas fa-calendar-day text-indigo-400 mr-1.5"></i>
@@ -178,21 +170,7 @@ extends('layouts.app')
                 {{-- Delete --}}
                 <form method="POST" action="{{ route('admin.timetable.destroy', $entry) }}" class="shrink-0"
                       onsubmit="return confirm('Remove this lesson from the timetable?')">
-                    @csrf @method('DELETE')
-                    <button type="submit" class="flex h-8 w-8 items-center justify-center rounded-xl bg-red-50 hover:bg-red-100 text-red-400 hover:text-red-600 transition-colors">
-                        <i class="fas fa-trash text-xs"></i>
-                    </button>
-                </form>
-            </div>
-        </div>
-        @endforeach
-        @endif
-    </div>
-
-    {{-- �"?�"? WEEKLY OVERVIEW (sidebar) �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
-    <div class="space-y-4">
-        <h2 class="text-sm font-extrabold text-slate-800">
-            <i class="fas fa-calendar-week text-indigo-400 mr-1.5"></i>This Week's Overview
+                    @csrf @method('DELETE'?'s Overview
         </h2>
 
         @foreach(\App\Models\TimetableEntry::$dayNames as $dayN => $dayName)
@@ -216,28 +194,7 @@ extends('layouts.app')
                 <div class="flex items-center gap-2 text-xs">
                     <span class="text-slate-400 font-mono shrink-0">{{ substr($e->start_time,0,5) }}</span>
                     <span class="flex-1 font-bold text-slate-700 truncate">{{ $e->course->name }}</span>
-                    <span class="text-slate-400 shrink-0 truncate max-w-[80px]">{{ $e->lecturer?->full_name ? explode(' ',$e->lecturer->full_name)[0] : '–' }}</span>
-                </div>
-                @endforeach
-            </div>
-            @endif
-        </div>
-        @endforeach
-    </div>
-</div>
-
-</div>
-
-{{-- �.��.� ADD LESSON MODAL �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� --}}
-<div id="addModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/40 p-4">
-    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg p-7 max-h-[90vh] overflow-y-auto">
-        <div class="flex items-center justify-between mb-5">
-            <h3 class="text-base font-extrabold text-slate-900">
-                <i class="fas fa-plus text-indigo-500 mr-2"></i>Add Timetable Entry
-            </h3>
-            <button onclick="closeModal()" class="text-slate-400 hover:text-slate-700"><i class="fas fa-xmark text-lg"></i></button>
-        </div>
-        <form method="POST" action="{{ route('admin.timetable.store') }}" class="space-y-3">
+                    <span class="text-slate-400 shrink-0 truncate max-w-[80px]">{{ $e->lecturer?->full_name ? explode(' ',$e->lecturer->full_name)[0] : '–'?'admin.timetable.store') }}" class="space-y-3">
             @csrf
             <div class="grid grid-cols-2 gap-3">
 
@@ -261,29 +218,7 @@ extends('layouts.app')
                         class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
                         <option value="">– Select program first –</option>
                         @foreach($courses as $c)
-                        <option value="{{ $c->id }}">{{ $c->name }}{{ $c->code ? ' ('.$c->code.')' : '' }}</option>
-                        @endforeach
-                    </select>
-                    <p id="courseLoadingMsg" class="text-[11px] text-indigo-500 mt-1 hidden"><i class="fas fa-spinner fa-spin mr-1"></i>Loading courses–�</p>
-                </div>
-
-                {{-- Teacher --}}
-                <div class="col-span-2">
-                    <label class="block text-xs font-bold uppercase tracking-wide text-slate-600 mb-1">Teacher *</label>
-                    <select name="lecturer_id" required
-                        class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
-                        <option value="">– Select teacher –</option>
-                        @foreach($lecturers as $l)<option value="{{ $l->id }}">{{ $l->full_name }}</option>@endforeach
-                    </select>
-                </div>
-
-                {{-- Day --}}
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wide text-slate-600 mb-1">Day *</label>
-                    <select name="day_of_week" required
-                        class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
-                        @foreach(\App\Models\TimetableEntry::$dayNames as $d => $n)
-                        <option value="{{ $d }}" {{ $dayNum==$d ? 'selected' : '' }}>{{ $n }}</option>
+                        <option value="{{ $c->id }}">{{ $c->name }}{{ $c->code ? ' ('.$c->code.')' : ''?'selected' : '' }}>{{ $n }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -345,7 +280,7 @@ document.getElementById('addModal').addEventListener('click', function(e) {
 function loadCourses(programId) {
     const sel = document.getElementById('modalCourse');
     const msg = document.getElementById('courseLoadingMsg');
-    sel.innerHTML = '<option value="">Loading–�</option>';
+    sel.innerHTML = '?';
     if (!programId) { sel.innerHTML = '<option value="">– Select program first –</option>'; return; }
     msg.classList.remove('hidden');
     fetch('{{ route('admin.timetable.courses') }}?program_id=' + programId)

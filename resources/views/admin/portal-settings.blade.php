@@ -47,18 +47,7 @@ extends('layouts.app')
                 <i class="fas fa-sliders-h mr-2"></i>Portal Access Control
             </h3>
         </div>
-        <form method="POST" action="{{ route('admin.portal-settings.toggle') }}" class="px-6 py-6 space-y-8">
-            @csrf
-
-            {{-- �"?�"? 1. Student Portal Section �"?�"? --}}
-            <div class="space-y-4 pb-6 border-b border-gray-100">
-                <h4 class="text-sm font-bold text-gray-800 flex items-center gap-2">
-                    <i class="fas fa-user-graduate text-blue-600"></i> Student Portal Access
-                </h4>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <label class="relative cursor-pointer">
-                        <input type="radio" name="portal_access" value="1"
-                               {{ $portalOpen ? 'checked' : '' }}
+        <form method="POST" action="{{ route('admin.portal-settings.toggle'?'checked' : '' }}
                                class="sr-only peer">
                         <div class="flex items-center gap-3 p-4 rounded-xl border-2 transition-all
                                     peer-checked:border-green-500 peer-checked:bg-green-50 border-gray-200 bg-white">
@@ -74,40 +63,7 @@ extends('layouts.app')
                     </label>
                     <label class="relative cursor-pointer">
                         <input type="radio" name="portal_access" value="0"
-                               {{ !$portalOpen ? 'checked' : '' }}
-                               class="sr-only peer">
-                        <div class="flex items-center gap-3 p-4 rounded-xl border-2 transition-all
-                                    peer-checked:border-red-500 peer-checked:bg-red-50 border-gray-200 bg-white">
-                            <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                                 style="background:#fee2e2">
-                                <i class="fas fa-lock text-red-600"></i>
-                            </div>
-                            <div>
-                                <p class="font-bold text-gray-800 text-sm">Close Student Portal</p>
-                                <p class="text-xs text-gray-500">Block all student access</p>
-                            </div>
-                        </div>
-                    </label>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-700 mb-1">
-                        Message shown to students when portal is closed
-                    </label>
-                    <textarea name="portal_message" rows="2"
-                              class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-none"
-                              placeholder="e.g. The student portal is closed for maintenance. Please check back later.">{{ $portalMessage }}</textarea>
-                </div>
-            </div>
-
-            {{-- �"?�"? 2. Teachers Portal Section �"?�"? --}}
-            <div class="space-y-4">
-                <h4 class="text-sm font-bold text-gray-800 flex items-center gap-2">
-                    <i class="fas fa-chalkboard-user text-purple-600"></i> Teachers Portal Access
-                </h4>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <label class="relative cursor-pointer">
-                        <input type="radio" name="teachers_portal_access" value="1"
-                               {{ $teachersPortalOpen ? 'checked' : '' }}
+                               {{ !$portalOpen ? 'checked' : ''?'checked' : '' }}
                                class="sr-only peer">
                         <div class="flex items-center gap-3 p-4 rounded-xl border-2 transition-all
                                     peer-checked:border-purple-500 peer-checked:bg-purple-50 border-gray-200 bg-white">
@@ -123,52 +79,7 @@ extends('layouts.app')
                     </label>
                     <label class="relative cursor-pointer">
                         <input type="radio" name="teachers_portal_access" value="0"
-                               {{ !$teachersPortalOpen ? 'checked' : '' }}
-                               class="sr-only peer">
-                        <div class="flex items-center gap-3 p-4 rounded-xl border-2 transition-all
-                                    peer-checked:border-red-500 peer-checked:bg-red-50 border-gray-200 bg-white">
-                            <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                                 style="background:#fee2e2">
-                                <i class="fas fa-lock text-red-600"></i>
-                            </div>
-                            <div>
-                                <p class="font-bold text-gray-800 text-sm">Close Teachers Portal</p>
-                                <p class="text-xs text-gray-500">Block all teacher access</p>
-                            </div>
-                        </div>
-                    </label>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-700 mb-1">
-                        Message shown to teachers when portal is closed
-                    </label>
-                    <textarea name="teachers_portal_message" rows="2"
-                              class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white resize-none"
-                              placeholder="e.g. The teacher portal is closed for score entry compilation.">{{ $teachersPortalMessage }}</textarea>
-                </div>
-            </div>
-
-            {{-- �"?�"? 3. Teacher Feature Permissions �"?�"? --}}
-            <div class="space-y-4 pt-6 border-t border-gray-100">
-                <div class="flex items-start justify-between">
-                    <div>
-                        <h4 class="text-sm font-bold text-gray-800 flex items-center gap-2">
-                            <i class="fas fa-toggle-on text-emerald-600"></i> Teacher Feature Permissions
-                        </h4>
-                        <p class="text-xs text-gray-500 mt-1">
-                            All permissions are <strong class="text-emerald-600">ON by default</strong>.
-                            Uncheck to disable a feature for all teachers. Individual teachers cannot override these.
-                        </p>
-                    </div>
-                    <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-100 text-emerald-700 text-[11px] font-bold px-3 py-1 shrink-0">
-                        <i class="fas fa-shield-check text-[10px]"></i> Default: All ON
-                    </span>
-                </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                    @foreach($teacherPermissions as $key => $label)
-                    @php $isOn = $teacherPermValues[$key] ?? true; @endphp
-                    <label class="flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all
-                                  {{ $isOn ? 'border-emerald-300 bg-emerald-50' : 'border-gray-200 bg-white' }}
+                               {{ !$teachersPortalOpen ? 'checked' : ''?'border-emerald-300 bg-emerald-50' : 'border-gray-200 bg-white' }}
                                   hover:border-purple-300">
                         <input type="checkbox"
                                name="lecturer_can_{{ $key }}"
@@ -182,7 +93,7 @@ extends('layouts.app')
                         <div>
                             <p class="text-sm font-bold text-gray-800">{{ $label }}</p>
                             <p class="text-[10px] font-semibold mt-0.5 {{ $isOn ? 'text-emerald-600' : 'text-red-500' }}">
-                                {{ $isOn ? '�o. Currently ON' : '�O Currently OFF' }}
+                                {{ $isOn ? '?' : '?' }}
                             </p>
                         </div>
                     </label>
@@ -192,24 +103,7 @@ extends('layouts.app')
                     <i class="fas fa-info-circle mr-1 text-[var(--brand)]"></i>
                     <strong>Note:</strong> These permissions control what features are visible to ALL teachers.
                     To give or restrict permissions for a specific staff member (Accountant, Headmaster etc.),
-                    use <a href="{{ route('admin.staff-portal-users.index') }}" class="underline font-bold text-[var(--primary-text)]">Staff Portal Accounts</a>.
-                </div>
-            </div>
-
-            <button type="submit" class="btn-gold w-full py-3 rounded-xl text-sm font-bold shadow-sm">
-                <i class="fas fa-save mr-2"></i> Save Portal Settings
-            </button>
-        </form>
-    </div>
-
-    {{-- �"?�"? Report Card Orientation �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
-    <div class="card overflow-hidden">
-        <div class="px-6 py-4 border-b border-slate-100" style="background:var(--primary-pale)">
-            <h3 class="text-sm font-bold" style="color:var(--primary-text)">
-                <i class="fas fa-file-alt mr-2"></i>Report Card Settings
-            </h3>
-        </div>
-        <form method="POST" action="{{ route('admin.portal-settings.toggle') }}" class="px-6 py-6 space-y-4">
+                    use <a href="{{ route('admin.staff-portal-users.index'?'admin.portal-settings.toggle') }}" class="px-6 py-6 space-y-4">
             @csrf
             {{-- Keep other fields so they don't get cleared --}}
             <input type="hidden" name="portal_access" value="{{ $portalOpen ? 1 : 0 }}">

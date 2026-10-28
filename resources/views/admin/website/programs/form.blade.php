@@ -9,25 +9,7 @@ extends('layouts.app')
       action="{{ $program ? route('admin.website.programs.update',$program) : route('admin.website.programs.store') }}"
       enctype="multipart/form-data"
       class="space-y-5">
-  @csrf @if($program) @method('PUT') @endif
-
-  @if($errors->any())
-  <div class="bg-red-50 border border-red-200 rounded-2xl px-5 py-4 text-sm text-red-800">
-    @foreach($errors->all() as $e)<div>–� {{ $e }}</div>@endforeach
-  </div>
-  @endif
-
-  {{-- Basic Info --}}
-  <div class="card p-6 space-y-4">
-    <h3 class="text-sm font-extrabold text-slate-800 border-b border-slate-100 pb-3">
-      <i class="fas fa-graduation-cap text-indigo-500 mr-1.5"></i>Program Identity
-      <span class="text-[11px] font-normal text-slate-400 ml-2">– shown as the program title on the card</span>
-    </h3>
-
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      <div>
-        <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Program Name *</label>
-        <input type="text" name="name" value="{{ old('name',$program?->name) }}" required
+  @csrf @if($program) @method('PUT'?'name',$program?->name) }}" required
             class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)]"
             placeholder="e.g. Bachelor of Theology">
       </div>
@@ -106,22 +88,9 @@ extends('layouts.app')
     </h3>
     <textarea name="features_text" rows="5"
         class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--brand)]"
-        placeholder="One feature per line, e.g.:&#10;Accredited Program&#10;Small Class Sizes&#10;Qualified Lecturers&#10;Industry Attachments&#10;On-campus Library">{{ old('features_text', is_array($program?->features) ? implode("\n",$program->features) : '') }}</textarea>
-    <p class="text-xs text-gray-400">Each line becomes a green �o" tag badge displayed on the program card.</p>
-  </div>
-
-  {{-- Appearance --}}
-  <div class="card p-6 space-y-4">
-    <h3 class="text-sm font-extrabold text-slate-800 border-b border-slate-100 pb-3">
-      <i class="fas fa-palette text-purple-500 mr-1.5"></i>Card Appearance
-    </h3>
-
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      <div>
-        <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Icon (emoji) <span class="font-normal text-gray-400">– shown when no image is set</span></label>
-        <input type="text" name="icon" value="{{ old('icon',$program?->icon ?? '�YZ"') }}"
+        placeholder="One feature per line, e.g.:&#10;Accredited Program&#10;Small Class Sizes&#10;Qualified Lecturers&#10;Industry Attachments&#10;On-campus Library">{{ old('features_text', is_array($program?->features) ? implode("\n",$program->features) : ''?'icon',$program?->icon ?? '?') }}"
             class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)]"
-            placeholder="�YZ" or �Y"s or �Y��">
+            placeholder="?YZ" or ?Y"s or ?Y??">
       </div>
       <div>
         <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Accent Color</label>

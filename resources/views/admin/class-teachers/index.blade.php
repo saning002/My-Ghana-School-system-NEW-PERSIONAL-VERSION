@@ -13,55 +13,7 @@ extends('layouts.app')
 @endif
 @if(session('error'))
 <div class="rounded-2xl bg-red-50 border border-red-200 px-5 py-3 text-sm font-semibold text-red-800 flex items-center gap-2">
-    <i class="fas fa-circle-exclamation text-red-500"></i>{{ session('error') }}
-</div>
-@endif
-
-{{-- Hero --}}
-<div class="rounded-3xl relative overflow-hidden p-6 lg:p-8 text-white"
-     style="background:linear-gradient(135deg,#0d0a2e 0%,#2d2480 40%,#5647d6 75%,#a395f5 100%)">
-    <div class="pointer-events-none absolute -top-16 -right-16 h-56 w-56 rounded-full bg-white/4 blur-3xl"></div>
-    <div class="pointer-events-none absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-yellow-400/50 to-transparent"></div>
-    <div class="relative z-10">
-        <h1 class="text-2xl lg:text-3xl font-extrabold tracking-tight">Class Teacher Assignments</h1>
-        <p class="text-indigo-200 text-sm mt-2 max-w-2xl leading-relaxed">
-            A <strong class="text-white">Class Teacher</strong> is assigned to manage one class (program). They take daily register covering all subjects for that class.
-            They can still be assigned as a <strong class="text-white">Subject Teacher</strong> in other classes too.
-        </p>
-        <div class="flex flex-wrap gap-3 mt-4">
-            <div class="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/15 px-3.5 py-1 text-xs font-bold text-white/80">
-                <i class="fas fa-users text-indigo-300 text-[10px]"></i>
-                {{ $programs->count() }} classes total
-            </div>
-            <div class="inline-flex items-center gap-2 rounded-full bg-emerald-500/20 border border-emerald-400/30 px-3.5 py-1 text-xs font-bold text-emerald-200">
-                <i class="fas fa-check text-emerald-300 text-[10px]"></i>
-                {{ $programs->filter(fn($p) => $p->classTeacherAssignment)->count() }} assigned
-            </div>
-            <div class="inline-flex items-center gap-2 rounded-full bg-[var(--primary-pale)]0/20 border border-amber-400/30 px-3.5 py-1 text-xs font-bold text-amber-200">
-                <i class="fas fa-exclamation text-amber-300 text-[10px]"></i>
-                {{ $programs->filter(fn($p) => !$p->classTeacherAssignment)->count() }} unassigned
-            </div>
-        </div>
-    </div>
-</div>
-
-{{-- Info box --}}
-<div class="rounded-2xl bg-indigo-50 border border-indigo-100 px-5 py-4 flex items-start gap-3">
-    <i class="fas fa-lightbulb text-indigo-400 mt-0.5 shrink-0"></i>
-    <div class="text-xs text-indigo-700 leading-relaxed space-y-1">
-        <p><strong class="text-indigo-900">How it works:</strong></p>
-        <p>–� The assigned class teacher logs in and sees a <strong>Class Register</strong> button on their dashboard.</p>
-        <p>–� They mark attendance once per day for their class – this covers all subjects for that day.</p>
-        <p>–� Subject teachers can still mark attendance for their own courses as usual.</p>
-        <p>–� A teacher can be a class teacher for one class AND a subject teacher in multiple other classes.</p>
-    </div>
-</div>
-
-{{-- Programs grid --}}
-<div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5">
-    @foreach($programs as $program)
-    @php $assignment = $program->classTeacherAssignment; @endphp
-    <div class="rounded-2xl border {{ $assignment ? 'border-emerald-200 bg-emerald-50/50' : 'border-slate-200 bg-white' }} overflow-hidden shadow-sm">
+    <i class="fas fa-circle-exclamation text-red-500"></i>{{ session('error'?'border-emerald-200 bg-emerald-50/50' : 'border-slate-200 bg-white' }} overflow-hidden shadow-sm">
 
         {{-- Card header --}}
         <div class="px-5 py-4 border-b {{ $assignment ? 'border-emerald-100 bg-emerald-50' : 'border-slate-100 bg-slate-50' }} flex items-center justify-between">

@@ -1,20 +1,7 @@
 extends('layouts.app')
 @section('title', 'Fee Reminders')
 
-@section('content')
-<style>
-/* �"?�"? Page base �"?�"? */
-.rm-hero {
-    background: linear-gradient(135deg, #0f3460 0%, #16213e 100%);
-    border-radius: 20px;
-    padding: 2rem 2.5rem;
-    color: #fff;
-    margin-bottom: 2rem;
-    position: relative;
-    overflow: hidden;
-}
-.rm-hero::before {
-    content: '';
+@section('content'?'';
     position: absolute;
     right: -50px; top: -50px;
     width: 250px; height: 250px;
@@ -22,171 +9,7 @@ extends('layouts.app')
     border-radius: 50%;
 }
 .rm-hero::after {
-    content: '';
-    position: absolute;
-    right: 80px; bottom: -70px;
-    width: 160px; height: 160px;
-    background: rgba(255,255,255,.03);
-    border-radius: 50%;
-}
-
-/* �"?�"? Stat cards �"?�"? */
-.rm-stat {
-    background: #fff;
-    border-radius: 14px;
-    padding: 1.25rem 1.5rem;
-    border: 1px solid #e2e8f0;
-    box-shadow: 0 1px 6px rgba(0,0,0,.06);
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    height: 100%;
-}
-.rm-stat-icon {
-    width: 52px; height: 52px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.3rem;
-    flex-shrink: 0;
-}
-
-/* �"?�"? Cards �"?�"? */
-.rm-card {
-    background: #fff;
-    border-radius: 16px;
-    border: 1px solid #e2e8f0;
-    box-shadow: 0 2px 10px rgba(0,0,0,.06);
-    overflow: hidden;
-    margin-bottom: 1.5rem;
-}
-.rm-card-hd {
-    padding: 1rem 1.5rem;
-    border-bottom: 1px solid #f1f5f9;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-/* �"?�"? Channel pills �"?�"? */
-.ch-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 20px;
-    border-radius: 50px;
-    border: 2px solid #e2e8f0;
-    cursor: pointer;
-    transition: all .15s;
-    font-size: .875rem;
-    font-weight: 600;
-    background: #fff;
-    user-select: none;
-    color: #64748b;
-}
-.ch-pill:hover { border-color: #94a3b8; background: #f8fafc; }
-.ch-pill.on-sms  { border-color: #16a34a; background: #f0fdf4; color: #15803d; }
-.ch-pill.on-wa   { border-color: #25d366; background: #f0fdf4; color: #15803d; }
-.ch-pill.on-mail { border-color: #3b82f6; background: #eff6ff; color: #1d4ed8; }
-
-/* �"?�"? Table �"?�"? */
-.rm-thead th {
-    font-size: .7rem;
-    text-transform: uppercase;
-    letter-spacing: .8px;
-    color: #94a3b8;
-    font-weight: 700;
-    padding: 10px 16px;
-    background: #f8fafc;
-    border: none;
-}
-.rm-row { transition: background .1s; cursor: pointer; }
-.rm-row:hover  { background: #f8fafc; }
-.rm-row.picked { background: #eff6ff; }
-.rm-row td { padding: 13px 16px; border-color: #f1f5f9; vertical-align: middle; }
-
-.balance-tag {
-    display: inline-block;
-    background: #fef2f2;
-    color: #dc2626;
-    font-weight: 700;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: .82rem;
-}
-.peek-btn {
-    width: 32px; height: 32px;
-    border-radius: 8px;
-    background: #f1f5f9;
-    border: none;
-    color: #64748b;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    transition: all .15s;
-}
-.peek-btn:hover { background: #0f3460; color: #fff; }
-
-/* �"?�"? Send buttons �"?�"? */
-.btn-send-sel {
-    background: linear-gradient(135deg, #f59e0b, #d97706);
-    color: #fff !important;
-    border: none;
-    border-radius: 12px;
-    padding: 11px 24px;
-    font-weight: 700;
-    font-size: .9rem;
-    transition: all .15s;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-}
-.btn-send-sel:hover { opacity: .9; transform: translateY(-1px); }
-
-.btn-send-all {
-    background: linear-gradient(135deg, #ef4444, #dc2626);
-    color: #fff !important;
-    border: none;
-    border-radius: 12px;
-    padding: 11px 24px;
-    font-weight: 700;
-    font-size: .9rem;
-    transition: all .15s;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-}
-.btn-send-all:hover { opacity: .9; transform: translateY(-1px); }
-
-/* �"?�"? Preview panel �"?�"? */
-.preview-bubble {
-    background: #f0f9ff;
-    border: 1px solid #bae6fd;
-    border-radius: 14px;
-    padding: 1.25rem;
-    font-size: .83rem;
-    line-height: 1.8;
-    color: #0c4a6e;
-    white-space: pre-wrap;
-    min-height: 160px;
-}
-</style>
-
-<div class="container-fluid py-4" style="max-width:1400px;">
-
-    {{-- �"?�"? Hero �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
-    <div class="rm-hero">
-        <div style="position:relative;z-index:1;" class="d-flex align-items-center justify-content-between flex-wrap gap-3">
-            <div>
-                <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:1px;opacity:.55;margin-bottom:4px;">
-                    Fees &rsaquo; Reminders
-                </div>
-                <h3 class="fw-black mb-1" style="font-size:1.6rem;">
-                    <i class="fas fa-paper-plane me-2" style="color:var(--brand);"></i>Fee Reminders
-                </h3>
-                <p style="opacity:.65;font-size:.875rem;margin:0;">
-                    Each message is auto-personalised with the student's own balance – no copy-pasting needed.
+    content: ''?'s own balance – no copy-pasting needed.
                 </p>
             </div>
             <div class="d-flex gap-2 flex-wrap">
@@ -194,16 +17,7 @@ extends('layouts.app')
                    style="background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:10px;padding:9px 18px;font-weight:600;font-size:.85rem;text-decoration:none;display:flex;align-items:center;gap:6px;">
                     <i class="fas fa-history"></i> Reminder Log
                 </a>
-                <a href="{{ route('admin.fees.term.index') }}"
-                   style="background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:10px;padding:9px 18px;font-weight:600;font-size:.85rem;text-decoration:none;display:flex;align-items:center;gap:6px;">
-                    <i class="fas fa-arrow-left"></i> Term Ledger
-                </a>
-            </div>
-        </div>
-    </div>
-
-    {{-- �"?�"? Alerts �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
-    @if(session('success'))
+                <a href="{{ route('admin.fees.term.index'?'success'))
     <div class="alert alert-dismissible fade show mb-4"
          style="border-radius:12px;border:none;background:#f0fdf4;color:#166534;border-left:4px solid #16a34a;">
         <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
@@ -220,15 +34,7 @@ extends('layouts.app')
     @if(session('error'))
     <div class="alert alert-dismissible fade show mb-4"
          style="border-radius:12px;border:none;background:#fef2f2;color:#991b1b;border-left:4px solid #dc2626;">
-        <i class="fas fa-exclamation-circle me-2"></i>{{ session('error') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-    @endif
-
-    {{-- �"?�"? Stats �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
-    @php
-        $msgCredits = null;
-        try { $msgCredits = \App\Models\MessagingCredit::forTenant(session('tenant_id', 0)); } catch(\Throwable $e) {}
+        <i class="fas fa-exclamation-circle me-2"></i>{{ session('error'?'tenant_id', 0)); } catch(\Throwable $e) {}
     @endphp
     <div class="row g-3 mb-4">
         <div class="col-6 col-lg-3">
@@ -274,34 +80,7 @@ extends('layouts.app')
                     <i class="fab fa-whatsapp"></i>
                 </div>
                 <div>
-                    <div style="font-size:1.6rem;font-weight:800;line-height:1;color:{{ ($msgCredits?->whatsapp_credits ?? 0) < 10 ? '#dc2626' : '#1e293b' }};">
-                        {{ number_format($msgCredits?->whatsapp_credits ?? 0) }}
-                    </div>
-                    <div style="font-size:.72rem;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-top:2px;">WhatsApp Credits</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row g-4">
-
-        {{-- �"?�"? LEFT COLUMN �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
-        <div class="col-lg-8">
-
-            {{-- Session picker --}}
-            <div class="rm-card">
-                <div class="rm-card-hd">
-                    <span style="font-weight:700;font-size:.9rem;">
-                        <i class="fas fa-calendar-alt me-2 text-primary"></i>Academic Session
-                    </span>
-                </div>
-                <div style="padding:1rem 1.5rem;">
-                    <form method="GET" class="d-flex align-items-center gap-3 flex-wrap">
-                        <select name="session_id" class="form-select fw-semibold"
-                            style="max-width:220px;border-radius:10px;border-color:#e2e8f0;"
-                            onchange="this.form.submit()">
-                            @foreach($sessions as $s)
-                                <option value="{{ $s->id }}" {{ $selectedSession?->id == $s->id ? 'selected' : '' }}>
+                    <div style="font-size:1.6rem;font-weight:800;line-height:1;color:{{ ($msgCredits?->whatsapp_credits ?? 0) < 10 ? '#dc2626' : '#1e293b'?'selected' : '' }}>
                                     {{ $s->year }}
                                 </option>
                             @endforeach
@@ -487,29 +266,7 @@ extends('layouts.app')
                                 </span>
                             </button>
                             <button type="submit" class="btn-send-all"
-                                onclick="document.getElementById('sendMode').value='all'; return validateAll()">
-                                <i class="fas fa-broadcast-tower"></i>
-                                Send to All ({{ $summaries->count() }})
-                            </button>
-                        </div>
-                    </div>
-                    @endif
-                </div>
-            </form>
-        </div>
-
-        {{-- �"?�"? RIGHT COLUMN: Preview panel �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
-        <div class="col-lg-4">
-            <div style="position:sticky;top:20px;">
-
-                {{-- Low credit warning --}}
-                @if(($msgCredits?->sms_credits ?? 0) < 10 || ($msgCredits?->whatsapp_credits ?? 0) < 10)
-                <div style="background:var(--primary-pale);border:1px solid #fbbf24;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem;">
-                    <div style="font-weight:700;font-size:.85rem;color:var(--primary-text);margin-bottom:4px;">
-                        <i class="fas fa-exclamation-triangle me-1"></i> Low Credits
-                    </div>
-                    <div style="font-size:.78rem;color:#78350f;">
-                        You're running low on messaging credits.
+                                onclick="document.getElementById('sendMode').value='all'?'re running low on messaging credits.
                         <a href="{{ route('admin.subscription.show') }}" style="color:var(--primary-text);font-weight:700;text-decoration:underline;">
                             Top up here
                         </a>.
@@ -598,13 +355,7 @@ extends('layouts.app')
 <input type="hidden" id="pvSessionId" value="{{ $selectedSession?->id }}">
 <input type="hidden" name="custom_message" id="customMsgInput" form="rmForm" value="">
 
-@push('scripts')
-<script>
-// �"?�"? Channel toggles �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?
-const chActive = { sms: false, wa: false, mail: false };
-function toggleCh(key, pill) {
-    chActive[key] = !chActive[key];
-    const classMap = { sms: 'on-sms', wa: 'on-wa', mail: 'on-mail' };
+@push('scripts'?'on-sms', wa: 'on-wa', mail: 'on-mail' };
     const cbMap = { sms: 'chSms', wa: 'chWa', mail: 'chEmail' };
     document.getElementById(cbMap[key]).checked = chActive[key];
     if (chActive[key]) {
@@ -612,13 +363,7 @@ function toggleCh(key, pill) {
     } else {
         pill.classList.remove(classMap[key]);
     }
-    document.getElementById('chWarnText').style.display = 'none';
-}
-function anyChannel() { return Object.values(chActive).some(Boolean); }
-
-// �"?�"? Row selection �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?
-function toggleRow(id) {
-    const cb = document.getElementById('cb-' + id);
+    document.getElementById('chWarnText').style.display = 'none'?'cb-' + id);
     cb.checked = !cb.checked;
     syncRow(id);
     recount();
@@ -639,13 +384,7 @@ function toggleAll(master) {
 function recount() {
     const n = document.querySelectorAll('.student-cb:checked').length;
     document.getElementById('countBadge').textContent = n + ' selected';
-    document.getElementById('selBadge').textContent   = n;
-}
-
-// �"?�"? Validation �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?
-function validate() {
-    if (!anyChannel()) {
-        document.getElementById('chWarnText').style.display = 'inline';
+    document.getElementById('selBadge'?'chWarnText').style.display = 'inline';
         return false;
     }
     const n = document.querySelectorAll('.student-cb:checked').length;
@@ -658,11 +397,7 @@ function validateAll() {
         return false;
     }
     const total = document.querySelectorAll('.student-cb').length;
-    return confirm('Send reminders to ALL ' + total + ' owing student(s)?');
-}
-
-// �"?�"? Preview �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?
-let originalMsg = '';
+    return confirm('Send reminders to ALL ' + total + ' owing student(s)?'?'';
 
 function loadPreview(studentId, sessionId, name) {
     document.getElementById('pvStudentId').value = studentId;
@@ -699,13 +434,7 @@ function loadPreview(studentId, sessionId, name) {
 }
 
 function resetMsg() {
-    document.getElementById('pvMsg').value = originalMsg;
-}
-
-// �"?�"? Quick send one student �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?
-function quickSend() {
-    if (!anyChannel()) {
-        alert('Please select at least one channel (SMS, WhatsApp, or Email) first.');
+    document.getElementById('pvMsg'?'Please select at least one channel (SMS, WhatsApp, or Email) first.');
         return;
     }
     const id = document.getElementById('pvStudentId').value;
