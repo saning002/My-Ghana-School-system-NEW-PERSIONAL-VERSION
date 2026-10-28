@@ -349,7 +349,7 @@
         </div>
     </header>
 
-    <main class="flex-1 p-4 lg:p-6 pb-24 lg:pb-6">
+    <main class="flex-1 p-4 lg:p-6 pb-24 lg:pb-10">
 
         @if(session('success'))
         <div x-data="{show:true}" x-show="show" x-cloak x-init="setTimeout(()=>show=false,5000)"
@@ -391,6 +391,16 @@
 
         @yield('content')
     </main>
+
+    {{-- Powered-by footer — desktop only (mobile uses bottom-nav) --}}
+    <footer class="hidden lg:block border-t border-slate-100 bg-white/60 px-6 py-3">
+        <p class="text-center text-[11px] text-slate-400">
+            &copy; {{ date('Y') }} {{ $schoolName ?? 'School' }}
+            &nbsp;&middot;&nbsp;
+            Powered by <a href="https://saningtech.com" target="_blank" rel="noopener" class="font-semibold text-slate-500 hover:text-[var(--brand)] transition-colors">SaningTech Solutions</a>
+        </p>
+    </footer>
+
 </div>
 
 <nav class="bottom-nav fixed bottom-0 left-0 right-0 z-30 lg:hidden">

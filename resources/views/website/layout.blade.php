@@ -386,6 +386,11 @@
         <a href="{{ $site->footer_support_url ?: wu('contact') }}">{{ $site->footer_support_text ?? 'Support' }}</a>
       </div>
     </div>
+    <div style="text-align:center;padding:10px 0 20px;border-top:1px solid rgba(255,255,255,.05);margin-top:0;">
+      <p style="font-size:.76rem;color:rgba(255,255,255,.28);letter-spacing:.02em;">
+        Powered &amp; built by <a href="https://saningtech.com" target="_blank" rel="noopener" style="color:rgba(255,255,255,.45);font-weight:700;text-decoration:none;transition:color .2s;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='rgba(255,255,255,.45)'">SaningTech Solutions</a>
+      </p>
+    </div>
   </div>
 </footer>
 
