@@ -24,38 +24,54 @@
     </script>
     <style>
         @php
+            // Read admin theme from tenant DB — SiteSetting has TenantAwareConnection
             $__adminPrimary = '#D4A017';
             $__adminNav     = '#0B1121';
             $__accent       = '#0891b2';
+            $__primary      = '#f59e0b';
+            $__primaryDark  = '#d97706';
+            $__primaryPale  = '#fef8e8';
+            $__primaryText  = '#f3af20';
+            $__surface      = '#f4f8ff';
+            $__text         = '#0f172a';
             try {
-                if (\Illuminate\Support\Facades\Schema::hasTable('site_settings')) {
-                    $__t = \App\Models\Website\SiteSetting::instance()->theme;
-                    $__adminPrimary = $__t['adminPrimary'] ?? '#D4A017';
-                    $__adminNav     = $__t['adminNav']     ?? '#0B1121';
-                    $__accent       = $__t['accent']       ?? '#0891b2';
-                }
-            } catch (\Throwable $__e) {
-                // site_settings table not yet migrated — fall back to defaults
-            }
+                $__t = \App\Models\Website\SiteSetting::instance()->theme;
+                $__adminPrimary = $__t['adminPrimary'] ?? $__adminPrimary;
+                $__adminNav     = $__t['adminNav']     ?? $__adminNav;
+                $__accent       = $__t['accent']       ?? $__accent;
+                $__primary      = $__t['primary']      ?? $__primary;
+                $__primaryDark  = \App\Http\Controllers\Admin\ThemeController::darken($__primary, 15);
+                $__primaryPale  = \App\Http\Controllers\Admin\ThemeController::lighten($__primary, 90);
+                $__primaryText  = \App\Http\Controllers\Admin\ThemeController::lighten($__primary, 25);
+                $__surface      = $__t['bg']            ?? $__surface;
+                $__text         = $__t['text']          ?? $__text;
+            } catch (\Throwable $__e) {}
         @endphp
         :root{
             --brand:{{ $__adminPrimary }};
             --brand-2:{{ $__accent }};
             --admin-nav:{{ $__adminNav }};
-            --surface:#f4f8ff;--surface-2:#ffffff;--text:#0f172a;--muted:#64748b;--border:rgba(148,163,184,.22)
+            --primary:{{ $__primary }};
+            --primary-dark:{{ $__primaryDark }};
+            --primary-pale:{{ $__primaryPale }};
+            --primary-text:{{ $__primaryText }};
+            --surface:{{ $__surface }};
+            --text:{{ $__text }};
+            --muted:#64748b;
+            --border:rgba(148,163,184,.22)
         }
         /* ── Dynamic sidebar background ─────────────────────────────── */
-        aside { background: {{ $__adminNav }} !important; }
+        aside { background: var(--admin-nav) !important; }
         /* ── Dynamic gold buttons & accents ─────────────────────────── */
-        .btn-gold { background: {{ $__adminPrimary }} !important; }
+        .btn-gold { background: var(--brand) !important; }
         .btn-gold:hover { filter: brightness(.9); }
-        .sidebar-link.active { background: rgba(255,255,255,.12) !important; border-left-color: {{ $__adminPrimary }} !important; }
+        .sidebar-link.active { background: rgba(255,255,255,.12) !important; border-left-color: var(--brand) !important; }
         *{-webkit-tap-highlight-color:transparent}
-        body{font-family:'Inter',sans-serif;background:#f8fafc;color:var(--text);letter-spacing:-0.01em;min-height:100vh;}
+        body{font-family:'Inter',sans-serif;background:var(--surface);color:var(--text);letter-spacing:-0.01em;min-height:100vh;}
         h1,h2,h3,h4,h5,h6{letter-spacing:-0.025em;font-weight:700;}
         .sidebar-link{transition:all .12s cubic-bezier(.4,0,.2,1);border-left:3px solid transparent}
         .sidebar-link:hover{background:rgba(255,255,255,.12);color:#fff;border-left-color:rgba(255,255,255,.35);transform:translateX(4px)}
-        .sidebar-link.active{background:rgba(245,158,11,.16);color:#fff3c4;border-left-color:#f59e0b;box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+        .sidebar-link.active{background:color-mix(in srgb, var(--primary) 16%, transparent);color:var(--primary-text);border-left-color:var(--primary);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
         .card{background:#ffffff;border-radius:1.35rem;border:1px solid rgba(148,163,184,.18);box-shadow:0 10px 30px -16px rgba(15,23,42,.16)}
         .card-hover{transition:all .12s cubic-bezier(.4,0,.2,1)}
         .card-hover:active{transform:scale(.98)}
@@ -71,11 +87,19 @@
         input,select,textarea,button{font-size:16px!important;transition:all .16s}
         .drawer{transition:transform .22s cubic-bezier(.4,0,.2,1)}
         [x-cloak]{display:none!important}
-        .btn-gold{background:#f59e0b;color:#fff;border:1px solid rgba(255,255,255,.2);transition:all .2s cubic-bezier(.4,0,.2,1)}
-        .btn-gold:hover{background:#d97706;box-shadow:0 8px 20px -8px rgba(15,23,42,.24);transform:translateY(-1px)}
+        .btn-gold{background:var(--primary);color:#fff;border:1px solid rgba(255,255,255,.2);transition:all .2s cubic-bezier(.4,0,.2,1)}
+        .btn-gold:hover{background:var(--primary-dark);box-shadow:0 8px 20px -8px rgba(15,23,42,.24);transform:translateY(-1px)}
         .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
         .input-premium{background:#f8fbff;border:1px solid #dbeafe;border-radius:0.75rem;transition:all .16s;box-shadow:inset 0 2px 4px 0 rgba(15,23,42,.02)}
-        .input-premium:focus{background:#fff;border-color:#2563eb;box-shadow:0 0 0 4px rgba(37,99,235,.14),inset 0 1px 2px 0 rgba(15,23,42,.02)}
+        .input-premium:focus{background:#fff;border-color:var(--brand-2);box-shadow:0 0 0 4px color-mix(in srgb, var(--brand-2) 14%, transparent),inset 0 1px 2px 0 rgba(15,23,42,.02)}
+        /* ── Dynamic theme utility classes ─────────────────────────────── */
+        .text-brand { color: var(--brand) !important; }
+        .bg-brand { background: var(--brand) !important; }
+        .text-primary-theme { color: var(--primary) !important; }
+        .bg-primary-theme { background: var(--primary) !important; }
+        .border-brand { border-color: var(--brand) !important; }
+        .text-accent { color: var(--brand-2) !important; }
+        .bg-accent { background: var(--brand-2) !important; }
     </style>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
