@@ -1,4 +1,4 @@
-@extends('layouts.app')
+extends('layouts.app')
 @section('title', 'Edit Teacher')
 @section('subtitle', 'Update teacher details and course assignments')
 
@@ -85,7 +85,7 @@
                 <div>
                     <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Gender</label>
                     <select name="gender" class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)] bg-white">
-                        <option value="">�?" Select �?"</option>
+                        <option value="">– Select –</option>
                         <option value="male"   {{ old('gender', $lecturer->gender) === 'male'   ? 'selected' : '' }}>Male</option>
                         <option value="female" {{ old('gender', $lecturer->gender) === 'female' ? 'selected' : '' }}>Female</option>
                         <option value="other"  {{ old('gender', $lecturer->gender) === 'other'  ? 'selected' : '' }}>Other</option>
@@ -128,7 +128,7 @@
             <div class="px-6 py-4 border-b border-gray-100 bg-blue-50">
                 <h3 class="text-sm font-bold text-blue-900 flex items-center gap-2">
                     <i class="fas fa-book-open text-blue-600"></i> Course Assignments
-                    <span class="text-xs font-normal text-blue-500 ml-1">�?" Tick the courses this teacher handles</span>
+                    <span class="text-xs font-normal text-blue-500 ml-1">– Tick the courses this teacher handles</span>
                 </h3>
             </div>
             <div class="px-6 py-6 space-y-6">

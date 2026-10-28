@@ -1,4 +1,4 @@
-@extends('layouts.app')
+extends('layouts.app')
 @section('title','Testimonials')
 @section('subtitle','Manage parent testimonials shown on the home page')
 
@@ -11,7 +11,7 @@
     <form method="POST" action="{{ route('admin.website.testimonials.store') }}" class="space-y-3">
       @csrf
       @if($errors->any())
-      <div class="bg-red-50 rounded-xl px-4 py-3 text-xs text-red-700">@foreach($errors->all() as $e)<div>�?� {{ $e }}</div>@endforeach</div>
+      <div class="bg-red-50 rounded-xl px-4 py-3 text-xs text-red-700">@foreach($errors->all() as $e)<div>–� {{ $e }}</div>@endforeach</div>
       @endif
       <div>
         <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Parent Name *</label>
@@ -26,7 +26,7 @@
         <textarea name="message" rows="4" class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm" required>{{ old('message') }}</textarea>
       </div>
       <div>
-        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Rating (1�?"5)</label>
+        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Rating (1–5)</label>
         <select name="rating" class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm">
           @foreach([5,4,3,2,1] as $r)
           <option value="{{ $r }}" {{ old('rating',5)==$r?'selected':'' }}>{{ $r }} �~.</option>

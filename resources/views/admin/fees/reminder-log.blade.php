@@ -1,4 +1,4 @@
-@extends('layouts.app')
+extends('layouts.app')
 @section('title', 'Reminder Log')
 
 @section('content')
@@ -28,7 +28,7 @@
                     <i class="fas fa-history me-2" style="color:var(--brand);"></i>Reminder Log
                 </h3>
                 <p style="opacity:.65;font-size:.875rem;margin:0;">
-                    Full history of every reminder sent �?" {{ count($reminders) }} record(s)
+                    Full history of every reminder sent – {{ count($reminders) }} record(s)
                 </p>
             </div>
             <a href="{{ route('admin.fees.reminders.index') }}"
@@ -91,13 +91,13 @@
                             <span class="st-other">{{ ucfirst($r->status) }}</span>
                         @endif
                     </td>
-                    <td style="font-size:.8rem;color:#64748b;">{{ $r->sent_by ?? '�?"' }}</td>
+                    <td style="font-size:.8rem;color:#64748b;">{{ $r->sent_by ?? '–' }}</td>
                     <td style="font-size:.78rem;color:#94a3b8;white-space:nowrap;">
                         @if($r->sent_at)
                             <div>{{ \Carbon\Carbon::parse($r->sent_at)->format('d M Y') }}</div>
                             <div style="color:#cbd5e1;">{{ \Carbon\Carbon::parse($r->sent_at)->format('H:i') }}</div>
                         @else
-                            �?"
+                            –
                         @endif
                     </td>
                 </tr>

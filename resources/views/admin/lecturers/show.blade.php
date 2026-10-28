@@ -1,4 +1,4 @@
-@extends('layouts.app')
+extends('layouts.app')
 @section('title', $lecturer->full_name)
 @section('subtitle', 'Teacher profile and course assignments')
 
@@ -149,7 +149,7 @@
                                 <i class="fas fa-book"></i>
                             </div>
                             <div class="min-w-0">
-                                <p class="text-sm font-semibold text-gray-800 truncate">{{ $assignment->course->name ?? '�?"' }}</p>
+                                <p class="text-sm font-semibold text-gray-800 truncate">{{ $assignment->course->name ?? '–' }}</p>
                                 <p class="text-xs text-gray-400 font-mono">{{ $assignment->course->code ?? '' }}</p>
                             </div>
                         </div>

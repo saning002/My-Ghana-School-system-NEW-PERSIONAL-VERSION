@@ -1,4 +1,4 @@
-@extends('layouts.app')
+extends('layouts.app')
 @section('title','Student Profile')
 @section('subtitle', $student->user->full_name)
 
@@ -22,7 +22,7 @@
                 </div>
                 <div class="flex-1 min-w-0">
                     <h2 class="text-2xl font-extrabold text-white tracking-tight leading-tight">{{ $student->user->full_name }}</h2>
-                    <p class="text-[var(--brand)]/80 text-sm font-medium mt-1 tracking-wide">{{ $student->student_id }} <span class="mx-2 opacity-50">·</span> {{ $student->program->name??'�?"' }}</p>
+                    <p class="text-[var(--brand)]/80 text-sm font-medium mt-1 tracking-wide">{{ $student->student_id }} <span class="mx-2 opacity-50">·</span> {{ $student->program->name??'–' }}</p>
                 </div>
                 <span class="px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider flex-shrink-0 shadow-sm border
                     {{ $student->status==='active'?'bg-emerald-500/10 text-emerald-300 border-emerald-500/20':
@@ -38,8 +38,8 @@
         {{-- Quick info --}}
         <div class="grid grid-cols-2 sm:grid-cols-4 bg-white divide-x divide-y sm:divide-y-0 divide-slate-100">
             <div class="px-6 py-4 hover:bg-slate-50/50 transition-colors"><p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Email</p><p class="text-[13px] font-semibold text-slate-800 truncate">{{ $student->user->email }}</p></div>
-            <div class="px-6 py-4 hover:bg-slate-50/50 transition-colors"><p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Phone</p><p class="text-[13px] font-semibold text-slate-800">{{ $student->user->phone??'�?"' }}</p></div>
-            <div class="px-6 py-4 hover:bg-slate-50/50 transition-colors"><p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Ministry Branch</p><p class="text-[13px] font-semibold text-slate-800 truncate">{{ $student->churchBranch->name??'�?"' }}</p></div>
+            <div class="px-6 py-4 hover:bg-slate-50/50 transition-colors"><p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Phone</p><p class="text-[13px] font-semibold text-slate-800">{{ $student->user->phone??'–' }}</p></div>
+            <div class="px-6 py-4 hover:bg-slate-50/50 transition-colors"><p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Ministry Branch</p><p class="text-[13px] font-semibold text-slate-800 truncate">{{ $student->churchBranch->name??'–' }}</p></div>
             <div class="px-6 py-4 hover:bg-slate-50/50 transition-colors"><p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Admitted</p><p class="text-[13px] font-semibold text-slate-800">{{ \Carbon\Carbon::parse($student->admission_date)->format('M d, Y') }}</p></div>
         </div>
 
@@ -48,7 +48,7 @@
             <a href="{{ route('admin.students.edit',$student) }}" class="btn-gold flex items-center gap-2 px-5 py-2.5 rounded-xl text-[13px] font-bold shadow-[0_2px_10px_rgba(212,160,23,0.2)]">
                 <i class="fas fa-pen text-xs"></i> Edit Profile
             </a>
-            {{-- Approve button �?" only shown when student not yet approved --}}
+            {{-- Approve button – only shown when student not yet approved --}}
             @if(! $student->is_approved)
             <form method="POST" action="{{ route('admin.students.approve', $student) }}"
                   onsubmit="return confirm('Approve {{ $student->user->full_name }}? This will remove their NEW badge.')">
@@ -85,7 +85,7 @@
                 </button>
             </form>
             <a href="{{ route('admin.students.index') }}" class="flex items-center gap-2 px-5 py-2.5 bg-white text-slate-600 hover:text-slate-900 border border-slate-200 hover:border-slate-300 rounded-xl text-[13px] font-bold shadow-sm transition-all hover:-translate-y-0.5">
-                �?� Back to List
+                –� Back to List
             </a>
         </div>
     </div>
@@ -106,21 +106,21 @@
         @foreach([
             'Full Name'       => $student->user->full_name,
             'Email'           => $student->user->email,
-            'Phone'           => $student->user->phone ?? '�?"',
-            'Address'         => $student->user->address ?? '�?"',
-            'Date of Birth'   => $student->user->date_of_birth?->format('M d, Y') ?? '�?"',
-            'Gender'          => $student->user->gender ? ucfirst($student->user->gender) : '�?"',
-            'Marital Status'  => $student->user->marital_status ? ucfirst($student->user->marital_status) : '�?"',
-            'Nationality'     => $student->user->nationality ?? '�?"',
+            'Phone'           => $student->user->phone ?? '–',
+            'Address'         => $student->user->address ?? '–',
+            'Date of Birth'   => $student->user->date_of_birth?->format('M d, Y') ?? '–',
+            'Gender'          => $student->user->gender ? ucfirst($student->user->gender) : '–',
+            'Marital Status'  => $student->user->marital_status ? ucfirst($student->user->marital_status) : '–',
+            'Nationality'     => $student->user->nationality ?? '–',
             'Student ID'      => $student->student_id,
-            'Program'         => $student->program->name ?? '�?"',
-            'Ministry Branch' => $student->churchBranch->name ?? '�?"',
+            'Program'         => $student->program->name ?? '–',
+            'Ministry Branch' => $student->churchBranch->name ?? '–',
             'Admission Date'  => \Carbon\Carbon::parse($student->admission_date)->format('M d, Y'),
-            'Qualifications'  => $student->qualifications ?? '�?"',
-            'Native Town'     => $student->native_town ?? '�?"',
-            'Enrollment Year' => $student->enrollment_year ?? '�?"',
-            'Study Mode'      => $student->study_mode ? ucwords(str_replace('_', ' ', $student->study_mode)) : '�?"',
-            'Profession'      => $student->profession ?? '�?"',
+            'Qualifications'  => $student->qualifications ?? '–',
+            'Native Town'     => $student->native_town ?? '–',
+            'Enrollment Year' => $student->enrollment_year ?? '–',
+            'Study Mode'      => $student->study_mode ? ucwords(str_replace('_', ' ', $student->study_mode)) : '–',
+            'Profession'      => $student->profession ?? '–',
             'Status'          => ucfirst($student->status),
         ] as $label=>$value)
         <div class="bg-slate-50 rounded-xl p-4 border border-slate-100 transition-colors hover:border-slate-200">
@@ -170,7 +170,7 @@
             @forelse($student->attendances->sortByDesc('date') as $att)
             <div class="flex items-center gap-3 px-5 py-3">
                 <span class="w-2 h-2 rounded-full flex-shrink-0 {{ $att->status==='present'?'bg-green-500':'bg-red-400' }}"></span>
-                <p class="text-sm text-ink flex-1 truncate">{{ $att->course->name??'�?"' }}</p>
+                <p class="text-sm text-ink flex-1 truncate">{{ $att->course->name??'–' }}</p>
                 <p class="text-xs text-gray-400">{{ \Carbon\Carbon::parse($att->date)->format('M d, Y') }}</p>
                 <span class="text-xs font-bold {{ $att->status==='present'?'text-green-600':'text-red-500' }}">{{ ucfirst($att->status) }}</span>
             </div>
@@ -238,8 +238,8 @@
             <div class="flex items-center gap-3 px-5 py-3.5">
                 <i class="fas fa-arrow-up text-xs" style="color:var(--brand)"></i>
                 <div class="flex-1 text-xs text-ink">
-                    <span class="font-semibold">{{ $history->fromProgram->name ?? '�?"' }}</span>
-                    <span class="text-gray-400 mx-2">�?'</span>
+                    <span class="font-semibold">{{ $history->fromProgram->name ?? '–' }}</span>
+                    <span class="text-gray-400 mx-2">–'</span>
                     <span class="font-semibold">{{ $history->toProgram?->name ?? 'Graduated' }}</span>
                 </div>
                 <p class="text-xs text-gray-400">{{ $history->promoted_at->format('M d, Y') }}</p>

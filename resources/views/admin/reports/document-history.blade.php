@@ -1,4 +1,4 @@
-@extends('layouts.app')
+extends('layouts.app')
 @section('title','Document History')
 @section('subtitle','Audit trail of all generated documents with QR verification')
 

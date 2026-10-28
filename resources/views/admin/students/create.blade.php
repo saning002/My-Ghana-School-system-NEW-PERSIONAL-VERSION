@@ -1,6 +1,6 @@
-@extends('layouts.app')
+extends('layouts.app')
 @section('title','Add Student')
-@section('subtitle','Student Admission Form �?" Royal Fame International School')
+@section('subtitle','Student Admission Form – Royal Fame International School')
 
 @section('content')
 <div class="max-w-4xl mx-auto" x-data="studentForm()">
@@ -10,7 +10,7 @@
         <div class="bg-gradient-to-r from-slate-800 to-slate-700 px-6 py-5 text-white flex items-center justify-between">
             <div>
                 <h2 class="text-lg font-extrabold tracking-tight">Student Admission Form</h2>
-                <p class="text-slate-300 text-xs mt-0.5">Complete all required sections �?" matches the official admission form</p>
+                <p class="text-slate-300 text-xs mt-0.5">Complete all required sections – matches the official admission form</p>
             </div>
             <div class="hidden sm:flex items-center gap-3 text-xs text-slate-300">
                 <span class="rounded-full bg-white/10 px-3 py-1 font-semibold">Application No: <span class="font-mono text-yellow-300">AUTO</span></span>
@@ -23,12 +23,12 @@
         @csrf
 
         {{-- �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.�
-             SECTION A �?" PUPIL'S PERSONAL INFORMATION
+             SECTION A – PUPIL'S PERSONAL INFORMATION
         �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� --}}
         <div class="card overflow-hidden">
             <div class="section-header bg-slate-800 text-white px-5 py-3 flex items-center gap-3">
                 <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--primary)] text-slate-900 text-xs font-extrabold shrink-0">A</span>
-                <h3 class="text-sm font-extrabold tracking-wide">SECTION A �?" PUPIL'S PERSONAL INFORMATION</h3>
+                <h3 class="text-sm font-extrabold tracking-wide">SECTION A – PUPIL'S PERSONAL INFORMATION</h3>
             </div>
             <div class="p-5 space-y-5">
 
@@ -142,7 +142,7 @@
                         <label class="field-label">Class / Program Applying For *</label>
                         <select name="program_id" required x-model="selectedProgram" @change="loadCourses(); generateStudentId()"
                             class="field-input">
-                            <option value="">�?" Select Program �?"</option>
+                            <option value="">– Select Program –</option>
                             @foreach($programs as $program)
                             <option value="{{ $program->id }}" {{ old('program_id')==$program->id?'selected':'' }}>{{ $program->name }}</option>
                             @endforeach
@@ -180,12 +180,12 @@
         </div>
 
         {{-- �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.�
-             SECTION B �?" PREVIOUS SCHOOL DETAILS
+             SECTION B – PREVIOUS SCHOOL DETAILS
         �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� --}}
         <div class="card overflow-hidden">
             <div class="section-header bg-slate-700 text-white px-5 py-3 flex items-center gap-3">
                 <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--primary)] text-slate-900 text-xs font-extrabold shrink-0">B</span>
-                <h3 class="text-sm font-extrabold tracking-wide">SECTION B �?" PREVIOUS SCHOOL DETAILS</h3>
+                <h3 class="text-sm font-extrabold tracking-wide">SECTION B – PREVIOUS SCHOOL DETAILS</h3>
             </div>
             <div class="p-5 space-y-4">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -220,12 +220,12 @@
         </div>
 
         {{-- �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.�
-             SECTION C �?" FATHER'S INFORMATION
+             SECTION C – FATHER'S INFORMATION
         �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� --}}
         <div class="card overflow-hidden">
             <div class="section-header bg-slate-700 text-white px-5 py-3 flex items-center gap-3">
                 <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--primary)] text-slate-900 text-xs font-extrabold shrink-0">C</span>
-                <h3 class="text-sm font-extrabold tracking-wide">SECTION C �?" FATHER'S INFORMATION</h3>
+                <h3 class="text-sm font-extrabold tracking-wide">SECTION C – FATHER'S INFORMATION</h3>
             </div>
             <div class="p-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div class="sm:col-span-2">
@@ -252,12 +252,12 @@
         </div>
 
         {{-- �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.�
-             SECTION D �?" MOTHER'S INFORMATION
+             SECTION D – MOTHER'S INFORMATION
         �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� --}}
         <div class="card overflow-hidden">
             <div class="section-header bg-slate-700 text-white px-5 py-3 flex items-center gap-3">
                 <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--primary)] text-slate-900 text-xs font-extrabold shrink-0">D</span>
-                <h3 class="text-sm font-extrabold tracking-wide">SECTION D �?" MOTHER'S INFORMATION</h3>
+                <h3 class="text-sm font-extrabold tracking-wide">SECTION D – MOTHER'S INFORMATION</h3>
             </div>
             <div class="p-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div class="sm:col-span-2">
@@ -284,12 +284,12 @@
         </div>
 
         {{-- �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.�
-             SECTION E �?" GUARDIAN INFORMATION (IF APPLICABLE)
+             SECTION E – GUARDIAN INFORMATION (IF APPLICABLE)
         �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� --}}
         <div class="card overflow-hidden">
             <div class="section-header bg-slate-700 text-white px-5 py-3 flex items-center gap-3">
                 <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--primary)] text-slate-900 text-xs font-extrabold shrink-0">E</span>
-                <h3 class="text-sm font-extrabold tracking-wide">SECTION E �?" GUARDIAN INFORMATION <span class="font-normal text-slate-300 text-xs">(if applicable)</span></h3>
+                <h3 class="text-sm font-extrabold tracking-wide">SECTION E – GUARDIAN INFORMATION <span class="font-normal text-slate-300 text-xs">(if applicable)</span></h3>
             </div>
             <div class="p-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div class="sm:col-span-2">
@@ -316,22 +316,22 @@
         </div>
 
         {{-- �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.�
-             SECTION G �?" MEDICAL INFORMATION
+             SECTION G – MEDICAL INFORMATION
         �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� --}}
         <div class="card overflow-hidden">
             <div class="section-header bg-red-700 text-white px-5 py-3 flex items-center gap-3">
                 <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--primary)] text-slate-900 text-xs font-extrabold shrink-0">G</span>
-                <h3 class="text-sm font-extrabold tracking-wide">SECTION G �?" MEDICAL INFORMATION</h3>
+                <h3 class="text-sm font-extrabold tracking-wide">SECTION G – MEDICAL INFORMATION</h3>
             </div>
             <div class="p-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                     <label class="field-label">Known Medical Condition</label>
-                    <input type="text" name="medical_condition" value="{{ old('medical_condition') }}" class="field-input" placeholder="e.g. Asthma, Diabetes �?" or None">
+                    <input type="text" name="medical_condition" value="{{ old('medical_condition') }}" class="field-input" placeholder="e.g. Asthma, Diabetes – or None">
                 </div>
                 <div>
                     <label class="field-label">Blood Group <span class="text-slate-400 font-normal text-xs">(optional)</span></label>
                     <select name="blood_group" class="field-input">
-                        <option value="">�?" Unknown �?"</option>
+                        <option value="">– Unknown –</option>
                         @foreach(['A+','A-','B+','B-','AB+','AB-','O+','O-'] as $bg)
                         <option value="{{ $bg }}" {{ old('blood_group')===$bg?'selected':'' }}>{{ $bg }}</option>
                         @endforeach
@@ -339,7 +339,7 @@
                 </div>
                 <div class="sm:col-span-2">
                     <label class="field-label">Allergies</label>
-                    <input type="text" name="allergies" value="{{ old('allergies') }}" class="field-input" placeholder="e.g. Penicillin, Peanuts �?" or None">
+                    <input type="text" name="allergies" value="{{ old('allergies') }}" class="field-input" placeholder="e.g. Penicillin, Peanuts – or None">
                 </div>
                 <div class="sm:col-span-2">
                     <label class="field-label">Special Educational Needs</label>
@@ -357,12 +357,12 @@
         </div>
 
         {{-- �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.�
-             SECTION H �?" PERSONS AUTHORIZED TO PICK UP THE CHILD
+             SECTION H – PERSONS AUTHORIZED TO PICK UP THE CHILD
         �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� --}}
         <div class="card overflow-hidden">
             <div class="section-header bg-slate-700 text-white px-5 py-3 flex items-center gap-3">
                 <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--primary)] text-slate-900 text-xs font-extrabold shrink-0">H</span>
-                <h3 class="text-sm font-extrabold tracking-wide">SECTION H �?" PERSONS AUTHORIZED TO PICK UP THE CHILD</h3>
+                <h3 class="text-sm font-extrabold tracking-wide">SECTION H – PERSONS AUTHORIZED TO PICK UP THE CHILD</h3>
             </div>
             <div class="p-5 grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
@@ -381,12 +381,12 @@
         </div>
 
         {{-- �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.�
-             SECTION I �?" SCHOOL CONTRIBUTION STATUS
+             SECTION I – SCHOOL CONTRIBUTION STATUS
         �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� --}}
         <div class="card overflow-hidden">
             <div class="section-header bg-slate-700 text-white px-5 py-3 flex items-center gap-3">
                 <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--primary)] text-slate-900 text-xs font-extrabold shrink-0">I</span>
-                <h3 class="text-sm font-extrabold tracking-wide">SECTION I �?" SCHOOL CONTRIBUTION STATUS</h3>
+                <h3 class="text-sm font-extrabold tracking-wide">SECTION I – SCHOOL CONTRIBUTION STATUS</h3>
             </div>
             <div class="p-5">
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -413,12 +413,12 @@
         </div>
 
         {{-- �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.�
-             SECTION J �?" CONSENT AND DECLARATION
+             SECTION J – CONSENT AND DECLARATION
         �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� --}}
         <div class="card overflow-hidden">
             <div class="section-header bg-slate-800 text-white px-5 py-3 flex items-center gap-3">
                 <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--primary)] text-slate-900 text-xs font-extrabold shrink-0">J</span>
-                <h3 class="text-sm font-extrabold tracking-wide">SECTION J �?" CONSENT AND DECLARATION</h3>
+                <h3 class="text-sm font-extrabold tracking-wide">SECTION J – CONSENT AND DECLARATION</h3>
             </div>
             <div class="p-5 space-y-4">
                 <div class="rounded-xl border border-slate-200 bg-slate-50 p-4 text-xs text-slate-600 leading-relaxed space-y-1.5">
@@ -453,7 +453,7 @@
                 <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--primary)] text-slate-900 text-xs font-extrabold shrink-0">
                     <i class="fas fa-cog text-[10px]"></i>
                 </span>
-                <h3 class="text-sm font-extrabold tracking-wide">FOR OFFICIAL USE �?" SYSTEM &amp; PORTAL DETAILS</h3>
+                <h3 class="text-sm font-extrabold tracking-wide">FOR OFFICIAL USE – SYSTEM &amp; PORTAL DETAILS</h3>
             </div>
             <div class="p-5 space-y-4">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -481,7 +481,7 @@
                                 @keydown.enter.prevent="selectHighlighted()"
                                 @blur="delayClose()"
                                 class="field-input"
-                                placeholder="Search or type new branch name�?�"
+                                placeholder="Search or type new branch name–�"
                                 autocomplete="off" required>
                             <input type="hidden" name="church_branch_id" :value="selectedId" id="branch-id-hidden">
                             <input type="hidden" name="branch_new"       :value="selectedId ? '' : query.trim()">
@@ -503,7 +503,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
                         <label class="field-label">Login Email *</label>
-                        <input type="email" name="email" value="{{ old('email') }}" class="field-input" placeholder="student@email.com �?" blank to auto-generate">
+                        <input type="email" name="email" value="{{ old('email') }}" class="field-input" placeholder="student@email.com – blank to auto-generate">
                         <p class="text-[11px] text-slate-400 mt-1">Leave blank to auto-assign a system email.</p>
                     </div>
                     <div>
@@ -512,7 +512,7 @@
                     </div>
                     <div>
                         <label class="field-label">Student Portal Password</label>
-                        <input type="password" name="portal_password" class="field-input" placeholder="Optional �?" for student portal">
+                        <input type="password" name="portal_password" class="field-input" placeholder="Optional – for student portal">
                     </div>
                 </div>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">

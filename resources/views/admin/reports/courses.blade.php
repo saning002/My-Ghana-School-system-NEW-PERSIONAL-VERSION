@@ -1,4 +1,4 @@
-@extends('layouts.app')
+extends('layouts.app')
 @section('title','Course Enrollment Report')
 @section('subtitle','Students enrolled per course')
 
@@ -50,12 +50,12 @@
     <div class="card p-5">
         <div class="flex items-start justify-between mb-3">
             <span class="text-xs font-bold px-2.5 py-1 rounded-lg" style="background:var(--primary-pale);color:var(--primary-text)">{{ $course->code }}</span>
-            <span class="text-xs text-gray-400">{{ $course->program->name??'�?"' }}</span>
+            <span class="text-xs text-gray-400">{{ $course->program->name??'–' }}</span>
         </div>
         <h3 class="text-sm font-bold text-ink mb-3">{{ $course->name }}</h3>
         <div class="flex items-center justify-between pt-3 border-t border-[var(--primary-pale)]">
             <span class="text-xs text-gray-500">{{ $course->enrollments_count }} enrolled</span>
-            <a href="{{ route('admin.courses.show',$course) }}" class="text-xs font-semibold" style="color:var(--brand)">View �?'</a>
+            <a href="{{ route('admin.courses.show',$course) }}" class="text-xs font-semibold" style="color:var(--brand)">View –'</a>
         </div>
     </div>
     @empty

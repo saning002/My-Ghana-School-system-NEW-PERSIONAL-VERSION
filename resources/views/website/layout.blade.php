@@ -1,8 +1,8 @@
-?<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 @php
-    // �"?�"? Slug-aware URL helper �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?
+    // = Slug-aware URL helper =
     // If the current URL contains /school/{slug}/website, use slug-based
     // routes so the URL stays as /school/{slug}/website/* during navigation.
     // Otherwise fall back to the session-based /website/* routes.
@@ -36,7 +36,7 @@
 @endphp
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>@hasSection('page_title'){{ $site->site_name ?? 'School' }} �?" @yield('page_title')@else{{ $site->site_name ?? 'School' }}@endif</title>
+  <title>@hasSection('page_title'){{ $site->site_name ?? 'School' }} – @yield('page_title')@else{{ $site->site_name ?? 'School' }}@endif</title>
   <meta name="description" content="@yield('meta_description', $site->tagline ?? 'Welcome to our school.')" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -349,10 +349,10 @@
         <ul>
           @php
           $footerPrograms = $site->footer_programs ?? [
-            ['name'=>'Day Care (Ages 1�?"2)',      'href'=>wu('academics')],
-            ['name'=>'Nursery (Ages 2�?"3)',        'href'=>wu('academics')],
-            ['name'=>'Preschool (Ages 3�?"4)',      'href'=>wu('academics')],
-            ['name'=>'Kindergarten (Ages 4�?"5)',   'href'=>wu('academics')],
+            ['name'=>'Day Care (Ages 1–2)',      'href'=>wu('academics')],
+            ['name'=>'Nursery (Ages 2–3)',        'href'=>wu('academics')],
+            ['name'=>'Preschool (Ages 3–4)',      'href'=>wu('academics')],
+            ['name'=>'Kindergarten (Ages 4–5)',   'href'=>wu('academics')],
           ];
           @endphp
           @foreach($footerPrograms as $fp)
@@ -374,7 +374,7 @@
           @php $fEmail = $site->footer_email ?: $site->contact_email; @endphp
           <div class="footer-contact-item"><i class="fas fa-envelope"></i><span><a href="mailto:{{ $fEmail }}" style="color:rgba(255,255,255,.5);">{{ $fEmail }}</a></span></div>
         @endif
-        <div class="footer-contact-item"><i class="fas fa-clock"></i><span>{{ $site->footer_office_hours ?? $site->office_hours ?? 'Mon�?"Fri: 7:00 AM �?" 5:00 PM' }}</span></div>
+        <div class="footer-contact-item"><i class="fas fa-clock"></i><span>{{ $site->footer_office_hours ?? $site->office_hours ?? 'Mon–Fri: 7:00 AM – 5:00 PM' }}</span></div>
         <a href="{{ wu('portal') }}" style="display:inline-flex;align-items:center;gap:6px;margin-top:16px;font-size:.82rem;font-weight:700;color:var(--gold);"><i class="fas fa-shield-halved"></i> {{ $site->footer_portal_text ?? 'Staff Portals' }}</a>
       </div>
     </div>

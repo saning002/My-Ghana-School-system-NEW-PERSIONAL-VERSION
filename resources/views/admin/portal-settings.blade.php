@@ -1,4 +1,4 @@
-@extends('layouts.app')
+extends('layouts.app')
 @section('title', 'Portals Management')
 @section('subtitle', 'Manage student and teacher portal access')
 
@@ -244,7 +244,7 @@
                             </div>
                             <div>
                                 <p class="font-bold text-gray-800 text-sm">Landscape (A4)</p>
-                                <p class="text-xs text-gray-500">Wider �?" two columns side by side</p>
+                                <p class="text-xs text-gray-500">Wider – two columns side by side</p>
                             </div>
                         </div>
                     </label>
@@ -259,7 +259,7 @@
                             </div>
                             <div>
                                 <p class="font-bold text-gray-800 text-sm">Portrait (A4)</p>
-                                <p class="text-xs text-gray-500">Taller �?" traditional page layout</p>
+                                <p class="text-xs text-gray-500">Taller – traditional page layout</p>
                             </div>
                         </div>
                     </label>
@@ -278,7 +278,7 @@
     {{-- Portal Links --}}
     <div class="space-y-4">
         <h3 class="text-sm font-bold text-gray-800">
-            <i class="fas fa-link mr-2 text-gray-500"></i>All Portal URLs �?" Share with staff
+            <i class="fas fa-link mr-2 text-gray-500"></i>All Portal URLs – Share with staff
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
@@ -414,7 +414,7 @@
                 </p>
                 <a href="{{ route('admin.staff-portal-users.index') }}"
                    class="inline-flex items-center gap-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-4 py-2.5 transition-all active:scale-95">
-                    <i class="fas fa-cog text-[10px]"></i> Manage Staff Portal Accounts �?'
+                    <i class="fas fa-cog text-[10px]"></i> Manage Staff Portal Accounts –'
                 </a>
             </div>
         </div>

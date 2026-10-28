@@ -1,4 +1,4 @@
-?@extends('website.layout')
+@extends('website.layout')
 @section('page_title','Welcome')
 @section('meta_description', $site->tagline ?? 'A nurturing, joyful environment where every child thrives.')
 
@@ -239,7 +239,7 @@ iframe.hero-video{width:100vw;height:56.25vw;min-height:100vh;min-width:177.78vh
             @endif
         </div>
 
-        {{-- Right panel �?" split layout only --}}
+        {{-- Right panel – split layout only --}}
         <div class="hero-panel">
             <div class="hero-card">
                 <div class="hero-card-label">{{ $site->hero_panel_title ?? 'World-Class Education' }}</div>
@@ -286,7 +286,7 @@ $whyFeatures = $site->why_features ?? [
 </section>
 
 {{-- �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� PROGRAMS �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� --}}
-{{-- Programs section removed from home page �?" programs are shown on /academics --}}
+{{-- Programs section removed from home page – programs are shown on /academics --}}
 
 {{-- �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� TESTIMONIALS �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� --}}
 @if($testimonials->count())
@@ -384,7 +384,7 @@ $whyFeatures = $site->why_features ?? [
 <section class="cta-banner">
   <div class="container cta-banner-inner">
     <h2>{{ $site->cta_title ?? 'Ready to Join Our Family?' }}</h2>
-    <p>{{ $site->cta_subtitle ?? 'Applications are open. Spots are limited �?" secure your child\'s place today.' }}</p>
+    <p>{{ $site->cta_subtitle ?? 'Applications are open. Spots are limited – secure your child\'s place today.' }}</p>
     <div class="cta-banner-btns">
       <a href="{{ wu('apply') }}" class="btn btn-navy btn-lg">
         <i class="fas fa-file-alt"></i> Apply Now

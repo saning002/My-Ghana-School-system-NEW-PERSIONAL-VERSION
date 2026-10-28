@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -64,7 +64,7 @@
 
 <div class="print-actions">
     <button class="btn-print" onclick="window.print()"><i>�Y-�</i> Print Receipt</button>
-    <a href="{{ url()->previous() }}" class="btn-back">�?� Back</a>
+    <a href="{{ url()->previous() }}" class="btn-back">–� Back</a>
 </div>
 
 <div class="receipt-wrapper">
@@ -93,15 +93,15 @@
         <div class="info-grid">
             <div class="info-item">
                 <div class="label">Full Name</div>
-                <div class="value">{{ $student?->user?->full_name ?? '�?"' }}</div>
+                <div class="value">{{ $student?->user?->full_name ?? '–' }}</div>
             </div>
             <div class="info-item">
                 <div class="label">Student ID</div>
-                <div class="value">{{ $student?->student_id ?? '�?"' }}</div>
+                <div class="value">{{ $student?->student_id ?? '–' }}</div>
             </div>
             <div class="info-item">
                 <div class="label">Programme</div>
-                <div class="value">{{ $student?->program?->name ?? '�?"' }}</div>
+                <div class="value">{{ $student?->program?->name ?? '–' }}</div>
             </div>
             <div class="info-item">
                 <div class="label">Academic Session</div>
@@ -115,11 +115,11 @@
         <div class="info-grid">
             <div class="info-item">
                 <div class="label">Payer Name</div>
-                <div class="value">{{ $payment->payer_name ?? '�?"' }}</div>
+                <div class="value">{{ $payment->payer_name ?? '–' }}</div>
             </div>
             <div class="info-item">
                 <div class="label">Phone</div>
-                <div class="value">{{ $payment->payer_phone ?? '�?"' }}</div>
+                <div class="value">{{ $payment->payer_phone ?? '–' }}</div>
             </div>
         </div>
         @endif
@@ -138,7 +138,7 @@
                 <tr>
                     <td>
                         School Fees Payment
-                        @if($session) �?" {{ $session->year }} @endif
+                        @if($session) – {{ $session->year }} @endif
                         @if($payment->notes) <br><small style="color:#94a3b8;">{{ $payment->notes }}</small> @endif
                     </td>
                     <td>{{ ucfirst(str_replace('_', ' ', $payment->payment_method ?? 'cash')) }}</td>
@@ -166,7 +166,7 @@
 
     {{-- Footer --}}
     <div class="receipt-footer">
-        <div>{{ $schoolName }} �?" Official Receipt</div>
+        <div>{{ $schoolName }} – Official Receipt</div>
         <div>Generated: {{ now()->format('d M Y H:i') }}</div>
         <div>Receipt: {{ $payment->receipt_number ?? 'N/A' }}</div>
     </div>
@@ -175,7 +175,7 @@
 
 <div class="print-actions">
     <button class="btn-print" onclick="window.print()"><i>�Y-�</i> Print Receipt</button>
-    <a href="{{ url()->previous() }}" class="btn-back">�?� Back</a>
+    <a href="{{ url()->previous() }}" class="btn-back">–� Back</a>
 </div>
 
 </body>

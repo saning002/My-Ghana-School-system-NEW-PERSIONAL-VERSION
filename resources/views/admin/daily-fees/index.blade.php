@@ -1,4 +1,4 @@
-@extends('layouts.app')
+extends('layouts.app')
 @section('title','Daily Fees')
 @section('subtitle','Mark student daily fee payments, manage exemptions and scholarships')
 
@@ -26,7 +26,7 @@
         <p class="text-sm font-bold text-[var(--primary-text)]">Database migration required</p>
         <p class="text-xs text-[var(--primary-text)] mt-1 leading-relaxed">
             The daily fees tables haven't been created yet on your live database.<br>
-            Go to <strong>Render �?' your service �?' Shell</strong> and run:<br>
+            Go to <strong>Render –' your service –' Shell</strong> and run:<br>
             <code class="bg-[var(--primary-pale)] px-2 py-0.5 rounded font-mono mt-1 inline-block">php artisan migrate</code>
         </p>
     </div>
@@ -125,9 +125,9 @@
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wide text-slate-600 mb-1">Student *</label>
                     <select name="student_id" required class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
-                        <option value="">�?" Select student �?"</option>
+                        <option value="">– Select student –</option>
                         @foreach($students as $s)
-                        <option value="{{ $s->id }}">{{ $s->student_id }} �?" {{ $s->user->full_name }}</option>
+                        <option value="{{ $s->id }}">{{ $s->student_id }} – {{ $s->user->full_name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -315,7 +315,7 @@
 
 </div>{{-- end .space-y-5 --}}
 
-{{-- Hidden unmark form �?" outside all other forms to avoid nesting --}}
+{{-- Hidden unmark form – outside all other forms to avoid nesting --}}
 <form id="unmarkForm" method="POST" action="{{ route('admin.daily-fees.unmark') }}" style="display:none">
     @csrf
     <input type="hidden" name="student_id" id="unmarkStudentId">
@@ -408,7 +408,7 @@ function unmarkFee(studentId, date) {
 function openExemption(id, name) {
     document.getElementById('exemptionStudentId').value = id;
     document.getElementById('removeExemptionStudentId').value = id;
-    document.getElementById('exemptionModalTitle').textContent = 'Exemption �?" ' + name;
+    document.getElementById('exemptionModalTitle').textContent = 'Exemption – ' + name;
     document.getElementById('exemptionModal').classList.remove('hidden');
     document.getElementById('exemptionModal').classList.add('flex');
 }

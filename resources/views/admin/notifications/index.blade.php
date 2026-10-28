@@ -1,4 +1,4 @@
-@extends('layouts.app')
+extends('layouts.app')
 @section('title','Notification Center')
 @section('subtitle','Send alerts and messages to students and teachers')
 
@@ -22,7 +22,7 @@
 
                 @if($errors->any())
                 <div class="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-xs text-red-700 space-y-1">
-                    @foreach($errors->all() as $e)<div>�?� {{ $e }}</div>@endforeach
+                    @foreach($errors->all() as $e)<div>–� {{ $e }}</div>@endforeach
                 </div>
                 @endif
 
@@ -97,7 +97,7 @@
                         <label class="block text-xs font-semibold text-gray-600 mb-1">Select Teacher *</label>
                         <select name="lecturer_id"
                                 class="w-full px-4 py-3 border border-[var(--brand)] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 bg-white">
-                            <option value="">�?" Choose a teacher �?"</option>
+                            <option value="">– Choose a teacher –</option>
                             @foreach($lecturers as $lecturer)
                             <option value="{{ $lecturer->id }}" {{ old('lecturer_id') == $lecturer->id ? 'selected' : '' }}>
                                 {{ $lecturer->full_name }}
@@ -212,7 +212,7 @@
                         <div class="flex items-center justify-between">
                             <p class="text-xs text-gray-400">
                                 <i class="fas fa-clock mr-1"></i>
-                                {{ $notif->created_at->diffForHumans() }} �?" by {{ $notif->sender->full_name ?? 'Admin' }}
+                                {{ $notif->created_at->diffForHumans() }} – by {{ $notif->sender->full_name ?? 'Admin' }}
                             </p>
                             <form method="POST" action="{{ route('admin.notifications.destroy', $notif) }}"
                                   onsubmit="return confirm('Delete this notification?')">

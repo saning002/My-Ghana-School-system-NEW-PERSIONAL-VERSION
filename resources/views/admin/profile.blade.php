@@ -1,4 +1,4 @@
-@extends('layouts.app')
+extends('layouts.app')
 @section('title', 'My Profile')
 @section('subtitle', 'Update your details and change your password')
 
@@ -110,12 +110,12 @@
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1">New Password</label>
                             <input type="password" name="password"
-                                class="w-full rounded-xl border-slate-200 bg-slate-50/50 p-3 text-sm focus:border-amber-500 focus:ring-amber-500 focus:bg-white transition-all" placeholder="�?��?��?��?��?��?��?��?�">
+                                class="w-full rounded-xl border-slate-200 bg-slate-50/50 p-3 text-sm focus:border-amber-500 focus:ring-amber-500 focus:bg-white transition-all" placeholder="–�–�–�–�–�–�–�–�">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1">Confirm New Password</label>
                             <input type="password" name="password_confirmation"
-                                class="w-full rounded-xl border-slate-200 bg-slate-50/50 p-3 text-sm focus:border-amber-500 focus:ring-amber-500 focus:bg-white transition-all" placeholder="�?��?��?��?��?��?��?��?�">
+                                class="w-full rounded-xl border-slate-200 bg-slate-50/50 p-3 text-sm focus:border-amber-500 focus:ring-amber-500 focus:bg-white transition-all" placeholder="–�–�–�–�–�–�–�–�">
                         </div>
                     </div>
                 </div>

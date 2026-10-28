@@ -1,4 +1,4 @@
-@extends('layouts.app')
+extends('layouts.app')
 @section('title', 'Academic Sessions')
 @section('subtitle', 'Manage academic years, semester/term periods, and the active period')
 
@@ -60,7 +60,7 @@
             @csrf
             @if($errors->any())
             <div class="rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-xs text-red-700">
-                @foreach($errors->all() as $e)<div>�?� {{ $e }}</div>@endforeach
+                @foreach($errors->all() as $e)<div>–� {{ $e }}</div>@endforeach
             </div>
             @endif
 
@@ -116,7 +116,7 @@
                 <p class="text-xs text-slate-500 mt-1">Total Periods</p>
             </div>
             <div class="rounded-2xl border border-slate-200 bg-white p-4 text-center shadow-sm">
-                <p class="text-lg font-extrabold text-slate-900">{{ $sessions->first()?->year ?? '�?"' }}</p>
+                <p class="text-lg font-extrabold text-slate-900">{{ $sessions->first()?->year ?? '–' }}</p>
                 <p class="text-xs text-slate-500 mt-1">Latest</p>
             </div>
         </div>
@@ -167,7 +167,7 @@
         @if($session->periods->isEmpty())
             <p class="text-xs text-red-500 text-center py-2">
                 <i class="fas fa-exclamation-triangle mr-1"></i>
-                No periods �?" delete and recreate this session.
+                No periods – delete and recreate this session.
             </p>
         @else
         <div class="grid grid-cols-1 sm:grid-cols-2 {{ $session->mode === 'term' ? 'lg:grid-cols-3' : 'lg:grid-cols-2' }} gap-3">

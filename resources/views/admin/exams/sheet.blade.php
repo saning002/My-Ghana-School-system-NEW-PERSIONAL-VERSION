@@ -1,4 +1,4 @@
-@extends('layouts.app')
+extends('layouts.app')
 
 @section('header')
 <div class="flex items-center justify-between">
@@ -86,8 +86,8 @@
             <div class="bg-[var(--primary-pale)] border border-[var(--brand)] rounded-xl p-5 flex items-start gap-3">
                 <i class="fas fa-lock text-[var(--brand)] text-lg mt-0.5"></i>
                 <div>
-                    <p class="text-sm font-bold text-[var(--primary-text)]">Pre-College Attempt 1 �?" Scores are final aggregates (out of 100)</p>
-                    <p class="text-xs text-[var(--primary-text)] mt-1">Scores for this attempt are treated as 100% exam score �?" no weighting applied.</p>
+                    <p class="text-sm font-bold text-[var(--primary-text)]">Pre-College Attempt 1 – Scores are final aggregates (out of 100)</p>
+                    <p class="text-xs text-[var(--primary-text)] mt-1">Scores for this attempt are treated as 100% exam score – no weighting applied.</p>
                 </div>
             </div>
             @else
@@ -124,7 +124,7 @@
 
                     {{-- Row 2: SBA sub-component weights --}}
                     <p class="text-xs font-bold text-gray-600 uppercase tracking-wide mb-3">
-                        SBA Sub-Components �?" weights must add to 100
+                        SBA Sub-Components – weights must add to 100
                     </p>
                     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
                         @foreach([
@@ -160,7 +160,7 @@
                     <div>
                         <h3 class="font-bold text-gray-800 mb-2 flex items-center gap-2"><i class="fas fa-download text-green-600"></i> Download Excel Template</h3>
                         <p class="text-sm text-gray-600 mb-4">
-                            Downloads a spreadsheet with two columns per course �?" SBA ({{ $quizPercentage }}%) and Exam ({{ $examPercentage }}%). Fill it offline and upload below.
+                            Downloads a spreadsheet with two columns per course – SBA ({{ $quizPercentage }}%) and Exam ({{ $examPercentage }}%). Fill it offline and upload below.
                         </p>
                     </div>
                     <form action="{{ route('admin.exams.sheet.export') }}" method="GET">
@@ -258,7 +258,7 @@
                                        :value="{{ $stu->id }}"
                                        class="rounded text-teal-600">
                                 <span class="text-xs text-gray-700 truncate">
-                                    {{ $stu->user->full_name ?? '�?"' }}<br>
+                                    {{ $stu->user->full_name ?? '–' }}<br>
                                     <span class="text-gray-400">{{ $stu->student_id }}</span>
                                 </span>
                             </label>
@@ -368,7 +368,7 @@
                                                        value="{{ $existing[$field] ?? '' }}"
                                                        min="0" max="{{ $sbaSubWeights[str_replace(['_score','_score'], '', $field)] ?? 100 }}" step="0.5"
                                                        class="w-16 text-center rounded border-{{ $col }}-200 text-xs py-1 px-1 focus:border-{{ $col }}-500"
-                                                       placeholder="�?"">
+                                                       placeholder="–">
                                             </td>
                                             @endforeach
                                             @endif
@@ -379,7 +379,7 @@
                                                        value="{{ $existing['exam_score'] ?? '' }}"
                                                        min="0" max="100" step="0.5"
                                                        class="w-16 text-center rounded border-orange-200 text-xs py-1 px-1 focus:border-orange-500"
-                                                       placeholder="�?"">
+                                                       placeholder="–">
                                             </td>
                                         @endforeach
                                     </tr>

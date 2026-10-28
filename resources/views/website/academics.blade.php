@@ -1,6 +1,6 @@
-?@extends('website.layout')
+@extends('website.layout')
 @section('page_title','Academics')
-@section('meta_description','Our academic programs at '.($site->site_name ?? 'our school').' �?" comprehensive programs designed for excellence.')
+@section('meta_description','Our academic programs at '.($site->site_name ?? 'our school').' – comprehensive programs designed for excellence.')
 @section('extra_css')
 .prog-list{display:flex;flex-direction:column;gap:32px;max-width:960px;margin:0 auto;}
 .prog-row{display:grid;grid-template-columns:220px 1fr;border-radius:var(--r-xl);overflow:hidden;background:var(--white);box-shadow:var(--shadow-sm);border:1px solid var(--gray-200);transition:var(--trans);}

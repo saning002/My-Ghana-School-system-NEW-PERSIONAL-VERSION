@@ -1,4 +1,4 @@
-@extends('layouts.app')
+extends('layouts.app')
 @section('title','Monthly Fee Report')
 @section('subtitle','Daily collection totals for the selected month')
 

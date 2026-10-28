@@ -1,4 +1,4 @@
-@extends('layouts.app')
+extends('layouts.app')
 @section('title', 'Term Fee Ledger')
 
 @section('content')
@@ -174,7 +174,7 @@
     {{-- Ledger table --}}
     <div class="tl-card">
         <div class="tl-card-hd">
-            <span style="font-weight:700;font-size:.9rem;"><i class="fas fa-table me-2 text-primary"></i>Student Ledger �?" {{ $selectedSession?->year }}</span>
+            <span style="font-weight:700;font-size:.9rem;"><i class="fas fa-table me-2 text-primary"></i>Student Ledger – {{ $selectedSession?->year }}</span>
             <span style="font-size:.78rem;color:#64748b;">{{ $summaries->count() }} record(s)</span>
         </div>
         <div class="table-responsive">
@@ -194,12 +194,12 @@
                 @forelse($summaries as $s)
                 <tr class="tl-row">
                     <td>
-                        <div style="font-weight:700;font-size:.875rem;color:#1e293b;">{{ $s['student']->user?->full_name ?? '�?"' }}</div>
+                        <div style="font-weight:700;font-size:.875rem;color:#1e293b;">{{ $s['student']->user?->full_name ?? '–' }}</div>
                         <span style="background:#f1f5f9;color:#475569;font-size:.7rem;font-weight:600;padding:2px 8px;border-radius:10px;">
                             {{ $s['student']->student_id }}
                         </span>
                     </td>
-                    <td style="font-size:.875rem;color:#475569;">{{ $s['student']->program?->name ?? '�?"' }}</td>
+                    <td style="font-size:.875rem;color:#475569;">{{ $s['student']->program?->name ?? '–' }}</td>
                     <td class="text-end" style="font-size:.875rem;">GHS {{ number_format($s['total_billed'],2) }}</td>
                     <td class="text-end" style="font-size:.875rem;font-weight:600;color:#16a34a;">GHS {{ number_format($s['total_paid'],2) }}</td>
                     <td class="text-end">

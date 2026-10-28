@@ -1,4 +1,4 @@
-@extends('layouts.app')
+extends('layouts.app')
 @section('title','Reports')
 @section('subtitle','Analytics, insights and exports')
 
@@ -152,7 +152,7 @@
         }
     });
 
-    // Chart 2: Student Status Distribution (doughnut �?" shows real data)
+    // Chart 2: Student Status Distribution (doughnut – shows real data)
     createChart(document.getElementById('reports-fees-chart'), {
         type: 'doughnut',
         data: {

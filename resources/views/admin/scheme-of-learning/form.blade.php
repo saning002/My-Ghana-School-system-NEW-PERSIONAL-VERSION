@@ -1,4 +1,4 @@
-@extends('layouts.app')
+extends('layouts.app')
 @section('title', isset($entry) ? 'Edit Scheme Entry' : 'Add Scheme Entry')
 @section('subtitle', 'Weekly topic plan for a course')
 
@@ -26,7 +26,7 @@
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Program *</label>
                     <select name="program_id" id="program_id" required
                         class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)]">
-                        <option value="">�?" Select �?"</option>
+                        <option value="">– Select –</option>
                         @foreach($programs as $p)
                         <option value="{{ $p->id }}" {{ old('program_id', $isEdit ? $entry->program_id : request('program_id'))==$p->id?'selected':'' }}>{{ $p->name }}</option>
                         @endforeach
@@ -36,7 +36,7 @@
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Course *</label>
                     <select name="course_id" id="course_id" required
                         class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)]">
-                        <option value="">�?" Select �?"</option>
+                        <option value="">– Select –</option>
                         @foreach($courses as $c)
                         <option value="{{ $c->id }}" {{ old('course_id', $isEdit ? $entry->course_id : request('course_id'))==$c->id?'selected':'' }}>{{ $c->name }}</option>
                         @endforeach
@@ -71,7 +71,7 @@
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Assigned Lecturer</label>
                     <select name="lecturer_id"
                         class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)]">
-                        <option value="">�?" None �?"</option>
+                        <option value="">– None –</option>
                         @foreach($lecturers ?? [] as $lec)
                         <option value="{{ $lec->id }}" {{ old('lecturer_id', $isEdit ? $entry->lecturer_id : '')==$lec->id?'selected':'' }}>{{ $lec->full_name }}</option>
                         @endforeach
@@ -119,7 +119,7 @@
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Assessment Type</label>
                     <select name="assessment_type"
                         class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)]">
-                        <option value="">�?" None �?"</option>
+                        <option value="">– None –</option>
                         @foreach(['Quiz','Test','Class Exercise','Group Work','Project','Assignment','Observation'] as $at)
                         <option value="{{ $at }}" {{ old('assessment_type', $isEdit ? $entry->assessment_type : '')==$at?'selected':'' }}>{{ $at }}</option>
                         @endforeach
@@ -191,12 +191,12 @@
 document.getElementById('program_id')?.addEventListener('change', function() {
     const pid = this.value;
     const sel = document.getElementById('course_id');
-    sel.innerHTML = '<option value="">�?" Loading... �?"</option>';
-    if (!pid) { sel.innerHTML = '<option value="">�?" Select �?"</option>'; return; }
+    sel.innerHTML = '<option value="">– Loading... –</option>';
+    if (!pid) { sel.innerHTML = '<option value="">– Select –</option>'; return; }
     fetch(`/admin/scheme-of-learning/courses?program_id=${pid}`)
         .then(r => r.json())
         .then(courses => {
-            sel.innerHTML = '<option value="">�?" Select Course �?"</option>';
+            sel.innerHTML = '<option value="">– Select Course –</option>';
             courses.forEach(c => {
                 sel.innerHTML += `<option value="${c.id}">${c.name}</option>`;
             });

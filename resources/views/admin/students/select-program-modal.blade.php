@@ -1,4 +1,4 @@
-{{-- Program selector modal �?" shown when the uploaded file has no Program column --}}
+{-- Program selector modal – shown when the uploaded file has no Program column --}}
 <div id="selectProgramModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
     <div class="bg-white rounded-2xl shadow-2xl p-6 max-w-md w-full mx-4">
         <h2 class="text-lg font-extrabold text-slate-800 mb-2">Select Program for Import</h2>
@@ -21,7 +21,7 @@
                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Select Program *</label>
                 <select name="default_program_id" required
                     class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)]">
-                    <option value="">�?" Choose a program �?"</option>
+                    <option value="">– Choose a program –</option>
                     @foreach(session('select_program_for_import')['programs'] as $prog)
                     <option value="{{ $prog->id }}">{{ $prog->name }}</option>
                     @endforeach

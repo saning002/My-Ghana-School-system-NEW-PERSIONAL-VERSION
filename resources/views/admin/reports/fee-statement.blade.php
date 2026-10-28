@@ -1,4 +1,4 @@
-@extends('layouts.app')
+extends('layouts.app')
 @section('title','Fee Statement')
 @section('subtitle','Charges, payments and outstanding balance per student')
 
@@ -22,7 +22,7 @@
             <select name="student_id" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
                 <option value="">-- Select Student --</option>
                 @foreach($students as $s)
-                <option value="{{ $s->id }}" {{ request('student_id')==$s->id?'selected':'' }}>{{ $s->student_id }} �?" {{ $s->user->full_name }}</option>
+                <option value="{{ $s->id }}" {{ request('student_id')==$s->id?'selected':'' }}>{{ $s->student_id }} – {{ $s->user->full_name }}</option>
                 @endforeach
             </select>
         </div>

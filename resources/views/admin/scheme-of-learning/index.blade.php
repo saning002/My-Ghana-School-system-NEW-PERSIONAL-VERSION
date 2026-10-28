@@ -1,4 +1,4 @@
-@extends('layouts.app')
+extends('layouts.app')
 @section('title','Scheme of Learning')
 @section('subtitle','Weekly teaching plan per course and program')
 
@@ -13,7 +13,7 @@
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Program *</label>
             <select name="program_id" onchange="this.form.submit()"
                 class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)]">
-                <option value="">�?" Select Program �?"</option>
+                <option value="">– Select Program –</option>
                 @foreach($programs as $p)
                 <option value="{{ $p->id }}" {{ request('program_id')==$p->id?'selected':'' }}>{{ $p->name }}</option>
                 @endforeach
@@ -24,7 +24,7 @@
             <select name="course_id" onchange="this.form.submit()"
                 class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)]"
                 {{ !$selectedProgram?'disabled':'' }}>
-                <option value="">�?" Select Course �?"</option>
+                <option value="">– Select Course –</option>
                 @if($selectedProgram)
                 <option value="all" {{ request('course_id')==='all'?'selected':'' }}>�Y"s All Courses</option>
                 @endif
@@ -82,13 +82,13 @@
 </div>
 
 {{-- �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.�
-     MODE A �?" CREATE ENTRIES (weekly topic-by-topic plan)
+     MODE A – CREATE ENTRIES (weekly topic-by-topic plan)
      �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� --}}
 <div x-show="mode==='entries'" x-cloak>
     <div class="card overflow-hidden">
         <div class="flex items-center justify-between px-5 py-4 border-b bg-slate-50">
             <div>
-                <h3 class="text-sm font-extrabold text-slate-800">{{ $selectedProgram->name }} �?" {{ $isAllCourses ? 'All Courses' : ($selectedCourse?->name ?? 'Course') }}</h3>
+                <h3 class="text-sm font-extrabold text-slate-800">{{ $selectedProgram->name }} – {{ $isAllCourses ? 'All Courses' : ($selectedCourse?->name ?? 'Course') }}</h3>
                 <p class="text-xs text-slate-500 mt-0.5">
                     Academic Year {{ $selectedYear }}
                     @if(request('term')) · {{ request('term') }} @endif
@@ -148,7 +148,7 @@
                     <tr class="hover:bg-slate-50 transition-colors">
                         @if($isAllCourses)
                         <td class="px-4 py-3 font-semibold text-slate-700 text-xs whitespace-nowrap">
-                            {{ $entry->course?->name ?? '�?"' }}
+                            {{ $entry->course?->name ?? '–' }}
                         </td>
                         @endif
                         <td class="px-4 py-3">
@@ -175,9 +175,9 @@
                         <td class="px-4 py-3 hidden md:table-cell">
                             @if($entry->assessment_type)
                             <span class="rounded-full bg-indigo-100 text-indigo-700 px-2.5 py-0.5 text-[11px] font-bold">{{ $entry->assessment_type }}</span>
-                            @else<span class="text-slate-300 text-xs">�?"</span>@endif
+                            @else<span class="text-slate-300 text-xs">–</span>@endif
                         </td>
-                        <td class="px-4 py-3 text-xs text-slate-500 hidden lg:table-cell">{{ $entry->lecturer?->full_name ?? '�?"' }}</td>
+                        <td class="px-4 py-3 text-xs text-slate-500 hidden lg:table-cell">{{ $entry->lecturer?->full_name ?? '–' }}</td>
                         <td class="px-4 py-3 text-right">
                             <div class="flex items-center justify-end gap-1.5">
                                 @if($entry->pdf_path)
@@ -213,7 +213,7 @@
 </div>
 
 {{-- �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.�
-     MODE B �?" UPLOAD FULL PDF SCHEME
+     MODE B – UPLOAD FULL PDF SCHEME
      Admin uploads one PDF that covers the entire term/year scheme.
      Lecturers view and download it from their portal.
      �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� --}}
@@ -243,7 +243,7 @@
                   enctype="multipart/form-data"
                   class="space-y-4">
                 @csrf
-                {{-- Hidden fields �?" course + program already selected --}}
+                {{-- Hidden fields – course + program already selected --}}
                 <input type="hidden" name="program_id"   value="{{ $selectedProgram->id }}">
                 @if(! $isAllCourses && $selectedCourse)
                 <input type="hidden" name="course_id"    value="{{ $selectedCourse->id }}">
@@ -258,7 +258,7 @@
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Select Course *</label>
                     <select name="course_id" required
                         class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-400">
-                        <option value="">�?" Select Course �?"</option>
+                        <option value="">– Select Course –</option>
                         @foreach($courses as $c)
                         <option value="{{ $c->id }}">{{ $c->name }}</option>
                         @endforeach

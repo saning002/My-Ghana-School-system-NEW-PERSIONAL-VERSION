@@ -1,4 +1,4 @@
-@extends('layouts.app')
+extends('layouts.app')
 @section('title', 'Bulk Student Promotion')
 @section('subtitle', 'Promote students to their next program in bulk')
 
@@ -66,7 +66,7 @@
                                 </div>
                                 <p class="text-xs text-slate-500 mt-1">
                                     @if($isFinal)
-                                        <span class="text-[var(--brand)] font-semibold"><i class="fas fa-exclamation-triangle mr-1"></i> Final Program �?" Students will be marked as Graduated</span>
+                                        <span class="text-[var(--brand)] font-semibold"><i class="fas fa-exclamation-triangle mr-1"></i> Final Program – Students will be marked as Graduated</span>
                                     @elseif($nextProg)
                                         Advances to: <strong class="text-slate-700">{{ $nextProg->name }}</strong>
                                     @endif

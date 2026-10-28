@@ -1,6 +1,6 @@
-@extends('layouts.app')
+extends('layouts.app')
 @section('title','Dashboard')
-@section('subtitle', ($schoolName ?? 'School') . ' �?" Admin Overview')
+@section('subtitle', ($schoolName ?? 'School') . ' – Admin Overview')
 
 @section('content')
 
@@ -46,8 +46,8 @@
             <p class="font-bold text-red-800">Storage health issue detected</p>
             <p class="text-sm text-red-700 mt-1">The application cannot write files to one or more storage locations. Please verify permissions for the paths below:</p>
             <ul class="text-sm text-red-700 mt-3 space-y-1 list-disc list-inside">
-                <li><strong>Public disk:</strong> {{ $storageHealth['public_disk_path'] ?? 'N/A' }} �?" {{ $storageHealth['public_disk_writable'] ? 'Writable' : 'Not writable' }}</li>
-                <li><strong>Fallback uploads:</strong> {{ $storageHealth['uploads_path'] ?? 'N/A' }} �?" {{ $storageHealth['uploads_writable'] ? 'Writable' : 'Not writable' }}</li>
+                <li><strong>Public disk:</strong> {{ $storageHealth['public_disk_path'] ?? 'N/A' }} – {{ $storageHealth['public_disk_writable'] ? 'Writable' : 'Not writable' }}</li>
+                <li><strong>Fallback uploads:</strong> {{ $storageHealth['uploads_path'] ?? 'N/A' }} – {{ $storageHealth['uploads_writable'] ? 'Writable' : 'Not writable' }}</li>
             </ul>
             <p class="text-sm text-red-700 mt-3">Fix permissions for these directories or contact your server administrator before uploading student photos.</p>
         </div>
@@ -140,14 +140,14 @@
         </div>
     </div>
 
-    {{-- Attendance Trend �?" styled like teacher portal --}}
+    {{-- Attendance Trend – styled like teacher portal --}}
     <div class="overflow-hidden rounded-2xl" style="background:linear-gradient(135deg,#0d0a2e 0%,#1a1550 25%,#2d2480 55%,#5647d6 80%,#7c6ee8 100%)">
         {{-- Header --}}
         <div class="px-5 pt-5 pb-3 flex items-center justify-between">
             <div>
                 <p class="text-[10px] font-bold uppercase tracking-widest text-indigo-300 mb-0.5">Live Data</p>
                 <h3 class="text-sm font-extrabold text-white">Attendance Trend</h3>
-                <p class="text-[11px] text-indigo-200 mt-0.5">Present vs absent �?" recent records</p>
+                <p class="text-[11px] text-indigo-200 mt-0.5">Present vs absent – recent records</p>
             </div>
             <span class="flex items-center gap-1.5 rounded-full border border-emerald-400/40 bg-emerald-500/20 px-3 py-1 text-[10px] font-extrabold text-emerald-300 uppercase tracking-wider">
                 <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>Live
@@ -157,11 +157,11 @@
         <div class="px-5 pb-3 flex gap-4">
             <div class="flex items-center gap-1.5">
                 <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 inline-block"></span>
-                <span class="text-[11px] font-bold text-emerald-200">Present: <span id="admin-total-present">�?"</span></span>
+                <span class="text-[11px] font-bold text-emerald-200">Present: <span id="admin-total-present">–</span></span>
             </div>
             <div class="flex items-center gap-1.5">
                 <span class="w-2.5 h-2.5 rounded-full bg-red-400 inline-block"></span>
-                <span class="text-[11px] font-bold text-red-300">Absent: <span id="admin-total-absent">�?"</span></span>
+                <span class="text-[11px] font-bold text-red-300">Absent: <span id="admin-total-absent">–</span></span>
             </div>
         </div>
         {{-- Chart on white background panel --}}
@@ -171,7 +171,7 @@
     </div>
 </div>
 
-{{-- Recent Activities �?" unified feed from all system actions --}}
+{{-- Recent Activities – unified feed from all system actions --}}
 <div class="card overflow-hidden">
     <div class="flex items-center justify-between px-6 py-5 border-b border-slate-100">
         <div class="flex items-center gap-2">

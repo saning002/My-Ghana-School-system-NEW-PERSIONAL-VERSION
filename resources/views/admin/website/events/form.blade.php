@@ -1,4 +1,4 @@
-@extends('layouts.app')
+extends('layouts.app')
 @section('title', $event ? 'Edit Event' : 'New Event')
 
 @section('content')

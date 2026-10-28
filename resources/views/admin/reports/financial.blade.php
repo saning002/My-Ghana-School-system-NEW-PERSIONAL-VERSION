@@ -1,4 +1,4 @@
-@extends('layouts.app')
+extends('layouts.app')
 @section('title','Financial Report')
 @section('subtitle','Fees, payments and outstanding balances')
 
@@ -83,7 +83,7 @@
                         <p class="text-sm font-semibold text-ink">{{ $row['student']->user->full_name }}</p>
                         <p class="text-xs text-gray-400 font-mono">{{ $row['student']->student_id }}</p>
                     </td>
-                    <td class="px-5 py-4 text-sm text-gray-600">{{ $row['student']->program->name??'�?"' }}</td>
+                    <td class="px-5 py-4 text-sm text-gray-600">{{ $row['student']->program->name??'–' }}</td>
                     <td class="px-5 py-4 text-sm font-semibold text-right" style="color:var(--primary-text)">GH₵ {{ number_format($row['total'],2) }}</td>
                     <td class="px-5 py-4 text-sm font-semibold text-right text-green-700">GH₵ {{ number_format($row['paid'],2) }}</td>
                     <td class="px-5 py-4 text-sm font-bold text-right {{ $row['balance']>0?'text-red-600':'text-green-600' }}">GH₵ {{ number_format($row['balance'],2) }}</td>

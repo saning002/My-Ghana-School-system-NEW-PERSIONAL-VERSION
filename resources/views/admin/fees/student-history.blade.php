@@ -1,5 +1,5 @@
-@extends('layouts.app')
-@section('title', 'Fee History �?" ' . ($student->user?->full_name ?? 'Student'))
+extends('layouts.app')
+@section('title', 'Fee History – ' . ($student->user?->full_name ?? 'Student'))
 
 @section('content')
 <style>

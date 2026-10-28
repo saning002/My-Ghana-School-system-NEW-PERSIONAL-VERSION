@@ -1,4 +1,4 @@
-@extends('layouts.app')
+extends('layouts.app')
 @section('title','Report Attributes')
 @section('subtitle','Manage personality development, conduct and attitude attributes for report cards')
 

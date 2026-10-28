@@ -1,4 +1,4 @@
-@extends('layouts.app')
+extends('layouts.app')
 @section('title', 'Edit Student')
 @section('subtitle', 'Update student information')
 
@@ -209,7 +209,7 @@
                             @keydown.enter.prevent="selectHighlighted()"
                             @blur="delayClose()"
                             class="input-premium w-full px-4 py-3 text-[14px] {{ $errors->has('church_branch_id') ? 'border-red-500 bg-red-50' : '' }}"
-                            placeholder="Search or type new branch name�?�"
+                            placeholder="Search or type new branch name–�"
                             autocomplete="off">
                         <input type="hidden" name="church_branch_id" :value="selectedId">
                         <input type="hidden" name="branch_new"       :value="selectedId ? '' : query.trim()">

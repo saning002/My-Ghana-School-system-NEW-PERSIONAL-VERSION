@@ -1,4 +1,4 @@
-@extends('layouts.app')
+extends('layouts.app')
 @section('title', 'Edit Administrator')
 @section('subtitle', 'Update administration account details')
 

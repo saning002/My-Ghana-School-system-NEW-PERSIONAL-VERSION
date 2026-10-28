@@ -1,6 +1,6 @@
-@extends('layouts.app')
+extends('layouts.app')
 @section('title','Website Programs')
-@section('subtitle','Programs shown on the public /academics page �?" add, edit, reorder, toggle visibility')
+@section('subtitle','Programs shown on the public /academics page – add, edit, reorder, toggle visibility')
 
 @section('content')
 <div class="space-y-5">
@@ -210,11 +210,11 @@
     <div>
         <p class="text-sm font-bold text-indigo-800 mb-1">Customize the Academics Page Text</p>
         <p class="text-xs text-indigo-600 mb-2">
-            Change the hero title, section heading, card section labels (Curriculum, Highlights, Schedule), button texts, and the bottom enrollment banner from Website Settings �?' Academics Tab.
+            Change the hero title, section heading, card section labels (Curriculum, Highlights, Schedule), button texts, and the bottom enrollment banner from Website Settings –' Academics Tab.
         </p>
         <a href="{{ route('admin.website.site-settings') }}"
            class="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-700 bg-indigo-100 hover:bg-indigo-200 px-3 py-1.5 rounded-lg transition-colors">
-            <i class="fas fa-external-link-alt text-[9px]"></i> Open Site Settings �?' Academics Tab
+            <i class="fas fa-external-link-alt text-[9px]"></i> Open Site Settings –' Academics Tab
         </a>
     </div>
 </div>

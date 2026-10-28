@@ -1,4 +1,4 @@
-@extends('layouts.app')
+extends('layouts.app')
 @section('title', 'Edit Branch Admin')
 @section('subtitle', 'Update admin for ' . $branch->name)
 

@@ -1,4 +1,4 @@
-@extends('layouts.app')
+extends('layouts.app')
 @section('title','Website Settings')
 @section('subtitle','Fully customise every text, section and detail on the public website')
 @section('content')
@@ -300,7 +300,7 @@
 
                     {{-- Option A: paste a URL (works without Cloudinary, survives redeploys) --}}
                     <div>
-                        <label class="ws-label">Image URL <span class="normal-case font-normal text-gray-400">(recommended �?" paste any public image URL)</span></label>
+                        <label class="ws-label">Image URL <span class="normal-case font-normal text-gray-400">(recommended – paste any public image URL)</span></label>
                         <input type="url" name="hero_bg_image_url"
                                value="{{ old('hero_bg_image_url', filter_var($s->hero_bg_image ?? '', FILTER_VALIDATE_URL) ? $s->hero_bg_image : '') }}"
                                placeholder="https://example.com/your-school-hero.jpg"
@@ -318,13 +318,13 @@
 
                     {{-- Option B: file upload (requires Cloudinary or persistent disk) --}}
                     <div>
-                        <label class="ws-label">Upload Image File <span class="normal-case font-normal text-gray-400">(JPG, PNG, WebP �?" max 8MB �?" requires Cloudinary)</span></label>
+                        <label class="ws-label">Upload Image File <span class="normal-case font-normal text-gray-400">(JPG, PNG, WebP – max 8MB – requires Cloudinary)</span></label>
                         <input type="file" name="hero_bg_image" accept="image/jpeg,image/png,image/jpg,image/webp"
                                class="mt-1 text-sm text-gray-600 block">
                         @if(!config('cloudinary.cloud_name'))
                         <p class="text-[10px] text-orange-500 mt-1">
                             <i class="fas fa-exclamation-triangle mr-1"></i>
-                            Cloudinary not configured �?" uploaded files will be lost on next server restart. Use a URL instead.
+                            Cloudinary not configured – uploaded files will be lost on next server restart. Use a URL instead.
                         </p>
                         @endif
                     </div>
@@ -390,7 +390,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <h4 class="text-xs font-bold uppercase tracking-wider text-blue-800">Public Website Colors</h4>
-                        <p class="text-[10px] text-blue-500 mt-0.5">Only affects the public-facing website �?" homepage, about, admissions, etc.</p>
+                        <p class="text-[10px] text-blue-500 mt-0.5">Only affects the public-facing website – homepage, about, admissions, etc.</p>
                     </div>
                     <span class="text-[10px] bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-semibold">Website only</span>
                 </div>
@@ -467,7 +467,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700">Admin Panel Colors</h4>
-                        <p class="text-[10px] text-slate-500 mt-0.5">Only affects the admin dashboard sidebar and buttons �?" not the public website.</p>
+                        <p class="text-[10px] text-slate-500 mt-0.5">Only affects the admin dashboard sidebar and buttons – not the public website.</p>
                     </div>
                     <span class="text-[10px] bg-slate-200 text-slate-700 px-2 py-1 rounded-full font-semibold">Admin only</span>
                 </div>
@@ -804,7 +804,7 @@
             </div>
             <div>
                 <label class="ws-label">Office Hours</label>
-                <input type="text" name="office_hours" value="{{ old('office_hours',$s->office_hours ?? 'Mon �?" Fri: 7:00 AM �?" 5:00 PM') }}" class="ws-input">
+                <input type="text" name="office_hours" value="{{ old('office_hours',$s->office_hours ?? 'Mon – Fri: 7:00 AM – 5:00 PM') }}" class="ws-input">
             </div>
             <div>
                 <label class="ws-label">Contact Form Subjects (one per line)</label>
@@ -890,7 +890,7 @@
                     </div>
                     <div>
                         <label class="ws-label">Footer Office Hours</label>
-                        <input type="text" name="footer_office_hours" value="{{ old('footer_office_hours',$s->footer_office_hours ?? $s->office_hours ?? 'Mon�?"Fri: 7:00 AM �?" 5:00 PM') }}" class="ws-input">
+                        <input type="text" name="footer_office_hours" value="{{ old('footer_office_hours',$s->footer_office_hours ?? $s->office_hours ?? 'Mon–Fri: 7:00 AM – 5:00 PM') }}" class="ws-input">
                     </div>
                 </div>
             </div>
@@ -998,7 +998,7 @@ function heroShowBgPanel(type) {
     if (panel) panel.classList.remove('hidden');
 }
 
-// �"?�"? Sync colour picker �?" text input �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?
+// �"?�"? Sync colour picker – text input �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?
 function syncColorInput(textInput) {
     const val = textInput.value.trim();
     const pickerName = textInput.dataset.picker;
@@ -1009,7 +1009,7 @@ function syncColorInput(textInput) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Sync all colour pickers �?' text inputs on picker change
+    // Sync all colour pickers –' text inputs on picker change
     document.querySelectorAll('input[type="color"]').forEach(picker => {
         const textInput = picker.parentElement.querySelector('input[type="text"]');
         if (textInput) {

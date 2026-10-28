@@ -1,4 +1,4 @@
-@extends('layouts.app')
+extends('layouts.app')
 @section('title','Exam Questions')
 @section('subtitle','Review exam question documents uploaded by teachers')
 
@@ -112,7 +112,7 @@
     <div class="py-16 text-center text-slate-400">
         <i class="fas fa-file-circle-question text-4xl mb-3 block"></i>
         <p class="text-sm font-semibold">No exam question documents uploaded yet.</p>
-        <p class="text-xs text-slate-400 mt-1">Teachers upload documents from their <strong>Exams �?' Question Upload</strong> section.</p>
+        <p class="text-xs text-slate-400 mt-1">Teachers upload documents from their <strong>Exams –' Question Upload</strong> section.</p>
     </div>
     @else
 
@@ -163,9 +163,9 @@
                             </form>
                         </div>
                     </td>
-                    <td class="px-4 py-3 text-xs font-semibold text-slate-700">{{ $doc->course->name ?? '�?"' }}</td>
-                    <td class="px-4 py-3 text-xs text-slate-600">{{ $doc->program->name ?? '�?"' }}</td>
-                    <td class="px-4 py-3 text-xs text-slate-600">{{ $doc->lecturer->full_name ?? '�?"' }}</td>
+                    <td class="px-4 py-3 text-xs font-semibold text-slate-700">{{ $doc->course->name ?? '–' }}</td>
+                    <td class="px-4 py-3 text-xs text-slate-600">{{ $doc->program->name ?? '–' }}</td>
+                    <td class="px-4 py-3 text-xs text-slate-600">{{ $doc->lecturer->full_name ?? '–' }}</td>
                     <td class="px-4 py-3 text-xs text-slate-600">
                         {{ $doc->academic_year }}
                         @if($doc->term)<br><span class="text-slate-400">{{ $doc->term }}</span>@endif
@@ -240,8 +240,8 @@
                 <div class="flex items-start justify-between gap-2">
                     <div>
                         <p class="text-sm font-bold text-slate-800">{{ $doc->title }}</p>
-                        <p class="text-xs text-slate-500 mt-0.5">{{ $doc->course->name ?? '�?"' }} · {{ $doc->program->name ?? '�?"' }}</p>
-                        <p class="text-xs text-slate-400">{{ $doc->lecturer->full_name ?? '�?"' }} · {{ $doc->academic_year }}</p>
+                        <p class="text-xs text-slate-500 mt-0.5">{{ $doc->course->name ?? '–' }} · {{ $doc->program->name ?? '–' }}</p>
+                        <p class="text-xs text-slate-400">{{ $doc->lecturer->full_name ?? '–' }} · {{ $doc->academic_year }}</p>
                     </div>
                     @if($doc->is_approved)
                     <span class="shrink-0 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-0.5">Approved</span>

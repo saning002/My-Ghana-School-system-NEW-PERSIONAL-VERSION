@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Program Performance Report �?" KMC</title>
+    <title>Program Performance Report – KMC</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
@@ -76,7 +76,7 @@
     @endif
 
     <div class="mt-6 pt-4 border-t text-xs text-gray-400 text-center no-print">
-        {{ $schoolName ?? 'School' }} {{ $schoolSubtitle ? ' �?" '.$schoolSubtitle : '' }} �?" Confidential Report
+        {{ $schoolName ?? 'School' }} {{ $schoolSubtitle ? ' – '.$schoolSubtitle : '' }} – Confidential Report
     </div>
 </body>
 </html>

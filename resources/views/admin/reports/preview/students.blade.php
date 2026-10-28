@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Students Report �?" KMC</title>
+    <title>Students Report – KMC</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
@@ -60,10 +60,10 @@
             @foreach($students as $i => $student)
             <tr class="{{ $i % 2 === 0 ? 'bg-white' : 'bg-[var(--primary-pale)]' }}">
                 <td class="border border-gray-200 px-3 py-2 font-mono text-xs">{{ $student->student_id }}</td>
-                <td class="border border-gray-200 px-3 py-2 font-semibold">{{ $student->user->full_name ?? '�?"' }}</td>
-                <td class="border border-gray-200 px-3 py-2">{{ $student->program->name ?? '�?"' }}</td>
-                <td class="border border-gray-200 px-3 py-2">{{ $student->churchBranch->name ?? '�?"' }}</td>
-                <td class="border border-gray-200 px-3 py-2">{{ $student->admission_date ? \Carbon\Carbon::parse($student->admission_date)->format('M d, Y') : '�?"' }}</td>
+                <td class="border border-gray-200 px-3 py-2 font-semibold">{{ $student->user->full_name ?? '–' }}</td>
+                <td class="border border-gray-200 px-3 py-2">{{ $student->program->name ?? '–' }}</td>
+                <td class="border border-gray-200 px-3 py-2">{{ $student->churchBranch->name ?? '–' }}</td>
+                <td class="border border-gray-200 px-3 py-2">{{ $student->admission_date ? \Carbon\Carbon::parse($student->admission_date)->format('M d, Y') : '–' }}</td>
                 <td class="border border-gray-200 px-3 py-2">
                     <span class="px-2 py-0.5 rounded-full text-xs font-semibold
                         {{ $student->status==='active'?'bg-emerald-100 text-emerald-700':($student->status==='graduated'?'bg-blue-100 text-blue-700':($student->status==='manifestation'?'bg-[var(--primary-pale)] text-[var(--primary-text)]':'bg-red-100 text-red-700')) }}">
@@ -77,7 +77,7 @@
     @endif
 
     <div class="mt-6 pt-4 border-t text-xs text-gray-400 text-center no-print">
-        {{ $schoolName ?? 'School' }} {{ $schoolSubtitle ? ' �?" '.$schoolSubtitle : '' }} �?" Confidential Report
+        {{ $schoolName ?? 'School' }} {{ $schoolSubtitle ? ' – '.$schoolSubtitle : '' }} – Confidential Report
     </div>
 </body>
 </html>

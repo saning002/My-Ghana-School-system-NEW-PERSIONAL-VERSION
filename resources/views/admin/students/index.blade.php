@@ -1,4 +1,4 @@
-@extends('layouts.app')
+extends('layouts.app')
 @section('title','Students')
 @section('subtitle','All registered students')
 
@@ -146,7 +146,7 @@
             </div>
             <div class="bg-gray-50 rounded-lg px-3 py-2">
                 <p class="text-xs text-gray-400 mb-0.5">Program</p>
-                <p class="text-xs font-semibold text-gray-700 truncate">{{ $student->program->name??'�?"' }}</p>
+                <p class="text-xs font-semibold text-gray-700 truncate">{{ $student->program->name??'–' }}</p>
             </div>
         </div>
         <div class="flex gap-2" onclick="event.stopPropagation()">
@@ -227,7 +227,7 @@
                         <p class="text-[12px] text-slate-500 mt-0.5">{{ $student->user->email }}</p>
                     </td>
                     <td class="px-6 py-4">
-                        <p class="text-[13px] font-semibold text-slate-700 max-w-xs truncate">{{ $student->program->name??'�?"' }}</p>
+                        <p class="text-[13px] font-semibold text-slate-700 max-w-xs truncate">{{ $student->program->name??'–' }}</p>
                     </td>
                     <td class="px-6 py-4">
                         <span class="text-[11px] px-2.5 py-1 rounded-full font-bold uppercase tracking-wider
@@ -311,7 +311,7 @@
                     </label>
                     <select name="default_program_id"
                         class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)]">
-                        <option value="">�?" Auto-detect from file �?"</option>
+                        <option value="">– Auto-detect from file –</option>
                         @foreach(\App\Models\Program::orderBy('sequence')->get() as $prog)
                         <option value="{{ $prog->id }}">{{ $prog->name }}</option>
                         @endforeach

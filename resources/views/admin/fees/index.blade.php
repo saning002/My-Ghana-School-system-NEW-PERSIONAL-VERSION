@@ -1,4 +1,4 @@
-@extends('layouts.app')
+extends('layouts.app')
 @section('title','Fees & Payments')
 @section('subtitle', auth()->user()->isBranchAdmin() ? 'Manage student payments for ' . (auth()->user()->branch->name ?? 'your branch') : 'Manage program fees and student payments across branches')
 
@@ -246,7 +246,7 @@
         @csrf
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-start">
 
-            {{-- Mode selector �?" 3 options --}}
+            {{-- Mode selector – 3 options --}}
             <div class="sm:col-span-2 lg:col-span-2">
                 <label class="block text-xs font-bold uppercase tracking-wide text-gray-600 mb-2">Fee Collection Mode</label>
                 <div class="grid grid-cols-3 gap-2">
@@ -310,7 +310,7 @@
                 @if($isDaily)
                 <a href="{{ route('admin.daily-fees.index') }}"
                    class="w-full text-center py-2.5 rounded-xl text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition-colors">
-                    <i class="fas fa-external-link-alt mr-1"></i> Go to Daily Fees �?'
+                    <i class="fas fa-external-link-alt mr-1"></i> Go to Daily Fees –'
                 </a>
                 @endif
             </div>
@@ -326,7 +326,7 @@
         <strong>Feeding Fee Mode active.</strong>
         Set a <strong>Feeding Fee</strong> per program in the "Program Fees" section below.
         Each student's term bill will show <em>Tuition Fee</em> + <em>Feeding Fee</em> as separate line items.
-        Students can pay either or both �?" the system tracks balances for each separately in the total.
+        Students can pay either or both – the system tracks balances for each separately in the total.
     </div>
 </div>
 @endif
@@ -454,7 +454,7 @@
                             {{ $bs['branch']->name }}
                         </div>
                     </td>
-                    <td class="px-4 py-3 text-gray-600 font-medium">{{ $bs['branch']->location ?? '�?"' }}</td>
+                    <td class="px-4 py-3 text-gray-600 font-medium">{{ $bs['branch']->location ?? '–' }}</td>
                     <td class="px-4 py-3 text-gray-900 font-semibold text-right">GH₵ {{ number_format($bs['summary']['billed'], 2) }}</td>
                     <td class="px-4 py-3 text-green-700 font-semibold text-right">GH₵ {{ number_format($bs['summary']['collected'], 2) }}</td>
                     <td class="px-4 py-3 text-red-700 font-bold text-right">GH₵ {{ number_format($bs['summary']['outstanding'], 2) }}</td>
@@ -581,7 +581,7 @@
             <div class="input-field {{ $isWith ? '' : 'opacity-40' }}" id="feedingFeeGroup">
                 <label class="block text-xs font-semibold mb-2 uppercase tracking-wide {{ $isWith ? 'text-blue-700' : 'text-gray-400' }}">
                     Feeding Fee (GH₵)
-                    @if($isWith)<span class="text-[10px] text-blue-500 normal-case ml-1">�?" feeding mode</span>@endif
+                    @if($isWith)<span class="text-[10px] text-blue-500 normal-case ml-1">– feeding mode</span>@endif
                 </label>
                 <input type="number" name="feeding_fee" step="0.01" min="0"
                     class="w-full px-4 py-3 border rounded-xl text-sm focus:outline-none focus:ring-2 bg-white {{ $isWith ? 'border-blue-300 focus:ring-blue-500' : 'border-gray-200 cursor-not-allowed' }}"
@@ -627,7 +627,7 @@
                         <i class="fas fa-list mr-2"></i>Student Records
                     </h3>
                     <p class="text-xs text-[var(--primary-text)] mt-1">{{ $students->total() }} total student(s) · Page {{ $students->currentPage() }} of {{ $students->lastPage() }}</p>
-                    <p class="text-xs text-gray-600 mt-1">Select students by ticking the checkbox on the left of each row, or use �?oSelect all on this page�?�.</p>
+                    <p class="text-xs text-gray-600 mt-1">Select students by ticking the checkbox on the left of each row, or use –oSelect all on this page–�.</p>
                 </div>
                 <div id="bulk-actions" class="hidden flex items-center gap-2 flex-wrap justify-end">
                     <button type="button" onclick="selectAllVisibleStudents()" class="premium-btn px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-semibold hover:bg-blue-700 flex items-center gap-1.5">

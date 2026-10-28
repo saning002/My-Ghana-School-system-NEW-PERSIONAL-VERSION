@@ -1,6 +1,6 @@
-@extends('layouts.app')
+extends('layouts.app')
 @section('title', 'Report Card')
-@section('subtitle', $student->user->full_name . ' �?" ' . $program->name)
+@section('subtitle', $student->user->full_name . ' – ' . $program->name)
 
 @section('content')
 <div class="max-w-3xl mx-auto">
@@ -24,7 +24,7 @@
            class="inline-flex items-center gap-2 px-4 py-2.5 bg-white border border-[var(--brand)] text-gray-700 rounded-xl text-sm font-semibold transition-colors hover:bg-[var(--primary-pale)]">
             <i class="fas fa-pen" style="color:var(--primary-text)"></i> Edit Scores
         </a>
-        <a href="{{ route('admin.exams.index') }}" class="ml-auto text-sm text-gray-500 hover:text-gray-700 font-medium">�?� Back</a>
+        <a href="{{ route('admin.exams.index') }}" class="ml-auto text-sm text-gray-500 hover:text-gray-700 font-medium">–� Back</a>
     </div>
 
     {{-- �"?�"? Attempt Tabs �"?�"? --}}
@@ -60,7 +60,7 @@
     @else
 
     {{-- �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.�
-         REPORT CARD �?" physical card replica
+         REPORT CARD – physical card replica
     �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� --}}
     <div id="report-card"
          class="overflow-hidden rounded-lg shadow-xl print:shadow-none print:rounded-none"
@@ -132,7 +132,7 @@
             <div style="font-size:12px;font-weight:700;margin-bottom:10px">
                 <span style="font-weight:900;text-transform:uppercase">Campus: </span>
                 <span style="display:inline-block;border-bottom:1.5px solid #000;min-width:300px;padding:0 4px 1px;font-weight:700;text-transform:uppercase">
-                    {{ strtoupper($student->churchBranch?->name ?? '�?"') }}
+                    {{ strtoupper($student->churchBranch?->name ?? '–') }}
                 </span>
             </div>
             <div style="text-align:center;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:0.3px;color:#000;margin-bottom:1px">
@@ -187,7 +187,7 @@
                     {{-- LEFT: Grading Scale --}}
                     <td style="width:36%;vertical-align:top;padding-right:16px">
                         <div style="font-size:11px;font-weight:900;text-decoration:underline;text-transform:uppercase;margin-bottom:5px;color:#000">Scale of Grading:</div>
-                        @foreach(['A1 = 80�?"100 (Distinction)','A2 = 70�?"79 (Upper Division)','A3 = 60�?"69 (Lower Division)','B1 = 50�?"59 (Credit)','B2 = 40�?"49 (Pass)','F  = 0�?"39  (Fail)'] as $g)
+                        @foreach(['A1 = 80–100 (Distinction)','A2 = 70–79 (Upper Division)','A3 = 60–69 (Lower Division)','B1 = 50–59 (Credit)','B2 = 40–49 (Pass)','F  = 0–39  (Fail)'] as $g)
                         <div style="font-size:11px;font-weight:700;color:#000;margin-bottom:3px">{{ $g }}</div>
                         @endforeach
                     </td>

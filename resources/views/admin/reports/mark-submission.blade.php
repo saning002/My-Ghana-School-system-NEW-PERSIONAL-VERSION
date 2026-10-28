@@ -1,4 +1,4 @@
-@extends('layouts.app')
+extends('layouts.app')
 @section('title','Mark Submission Status')
 @section('subtitle','Track which teachers have submitted scores for the current period')
 
@@ -40,7 +40,7 @@
     @foreach([
         ['label'=>'Complete',  'val'=>$data['total_complete'], 'bg'=>'from-emerald-500 to-teal-600',  'icon'=>'fa-check-circle'],
         ['label'=>'Pending',   'val'=>$data['total_pending'],  'bg'=>'from-amber-500 to-orange-600', 'icon'=>'fa-clock'],
-        ['label'=>'Period',    'val'=>$period?->full_label??'�?"','bg'=>'from-indigo-500 to-violet-600','icon'=>'fa-calendar'],
+        ['label'=>'Period',    'val'=>$period?->full_label??'–','bg'=>'from-indigo-500 to-violet-600','icon'=>'fa-calendar'],
     ] as $k)
     <div class="rounded-2xl bg-gradient-to-br {{ $k['bg'] }} p-4 text-white shadow-sm flex items-center gap-3">
         <i class="fas {{ $k['icon'] }} text-2xl text-white/60"></i>
@@ -74,10 +74,10 @@
                 @forelse($data['rows'] as $row)
                 <tr class="hover:bg-slate-50 transition-colors">
                     <td class="px-5 py-3">
-                        <p class="font-bold text-slate-800 text-sm">{{ $row['lecturer']?->full_name ?? '�?"' }}</p>
+                        <p class="font-bold text-slate-800 text-sm">{{ $row['lecturer']?->full_name ?? '–' }}</p>
                     </td>
-                    <td class="px-4 py-3 text-slate-600 font-medium">{{ $row['course']?->name ?? '�?"' }}</td>
-                    <td class="px-4 py-3 text-slate-600 font-medium">{{ $row['program']?->name ?? '�?"' }}</td>
+                    <td class="px-4 py-3 text-slate-600 font-medium">{{ $row['course']?->name ?? '–' }}</td>
+                    <td class="px-4 py-3 text-slate-600 font-medium">{{ $row['program']?->name ?? '–' }}</td>
                     <td class="px-4 py-3 text-center font-semibold text-slate-700">{{ $row['expected'] }}</td>
                     <td class="px-4 py-3 text-center font-bold text-emerald-700">{{ $row['submitted'] }}</td>
                     <td class="px-4 py-3 text-center font-bold {{ $row['missing']>0?'text-red-600':'text-slate-400' }}">{{ $row['missing'] }}</td>

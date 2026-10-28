@@ -1,4 +1,4 @@
-@extends('layouts.app')
+extends('layouts.app')
 @section('title', $programLabelSingular.' Report')
 @section('subtitle', 'Enrollment and course breakdown per '.strtolower($programLabelSingular))
 
@@ -46,7 +46,7 @@
                 <h3 class="text-sm font-bold text-gray-800">{{ $program->name }}</h3>
                 <p class="text-xs text-gray-400 mt-0.5">{{ $program->duration }} months · {{ $program->courses->count() }} courses</p>
             </div>
-            <a href="{{ route('admin.programs.show',$program) }}" class="text-xs text-primary-600 font-semibold">View �?'</a>
+            <a href="{{ route('admin.programs.show',$program) }}" class="text-xs text-primary-600 font-semibold">View –'</a>
         </div>
 
         {{-- Stats --}}

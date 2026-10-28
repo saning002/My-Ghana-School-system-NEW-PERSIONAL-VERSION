@@ -1,4 +1,4 @@
-@extends('layouts.app')
+extends('layouts.app')
 
 @section('title', 'Admin Guide')
 @section('subtitle', 'System Reference & Explainer for Administrators')
@@ -290,7 +290,7 @@
                 <div class="icon-badge badge-cyan"><i class="fas fa-clipboard-check"></i></div>
                 <div>
                     <p class="font-bold text-sm text-slate-800 mb-1">Attendance</p>
-                    <p class="text-xs text-slate-500 leading-relaxed">Record daily attendance per student per course. The dashboard shows an attendance rate (present / total records �- 100%). Students can view their own attendance in the portal.</p>
+                    <p class="text-xs text-slate-500 leading-relaxed">Record daily attendance per student per course. The dashboard shows an attendance rate (present / total records – 100%). Students can view their own attendance in the portal.</p>
                 </div>
             </div>
         </div>
@@ -335,7 +335,7 @@
     <div class="guide-alert" style="background:rgba(212,160,23,0.08);border:1px solid rgba(212,160,23,0.2)">
         <div class="guide-alert-icon" style="background:rgba(212,160,23,0.15);color:var(--primary-dark)"><i class="fas fa-lightbulb"></i></div>
         <div>
-            <p class="font-semibold text-sm text-[var(--primary-text)] mb-0.5">Quick Tip �?" Navigation</p>
+            <p class="font-semibold text-sm text-[var(--primary-text)] mb-0.5">Quick Tip – Navigation</p>
             <p class="text-[var(--primary-text)]">Use the sidebar on desktop or the bottom bar on mobile to navigate between sections. The active section is always highlighted in gold.</p>
         </div>
     </div>
@@ -360,7 +360,7 @@
                         <div class="step-connector"></div>
                     </div>
                     <div class="pt-1">
-                        <p class="text-sm font-semibold text-slate-700">Go to Students �?' Add New Student</p>
+                        <p class="text-sm font-semibold text-slate-700">Go to Students –' Add New Student</p>
                         <p class="text-xs text-slate-500 mt-0.5">Fill in full name, date of birth, gender, and contact information.</p>
                     </div>
                 </div>
@@ -437,7 +437,7 @@
                     </div>
                     <div class="pt-1">
                         <p class="text-sm font-semibold text-slate-700">Promotion History Recorded</p>
-                        <p class="text-xs text-slate-500 mt-0.5">Every promotion creates a history entry (from_program �?' to_program) used for accurate fee billing and audit trails.</p>
+                        <p class="text-xs text-slate-500 mt-0.5">Every promotion creates a history entry (from_program –' to_program) used for accurate fee billing and audit trails.</p>
                     </div>
                 </div>
             </div>
@@ -498,8 +498,8 @@
                 <i class="fas fa-graduation-cap text-purple-500"></i> Program Sequencing Rules
             </p>
             <div class="space-y-2 text-xs text-slate-600 leading-relaxed">
-                <div class="tip-item"><div class="tip-dot"></div><span>Programs are ordered by their <strong>Sequence</strong> field �?" e.g. First Semester = 1, Second Semester = 2, etc.</span></div>
-                <div class="tip-item"><div class="tip-dot"></div><span>Always ensure sequence numbers are unique and sequential �?" gaps are fine but duplicates cause promotion errors.</span></div>
+                <div class="tip-item"><div class="tip-dot"></div><span>Programs are ordered by their <strong>Sequence</strong> field – e.g. First Semester = 1, Second Semester = 2, etc.</span></div>
+                <div class="tip-item"><div class="tip-dot"></div><span>Always ensure sequence numbers are unique and sequential – gaps are fine but duplicates cause promotion errors.</span></div>
                 <div class="tip-item"><div class="tip-dot"></div><span>A student starts at the lowest-sequenced program they were assigned to at registration.</span></div>
                 <div class="tip-item"><div class="tip-dot"></div><span>When promoted, the system automatically finds the program with the next highest sequence number.</span></div>
                 <div class="tip-item"><div class="tip-dot"></div><span>Each program should have its own set of courses and its own fee configuration.</span></div>
@@ -512,8 +512,8 @@
             <div class="space-y-2 text-xs text-slate-600 leading-relaxed">
                 <div class="tip-item"><div class="tip-dot"></div><span>Each course has a <strong>Credit Unit</strong> value (default: 3). This determines its weight in SGPA calculation.</span></div>
                 <div class="tip-item"><div class="tip-dot"></div><span>A course with 4 credits contributes more to SGPA than one with 2 credits.</span></div>
-                <div class="tip-item"><div class="tip-dot"></div><span>The SGPA formula is: <strong>Sum(Credit �- Grade Point) ÷ Sum(Credits)</strong>.</span></div>
-                <div class="tip-item"><div class="tip-dot"></div><span>Set credit values accurately when creating courses �?" they affect every student's calculated GPA.</span></div>
+                <div class="tip-item"><div class="tip-dot"></div><span>The SGPA formula is: <strong>Sum(Credit – Grade Point) ÷ Sum(Credits)</strong>.</span></div>
+                <div class="tip-item"><div class="tip-dot"></div><span>Set credit values accurately when creating courses – they affect every student's calculated GPA.</span></div>
                 <div class="tip-item"><div class="tip-dot"></div><span>Courses are shared across the system but are linked to specific programs in the grading module.</span></div>
             </div>
         </div>
@@ -526,11 +526,11 @@
         <div class="step-flow">
             <div class="step-item">
                 <div class="relative"><div class="step-num">1</div><div class="step-connector"></div></div>
-                <div class="pt-1"><p class="text-sm font-semibold text-slate-700">Go to Exams & Results �?' Enter Scores</p><p class="text-xs text-slate-500 mt-0.5">Choose a program, then a student. Pick which attempt to enter (e.g. Attempt 1 for the first sitting).</p></div>
+                <div class="pt-1"><p class="text-sm font-semibold text-slate-700">Go to Exams & Results –' Enter Scores</p><p class="text-xs text-slate-500 mt-0.5">Choose a program, then a student. Pick which attempt to enter (e.g. Attempt 1 for the first sitting).</p></div>
             </div>
             <div class="step-item">
                 <div class="relative"><div class="step-num">2</div><div class="step-connector"></div></div>
-                <div class="pt-1"><p class="text-sm font-semibold text-slate-700">Enter Both Quiz and Exam Scores</p><p class="text-xs text-slate-500 mt-0.5">For each course you now have two columns �?" <strong class="text-blue-700">Quiz Score</strong> and <strong class="text-orange-700">Exam Score</strong>, each out of 100. A live <strong>Aggregate</strong> column shows the weighted total as you type.</p></div>
+                <div class="pt-1"><p class="text-sm font-semibold text-slate-700">Enter Both Quiz and Exam Scores</p><p class="text-xs text-slate-500 mt-0.5">For each course you now have two columns – <strong class="text-blue-700">Quiz Score</strong> and <strong class="text-orange-700">Exam Score</strong>, each out of 100. A live <strong>Aggregate</strong> column shows the weighted total as you type.</p></div>
             </div>
             <div class="step-item">
                 <div class="relative"><div class="step-num">3</div><div class="step-connector"></div></div>
@@ -568,7 +568,7 @@
                 <div class="grade-badge" style="background:var(--brand);color:#fff">A1</div>
                 <div class="flex-1">
                     <p class="text-xs font-bold text-slate-700">Distinction</p>
-                    <p class="text-xs text-slate-500">Score �?� 80</p>
+                    <p class="text-xs text-slate-500">Score –� 80</p>
                 </div>
                 <div class="grade-gp">4.0</div>
                 <div class="text-xs font-bold text-[var(--primary-text)] px-2 py-1 rounded-lg" style="background:rgba(212,160,23,.12)">A1</div>
@@ -577,7 +577,7 @@
                 <div class="grade-badge" style="background:#3b82f6;color:#fff">A2</div>
                 <div class="flex-1">
                     <p class="text-xs font-bold text-slate-700">Upper Division</p>
-                    <p class="text-xs text-slate-500">Score 70 �?" 79</p>
+                    <p class="text-xs text-slate-500">Score 70 – 79</p>
                 </div>
                 <div class="grade-gp">3.7</div>
                 <div class="text-xs font-bold text-blue-700 px-2 py-1 rounded-lg" style="background:rgba(59,130,246,.12)">A2</div>
@@ -586,7 +586,7 @@
                 <div class="grade-badge" style="background:#06b6d4;color:#fff">A3</div>
                 <div class="flex-1">
                     <p class="text-xs font-bold text-slate-700">Lower Division</p>
-                    <p class="text-xs text-slate-500">Score 60 �?" 69</p>
+                    <p class="text-xs text-slate-500">Score 60 – 69</p>
                 </div>
                 <div class="grade-gp">3.3</div>
                 <div class="text-xs font-bold text-cyan-700 px-2 py-1 rounded-lg" style="background:rgba(6,182,212,.12)">A3</div>
@@ -595,7 +595,7 @@
                 <div class="grade-badge" style="background:#22c55e;color:#fff">B1</div>
                 <div class="flex-1">
                     <p class="text-xs font-bold text-slate-700">Credit</p>
-                    <p class="text-xs text-slate-500">Score 50 �?" 59</p>
+                    <p class="text-xs text-slate-500">Score 50 – 59</p>
                 </div>
                 <div class="grade-gp">3.0</div>
                 <div class="text-xs font-bold text-green-700 px-2 py-1 rounded-lg" style="background:rgba(34,197,94,.12)">B1</div>
@@ -604,7 +604,7 @@
                 <div class="grade-badge" style="background:var(--primary);color:#fff">B2</div>
                 <div class="flex-1">
                     <p class="text-xs font-bold text-slate-700">Pass</p>
-                    <p class="text-xs text-slate-500">Score 40 �?" 49</p>
+                    <p class="text-xs text-slate-500">Score 40 – 49</p>
                 </div>
                 <div class="grade-gp">2.0</div>
                 <div class="text-xs font-bold text-[var(--primary-text)] px-2 py-1 rounded-lg" style="background:rgba(245,158,11,.12)">B2</div>
@@ -618,7 +618,7 @@
                 <div class="grade-gp">0.0</div>
                 <div class="text-xs font-bold text-red-700 px-2 py-1 rounded-lg" style="background:rgba(239,68,68,.12)">F</div>
             </div>
-            <p class="text-xs text-slate-400 text-center mt-3">Overall average �?� 40 = Promoted | Below 40 = Repeat Program</p>
+            <p class="text-xs text-slate-400 text-center mt-3">Overall average –� 40 = Promoted | Below 40 = Repeat Program</p>
         </div>
 
         <div>
@@ -628,9 +628,9 @@
                 </p>
                 <div class="formula-box mb-3">
                     <span class="comment">-- Example: 3 courses</span><br>
-                    Course A: <span class="hl">Score 85</span> �?' Grade A1 �?' GPoint <span class="hl">4.0</span> �- Credits <span class="hl">3</span> = <span class="hl">12.0</span><br>
-                    Course B: <span class="hl">Score 72</span> �?' Grade A2 �?' GPoint <span class="hl">3.7</span> �- Credits <span class="hl">3</span> = <span class="hl">11.1</span><br>
-                    Course C: <span class="hl">Score 55</span> �?' Grade B1 �?' GPoint <span class="hl">3.0</span> �- Credits <span class="hl">3</span> = <span class="hl">9.0</span><br>
+                    Course A: <span class="hl">Score 85</span> –' Grade A1 –' GPoint <span class="hl">4.0</span> – Credits <span class="hl">3</span> = <span class="hl">12.0</span><br>
+                    Course B: <span class="hl">Score 72</span> –' Grade A2 –' GPoint <span class="hl">3.7</span> – Credits <span class="hl">3</span> = <span class="hl">11.1</span><br>
+                    Course C: <span class="hl">Score 55</span> –' Grade B1 –' GPoint <span class="hl">3.0</span> – Credits <span class="hl">3</span> = <span class="hl">9.0</span><br>
                     <br>
                     <span class="comment">-- Total</span><br>
                     Sum Credit Points = <span class="hl">12.0 + 11.1 + 9.0 = 32.1</span><br>
@@ -647,8 +647,8 @@
                 </p>
                 <div class="space-y-2 text-xs text-slate-600 leading-relaxed">
                     <div class="tip-item"><div class="tip-dot"></div><span>Rankings use <strong>Dense Ranking</strong>: students with equal averages share the same position with no gaps.</span></div>
-                    <div class="tip-item"><div class="tip-dot"></div><span>Ranking is calculated per program attempt �?" so all students who sat the same exam are compared.</span></div>
-                    <div class="tip-item"><div class="tip-dot"></div><span>Class positions are <strong>100% confidential</strong> �?" they are never printed on PDF or Excel exports.</span></div>
+                    <div class="tip-item"><div class="tip-dot"></div><span>Ranking is calculated per program attempt – so all students who sat the same exam are compared.</span></div>
+                    <div class="tip-item"><div class="tip-dot"></div><span>Class positions are <strong>100% confidential</strong> – they are never printed on PDF or Excel exports.</span></div>
                     <div class="tip-item"><div class="tip-dot"></div><span>Students can only see their own position, not others', through their personal portal account.</span></div>
                 </div>
             </div>
@@ -661,11 +661,11 @@
         </p>
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
             @foreach([
-                ['label'=>'EXCELLENT RESULT','range'=>'Avg �?� 80','color'=>'#D4A017','bg'=>'rgba(212,160,23,.1)','text'=>'#78520a'],
-                ['label'=>'VERY GOOD RESULT','range'=>'Avg 70�?"79','color'=>'#3b82f6','bg'=>'rgba(59,130,246,.1)','text'=>'#1d4ed8'],
-                ['label'=>'GOOD RESULT','range'=>'Avg 60�?"69','color'=>'#06b6d4','bg'=>'rgba(6,182,212,.1)','text'=>'#0e7490'],
-                ['label'=>'CREDIT RESULT','range'=>'Avg 50�?"59','color'=>'#22c55e','bg'=>'rgba(34,197,94,.1)','text'=>'#15803d'],
-                ['label'=>'PASS RESULT','range'=>'Avg 40�?"49','color'=>'#f59e0b','bg'=>'rgba(245,158,11,.1)','text'=>'#b45309'],
+                ['label'=>'EXCELLENT RESULT','range'=>'Avg –� 80','color'=>'#D4A017','bg'=>'rgba(212,160,23,.1)','text'=>'#78520a'],
+                ['label'=>'VERY GOOD RESULT','range'=>'Avg 70–79','color'=>'#3b82f6','bg'=>'rgba(59,130,246,.1)','text'=>'#1d4ed8'],
+                ['label'=>'GOOD RESULT','range'=>'Avg 60–69','color'=>'#06b6d4','bg'=>'rgba(6,182,212,.1)','text'=>'#0e7490'],
+                ['label'=>'CREDIT RESULT','range'=>'Avg 50–59','color'=>'#22c55e','bg'=>'rgba(34,197,94,.1)','text'=>'#15803d'],
+                ['label'=>'PASS RESULT','range'=>'Avg 40–49','color'=>'#f59e0b','bg'=>'rgba(245,158,11,.1)','text'=>'#b45309'],
                 ['label'=>'FAIL','range'=>'Avg < 40','color'=>'#ef4444','bg'=>'rgba(239,68,68,.1)','text'=>'#b91c1c'],
             ] as $r)
             <div class="text-center p-3 rounded-xl" style="background:{{ $r['bg'] }};border:1px solid {{ $r['color'] }}33">
@@ -692,11 +692,11 @@
             <div class="step-flow">
                 <div class="step-item">
                     <div class="relative"><div class="step-num">1</div><div class="step-connector"></div></div>
-                    <div class="pt-1"><p class="text-sm font-semibold text-slate-700">Set Program Fees</p><p class="text-xs text-slate-500 mt-0.5">Go to Fees & Payments �?' Set Fee. Select a program and enter the <strong>Tuition Fee</strong> and <strong>Exam Fee</strong> separately. Both are billed when a student is in or has passed through that program.</p></div>
+                    <div class="pt-1"><p class="text-sm font-semibold text-slate-700">Set Program Fees</p><p class="text-xs text-slate-500 mt-0.5">Go to Fees & Payments –' Set Fee. Select a program and enter the <strong>Tuition Fee</strong> and <strong>Exam Fee</strong> separately. Both are billed when a student is in or has passed through that program.</p></div>
                 </div>
                 <div class="step-item">
                     <div class="relative"><div class="step-num">2</div><div class="step-connector"></div></div>
-                    <div class="pt-1"><p class="text-sm font-semibold text-slate-700">Record Payments</p><p class="text-xs text-slate-500 mt-0.5">Search a student and enter the payment amount and date. Payments are cumulative �?" enter multiple installments separately.</p></div>
+                    <div class="pt-1"><p class="text-sm font-semibold text-slate-700">Record Payments</p><p class="text-xs text-slate-500 mt-0.5">Search a student and enter the payment amount and date. Payments are cumulative – enter multiple installments separately.</p></div>
                 </div>
                 <div class="step-item">
                     <div class="relative"><div class="step-num">3</div></div>
@@ -724,7 +724,7 @@
             </div>
             <div class="guide-alert mb-0" style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2)">
                 <div class="guide-alert-icon" style="background:rgba(245,158,11,0.15);color:var(--primary-dark)"><i class="fas fa-info-circle"></i></div>
-                <div><p class="text-xs text-[var(--primary-text)]">When a student is promoted, the next program's fee is <strong>automatically added</strong> to their total bill �?" no manual action needed.</p></div>
+                <div><p class="text-xs text-[var(--primary-text)]">When a student is promoted, the next program's fee is <strong>automatically added</strong> to their total bill – no manual action needed.</p></div>
             </div>
         </div>
     </div>
@@ -861,7 +861,7 @@
                 <li class="flex gap-2"><i class="fas fa-check text-green-500 mt-0.5 flex-shrink-0"></i> Can view their own results and report cards</li>
                 <li class="flex gap-2"><i class="fas fa-check text-green-500 mt-0.5 flex-shrink-0"></i> Can view attendance and fees</li>
                 <li class="flex gap-2"><i class="fas fa-check text-green-500 mt-0.5 flex-shrink-0"></i> Can view notifications from admin</li>
-                <li class="flex gap-2"><i class="fas fa-times text-red-400 mt-0.5 flex-shrink-0"></i> Read-only �?" cannot modify any data</li>
+                <li class="flex gap-2"><i class="fas fa-times text-red-400 mt-0.5 flex-shrink-0"></i> Read-only – cannot modify any data</li>
             </ul>
         </div>
     </div>
@@ -872,7 +872,7 @@
         </p>
         <div class="space-y-2 text-xs text-slate-600 leading-relaxed">
             <div class="tip-item"><div class="tip-dot"></div><span>Super Admins can access <strong>Branches</strong> and <strong>Admins</strong> sections at the bottom of the sidebar (hidden from Branch Admins).</span></div>
-            <div class="tip-item"><div class="tip-dot"></div><span>Branch Admins are created through <strong>Branches �?' View Branch �?' Add Admin</strong>.</span></div>
+            <div class="tip-item"><div class="tip-dot"></div><span>Branch Admins are created through <strong>Branches –' View Branch –' Add Admin</strong>.</span></div>
             <div class="tip-item"><div class="tip-dot"></div><span>Additional Super Admins can be created from the <strong>Admins</strong> section.</span></div>
             <div class="tip-item"><div class="tip-dot"></div><span>Admins log in using their email and password on the main login page.</span></div>
             <div class="tip-item"><div class="tip-dot"></div><span>Students use a completely separate login at <code class="bg-slate-100 px-1 rounded">/portal/login</code> with their Student ID and name-based credentials.</span></div>
@@ -884,7 +884,7 @@
 <div class="guide-panel" x-show="activeTab === 'exams_new'" id="panel-exams_new">
     <div class="section-heading">
         <div class="section-heading-bar"></div>
-        <h2 class="text-base font-bold text-slate-800">New Exam Features �?" Complete Walkthrough</h2>
+        <h2 class="text-base font-bold text-slate-800">New Exam Features – Complete Walkthrough</h2>
     </div>
 
     {{-- What's new callout --}}
@@ -917,7 +917,7 @@
                     <div class="step-item">
                         <div class="relative"><div class="step-num">1</div><div class="step-connector"></div></div>
                         <div class="pt-1">
-                            <p class="text-sm font-semibold text-slate-700">Go to Exams &amp; Results �?' Enter Scores</p>
+                            <p class="text-sm font-semibold text-slate-700">Go to Exams &amp; Results –' Enter Scores</p>
                             <p class="text-xs text-slate-500 mt-0.5">Select the program, then search for and select the student.</p>
                         </div>
                     </div>
@@ -939,7 +939,7 @@
                         <div class="relative"><div class="step-num">3</div><div class="step-connector"></div></div>
                         <div class="pt-1">
                             <p class="text-sm font-semibold text-slate-700">Live Aggregate Preview</p>
-                            <p class="text-xs text-slate-500 mt-0.5">As you type either score, the <strong>Aggregate</strong> column updates instantly �?" no need to calculate manually. Formula: <code class="bg-slate-100 px-1 rounded">(Quiz �- Quiz%) + (Exam �- Exam%)</code></p>
+                            <p class="text-xs text-slate-500 mt-0.5">As you type either score, the <strong>Aggregate</strong> column updates instantly – no need to calculate manually. Formula: <code class="bg-slate-100 px-1 rounded">(Quiz – Quiz%) + (Exam – Exam%)</code></p>
                         </div>
                     </div>
                     <div class="step-item">
@@ -977,7 +977,7 @@
                         <div class="relative"><div class="step-num">3</div><div class="step-connector"></div></div>
                         <div class="pt-1">
                             <p class="text-sm font-semibold text-slate-700">Or Download the Excel Template</p>
-                            <p class="text-xs text-slate-500 mt-0.5">The downloaded Excel file has two columns per course �?" one labelled <code>[QUIZ 30%]</code> and one labelled <code>[EXAM 70%]</code>. Fill it offline and upload it back.</p>
+                            <p class="text-xs text-slate-500 mt-0.5">The downloaded Excel file has two columns per course – one labelled <code>[QUIZ 30%]</code> and one labelled <code>[EXAM 70%]</code>. Fill it offline and upload it back.</p>
                         </div>
                     </div>
                     <div class="step-item">
@@ -995,7 +995,7 @@
             <div class="guide-alert-icon" style="background:rgba(59,130,246,0.15);color:#2563eb"><i class="fas fa-info-circle"></i></div>
             <div>
                 <p class="font-semibold text-sm text-blue-800 mb-0.5">Both scores are optional per entry</p>
-                <p class="text-blue-700 text-xs">You can enter only an Exam score and leave Quiz blank (or vice versa). The aggregate is calculated using whatever is entered �?" a blank score counts as 0 for that component.</p>
+                <p class="text-blue-700 text-xs">You can enter only an Exam score and leave Quiz blank (or vice versa). The aggregate is calculated using whatever is entered – a blank score counts as 0 for that component.</p>
             </div>
         </div>
     </div>
@@ -1031,7 +1031,7 @@
                         <div class="relative"><div class="step-num">3</div></div>
                         <div class="pt-1">
                             <p class="text-sm font-semibold text-slate-700">Click Save Percentages</p>
-                            <p class="text-xs text-slate-500 mt-0.5">The new percentages apply immediately to <strong>all report cards and aggregates system-wide</strong> �?" including existing saved scores.</p>
+                            <p class="text-xs text-slate-500 mt-0.5">The new percentages apply immediately to <strong>all report cards and aggregates system-wide</strong> – including existing saved scores.</p>
                         </div>
                     </div>
                 </div>
@@ -1045,16 +1045,16 @@
                     <span class="comment">-- Example: Quiz 30%, Exam 70%</span><br>
                     Quiz Score: <span class="hl">65</span> out of 100<br>
                     Exam Score: <span class="hl">80</span> out of 100<br><br>
-                    Aggregate = <span class="hl">(65 �- 30%) + (80 �- 70%)</span><br>
+                    Aggregate = <span class="hl">(65 – 30%) + (80 – 70%)</span><br>
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <span class="hl">19.5 + 56.0</span><br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <span class="hl">75.5</span> �?' Grade <span class="hl">A2</span>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <span class="hl">75.5</span> –' Grade <span class="hl">A2</span>
                 </div>
                 <div class="formula-box">
                     <span class="comment">-- Example: Quiz 40%, Exam 60%</span><br>
                     Quiz Score: <span class="hl">65</span>, Exam Score: <span class="hl">80</span><br><br>
-                    Aggregate = <span class="hl">(65 �- 40%) + (80 �- 60%)</span><br>
+                    Aggregate = <span class="hl">(65 – 40%) + (80 – 60%)</span><br>
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <span class="hl">26.0 + 48.0</span><br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <span class="hl">74.0</span> �?' Grade <span class="hl">A2</span>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <span class="hl">74.0</span> –' Grade <span class="hl">A2</span>
                 </div>
             </div>
         </div>
@@ -1062,8 +1062,8 @@
         <div class="guide-alert" style="background:rgba(168,85,247,0.07);border:1px solid rgba(168,85,247,0.2)">
             <div class="guide-alert-icon" style="background:rgba(168,85,247,0.15);color:#7c3aed"><i class="fas fa-exclamation-circle"></i></div>
             <div>
-                <p class="font-semibold text-sm text-purple-800 mb-0.5">Important �?" Percentages are global, not per-program</p>
-                <p class="text-purple-700 text-xs">Changing the percentage affects every program and every student's aggregate. The raw quiz and exam scores are always preserved �?" only the display and grading formula changes. You can safely adjust and re-adjust without losing any data.</p>
+                <p class="font-semibold text-sm text-purple-800 mb-0.5">Important – Percentages are global, not per-program</p>
+                <p class="text-purple-700 text-xs">Changing the percentage affects every program and every student's aggregate. The raw quiz and exam scores are always preserved – only the display and grading formula changes. You can safely adjust and re-adjust without losing any data.</p>
             </div>
         </div>
     </div>
@@ -1091,19 +1091,19 @@
                     <div class="step-item">
                         <div class="relative"><div class="step-num">2</div><div class="step-connector"></div></div>
                         <div class="pt-1">
-                            <p class="text-sm font-semibold text-slate-700">Step 1 �?" Pick Program &amp; Attempt</p>
+                            <p class="text-sm font-semibold text-slate-700">Step 1 – Pick Program &amp; Attempt</p>
                             <p class="text-xs text-slate-500 mt-0.5">Select the program from the dropdown. The attempt dropdown shows only attempts that already have scores. Pick the one you want (e.g. Attempt 1) and click <strong>Load Students</strong>.</p>
                         </div>
                     </div>
                     <div class="step-item">
                         <div class="relative"><div class="step-num">3</div><div class="step-connector"></div></div>
                         <div class="pt-1">
-                            <p class="text-sm font-semibold text-slate-700">Step 2 �?" Select Students</p>
+                            <p class="text-sm font-semibold text-slate-700">Step 2 – Select Students</p>
                             <p class="text-xs text-slate-500 mt-0.5">
                                 Only students who have scores for that attempt appear in the list. You can:
-                                <br>�?� Click <strong>Select All</strong> to tick everyone
-                                <br>�?� Use the <strong>filter box</strong> to search by name or student ID
-                                <br>�?� Tick/untick individual students
+                                <br>–� Click <strong>Select All</strong> to tick everyone
+                                <br>–� Use the <strong>filter box</strong> to search by name or student ID
+                                <br>–� Tick/untick individual students
                                 <br>The counter at the top right shows how many are selected.
                             </p>
                         </div>
@@ -1111,7 +1111,7 @@
                     <div class="step-item">
                         <div class="relative"><div class="step-num">4</div></div>
                         <div class="pt-1">
-                            <p class="text-sm font-semibold text-slate-700">Step 3 �?" Download or Print</p>
+                            <p class="text-sm font-semibold text-slate-700">Step 3 – Download or Print</p>
                             <p class="text-xs text-slate-500 mt-0.5">
                                 Click <strong>Download PDF</strong> to save a multi-page PDF (one page = one report card) to your device.
                                 <br>Click <strong>Print Report Cards</strong> to open the PDF in a new browser tab, then use <kbd class="bg-gray-100 px-1 rounded">Ctrl+P</kbd> (or <kbd class="bg-gray-100 px-1 rounded">�O~P</kbd> on Mac) to print all cards at once.
@@ -1128,17 +1128,17 @@
                     </p>
                     <div class="space-y-1.5 text-xs text-slate-600">
                         <div class="tip-item"><div class="tip-dot"></div><span>Each student gets their own <strong>full-page report card</strong>, identical to the individual PDF download.</span></div>
-                        <div class="tip-item"><div class="tip-dot"></div><span>Cards are separated by page breaks �?" print them and simply cut or distribute individually.</span></div>
+                        <div class="tip-item"><div class="tip-dot"></div><span>Cards are separated by page breaks – print them and simply cut or distribute individually.</span></div>
                         <div class="tip-item"><div class="tip-dot"></div><span>The student's <strong>photo</strong> appears if one was uploaded, otherwise their initials show in a placeholder box.</span></div>
                         <div class="tip-item"><div class="tip-dot"></div><span>The date on each card shows the month/year <strong>the exam was taken</strong>, not today's date.</span></div>
                         <div class="tip-item"><div class="tip-dot"></div><span>Class positions are <strong>not printed</strong> on the report cards for student privacy.</span></div>
-                        <div class="tip-item"><div class="tip-dot"></div><span>If a student is selected but has no scores for that attempt, they are <strong>silently skipped</strong> �?" no error.</span></div>
+                        <div class="tip-item"><div class="tip-dot"></div><span>If a student is selected but has no scores for that attempt, they are <strong>silently skipped</strong> – no error.</span></div>
                     </div>
                 </div>
 
                 <div class="feature-card">
                     <p class="font-bold text-sm text-slate-800 mb-2 flex items-center gap-2">
-                        <i class="fas fa-print text-gray-600"></i> Download vs. Print �?" What's the Difference?
+                        <i class="fas fa-print text-gray-600"></i> Download vs. Print – What's the Difference?
                     </p>
                     <div class="grid grid-cols-2 gap-2">
                         <div class="p-3 rounded-xl text-center" style="background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.2)">
@@ -1171,7 +1171,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div class="p-4 rounded-xl" style="background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.2)">
                     <p class="text-xs font-bold text-red-700 mb-1"><i class="fas fa-times-circle mr-1"></i> Old Behaviour (Removed)</p>
-                    <p class="text-xs text-red-600">Every time a report card was downloaded or printed, it showed <strong>the current month and year</strong> �?" meaning a report card downloaded in July would show "JULY 2026" even if the exam was taken in February.</p>
+                    <p class="text-xs text-red-600">Every time a report card was downloaded or printed, it showed <strong>the current month and year</strong> – meaning a report card downloaded in July would show "JULY 2026" even if the exam was taken in February.</p>
                 </div>
                 <div class="p-4 rounded-xl" style="background:rgba(34,197,94,0.07);border:1px solid rgba(34,197,94,0.2)">
                     <p class="text-xs font-bold text-green-700 mb-1"><i class="fas fa-check-circle mr-1"></i> New Behaviour (Current)</p>
@@ -1212,7 +1212,7 @@
             <div class="faq-item">
                 <details>
                     <summary>Can I edit exam scores after saving?<i class="fas fa-chevron-down text-xs"></i></summary>
-                    <div class="faq-body">Exam scores are stored per student per course per attempt. To correct an error, re-enter the scores through the Exams & Results �?' Add Scores form for the same program and attempt. The system will update the existing record.</div>
+                    <div class="faq-body">Exam scores are stored per student per course per attempt. To correct an error, re-enter the scores through the Exams & Results –' Add Scores form for the same program and attempt. The system will update the existing record.</div>
                 </details>
             </div>
             <div class="faq-item">
@@ -1224,7 +1224,7 @@
             <div class="faq-item">
                 <details>
                     <summary>How do I promote multiple students at once?<i class="fas fa-chevron-down text-xs"></i></summary>
-                    <div class="faq-body">Currently, promotion is done individually from each student's profile. Go to Students �?' click the student �?' use the Promote button. Each promotion creates a traceable history record. Bulk promotion is not available to ensure accuracy.</div>
+                    <div class="faq-body">Currently, promotion is done individually from each student's profile. Go to Students –' click the student –' use the Promote button. Each promotion creates a traceable history record. Bulk promotion is not available to ensure accuracy.</div>
                 </details>
             </div>
         </div>
@@ -1232,7 +1232,7 @@
             <div class="faq-item">
                 <details>
                     <summary>How does class position ranking work exactly?<i class="fas fa-chevron-down text-xs"></i></summary>
-                    <div class="faq-body">Class positions are calculated using <strong>Dense Ranking</strong> based on overall average exam score. All students who sat the same program attempt are ranked together. Students with identical averages share the same position. Position 1 = highest average in the class. This is shown only in the student's personal portal �?" never in any export.</div>
+                    <div class="faq-body">Class positions are calculated using <strong>Dense Ranking</strong> based on overall average exam score. All students who sat the same program attempt are ranked together. Students with identical averages share the same position. Position 1 = highest average in the class. This is shown only in the student's personal portal – never in any export.</div>
                 </details>
             </div>
             <div class="faq-item">
@@ -1250,13 +1250,13 @@
             <div class="faq-item">
                 <details>
                     <summary>How do notifications reach students?<i class="fas fa-chevron-down text-xs"></i></summary>
-                    <div class="faq-body">Notifications created in the Notifications section are broadcast to <strong>all students</strong> and appear in their portal dashboard. Students see a notification count badge. They can mark all as read from their portal. Notifications are not sent by email �?" only within the portal system.</div>
+                    <div class="faq-body">Notifications created in the Notifications section are broadcast to <strong>all students</strong> and appear in their portal dashboard. Students see a notification count badge. They can mark all as read from their portal. Notifications are not sent by email – only within the portal system.</div>
                 </details>
             </div>
             <div class="faq-item">
                 <details>
                     <summary>How do I close the student portal for results season?<i class="fas fa-chevron-down text-xs"></i></summary>
-                    <div class="faq-body">Go to <strong>Student Portal</strong> in the sidebar �?' toggle the portal to <strong>Closed</strong> and write a message students will see. The portal access will be disabled instantly for all students. Re-open it the same way when ready.</div>
+                    <div class="faq-body">Go to <strong>Student Portal</strong> in the sidebar –' toggle the portal to <strong>Closed</strong> and write a message students will see. The portal access will be disabled instantly for all students. Re-open it the same way when ready.</div>
                 </details>
             </div>
         </div>

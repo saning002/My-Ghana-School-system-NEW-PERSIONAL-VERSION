@@ -1,4 +1,4 @@
-@extends('layouts.app')
+extends('layouts.app')
 @section('title', 'Fee Reminders')
 
 @section('content')
@@ -186,7 +186,7 @@
                     <i class="fas fa-paper-plane me-2" style="color:var(--brand);"></i>Fee Reminders
                 </h3>
                 <p style="opacity:.65;font-size:.875rem;margin:0;">
-                    Each message is auto-personalised with the student's own balance �?" no copy-pasting needed.
+                    Each message is auto-personalised with the student's own balance – no copy-pasting needed.
                 </p>
             </div>
             <div class="d-flex gap-2 flex-wrap">
@@ -400,7 +400,7 @@
                             @php
                                 $phone = $s['student']->user?->phone ?? $s['student']->guardian_phone ?? null;
                                 $email = $s['student']->user?->email ?? $s['student']->guardian_email ?? null;
-                                $name  = $s['student']->user?->full_name ?? '�?"';
+                                $name  = $s['student']->user?->full_name ?? '–';
                             @endphp
                             <tr class="rm-row" id="row-{{ $s['student']->id }}"
                                 onclick="toggleRow({{ $s['student']->id }})">
@@ -474,7 +474,7 @@
                     <div style="padding:1.25rem 1.5rem;background:#f8fafc;border-top:1px solid #f1f5f9;">
                         <div style="font-size:.8rem;color:#64748b;margin-bottom:14px;">
                             <span style="background:#0f3460;color:#fff;width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;margin-right:8px;">3</span>
-                            <strong>Send</strong> �?" select students above, pick your channels, then fire.
+                            <strong>Send</strong> – select students above, pick your channels, then fire.
                         </div>
                         <div class="d-flex gap-3 flex-wrap">
                             <button type="submit" class="btn-send-sel"

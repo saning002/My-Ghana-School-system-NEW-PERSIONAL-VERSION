@@ -1,6 +1,6 @@
-@extends('layouts.app')
+extends('layouts.app')
 @section('title','Timetable')
-@section('subtitle', $date->isToday() ? "Today's Timetable �?" " . $date->format('l, F j') : $date->format('l, F j Y') . ' Timetable')
+@section('subtitle', $date->isToday() ? "Today's Timetable – " . $date->format('l, F j') : $date->format('l, F j Y') . ' Timetable')
 
 @push('head')
 <style>
@@ -26,7 +26,7 @@
     <div class="relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
             <h1 class="text-2xl lg:text-3xl font-extrabold tracking-tight">
-                @if($date->isToday()) Today �?" @endif
+                @if($date->isToday()) Today – @endif
                 <span class="text-yellow-300">{{ $date->format('l, F j Y') }}</span>
             </h1>
             <p class="text-indigo-200 text-sm mt-1">
@@ -99,7 +99,7 @@
         <h2 class="text-sm font-extrabold text-slate-800">
             <i class="fas fa-calendar-day text-indigo-400 mr-1.5"></i>
             {{ $date->isToday() ? "Today's Lessons" : $date->format('l') . "'s Lessons" }}
-            @if($dayNum == 7)<span class="ml-2 text-xs font-semibold text-slate-400">(Sunday �?" Rest Day)</span>@endif
+            @if($dayNum == 7)<span class="ml-2 text-xs font-semibold text-slate-400">(Sunday – Rest Day)</span>@endif
         </h2>
 
         @if($dayNum == 7 || $todayEntries->isEmpty())
@@ -160,7 +160,7 @@
                     </div>
                     <div class="flex flex-wrap gap-3 mt-2.5 text-xs text-slate-500 font-semibold">
                         <span class="flex items-center gap-1.5">
-                            <i class="fas fa-chalkboard-teacher text-slate-400"></i>{{ $entry->lecturer?->full_name ?? '�?"' }}
+                            <i class="fas fa-chalkboard-teacher text-slate-400"></i>{{ $entry->lecturer?->full_name ?? '–' }}
                         </span>
                         @if($entry->room)
                         <span class="flex items-center gap-1.5">
@@ -216,7 +216,7 @@
                 <div class="flex items-center gap-2 text-xs">
                     <span class="text-slate-400 font-mono shrink-0">{{ substr($e->start_time,0,5) }}</span>
                     <span class="flex-1 font-bold text-slate-700 truncate">{{ $e->course->name }}</span>
-                    <span class="text-slate-400 shrink-0 truncate max-w-[80px]">{{ $e->lecturer?->full_name ? explode(' ',$e->lecturer->full_name)[0] : '�?"' }}</span>
+                    <span class="text-slate-400 shrink-0 truncate max-w-[80px]">{{ $e->lecturer?->full_name ? explode(' ',$e->lecturer->full_name)[0] : '–' }}</span>
                 </div>
                 @endforeach
             </div>
@@ -247,7 +247,7 @@
                     <select name="program_id" id="modalProgram" required
                         class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
                         onchange="loadCourses(this.value)">
-                        <option value="">�?" Select program �?"</option>
+                        <option value="">– Select program –</option>
                         @foreach($programs as $p)
                         <option value="{{ $p->id }}" {{ $selectedProgram?->id==$p->id?'selected':'' }}>{{ $p->name }}</option>
                         @endforeach
@@ -259,12 +259,12 @@
                     <label class="block text-xs font-bold uppercase tracking-wide text-slate-600 mb-1">Course / Subject *</label>
                     <select name="course_id" id="modalCourse" required
                         class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
-                        <option value="">�?" Select program first �?"</option>
+                        <option value="">– Select program first –</option>
                         @foreach($courses as $c)
                         <option value="{{ $c->id }}">{{ $c->name }}{{ $c->code ? ' ('.$c->code.')' : '' }}</option>
                         @endforeach
                     </select>
-                    <p id="courseLoadingMsg" class="text-[11px] text-indigo-500 mt-1 hidden"><i class="fas fa-spinner fa-spin mr-1"></i>Loading courses�?�</p>
+                    <p id="courseLoadingMsg" class="text-[11px] text-indigo-500 mt-1 hidden"><i class="fas fa-spinner fa-spin mr-1"></i>Loading courses–�</p>
                 </div>
 
                 {{-- Teacher --}}
@@ -272,7 +272,7 @@
                     <label class="block text-xs font-bold uppercase tracking-wide text-slate-600 mb-1">Teacher *</label>
                     <select name="lecturer_id" required
                         class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
-                        <option value="">�?" Select teacher �?"</option>
+                        <option value="">– Select teacher –</option>
                         @foreach($lecturers as $l)<option value="{{ $l->id }}">{{ $l->full_name }}</option>@endforeach
                     </select>
                 </div>
@@ -345,8 +345,8 @@ document.getElementById('addModal').addEventListener('click', function(e) {
 function loadCourses(programId) {
     const sel = document.getElementById('modalCourse');
     const msg = document.getElementById('courseLoadingMsg');
-    sel.innerHTML = '<option value="">Loading�?�</option>';
-    if (!programId) { sel.innerHTML = '<option value="">�?" Select program first �?"</option>'; return; }
+    sel.innerHTML = '<option value="">Loading–�</option>';
+    if (!programId) { sel.innerHTML = '<option value="">– Select program first –</option>'; return; }
     msg.classList.remove('hidden');
     fetch('{{ route('admin.timetable.courses') }}?program_id=' + programId)
         .then(r => r.json())
@@ -356,7 +356,7 @@ function loadCourses(programId) {
                 sel.innerHTML = '<option value="">No courses for this program</option>';
                 return;
             }
-            sel.innerHTML = '<option value="">�?" Select course �?"</option>' +
+            sel.innerHTML = '<option value="">– Select course –</option>' +
                 courses.map(c => `<option value="${c.id}">${c.name}${c.code ? ' ('+c.code+')' : ''}</option>`).join('');
         })
         .catch(() => {

@@ -1,4 +1,4 @@
-@extends('layouts.app')
+extends('layouts.app')
 @section('title', 'Subscription')
 
 @section('content')
@@ -118,7 +118,7 @@
                             <i class="fas fa-sms me-1"></i> SMS Credits
                         </div>
                         @if(($msgCredits ?? null)?->sms_credits == 0)
-                            <small style="color:#ef4444;font-size:0.72rem;">No credits �?" top up below</small>
+                            <small style="color:#ef4444;font-size:0.72rem;">No credits – top up below</small>
                         @elseif(($msgCredits ?? null)?->sms_credits < 20)
                             <small style="color:var(--brand);font-size:0.72rem;">Running low</small>
                         @endif
@@ -133,7 +133,7 @@
                             <i class="fab fa-whatsapp me-1"></i> WhatsApp Credits
                         </div>
                         @if(($msgCredits ?? null)?->whatsapp_credits == 0)
-                            <small style="color:#ef4444;font-size:0.72rem;">No credits �?" top up below</small>
+                            <small style="color:#ef4444;font-size:0.72rem;">No credits – top up below</small>
                         @elseif(($msgCredits ?? null)?->whatsapp_credits < 10)
                             <small style="color:var(--brand);font-size:0.72rem;">Running low</small>
                         @endif

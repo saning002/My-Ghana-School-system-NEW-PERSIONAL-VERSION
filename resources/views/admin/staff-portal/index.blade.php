@@ -1,4 +1,4 @@
-@extends('layouts.app')
+extends('layouts.app')
 @section('title','Staff Portals')
 @section('subtitle','Manage Accountant, Headmaster, Headteacher, Deputy Head and Secretary portal accounts')
 
@@ -17,7 +17,7 @@
         <p class="text-indigo-200 text-sm mt-2 max-w-2xl leading-relaxed">
             Create portal accounts for <strong class="text-white">Accountants</strong>, <strong class="text-white">Headmasters</strong>,
             <strong class="text-white">Headteachers</strong>, <strong class="text-white">Deputies</strong> and <strong class="text-white">Secretaries</strong>.
-            All permissions are <strong class="text-yellow-300">ON by default</strong> �?" admin can turn individual ones off.
+            All permissions are <strong class="text-yellow-300">ON by default</strong> – admin can turn individual ones off.
         </p>
         <div class="flex flex-wrap gap-3 mt-4">
             @foreach(\App\Models\StaffPortalUser::$roleLabels as $role => $label)
@@ -202,7 +202,7 @@ $defaults = \App\Models\StaffPortalUser::$defaultPermissions;
                         {{ $allPerms[$p] ?? $p }}
                     </span>
                     @empty
-                    <span class="text-xs text-red-400 font-semibold italic">�s� No permissions �?" this account cannot access anything</span>
+                    <span class="text-xs text-red-400 font-semibold italic">�s� No permissions – this account cannot access anything</span>
                     @endforelse
                 </div>
             </div>

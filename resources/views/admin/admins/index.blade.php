@@ -1,4 +1,4 @@
-@extends('layouts.app')
+extends('layouts.app')
 @section('title', 'System Administrators')
 @section('subtitle', 'Manage global and branch-scoped administrators')
 
@@ -59,7 +59,7 @@
                         </div>
                     </td>
                     <td class="px-6 py-4 text-sm text-gray-600">
-                        <i class="fas fa-phone text-[var(--brand)] mr-2"></i>{{ $admin->phone ?? '�?"' }}
+                        <i class="fas fa-phone text-[var(--brand)] mr-2"></i>{{ $admin->phone ?? '–' }}
                     </td>
                     <td class="px-6 py-4">
                         @if($admin->branch)

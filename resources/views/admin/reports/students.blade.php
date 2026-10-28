@@ -1,4 +1,4 @@
-@extends('layouts.app')
+extends('layouts.app')
 @section('title','Student Report')
 @section('subtitle','Filter and view student data')
 
@@ -90,7 +90,7 @@
         <div class="grid grid-cols-2 gap-2 text-xs">
             <div class="bg-gray-50 rounded-lg p-2 text-center">
                 <p class="text-gray-400">{{ $programLabelSingular }}</p>
-                <p class="font-semibold text-gray-700 truncate">{{ $student->program->name??'�?"' }}</p>
+                <p class="font-semibold text-gray-700 truncate">{{ $student->program->name??'–' }}</p>
             </div>
             <div class="bg-gray-50 rounded-lg p-2 text-center">
                 <p class="text-gray-400">Courses</p>
@@ -123,8 +123,8 @@
                         <p class="text-sm font-semibold text-gray-800">{{ $student->user->full_name }}</p>
                         <p class="text-xs text-gray-400 font-mono">{{ $student->student_id }}</p>
                     </td>
-                    <td class="px-6 py-4 text-sm text-gray-600">{{ $student->program->name??'�?"' }}</td>
-                    <td class="px-6 py-4 text-sm text-gray-600">{{ $student->churchBranch->name??'�?"' }}</td>
+                    <td class="px-6 py-4 text-sm text-gray-600">{{ $student->program->name??'–' }}</td>
+                    <td class="px-6 py-4 text-sm text-gray-600">{{ $student->churchBranch->name??'–' }}</td>
                     <td class="px-6 py-4 text-sm text-gray-600">{{ $student->enrollments->count() }}</td>
                     <td class="px-6 py-4">
                         <span class="text-xs px-2.5 py-1 rounded-full font-semibold

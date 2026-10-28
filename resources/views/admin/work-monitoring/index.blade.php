@@ -1,4 +1,4 @@
-@extends('layouts.app')
+extends('layouts.app')
 @section('title', 'Teacher Work Monitoring')
 @section('subtitle', 'Monitor all teacher work log entries and subject progress')
 
@@ -123,7 +123,7 @@
                             <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-400 to-yellow-600 flex items-center justify-center text-white text-[10px] font-extrabold shrink-0">
                                 {{ strtoupper(substr($log->lecturer?->full_name ?? '?', 0, 1)) }}
                             </div>
-                            <span class="text-xs font-semibold text-slate-700">{{ $log->lecturer?->full_name ?? '�?"' }}</span>
+                            <span class="text-xs font-semibold text-slate-700">{{ $log->lecturer?->full_name ?? '–' }}</span>
                         </div>
                     </td>
                     <td class="px-4 py-3">
@@ -141,8 +141,8 @@
                             </span>
                         @endif
                     </td>
-                    <td class="px-4 py-3 text-xs font-bold text-slate-800">{{ $log->course?->name ?? '�?"' }}</td>
-                    <td class="px-4 py-3 text-xs text-slate-600">{{ $log->program?->name ?? '�?"' }}</td>
+                    <td class="px-4 py-3 text-xs font-bold text-slate-800">{{ $log->course?->name ?? '–' }}</td>
+                    <td class="px-4 py-3 text-xs text-slate-600">{{ $log->program?->name ?? '–' }}</td>
                     <td class="px-4 py-3">
                         <p class="text-xs font-semibold text-slate-800">{{ $log->title }}</p>
                         @if(!empty($log->topic_covered))

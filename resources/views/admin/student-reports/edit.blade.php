@@ -1,4 +1,4 @@
-@extends('layouts.app')
+extends('layouts.app')
 @section('title','Edit Student Report')
 @section('subtitle',$student->user->full_name ?? 'Student Report')
 

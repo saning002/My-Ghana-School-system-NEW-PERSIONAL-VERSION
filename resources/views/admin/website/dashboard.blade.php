@@ -1,4 +1,4 @@
-@extends('layouts.app')
+extends('layouts.app')
 @section('title','Website CMS')
 @section('subtitle','Manage your school website content')
 
