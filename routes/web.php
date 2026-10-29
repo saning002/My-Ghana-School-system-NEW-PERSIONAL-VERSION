@@ -416,6 +416,7 @@ Route::middleware(['tenant', 'role:admin'])->prefix('admin')->name('admin.')->gr
     Route::post('/settings/permissions',       [\App\Http\Controllers\Admin\AdminSettingsController::class, 'updatePermissions'])->name('settings.update-permissions');
     Route::post('/settings/sba',               [\App\Http\Controllers\Admin\AdminSettingsController::class, 'updateSba'])->name('settings.update-sba');
     Route::post('/settings/academic-expectations', [\App\Http\Controllers\Admin\AdminSettingsController::class, 'updateAcademicExpectations'])->name('settings.update-academic-expectations');
+    Route::post('/settings/portal',            [\App\Http\Controllers\Admin\AdminSettingsController::class, 'updatePortal'])->name('settings.update-portal');
 
     // Theme
     Route::post('/theme',       [\App\Http\Controllers\Admin\ThemeController::class, 'save'])->name('theme.save');

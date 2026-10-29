@@ -12,6 +12,24 @@ use Illuminate\Support\Facades\Storage;
 class AdminSettingsController extends Controller
 {
     /**
+     * Save portal mode and theme only — no school_name validation needed.
+     */
+    public function updatePortal(Request $request)
+    {
+        $request->validate([
+            'portal_mode'  => 'required|in:basic,jhs,shs,university',
+            'portal_theme' => 'required|in:gold,blue,green,purple,red,teal',
+        ]);
+
+        Setting::set('portal_mode',  $request->portal_mode);
+        Setting::set('portal_theme', $request->portal_theme);
+
+        $this->bustSettingsCache();
+
+        return back()->with('success', 'Student portal settings saved successfully.');
+    }
+
+    /**
      * Bust the tenant settings cache so the next request re-reads from DB.
      * Called after any settings save.
      */
