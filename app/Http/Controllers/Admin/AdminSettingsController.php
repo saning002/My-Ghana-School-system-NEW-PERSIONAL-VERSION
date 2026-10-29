@@ -229,8 +229,16 @@ class AdminSettingsController extends Controller
             Setting::set($key, $request->boolean($key) ? '1' : '0');
         }
 
+        // Save portal mode and theme
+        if ($request->filled('portal_mode')) {
+            Setting::set('portal_mode', $request->portal_mode);
+        }
+        if ($request->filled('portal_theme')) {
+            Setting::set('portal_theme', $request->portal_theme);
+        }
+
         $this->bustSettingsCache();
-        return back()->with('success', 'Branding and sidebar labels updated successfully.');
+        return back()->with('success', 'Settings saved successfully.');
     }
 
     /**

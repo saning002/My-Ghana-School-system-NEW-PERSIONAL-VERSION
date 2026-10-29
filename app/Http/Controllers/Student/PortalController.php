@@ -332,7 +332,10 @@ class PortalController extends Controller
             ->latest()->get();
         $unreadCount = $notifications->where('is_read', false)->count();
 
-        return view('portal.dashboard', compact('student', 'fees', 'programs', 'reportCardPreview', 'previewAttempt', 'attendanceSummary', 'notifications', 'unreadCount', 'cgpa'));
+        $portalMode  = \App\Models\Setting::get('portal_mode', 'university');
+        $portalTheme = \App\Models\Setting::get('portal_theme', 'gold');
+
+        return view('portal.dashboard', compact('student', 'fees', 'programs', 'reportCardPreview', 'previewAttempt', 'attendanceSummary', 'notifications', 'unreadCount', 'cgpa', 'portalMode', 'portalTheme'));
     }
 
     /** View report card for a specific program */
@@ -358,6 +361,8 @@ class PortalController extends Controller
         $data = $this->reportCardService->generate($student, $program, $currentAttempt);
         $data['attempts']       = $attempts;
         $data['currentAttempt'] = $currentAttempt;
+        $data['portalMode']     = \App\Models\Setting::get('portal_mode', 'university');
+        $data['portalTheme']    = \App\Models\Setting::get('portal_theme', 'gold');
 
         return view('portal.report-card', $data);
     }

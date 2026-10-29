@@ -3,25 +3,40 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Student Portal — {{ $student->user->full_name }}</title>
+  <title>{{ $modeLabel }} — {{ $student->user->full_name }}</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  @php
+  $themeMap = [
+      'gold'   => ['accent'=>'#f59e0b','accent2'=>'#d97706','hero'=>'#fef9c3','sub'=>'#78350f','header'=>'#f59e0b','text'=>'#111827'],
+      'blue'   => ['accent'=>'#3b82f6','accent2'=>'#2563eb','hero'=>'#eff6ff','sub'=>'#1e3a8a','header'=>'#3b82f6','text'=>'#ffffff'],
+      'green'  => ['accent'=>'#16a34a','accent2'=>'#15803d','hero'=>'#f0fdf4','sub'=>'#14532d','header'=>'#16a34a','text'=>'#ffffff'],
+      'purple' => ['accent'=>'#7c3aed','accent2'=>'#6d28d9','hero'=>'#f5f3ff','sub'=>'#4c1d95','header'=>'#7c3aed','text'=>'#ffffff'],
+      'red'    => ['accent'=>'#dc2626','accent2'=>'#b91c1c','hero'=>'#fef2f2','sub'=>'#7f1d1d','header'=>'#dc2626','text'=>'#ffffff'],
+      'teal'   => ['accent'=>'#0d9488','accent2'=>'#0f766e','hero'=>'#f0fdfa','sub'=>'#134e4a','header'=>'#0d9488','text'=>'#ffffff'],
+  ];
+  $tc = $themeMap[$portalTheme ?? 'gold'] ?? $themeMap['gold'];
+  $portalMode = $portalMode ?? 'university';
+  $modeLabels = ['basic'=>'Primary School Portal','jhs'=>'JHS Student Portal','shs'=>'SHS Student Portal','university'=>'University Portal'];
+  $modeLabel = $modeLabels[$portalMode] ?? 'Student Portal';
+  @endphp
   <style>
     /* ── THEME VARIABLES ─────────────────────────────────────────── */
     :root {
       --bg:           #F5F0E8;
       --surface:      #ffffff;
       --surface2:     #fffbf0;
-      --border:       #fef3c7;
+      --border:       rgba(0,0,0,0.08);
       --text:         #111827;
       --text-muted:   #6b7280;
-      --text-sub:     #78350f;
-      --accent:       #fbbf24;
-      --accent2:      #f59e0b;
-      --accent-dark:  #D4A017;
-      --accent-text:  #111827;
-      --hero-bg:      #fef9c3;
+      --text-sub:     {{ $tc['sub'] }};
+      --accent:       {{ $tc['accent'] }};
+      --accent2:      {{ $tc['accent2'] }};
+      --accent-dark:  {{ $tc['accent2'] }};
+      --accent-text:  {{ $tc['text'] }};
+      --hero-bg:      {{ $tc['hero'] }};
       --hero-text:    #111827;
+      --header-bg:    {{ $tc['header'] }};
       --hero-sub:     #78350f;
       --header-bg:    #fbbf24;
       --sidebar-bg:   rgba(11,17,33,0.92);
@@ -359,6 +374,7 @@
                 <p style="font-size: 11px; color: var(--text-muted); max-width: 200px; margin: 0 auto;">Please settle pending fees to unlock your results.</p>
               </div>
             @else
+              @if($portalMode === 'university')
               <div class="circular-progress" style="--percentage:{{ min((float)$mostRecentSgpa * 25, 100) }}%;">
                 <div class="circular-progress-inner">
                   <div class="circular-progress-text">
@@ -368,6 +384,27 @@
                 </div>
               </div>
               <p style="margin:0;color:#6b7280;font-size:11px;">Grade Point Average ({{ $mostRecentProgramName }})</p>
+              @else
+              @php
+                $displayScore = 0;
+                if ($reportCardPreview && !empty($reportCardPreview['courses'])) {
+                    $scores = collect($reportCardPreview['courses'])->pluck('total_score')->filter()->values();
+                    $displayScore = $scores->count() > 0 ? round($scores->avg(), 1) : 0;
+                }
+              @endphp
+              <div class="circular-progress" style="--percentage:{{ min($displayScore, 100) }}%;">
+                <div class="circular-progress-inner">
+                  <div class="circular-progress-text">
+                    <div class="num">{{ $displayScore }}</div>
+                    <div class="pct">/ 100</div>
+                  </div>
+                </div>
+              </div>
+              <p style="margin:0;color:#6b7280;font-size:11px;">
+                @if($portalMode === 'basic') Overall Score @elseif($portalMode === 'jhs') Class Average (BECE) @else Subject Average (WASSCE) @endif
+                ({{ $mostRecentProgramName }})
+              </p>
+              @endif
             @endif
             <div class="stats-row">
               <div class="stat-item">
@@ -403,9 +440,9 @@
             <div class="detail">Enrolled</div>
           </div>
           <div class="analytics-box">
-            <div class="label">GPA</div>
-            <p class="value">{{ number_format($mostRecentSgpa, 2) }}</p>
-            <div class="detail">SGPA ({{ $mostRecentProgramName }})</div>
+            <div class="label">{{ $portalMode === 'university' ? 'GPA' : ($portalMode === 'basic' ? 'Score' : 'Average') }}</div>
+            <p class="value">{{ $portalMode === 'university' ? number_format($mostRecentSgpa, 2) : ($displayScore ?? $mostRecentSgpa) }}</p>
+            <div class="detail">{{ $portalMode === 'university' ? 'SGPA ('.$mostRecentProgramName.')' : ($portalMode === 'basic' ? 'Class Score' : 'Term Average') }}</div>
           </div>
           <div class="analytics-box">
             <div class="label">CGPA</div>
@@ -737,9 +774,19 @@
         </div>
 
         <div class="card" style="background: var(--accent); color: var(--accent-text); border: none; padding: 24px;">
-          <h2 style="color: var(--accent-text); font-size: 18px; margin-bottom: 8px;">Welcome to Your Student Portal! 👋</h2>
-          <p style="color: var(--hero-sub); font-size: 13px; line-height: 1.5; font-weight: 500; max-width: 600px;">
-            This portal is your personal academic assistant. Designed to be clean, premium, and fully responsive, it enables you to monitor your performance, verify your attendance, manage your financial statements, and track your path to graduation with complete clarity.
+          <h2 style="color: var(--accent-text); font-size: 18px; margin-bottom: 8px;">
+            Welcome to Your {{ $modeLabel }}!
+          </h2>
+          <p style="color: var(--accent-text); opacity:.8; font-size: 13px; line-height: 1.5; font-weight: 500; max-width: 600px;">
+            @if($portalMode === 'basic')
+              This portal lets you see your lessons, attendance record, teacher remarks and school fees.
+            @elseif($portalMode === 'jhs')
+              Check your class scores, exam scores and grades in BECE format. View your position in class and download your report card.
+            @elseif($portalMode === 'shs')
+              View your elective and core subject scores, WASSCE aggregate, class position and download your official report card.
+            @else
+              Your personal academic assistant. Monitor your GPA, course scores, attendance, and financial statements with complete clarity.
+            @endif
           </p>
         </div>
 

@@ -67,6 +67,7 @@
             ['expectations', 'fa-bullseye',         'Academic Expectations'],
             ['permissions',  'fa-shield-halved',    'Teacher Permissions'],
             ['login-bg',     'fa-image',            'Login Background'],
+            ['portal',       'fa-graduation-cap',   'Student Portal'],
         ] as [$id, $icon, $label])
         <button type="button"
                 onclick="showTab('{{ $id }}')"
@@ -941,6 +942,121 @@
 
 
 {{-- ═══════════════════════════════════════════════════════════════
+     TAB: STUDENT PORTAL
+═══════════════════════════════════════════════════════════════ --}}
+<div id="panel-portal" class="settings-panel hidden">
+<form method="POST" action="{{ route('admin.settings.update') }}">
+@csrf
+@php
+    $portalMode  = \App\Models\Setting::get('portal_mode', 'university');
+    $portalTheme = \App\Models\Setting::get('portal_theme', 'gold');
+@endphp
+
+{{-- Mode selector --}}
+<div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden mb-5">
+    <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background:var(--primary-pale);">
+            <i class="fas fa-graduation-cap" style="color:var(--brand);"></i>
+        </div>
+        <div>
+            <h3 class="text-sm font-bold text-gray-900">Portal Mode</h3>
+            <p class="text-xs text-gray-500 mt-0.5">Choose how results and reports are displayed to students</p>
+        </div>
+    </div>
+    <div class="p-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+        @php
+        $modes = [
+            'basic'      => ['label'=>'Basic (Primary School)',  'icon'=>'fa-child',           'desc'=>'Simple view: attendance, conduct, teacher remarks and class scores. No complex grading.', 'tag'=>'Ages 3–12'],
+            'jhs'        => ['label'=>'JHS / BECE Style',         'icon'=>'fa-school',          'desc'=>'Ghana BECE format: Class Score (30%) + Exam Score (70%) = Total. A1–F9 grades.', 'tag'=>'JHS 1–3'],
+            'shs'        => ['label'=>'SHS / WASSCE Style',       'icon'=>'fa-book',            'desc'=>'WASSCE format with aggregate points, electives/core split, and BECE aggregate display.', 'tag'=>'SHS 1–3'],
+            'university' => ['label'=>'University / Tertiary',    'icon'=>'fa-university',      'desc'=>'GPA system: credit hours, weighted GPA per course, CGPA, and transcript-style view.', 'tag'=>'Tertiary'],
+        ];
+        @endphp
+
+        @foreach($modes as $key => $m)
+        <label for="pm_{{ $key }}" style="cursor:pointer;">
+            <div class="rounded-xl border-2 p-4 transition-all {{ $portalMode === $key ? 'border-[var(--brand)] bg-[var(--primary-pale)]' : 'border-gray-200 hover:border-gray-300' }}"
+                 id="pmCard_{{ $key }}"
+                 onclick="selectPortalMode('{{ $key }}')">
+                <div class="flex items-start gap-3">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 {{ $portalMode === $key ? 'bg-[var(--brand)]' : 'bg-gray-100' }}">
+                        <i class="fas {{ $m['icon'] }} {{ $portalMode === $key ? 'text-white' : 'text-gray-500' }} text-sm"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-sm font-bold text-gray-900">{{ $m['label'] }}</span>
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full {{ $portalMode === $key ? 'bg-[var(--brand)] text-white' : 'bg-gray-100 text-gray-500' }}">{{ $m['tag'] }}</span>
+                        </div>
+                        <p class="text-xs text-gray-500 leading-relaxed">{{ $m['desc'] }}</p>
+                    </div>
+                    <div class="w-5 h-5 rounded-full border-2 flex-shrink-0 mt-1 flex items-center justify-center {{ $portalMode === $key ? 'border-[var(--brand)] bg-[var(--brand)]' : 'border-gray-300' }}">
+                        @if($portalMode === $key)
+                        <i class="fas fa-check text-white" style="font-size:8px;"></i>
+                        @endif
+                    </div>
+                </div>
+                <input type="radio" name="portal_mode" id="pm_{{ $key }}" value="{{ $key }}"
+                       {{ $portalMode === $key ? 'checked' : '' }} style="display:none;">
+            </div>
+        </label>
+        @endforeach
+    </div>
+</div>
+
+{{-- Portal Theme / Colour --}}
+<div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden mb-5">
+    <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl flex items-center justify-center bg-purple-50">
+            <i class="fas fa-palette text-purple-500"></i>
+        </div>
+        <div>
+            <h3 class="text-sm font-bold text-gray-900">Portal Accent Colour</h3>
+            <p class="text-xs text-gray-500 mt-0.5">The highlight colour used on the student portal</p>
+        </div>
+    </div>
+    <div class="p-5">
+        <div class="grid grid-cols-3 sm:grid-cols-6 gap-3">
+            @php
+            $themes = [
+                'gold'    => ['bg'=>'#f59e0b','label'=>'Gold'],
+                'blue'    => ['bg'=>'#3b82f6','label'=>'Blue'],
+                'green'   => ['bg'=>'#16a34a','label'=>'Green'],
+                'purple'  => ['bg'=>'#7c3aed','label'=>'Purple'],
+                'red'     => ['bg'=>'#dc2626','label'=>'Red'],
+                'teal'    => ['bg'=>'#0d9488','label'=>'Teal'],
+            ];
+            @endphp
+            @foreach($themes as $tk => $tv)
+            <label for="pt_{{ $tk }}" style="cursor:pointer;">
+                <div class="flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all {{ $portalTheme === $tk ? 'border-gray-800' : 'border-transparent hover:border-gray-200' }}"
+                     onclick="document.getElementById('pt_{{ $tk }}').checked=true;document.querySelectorAll('.pt-sel').forEach(e=>e.classList.remove('border-gray-800'));this.closest('div').classList.add('border-gray-800')">
+                    <div class="w-10 h-10 rounded-xl shadow-sm" style="background:{{ $tv['bg'] }};"></div>
+                    <span class="text-xs font-semibold text-gray-600">{{ $tv['label'] }}</span>
+                </div>
+                <input type="radio" name="portal_theme" id="pt_{{ $tk }}" value="{{ $tk }}"
+                       {{ $portalTheme === $tk ? 'checked' : '' }} style="display:none;">
+            </label>
+            @endforeach
+        </div>
+        <p class="text-xs text-gray-400 mt-3">
+            <i class="fas fa-info-circle mr-1"></i>
+            This colour is applied to the student portal header, buttons and accent elements.
+        </p>
+    </div>
+</div>
+
+<div class="flex justify-end gap-3">
+    <button type="submit"
+        class="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold text-white transition-all"
+        style="background:var(--primary);">
+        <i class="fas fa-save"></i> Save Portal Settings
+    </button>
+</div>
+</form>
+</div>
+
+{{-- ═══════════════════════════════════════════════════════════════
      SCRIPTS
 ═══════════════════════════════════════════════════════════════ --}}
 <style>
@@ -1080,6 +1196,29 @@ window.applyPreset = function(sec,pri,acc,txt,bg,nav,anav,apri) {
     var bar=document.querySelector('#prev-secondary')?.parentElement;
     if(bar){bar.style.transition='opacity .15s';bar.style.opacity='0.5';setTimeout(function(){bar.style.opacity='1';},150);}
 };
+function selectPortalMode(key) {
+    document.querySelectorAll('[id^="pmCard_"]').forEach(function(el) {
+        var k = el.id.replace('pmCard_','');
+        var isSelected = (k === key);
+        el.style.borderColor = isSelected ? 'var(--brand)' : '#e5e7eb';
+        el.style.background  = isSelected ? 'var(--primary-pale)' : '';
+        var icon = el.querySelector('.fas');
+        if (icon) {
+            var iconWrap = icon.closest('div');
+            if (iconWrap) {
+                iconWrap.style.background = isSelected ? 'var(--brand)' : '#f3f4f6';
+                icon.style.color = isSelected ? '#fff' : '#6b7280';
+            }
+        }
+        var check = el.querySelector('[id^="pm_"]');
+        if (check) check.checked = isSelected;
+        var badge = el.querySelector('span.text-\\[10px\\]');
+        if (badge) {
+            badge.style.background = isSelected ? 'var(--brand)' : '#f3f4f6';
+            badge.style.color = isSelected ? '#fff' : '#6b7280';
+        }
+    });
+}
 </script>
 
 @endsection

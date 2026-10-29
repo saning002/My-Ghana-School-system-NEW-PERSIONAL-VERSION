@@ -6,7 +6,12 @@
     <title>Live Results — {{ $student->user->full_name }}</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    @php
+    $themeColors = ['gold'=>'#f59e0b','blue'=>'#3b82f6','green'=>'#16a34a','purple'=>'#7c3aed','red'=>'#dc2626','teal'=>'#0d9488'];
+    $accentColor = $themeColors[$portalTheme ?? 'gold'] ?? '#f59e0b';
+    @endphp
     <style>
+        :root { --accent: {{ $accentColor }}; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html, body { min-height: 100%; font-family: 'Inter', sans-serif; background: #f4f5fb; color: #111827; }
         body { padding: 24px; }
@@ -25,7 +30,7 @@
         .actions { display: flex; justify-content: flex-end; gap: 12px; flex-wrap: wrap; }
         .button { display: inline-flex; align-items: center; gap: 8px; padding: 12px 18px; border-radius: 14px; font-size: 13px; font-weight: 700; transition: transform .2s ease, box-shadow .2s ease; }
         .button:hover { transform: translateY(-1px); }
-        .button.primary { background: #2563eb; color: #ffffff; }
+        .button.primary { background: var(--accent, #2563eb); color: #ffffff; }
         .button.secondary { background: #ffffff; color: #111827; border: 1px solid #d1d5db; }
 
         .content-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
@@ -42,7 +47,7 @@
         .result-table td.course { width: 48%; }
         .result-table td.center { text-align: center; }
         .summary-panel { display: grid; gap: 18px; }
-        .summary-box { background: #2563eb; color: #ffffff; border-radius: 24px; padding: 26px; position: relative; overflow: hidden; }
+        .summary-box { background: var(--accent, #2563eb); color: #ffffff; border-radius: 24px; padding: 26px; position: relative; overflow: hidden; }
         .summary-box::after { content: ''; position: absolute; right: -14px; top: -14px; width: 94px; height: 94px; background: rgba(255,255,255,0.12); border-radius: 50%; }
         .summary-box h2 { font-size: 16px; font-weight: 900; margin-bottom: 14px; }
         .summary-box p { color: rgba(255,255,255,0.84); font-size: 13px; line-height: 1.6; }
@@ -119,21 +124,51 @@
                     <table class="result-table">
                         <thead>
                             <tr>
+                                @if(($portalMode ?? 'university') === 'basic')
+                                <th>Subject</th>
+                                <th class="center">Score</th>
+                                <th class="center">Remark</th>
+                                @elseif(($portalMode ?? 'university') === 'jhs' || ($portalMode ?? 'university') === 'shs')
+                                <th>Subject Code</th>
+                                <th>Subject Title</th>
+                                <th class="center">Class Score (30%)</th>
+                                <th class="center">Exam Score (70%)</th>
+                                <th class="center">Total</th>
+                                <th class="center">Grade</th>
+                                @else
                                 <th>Course Code</th>
                                 <th>Course Title</th>
                                 <th class="center">Credit</th>
                                 <th class="center">Grade</th>
                                 <th class="center">Point</th>
+                                @endif
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($courses as $row)
                                 <tr>
+                                @if(($portalMode ?? 'university') === 'basic')
+                                    <td>{{ $row['course']->name }}</td>
+                                    <td class="center">{{ $row['total_score'] ?? '—' }}</td>
+                                    <td class="center">{{ $row['grade'] ?? '—' }}</td>
+                                @elseif(($portalMode ?? 'university') === 'jhs' || ($portalMode ?? 'university') === 'shs')
+                                    <td>{{ strtoupper($row['course']->code ?? '—') }}</td>
+                                    <td class="course">{{ $row['course']->name }}</td>
+                                    <td class="center">{{ $row['class_score'] ?? '—' }}</td>
+                                    <td class="center">{{ $row['exam_score'] ?? '—' }}</td>
+                                    <td class="center"><strong>{{ $row['total_score'] ?? '—' }}</strong></td>
+                                    <td class="center">
+                                        <span class="pill {{ ($row['total_score'] ?? 0) >= 50 ? 'success' : 'warning' }}">
+                                            {{ $row['grade'] ?? '—' }}
+                                        </span>
+                                    </td>
+                                @else
                                     <td>{{ strtoupper($row['course']->code ?? '—') }}</td>
                                     <td class="course">{{ $row['course']->name }}</td>
                                     <td class="center">{{ $row['credit'] }}</td>
                                     <td class="center">{{ strtoupper($row['grade']) }}</td>
                                     <td class="center">{{ number_format($row['grade_point'], 2) }}</td>
+                                @endif
                                 </tr>
                             @endforeach
                         </tbody>
@@ -147,6 +182,7 @@
                         <div class="large-number">{{ number_format($overall_average, 2) }}%</div>
                         <div class="chip"><i class="fas fa-chart-line"></i> {{ $overall_grade_description }}</div>
                     </div>
+                    @if(($portalMode ?? 'university') === 'university')
                     <div class="stat-row">
                         <div class="stat-card">
                             <strong>{{ number_format($overall_sgpa, 2) }}</strong>
@@ -161,6 +197,39 @@
                             <span>Total Credits</span>
                         </div>
                     </div>
+                    @elseif(($portalMode ?? 'university') === 'jhs' || ($portalMode ?? 'university') === 'shs')
+                    <div class="stat-row">
+                        <div class="stat-card">
+                            <strong>{{ number_format($overall_average, 1) }}</strong>
+                            <span>Average Score</span>
+                        </div>
+                        <div class="stat-card">
+                            <strong>{{ count($courses) }}</strong>
+                            <span>Subjects</span>
+                        </div>
+                    </div>
+                    @if(($portalMode ?? 'university') === 'shs')
+                    <div class="stat-card" style="background:#fef3c7;border:1.5px solid #fde68a;border-radius:18px;padding:16px;">
+                        <span style="display:block;font-size:11px;font-weight:700;color:#b45309;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">WASSCE Aggregate</span>
+                        <strong style="font-size:24px;font-weight:900;color:#78350f;">
+                            {{ collect($courses)->sortBy('total_score')->take(6)->sum(fn($c) => match(true) { ($c['total_score'] ?? 0) >= 80 => 1, ($c['total_score'] ?? 0) >= 70 => 2, ($c['total_score'] ?? 0) >= 60 => 3, ($c['total_score'] ?? 0) >= 55 => 4, ($c['total_score'] ?? 0) >= 50 => 5, ($c['total_score'] ?? 0) >= 45 => 6, ($c['total_score'] ?? 0) >= 40 => 7, ($c['total_score'] ?? 0) >= 35 => 8, default => 9 }) }}
+                        </strong>
+                        <span style="font-size:11px;color:#92400e;">(Best 6 subjects)</span>
+                    </div>
+                    @endif
+                    @else
+                    {{-- Basic mode --}}
+                    <div class="stat-row">
+                        <div class="stat-card">
+                            <strong>{{ number_format($overall_average, 1) }}</strong>
+                            <span>Overall Score</span>
+                        </div>
+                        <div class="stat-card">
+                            <strong>{{ count($courses) }}</strong>
+                            <span>Subjects</span>
+                        </div>
+                    </div>
+                    @endif
                     @if(isset($overall_position) && $overall_position !== '—')
                     <div class="stat-card" style="display: flex; align-items: center; justify-content: space-between; background: #fffbeb; border: 1.5px solid #fde68a; border-radius: 18px; padding: 16px; margin-top: -6px;">
                         <div>
