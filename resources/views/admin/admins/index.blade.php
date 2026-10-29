@@ -44,7 +44,7 @@
                     <td class="px-6 py-4">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-lg flex items-center justify-center text-white text-sm font-bold flex-shrink-0 shadow-sm"
-                                 style="background: {{ $admin->isSuperAdmin() ? '#D4A017' : '#64748b' }}">
+                                 style="background: {{ $admin->isSuperAdmin() ? 'var(--brand)' : '#64748b' }}">
                                 {{ strtoupper(substr($admin->full_name, 0, 1)) }}
                             </div>
                             <div>

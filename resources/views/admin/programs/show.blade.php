@@ -7,7 +7,7 @@
 
     {{-- Header --}}
     <div class="card overflow-hidden">
-        <div class="px-5 py-5" style="background:linear-gradient(135deg,#1a1a2e,#0f3460)">
+        <div class="px-5 py-5" style="background:linear-gradient(135deg,var(--admin-nav),var(--admin-nav))">
             <div class="flex items-center gap-4">
                 <div class="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center flex-shrink-0">
                     <i class="fas fa-graduation-cap text-white text-2xl"></i>

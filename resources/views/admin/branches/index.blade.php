@@ -27,7 +27,7 @@
         left: 0;
         right: 0;
         height: 3px;
-        background: #D4A017;
+        background: var(--brand);
     }
 </style>
 
@@ -50,7 +50,7 @@
                 <p class="text-xs uppercase tracking-wider text-gray-500 mb-2 font-semibold">{{ $branch->code ? strtoupper($branch->code) : $branch->getCodeOrDerived() }}</p>
                 <h3 class="text-lg font-bold text-gray-900 leading-tight">{{ $branch->name }}</h3>
                 <p class="text-sm text-gray-600 mt-1.5">
-                    <i class="fas fa-map-marker-alt mr-1.5" style="color: #D4A017;"></i>
+                    <i class="fas fa-map-marker-alt mr-1.5" style="color: var(--brand);"></i>
                     {{ $branch->location ?: 'No location set' }}
                 </p>
             </div>
