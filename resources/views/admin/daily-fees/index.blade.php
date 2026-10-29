@@ -5,6 +5,18 @@
 @section('content')
 <div class="space-y-5">
 
+<div class="page-hero-banner">
+    <div class="hero-left">
+        <h1><i class="fas fa-calendar-check mr-2" style="color:var(--primary);"></i>Daily Fees</h1>
+        <p>Mark student daily fee payments, manage exemptions and scholarships</p>
+    </div>
+    <div class="hero-actions">
+        <a href="{{ route('admin.daily-fees.monthly') }}" class="btn-secondary-action">
+            <i class="fas fa-calendar-alt"></i> Monthly View
+        </a>
+    </div>
+</div>
+
 {{-- Flash --}}
 @if(session('success'))
 <div class="rounded-2xl bg-emerald-50 border border-emerald-200 px-5 py-3 text-sm font-semibold text-emerald-800 flex items-center gap-2">

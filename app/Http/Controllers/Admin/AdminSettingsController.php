@@ -30,66 +30,70 @@ class AdminSettingsController extends Controller
     public function show()
     {
         $admin = auth()->user();
-        
-        // Branch admins can only edit their own settings
+
         if ($admin->isBranchAdmin() && !$admin->isSuperAdmin()) {
-            // OK - branch admin editing own settings
+            // OK
         } elseif ($admin->isSuperAdmin()) {
-            // OK - super admin can edit settings
+            // OK
         } else {
             abort(403, 'Unauthorized');
         }
 
-        // Expose grading settings values to the view
-        $gradingPreset = \App\Models\Setting::get('grading_preset', 'ghana_standard');
-        $gradingScaleJson = \App\Models\Setting::get('grading_scale_json', json_encode([
-            ['grade' => 'A1', 'min' => 80, 'point' => 4.0, 'description' => 'A1 DISTINCTION'],
-            ['grade' => 'A2', 'min' => 70, 'point' => 3.7, 'description' => 'A2 UPPER DIVISION'],
-            ['grade' => 'A3', 'min' => 60, 'point' => 3.3, 'description' => 'A3 LOWER DIVISION'],
-            ['grade' => 'B1', 'min' => 50, 'point' => 3.0, 'description' => 'B1 CREDIT'],
-            ['grade' => 'B2', 'min' => 40, 'point' => 2.0, 'description' => 'B2 PASS'],
-            ['grade' => 'F',  'min' => 0,  'point' => 0.0, 'description' => 'F FAIL'],
-        ], JSON_PRETTY_PRINT));
+        // ── Single batch query for all settings needed on this page ──────────
+        $neededKeys = [
+            'grading_preset','grading_scale_json',
+            'school_name','school_subtitle','site_logo_url','school_id_prefix',
+            'lecturer_can_attendance','lecturer_can_exams','lecturer_can_reports',
+            'lecturer_can_notifications','lecturer_can_edit_profile',
+            'sidebar_programs_label','sidebar_courses_label','sidebar_students_label',
+            'sidebar_lecturers_label','sidebar_teachers_label','sidebar_attendance_label',
+            'sidebar_exams_label','sidebar_fees_label','sidebar_reports_label',
+            'sidebar_portal_label','sidebar_portals_label','sidebar_settings_label','sidebar_guide_label',
+            'fee_mode','daily_fee_rate',
+            'school_paystack_public_key','school_paystack_secret_key',
+        ];
 
-        $schoolName = Setting::get('school_name', 'School');
-        $schoolSubtitle = Setting::get('school_subtitle', 'University College');
-        $siteLogoUrl = Setting::get('site_logo_url', '');
+        $s = \Illuminate\Support\Facades\DB::connection('tenant')
+            ->table('settings')
+            ->whereIn('key', $neededKeys)
+            ->pluck('value', 'key');
 
-        // Lecturer permission flags (all default true = enabled)
+        $gradingPreset    = $s['grading_preset'] ?? 'ghana_standard';
+        $gradingScaleJson = $s['grading_scale_json'] ?? json_encode([
+            ['grade'=>'A1','min'=>80,'point'=>4.0,'description'=>'A1 DISTINCTION'],
+            ['grade'=>'A2','min'=>70,'point'=>3.7,'description'=>'A2 UPPER DIVISION'],
+            ['grade'=>'A3','min'=>60,'point'=>3.3,'description'=>'A3 LOWER DIVISION'],
+            ['grade'=>'B1','min'=>50,'point'=>3.0,'description'=>'B1 CREDIT'],
+            ['grade'=>'B2','min'=>40,'point'=>2.0,'description'=>'B2 PASS'],
+            ['grade'=>'F', 'min'=>0, 'point'=>0.0,'description'=>'F FAIL'],
+        ], JSON_PRETTY_PRINT);
+
+        $schoolName    = $s['school_name']    ?? 'School';
+        $schoolSubtitle= $s['school_subtitle']?? 'University College';
+        $siteLogoUrl   = $s['site_logo_url']  ?? '';
+
         $lecturerPermissions = [
-            'attendance'   => (bool) Setting::get('lecturer_can_attendance',   true),
-            'exams'        => (bool) Setting::get('lecturer_can_exams',        true),
-            'reports'      => (bool) Setting::get('lecturer_can_reports',      true),
-            'notifications'=> (bool) Setting::get('lecturer_can_notifications',true),
-            'edit_profile' => (bool) Setting::get('lecturer_can_edit_profile', true),
+            'attendance'   => (bool)($s['lecturer_can_attendance']    ?? true),
+            'exams'        => (bool)($s['lecturer_can_exams']         ?? true),
+            'reports'      => (bool)($s['lecturer_can_reports']       ?? true),
+            'notifications'=> (bool)($s['lecturer_can_notifications'] ?? true),
+            'edit_profile' => (bool)($s['lecturer_can_edit_profile']  ?? true),
         ];
 
         $sidebarLabels = [
-            'programs'   => Setting::get('sidebar_programs_label', 'Programs'),
-            'courses'    => Setting::get('sidebar_courses_label', 'Courses'),
-            'students'   => Setting::get('sidebar_students_label', 'Students'),
-            'lecturers'  => Setting::get(
-                'sidebar_lecturers_label',
-                Setting::get('sidebar_teachers_label', 'Teachers')
-            ),
-            'teachers'   => Setting::get(
-                'sidebar_lecturers_label',
-                Setting::get('sidebar_teachers_label', 'Teachers')
-            ),
-            'attendance' => Setting::get('sidebar_attendance_label', 'Attendance'),
-            'exams'      => Setting::get('sidebar_exams_label', 'Exams & Results'),
-            'fees'       => Setting::get('sidebar_fees_label', 'Fees & Payments'),
-            'reports'    => Setting::get('sidebar_reports_label', 'Reports'),
-            'portal'     => Setting::get(
-                'sidebar_portal_label',
-                Setting::get('sidebar_portals_label', 'Student Portal')
-            ),
-            'portals'    => Setting::get(
-                'sidebar_portal_label',
-                Setting::get('sidebar_portals_label', 'Student Portal')
-            ),
-            'settings'   => Setting::get('sidebar_settings_label', 'Settings'),
-            'guide'      => Setting::get('sidebar_guide_label', 'Admin Guide'),
+            'programs'   => $s['sidebar_programs_label']   ?? 'Programs',
+            'courses'    => $s['sidebar_courses_label']    ?? 'Courses',
+            'students'   => $s['sidebar_students_label']   ?? 'Students',
+            'lecturers'  => $s['sidebar_lecturers_label']  ?? $s['sidebar_teachers_label']  ?? 'Teachers',
+            'teachers'   => $s['sidebar_lecturers_label']  ?? $s['sidebar_teachers_label']  ?? 'Teachers',
+            'attendance' => $s['sidebar_attendance_label'] ?? 'Attendance',
+            'exams'      => $s['sidebar_exams_label']      ?? 'Exams & Results',
+            'fees'       => $s['sidebar_fees_label']       ?? 'Fees & Payments',
+            'reports'    => $s['sidebar_reports_label']    ?? 'Reports',
+            'portal'     => $s['sidebar_portal_label']     ?? $s['sidebar_portals_label']   ?? 'Student Portal',
+            'portals'    => $s['sidebar_portals_label']    ?? $s['sidebar_portal_label']    ?? 'Student Portal',
+            'settings'   => $s['sidebar_settings_label']  ?? 'Settings',
+            'guide'      => $s['sidebar_guide_label']      ?? 'Admin Guide',
         ];
 
         return view('admin.settings.profile', compact(

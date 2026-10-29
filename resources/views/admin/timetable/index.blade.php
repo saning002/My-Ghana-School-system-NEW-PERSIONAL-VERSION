@@ -14,45 +14,54 @@
 @section('content')
 <div class="space-y-5">
 
-{{-- Flash --}}
-@if(session('success'))<div class="rounded-2xl bg-emerald-50 border border-emerald-200 px-5 py-3 text-sm font-semibold text-emerald-800 flex items-center gap-2"><i class="fas fa-check-circle text-emerald-500"></i>{{ session('success') }}</div>@endif
-@if($errors->any())<div class="rounded-2xl bg-red-50 border border-red-200 px-5 py-3 text-sm text-red-800"><ul class="list-disc list-inside">@foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach</ul></div>@endif
+<div class="page-hero-banner">
+    <div class="hero-left">
+        <h1><i class="fas fa-table-cells mr-2" style="color:var(--primary);"></i>Timetable</h1>
+        <p>{{ $date->isToday() ? "Today — " . $date->format('l, F j Y') : $date->format('l, F j Y') }}</p>
+    </div>
+    <div class="hero-actions">
+        {{-- Date navigation --}}
+        <a href="{{ route('admin.timetable.index', ['date' => $date->copy()->subDay()->toDateString()]) }}" class="btn-secondary-action">
+            <i class="fas fa-chevron-left"></i>
+        </a>
+        <a href="{{ route('admin.timetable.index') }}" class="btn-secondary-action">Today</a>
+        <a href="{{ route('admin.timetable.index', ['date' => $date->copy()->addDay()->toDateString()]) }}" class="btn-secondary-action">
+            <i class="fas fa-chevron-right"></i>
+        </a>
+        @if(auth()->user()->isSuperAdmin())
+        <a href="{{ route('admin.timetable.index', ['view' => 'manage']) }}" class="btn-primary-action">
+            <i class="fas fa-plus"></i> Manage
+        </a>
+        @endif
+    </div>
+</div>
 
-{{-- Hero header --}}
-<div class="rounded-3xl relative overflow-hidden p-6 lg:p-8 text-white"
-     style="background:linear-gradient(135deg,#0d0a2e 0%,#2d2480 40%,#5647d6 75%,#a395f5 100%)">
-    <div class="pointer-events-none absolute -top-16 -right-16 h-56 w-56 rounded-full bg-white/4 blur-3xl"></div>
-    <div class="pointer-events-none absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-yellow-400/50 to-transparent"></div>
-    <div class="relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+{{-- Flash --}}
+@if(session('success'))<div class="rounded-2xl bg-emerald-50 border border-emerald-200 px-5 py-3 text-sm font-semibold text-emerald-800 flex items-center gap-2 mb-4"><i class="fas fa-check-circle text-emerald-500"></i>{{ session('success') }}</div>@endif
+@if($errors->any())<div class="rounded-2xl bg-red-50 border border-red-200 px-5 py-3 text-sm text-red-800 mb-4"><ul class="list-disc list-inside">@foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach</ul></div>@endif
+
+{{-- Filters --}}
+<div class="card p-4 flex flex-wrap gap-3 items-end">
+    <form method="GET" class="flex flex-wrap gap-3 items-end w-full">
+        <div class="flex-1 min-w-[140px]">
+            <label class="block text-xs font-bold uppercase tracking-wide text-slate-600 mb-1">Program</label>
+            <select name="program_id" onchange="this.form.submit()"
+                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)]">
+                <option value="">All Programs</option>
+                @foreach($programs as $p)
+                <option value="{{ $p->id }}" {{ $selectedProgram?->id == $p->id ? 'selected' : '' }}>{{ $p->name }}</option>
+                @endforeach
+            </select>
+        </div>
         <div>
-            <h1 class="text-2xl lg:text-3xl font-extrabold tracking-tight">
-                @if($date->isToday()) Today – @endif
-                <span class="text-yellow-300">{{ $date->format('l, F j Y') }}</span>
-            </h1>
-            <p class="text-indigo-200 text-sm mt-1">
-                {{ $selectedProgram?->name ?? 'All Programs' }} ·
-                {{ $todayEntries->count() }} lesson{{ $todayEntries->count() !== 1 ? 's' : '' }} today
-            </p>
+            <label class="block text-xs font-bold uppercase tracking-wide text-slate-600 mb-1">Date</label>
+            <input type="date" name="date" value="{{ $date->toDateString() }}"
+                class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)]"
+                onchange="this.form.submit()">
         </div>
-        <div class="flex flex-wrap gap-2 items-center">
-            {{-- Date picker --}}
-            <form method="GET" class="flex items-center gap-2">
-                @if($selectedProgram)<input type="hidden" name="program_id" value="{{ $selectedProgram->id }}">@endif
-                <input type="date" name="date" value="{{ $date->toDateString() }}"
-                    class="rounded-xl bg-white/15 border border-white/20 text-white text-sm font-semibold px-3 py-2 focus:outline-none focus:ring-2 focus:ring-white/30"
-                    onchange="this.form.submit()">
-                @if(!$date->isToday())
-                <a href="{{ route('admin.timetable.index', array_filter(['program_id'=>$selectedProgram?->id])) }}"
-                   class="inline-flex items-center gap-1 rounded-xl bg-white/15 border border-white/20 text-white text-xs font-bold px-3 py-2 hover:bg-white/25 transition-colors">
-                    <i class="fas fa-calendar-day text-[10px]"></i> Today
-                </a>
-                @endif
-            </form>
-            <button onclick="document.getElementById('addModal').classList.remove('hidden');document.getElementById('addModal').classList.add('flex')"
-                class="inline-flex items-center gap-1.5 rounded-xl bg-[var(--primary)] hover:bg-yellow-300 text-[var(--primary-text)] text-xs font-bold px-4 py-2 shadow transition-all active:scale-95">
-                <i class="fas fa-plus text-[10px]"></i> Add Lesson
-            </button>
-        </div>
+        @if($selectedProgram)<input type="hidden" name="program_id" value="{{ $selectedProgram->id }}">@endif
+    </form>
+</div>
     </div>
 
     {{-- Week strip --}}

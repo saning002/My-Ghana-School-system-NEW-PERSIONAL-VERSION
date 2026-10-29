@@ -3,6 +3,14 @@
 @section('subtitle','Send alerts and messages to students and teachers')
 
 @section('content')
+
+<div class="page-hero-banner">
+    <div class="hero-left">
+        <h1><i class="fas fa-bell mr-2" style="color:var(--primary);"></i>{{ $sidebarLabels['notifications'] ?? 'Notifications' }}</h1>
+        <p>Send alerts and messages to students and teachers</p>
+    </div>
+</div>
+
 <div class="grid grid-cols-1 lg:grid-cols-5 gap-5">
 
     {{-- �"?�"? SEND FORM �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}

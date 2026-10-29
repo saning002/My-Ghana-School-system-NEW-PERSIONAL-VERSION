@@ -5,6 +5,18 @@
 @section('content')
 <div class="space-y-5" x-data="{ mode: '{{ request('mode','entries') }}' }">
 
+<div class="page-hero-banner">
+    <div class="hero-left">
+        <h1><i class="fas fa-book-open mr-2" style="color:var(--primary);"></i>Scheme of Learning</h1>
+        <p>Weekly teaching plan per course and program</p>
+    </div>
+    <div class="hero-actions">
+        <a href="{{ route('admin.scheme-of-learning.create') }}" class="btn-primary-action">
+            <i class="fas fa-plus"></i> Add Entry
+        </a>
+    </div>
+</div>
+
 {{-- �"?�"? Filters �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
 <div class="card p-5">
     <form method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">

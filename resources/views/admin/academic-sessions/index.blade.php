@@ -5,6 +5,18 @@
 @section('content')
 <div class="space-y-6">
 
+<div class="page-hero-banner">
+    <div class="hero-left">
+        <h1><i class="fas fa-calendar-alt mr-2" style="color:var(--primary);"></i>Academic Sessions</h1>
+        <p>Manage academic years, term periods and the active period</p>
+    </div>
+    <div class="hero-actions">
+        <a href="{{ route('admin.academic-sessions.create') }}" class="btn-primary-action">
+            <i class="fas fa-plus"></i> New Session
+        </a>
+    </div>
+</div>
+
 {{-- �"?�"? Active Period Banner �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
 @if($activePeriod)
 <div class="rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shadow-lg shadow-emerald-200">

@@ -5,6 +5,13 @@
 @section('content')
 <div class="max-w-7xl mx-auto space-y-5">
 
+<div class="page-hero-banner">
+    <div class="hero-left">
+        <h1><i class="fas fa-tasks mr-2" style="color:var(--primary);"></i>Teacher Work Monitoring</h1>
+        <p>Monitor all teacher work log entries and subject progress</p>
+    </div>
+</div>
+
 {{-- Flash --}}
 @if(session('success'))
 <div class="rounded-2xl bg-emerald-50 border border-emerald-200 px-5 py-3 text-sm font-semibold text-emerald-800 flex items-center gap-2">

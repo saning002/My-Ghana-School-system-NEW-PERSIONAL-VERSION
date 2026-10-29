@@ -4,7 +4,7 @@
 
 @section('content')
 @php
-    $currentTheme = ['primary'=>'#e9a422','secondary'=>'#0a1f44','accent'=>'#0891b2','text'=>'#3a3830','bg'=>'#ffffff','navBg'=>'#0a1f44','adminPrimary'=>'#D4A017','adminNav'=>'#0B1121'];
+    $currentTheme = ['primary'=>'#e9a422','secondary'=>'var(--admin-nav)','accent'=>'#0891b2','text'=>'#3a3830','bg'=>'#ffffff','navBg'=>'var(--admin-nav)','adminPrimary'=>'var(--brand)','adminNav'=>'var(--admin-nav)'];
     try {
         if (\Illuminate\Support\Facades\Schema::hasTable('site_settings')) {
             $currentTheme = \App\Models\Website\SiteSetting::instance()->theme;
@@ -12,6 +12,18 @@
     } catch (\Throwable $e) {}
     $defaultTheme = \App\Models\Website\SiteSetting::defaultTheme();
 @endphp
+
+<div class="page-hero-banner">
+    <div class="hero-left">
+        <h1><i class="fas fa-sliders-h mr-2" style="color:var(--primary);"></i>System Settings</h1>
+        <p>Control branding, appearance, grading and system behaviour</p>
+    </div>
+    <div class="hero-actions">
+        <a href="{{ wu('home') }}" target="_blank" class="btn-secondary-action">
+            <i class="fas fa-external-link-alt"></i> View Website
+        </a>
+    </div>
+</div>
 
 {{-- ═══════════════════════════════════════════════════════════════
      FLASH BANNERS
@@ -42,24 +54,9 @@
 @endif
 
 {{-- ═══════════════════════════════════════════════════════════════
-     PAGE HEADER + TAB BAR
+     TAB BAR
 ═══════════════════════════════════════════════════════════════ --}}
 <div class="mb-6">
-    <div class="flex items-center gap-4 mb-5">
-        <div class="w-12 h-12 rounded-2xl flex items-center justify-center shadow-sm flex-shrink-0"
-             style="background:linear-gradient(135deg,#0B1121,#1a3a6b)">
-            <i class="fas fa-sliders-h text-yellow-400 text-lg"></i>
-        </div>
-        <div>
-            <h1 class="text-xl font-bold text-gray-900 leading-tight">System Settings</h1>
-            <p class="text-sm text-gray-500 mt-0.5">Control every aspect of how the system looks and behaves</p>
-        </div>
-        <a href="{{ wu('home') }}" target="_blank"
-           class="ml-auto flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-gray-600 bg-white border border-gray-200 hover:border-gray-400 transition-all shadow-sm">
-            <i class="fas fa-external-link-alt text-xs"></i> View Website
-        </a>
-    </div>
-
     {{-- Tab bar --}}
     <div class="flex gap-1 p-1 bg-gray-100 rounded-2xl overflow-x-auto" id="settingsTabs">
         @foreach([
@@ -227,7 +224,7 @@
         {{-- Save button --}}
         <button type="submit"
                 class="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl text-sm font-bold text-white shadow-lg transition-all hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0"
-                style="background:linear-gradient(135deg,#D4A017,#b8860e)">
+                style="background:linear-gradient(135deg,var(--brand),#b8860e)">
             <i class="fas fa-save"></i> Save Branding Settings
         </button>
     </div>
@@ -246,7 +243,7 @@
             <p class="text-xs text-green-600 mt-0.5">Allow parents/students to pay fees online directly to your school's Paystack account</p>
         </div>
     </div>
-    <form method="POST" action="{{ route('admin.settings.save') }}" class="px-5 py-5">
+    <form method="POST" action="{{ route('admin.settings.update') }}" class="px-5 py-5">
         @csrf
         <div class="rounded-xl bg-blue-50 border border-blue-100 p-3 mb-4 text-xs text-blue-700">
             <i class="fas fa-info-circle mr-1"></i>
@@ -426,7 +423,7 @@
         <div class="p-4 space-y-2">
             @php
             $presets = [
-                ['Navy & Gold (Default)', '#0a1f44','#e9a422','#0891b2','#3a3830','#ffffff','#0a1f44','#0B1121','#D4A017'],
+                ['Navy & Gold (Default)', 'var(--admin-nav)','#e9a422','#0891b2','#3a3830','#ffffff','var(--admin-nav)','var(--admin-nav)','var(--brand)'],
                 ['Royal Blue & Gold',     '#1e3a8a','#f59e0b','#06b6d4','#1e293b','#f8fafc','#1e3a8a','#172554','#f59e0b'],
                 ['Forest Green & Amber',  '#14532d','#d97706','#0891b2','#1c2916','#f9fafb','#14532d','#052e16','#d97706'],
                 ['Deep Purple & Gold',    '#4c1d95','#f59e0b','#0891b2','#1e1b4b','#fafaf9','#4c1d95','#2e1065','#f59e0b'],
