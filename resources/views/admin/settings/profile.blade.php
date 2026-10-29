@@ -1071,7 +1071,7 @@
 
 <script>
 /* ── Tab switching ───────────────────────────────────────────────── */
-var TABS = ['branding','theme','grading','sba','expectations','permissions','login-bg'];
+var TABS = ['branding','theme','grading','sba','expectations','permissions','login-bg','portal'];
 function showTab(id) {
     TABS.forEach(function(t) {
         var panel = document.getElementById('panel-' + t);

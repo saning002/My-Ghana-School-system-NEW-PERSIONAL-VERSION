@@ -1,3 +1,17 @@
+@php
+$themeMap = [
+    'gold'   => ['accent'=>'#f59e0b','accent2'=>'#d97706','hero'=>'#fef9c3','sub'=>'#78350f','header'=>'#f59e0b','text'=>'#111827'],
+    'blue'   => ['accent'=>'#3b82f6','accent2'=>'#2563eb','hero'=>'#eff6ff','sub'=>'#1e3a8a','header'=>'#3b82f6','text'=>'#ffffff'],
+    'green'  => ['accent'=>'#16a34a','accent2'=>'#15803d','hero'=>'#f0fdf4','sub'=>'#14532d','header'=>'#16a34a','text'=>'#ffffff'],
+    'purple' => ['accent'=>'#7c3aed','accent2'=>'#6d28d9','hero'=>'#f5f3ff','sub'=>'#4c1d95','header'=>'#7c3aed','text'=>'#ffffff'],
+    'red'    => ['accent'=>'#dc2626','accent2'=>'#b91c1c','hero'=>'#fef2f2','sub'=>'#7f1d1d','header'=>'#dc2626','text'=>'#ffffff'],
+    'teal'   => ['accent'=>'#0d9488','accent2'=>'#0f766e','hero'=>'#f0fdfa','sub'=>'#134e4a','header'=>'#0d9488','text'=>'#ffffff'],
+];
+$tc = $themeMap[$portalTheme ?? 'gold'] ?? $themeMap['gold'];
+$portalMode = $portalMode ?? 'university';
+$modeLabels = ['basic'=>'Primary School Portal','jhs'=>'JHS Student Portal','shs'=>'SHS Student Portal','university'=>'University Portal'];
+$modeLabel = $modeLabels[$portalMode] ?? 'Student Portal';
+@endphp
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,20 +20,6 @@
   <title>{{ $modeLabel }} — {{ $student->user->full_name }}</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  @php
-  $themeMap = [
-      'gold'   => ['accent'=>'#f59e0b','accent2'=>'#d97706','hero'=>'#fef9c3','sub'=>'#78350f','header'=>'#f59e0b','text'=>'#111827'],
-      'blue'   => ['accent'=>'#3b82f6','accent2'=>'#2563eb','hero'=>'#eff6ff','sub'=>'#1e3a8a','header'=>'#3b82f6','text'=>'#ffffff'],
-      'green'  => ['accent'=>'#16a34a','accent2'=>'#15803d','hero'=>'#f0fdf4','sub'=>'#14532d','header'=>'#16a34a','text'=>'#ffffff'],
-      'purple' => ['accent'=>'#7c3aed','accent2'=>'#6d28d9','hero'=>'#f5f3ff','sub'=>'#4c1d95','header'=>'#7c3aed','text'=>'#ffffff'],
-      'red'    => ['accent'=>'#dc2626','accent2'=>'#b91c1c','hero'=>'#fef2f2','sub'=>'#7f1d1d','header'=>'#dc2626','text'=>'#ffffff'],
-      'teal'   => ['accent'=>'#0d9488','accent2'=>'#0f766e','hero'=>'#f0fdfa','sub'=>'#134e4a','header'=>'#0d9488','text'=>'#ffffff'],
-  ];
-  $tc = $themeMap[$portalTheme ?? 'gold'] ?? $themeMap['gold'];
-  $portalMode = $portalMode ?? 'university';
-  $modeLabels = ['basic'=>'Primary School Portal','jhs'=>'JHS Student Portal','shs'=>'SHS Student Portal','university'=>'University Portal'];
-  $modeLabel = $modeLabels[$portalMode] ?? 'Student Portal';
-  @endphp
   <style>
     /* ── THEME VARIABLES ─────────────────────────────────────────── */
     :root {
@@ -37,11 +37,10 @@
       --hero-bg:      {{ $tc['hero'] }};
       --hero-text:    #111827;
       --header-bg:    {{ $tc['header'] }};
-      --hero-sub:     #78350f;
-      --header-bg:    #fbbf24;
+      --hero-sub:     {{ $tc['sub'] }};
       --sidebar-bg:   rgba(11,17,33,0.92);
       --card-shadow:  0 4px 12px rgba(0,0,0,0.06);
-      --analytics-val:#fbbf24;
+      --analytics-val:{{ $tc['accent'] }};
       --badge-ok-bg:  #dcfce7; --badge-ok-txt:#166534;
       --badge-warn-bg:#fef3c7; --badge-warn-txt:#92400e;
       --badge-err-bg: #fee2e2; --badge-err-txt:#b91c1c;
