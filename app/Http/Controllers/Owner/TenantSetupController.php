@@ -712,6 +712,12 @@ class TenantSetupController extends Controller
             "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='student_reports' AND column_name='class_teacher_remark') THEN ALTER TABLE student_reports ADD COLUMN \"class_teacher_remark\" TEXT NULL; END IF; END \$\$",
             "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='student_reports' AND column_name='head_teacher_remark') THEN ALTER TABLE student_reports ADD COLUMN \"head_teacher_remark\" TEXT NULL; END IF; END \$\$",
             "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='student_reports' AND column_name='promoted_to') THEN ALTER TABLE student_reports ADD COLUMN \"promoted_to\" BIGINT NULL; END IF; END \$\$",
+            // student_notifications — channel (in_app/sms/both) and SMS delivery tracking
+            "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='student_notifications' AND column_name='channel') THEN ALTER TABLE student_notifications ADD COLUMN \"channel\" VARCHAR(20) NOT NULL DEFAULT 'in_app'; END IF; END \$\$",
+            "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='student_notifications' AND column_name='sms_status') THEN ALTER TABLE student_notifications ADD COLUMN \"sms_status\" VARCHAR(20) NULL; END IF; END \$\$",
+            "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='student_notifications' AND column_name='sms_sent_count') THEN ALTER TABLE student_notifications ADD COLUMN \"sms_sent_count\" INTEGER NOT NULL DEFAULT 0; END IF; END \$\$",
+            "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='student_notifications' AND column_name='sms_failed_count') THEN ALTER TABLE student_notifications ADD COLUMN \"sms_failed_count\" INTEGER NOT NULL DEFAULT 0; END IF; END \$\$",
+            "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='student_notifications' AND column_name='sms_error') THEN ALTER TABLE student_notifications ADD COLUMN \"sms_error\" TEXT NULL; END IF; END \$\$",
         ];
     }
 

@@ -13,6 +13,7 @@ class StudentNotification extends Model
     protected $fillable = [
         'sent_by', 'student_id', 'lecturer_id', 'recipient_type',
         'audience', 'type', 'title', 'message', 'is_read',
+        'channel', 'sms_status', 'sms_sent_count', 'sms_failed_count', 'sms_error',
     ];
 
     protected $casts = [

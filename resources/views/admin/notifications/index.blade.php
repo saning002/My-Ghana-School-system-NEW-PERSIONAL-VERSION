@@ -116,15 +116,52 @@
                 </div>
 
                 {{-- �"?�"? Type �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
+                
+                {{-- Channel Selector --}}
                 <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-2">Delivery Channel *</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="channel" value="in_app" class="sr-only peer" checked>
+                            <div class="flex flex-col items-center gap-1 p-2.5 rounded-xl border-2 transition-all text-center peer-checked:border-[var(--brand)] peer-checked:bg-[var(--primary-pale)] border-gray-200">
+                                <i class="fas fa-bell text-sm" style="color:var(--brand)"></i>
+                                <p class="text-xs font-bold text-gray-800">In-App</p>
+                                <p class="text-[10px] text-gray-400">Portal only</p>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer {{ $smsAvailable ? '' : 'opacity-50' }}">
+                            <input type="radio" name="channel" value="sms" class="sr-only peer" {{ $smsAvailable ? '' : 'disabled' }}>
+                            <div class="flex flex-col items-center gap-1 p-2.5 rounded-xl border-2 transition-all text-center peer-checked:border-emerald-500 peer-checked:bg-emerald-50 border-gray-200">
+                                <i class="fas fa-sms text-sm text-emerald-600"></i>
+                                <p class="text-xs font-bold text-gray-800">SMS Only</p>
+                                <p class="text-[10px] text-gray-400">{{ $smsAvailable ? $smsCredits . ' credits' : 'No credits' }}</p>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer {{ $smsAvailable ? '' : 'opacity-50' }}">
+                            <input type="radio" name="channel" value="both" class="sr-only peer" {{ $smsAvailable ? '' : 'disabled' }}>
+                            <div class="flex flex-col items-center gap-1 p-2.5 rounded-xl border-2 transition-all text-center peer-checked:border-blue-500 peer-checked:bg-blue-50 border-gray-200">
+                                <i class="fas fa-share-alt text-sm text-blue-600"></i>
+                                <p class="text-xs font-bold text-gray-800">Both</p>
+                                <p class="text-[10px] text-gray-400">App + SMS</p>
+                            </div>
+                        </label>
+                    </div>
+                    @if(!$smsAvailable)
+                    <p class="text-[10px] text-amber-600 mt-1.5 flex items-center gap-1">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        SMS unavailable â€” {{ $smsCredits === 0 ? 'top up credits in Subscription' : 'no SMS provider configured' }}
+                    </p>
+                    @endif
+                </div>
+<div>
                     <label class="block text-xs font-semibold text-gray-600 mb-2">Notification Type *</label>
                     <select name="type" required
                             class="w-full px-4 py-3 border border-[var(--brand)] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
-                        <option value="general">�Y"� General Announcement</option>
-                        <option value="fee">�Y'� Fee Reminder</option>
-                        <option value="emergency">�Ys� Emergency Alert</option>
+                        <option value="general">General Announcement</option>
+                        <option value="fee">Fee Reminder</option>
+                        <option value="emergency">Emergency Alert</option>
                         <option value="result">�Y"< Result Notice</option>
-                        <option value="attendance">�Y". Attendance Notice</option>
+                        <option value="attendance">Attendance Notice</option>
                     </select>
                 </div>
 
@@ -222,6 +259,25 @@
                                 <i class="fas fa-clock mr-1"></i>
                                 {{ $notif->created_at->diffForHumans() }} – by {{ $notif->sender->full_name ?? 'Admin' }}
                             </p>
+                            {{-- Channel badges --}}
+                            <div class="flex items-center gap-1 mt-1 flex-wrap">
+                                @if(in_array($notif->channel ?? 'in_app', ['in_app','both']))
+                                <span class="text-[10px] px-1.5 py-0.5 rounded font-semibold bg-indigo-50 text-indigo-600">
+                                    <i class="fas fa-bell mr-0.5"></i>In-App
+                                </span>
+                                @endif
+                                @if(in_array($notif->channel ?? 'in_app', ['sms','both']))
+                                <span class="text-[10px] px-1.5 py-0.5 rounded font-semibold {{ ($notif->sms_status ?? '') === 'sent' ? 'bg-emerald-50 text-emerald-700' : (($notif->sms_status ?? '') === 'failed' ? 'bg-red-50 text-red-600' : 'bg-gray-100 text-gray-500') }}">
+                                    <i class="fas fa-sms mr-0.5"></i>
+                                    SMS
+                                    @if($notif->sms_sent_count ?? 0)
+                                        <span class="opacity-70">({{ $notif->sms_sent_count }} sent{{ ($notif->sms_failed_count ?? 0) > 0 ? ', ' . $notif->sms_failed_count . ' failed' : '' }})</span>
+                                    @elseif(($notif->sms_status ?? '') === 'failed')
+                                        <span class="opacity-70" title="{{ $notif->sms_error }}">Failed</span>
+                                    @endif
+                                </span>
+                                @endif
+                            </div>
                             <form method="POST" action="{{ route('admin.notifications.destroy', $notif) }}"
                                   onsubmit="return confirm('Delete this notification?')">
                                 @csrf @method('DELETE')
