@@ -2242,6 +2242,7 @@ Route::prefix('owner')->name('owner.')->group(function () {
         Route::get('/backups',                          [\App\Http\Controllers\Owner\BackupController::class, 'index'])->name('backups.index');
         Route::post('/backups/{tenant}',                [\App\Http\Controllers\Owner\BackupController::class, 'create'])->name('backups.create');
         Route::get('/backups/{backup}/download',        [\App\Http\Controllers\Owner\BackupController::class, 'download'])->name('backups.download');
+        Route::get('/backups/{backup}/csv',             [\App\Http\Controllers\Owner\BackupController::class, 'downloadCsv'])->name('backups.csv');
         Route::post('/backups/{backup}/cloud-push',     [\App\Http\Controllers\Owner\BackupController::class, 'cloudPush'])->name('backups.cloud-push');
         Route::post('/backups/{backup}/email',          [\App\Http\Controllers\Owner\BackupController::class, 'email'])->name('backups.email');
         Route::post('/backups/{backup}/restore',        [\App\Http\Controllers\Owner\BackupController::class, 'restore'])->name('backups.restore');

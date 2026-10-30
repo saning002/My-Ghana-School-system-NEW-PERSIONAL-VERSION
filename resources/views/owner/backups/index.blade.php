@@ -110,7 +110,12 @@
             <td>
                 <div class="d-flex gap-1 flex-wrap">
                     @if($b->status === 'completed')
-                        <a href="{{ route('owner.backups.download', $b) }}" class="btn btn-xs btn-outline-primary" title="Download" style="padding:0.2rem 0.5rem;font-size:0.75rem;"><i class="fas fa-download"></i></a>
+                        <a href="{{ route('owner.backups.download', $b) }}" class="btn btn-xs btn-outline-primary" title="Download SQL" style="padding:0.2rem 0.5rem;font-size:0.75rem;">
+                            <i class="fas fa-download"></i> SQL
+                        </a>
+                        <a href="{{ route('owner.backups.csv', $b) }}" class="btn btn-xs btn-outline-success" title="Download CSV/Excel (ZIP)" style="padding:0.2rem 0.5rem;font-size:0.75rem;">
+                            <i class="fas fa-file-excel"></i> CSV
+                        </a>
                         @if(!$b->cloud_synced)
                         <form method="POST" action="{{ route('owner.backups.cloud-push', $b) }}">
                             @csrf
