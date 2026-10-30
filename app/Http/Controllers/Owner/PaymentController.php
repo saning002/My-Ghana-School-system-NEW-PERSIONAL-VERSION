@@ -14,7 +14,17 @@ class PaymentController extends Controller
 {
     public function index(Request $request)
     {
-        $query = OwnerPayment::with('tenant')->orderByDesc('payment_date');
+        $query = OwnerPayment::on('pgsql')->with('tenant')->orderByDesc('payment_date');
+
+        // Exclude payments that are actually messaging credit purchases
+        // (some were incorrectly saved as OwnerPayment due to the old type bug)
+        $msgRefs = \App\Models\MessagingCreditPayment::on('pgsql')
+            ->whereNotNull('paystack_reference')
+            ->pluck('paystack_reference')
+            ->toArray();
+        if (!empty($msgRefs)) {
+            $query->whereNotIn('paystack_reference', $msgRefs);
+        }
 
         if ($request->filled('tenant_id')) {
             $query->where('tenant_id', $request->tenant_id);
