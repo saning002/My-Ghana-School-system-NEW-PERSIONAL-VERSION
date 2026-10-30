@@ -1582,10 +1582,108 @@ Route::get('/setup/clear-cache', function () {
     // Re-warm the view cache immediately
     try { \Illuminate\Support\Facades\Artisan::call('view:cache'); $results[] = '✅ View cache re-warmed'; } catch (\Throwable $e) { $results[] = '⚠️ view:cache — ' . $e->getMessage(); }
 
+    // ── Auto-recover missed payments ──────────────────────────────────
+    $results[] = '';
+    $results[] = '── Payment Recovery ──';
+    try {
+        $unrecorded = \App\Models\PaystackTransaction::on('pgsql')
+            ->where('status', 'success')
+            ->whereNull('owner_payment_id')
+            ->whereIn('type', ['subscription', 'messaging_credits'])
+            ->get();
+
+        $results[] = "Found {$unrecorded->count()} unrecorded successful transactions.";
+
+        foreach ($unrecorded as $tx) {
+            try {
+                if ($tx->type === 'subscription') {
+                    $existing = \App\Models\OwnerPayment::on('pgsql')
+                        ->where('paystack_reference', $tx->reference)->first();
+                    if ($existing) {
+                        $tx->update(['owner_payment_id' => $existing->id]);
+                        $results[] = "  [SUB] Linked existing payment for ref {$tx->reference}";
+                        continue;
+                    }
+
+                    $payment = \App\Models\OwnerPayment::on('pgsql')->create([
+                        'tenant_id'          => $tx->tenant_id,
+                        'receipt_number'     => \App\Models\OwnerPayment::generateReceiptNumber(),
+                        'amount'             => $tx->amount,
+                        'currency'           => 'GHS',
+                        'payment_date'       => $tx->paid_at?->toDateString() ?? now()->toDateString(),
+                        'payment_method'     => 'paystack',
+                        'reference'          => $tx->reference,
+                        'description'        => $tx->description,
+                        'months_paid'        => $tx->months_paid ?? 1,
+                        'paystack_reference' => $tx->reference,
+                        'paystack_status'    => 'success',
+                        'paid_online'        => true,
+                    ]);
+
+                    $tenant = \App\Models\Tenant::on('pgsql')->find($tx->tenant_id);
+                    if ($tenant) {
+                        $base = ($tenant->subscription_ends_at && $tenant->subscription_ends_at->isFuture())
+                            ? $tenant->subscription_ends_at : now();
+                        $tenant->update([
+                            'subscription_ends_at' => $base->addMonths($tx->months_paid ?? 1),
+                            'status' => 'active',
+                        ]);
+                    }
+
+                    $tx->update(['owner_payment_id' => $payment->id]);
+                    $results[] = "  [SUB] Created payment #{$payment->receipt_number} — GHS {$tx->amount}";
+
+                } elseif ($tx->type === 'messaging_credits') {
+                    $existing = \App\Models\MessagingCreditPayment::on('pgsql')
+                        ->where('paystack_reference', $tx->reference)->first();
+                    if ($existing) {
+                        $results[] = "  [MSG] Already exists for ref {$tx->reference}";
+                        continue;
+                    }
+
+                    $metadata = json_decode($tx->metadata ?? '{}', true) ?? [];
+                    $package = null;
+                    if (!empty($metadata['package_id'])) {
+                        $package = \App\Models\MessagingCreditPackage::find($metadata['package_id']);
+                    }
+                    if (!$package) {
+                        $package = \App\Models\MessagingCreditPackage::where('price', $tx->amount)->first();
+                    }
+
+                    if ($package) {
+                        $credits = \App\Models\MessagingCredit::forTenant($tx->tenant_id);
+                        $credits->addCredits($package->sms_credits, $package->whatsapp_credits);
+
+                        \App\Models\MessagingCreditPayment::on('pgsql')->create([
+                            'tenant_id'              => $tx->tenant_id,
+                            'package_id'             => $package->id,
+                            'receipt_number'         => \App\Models\MessagingCreditPayment::generateReceiptNumber(),
+                            'amount'                 => $tx->amount,
+                            'sms_credits_added'      => $package->sms_credits,
+                            'whatsapp_credits_added' => $package->whatsapp_credits,
+                            'payment_method'         => 'paystack',
+                            'paystack_reference'     => $tx->reference,
+                            'paystack_status'        => 'success',
+                            'status'                 => 'completed',
+                        ]);
+                        $results[] = "  [MSG] Created credit payment — {$package->name} — GHS {$tx->amount}";
+                    } else {
+                        $results[] = "  [MSG] SKIPPED (no package) — ref {$tx->reference} — GHS {$tx->amount}";
+                    }
+                }
+            } catch (\Throwable $e) {
+                $results[] = "  ERROR for ref {$tx->reference}: " . $e->getMessage();
+            }
+        }
+        $results[] = 'Payment recovery complete.';
+    } catch (\Throwable $e) {
+        $results[] = '⚠️ Payment recovery error: ' . $e->getMessage();
+    }
+
     return response(
         '<pre style="font-family:monospace;padding:20px;background:#0f172a;color:#94a3b8;min-height:100vh;">'
         . implode("\n", $results)
-        . "\n\n<span style='color:#4ade80;font-weight:bold;'>Done. Now visit the school website to confirm it renders correctly.</span>"
+        . "\n\n<span style='color:#4ade80;font-weight:bold;'>Done. Caches cleared + payments recovered. Visit /owner/payments to verify.</span>"
         . '</pre>'
     );
 })->middleware('web');
