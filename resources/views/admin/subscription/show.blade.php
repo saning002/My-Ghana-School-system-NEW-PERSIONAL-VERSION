@@ -324,16 +324,20 @@
         </div>
         <div>
             <h3>Payment History</h3>
-            <p>Your last 10 subscription payments</p>
+            <p>Your last 10 subscription and messaging credit payments</p>
         </div>
     </div>
 
-    @php
-        $payments = $tenant->payments()->orderByDesc('payment_date')->limit(10)->get();
-    @endphp
+    @if($subscriptionPayments->count() || $creditPayments->count())
 
-    @if($payments->count())
-    @foreach($payments as $p)
+    {{-- Subscription payments --}}
+    @if($subscriptionPayments->count())
+    <div style="padding:.75rem 1.5rem;background:#f8fafc;border-bottom:1px solid #f1f5f9;">
+        <span style="font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#94a3b8;">
+            <i class="fas fa-shield-alt me-1"></i> Subscription Payments
+        </span>
+    </div>
+    @foreach($subscriptionPayments as $p)
     <div class="pmt-row">
         <div>
             <div style="font-size:.875rem;font-weight:700;color:#1e293b;">
@@ -342,6 +346,9 @@
             <div style="font-size:.72rem;color:#94a3b8;margin-top:2px;">
                 <code style="background:#f1f5f9;padding:1px 6px;border-radius:4px;font-size:.65rem;">{{ $p->receipt_number }}</code>
                 &nbsp; {{ $p->payment_date->format('d M Y') }}
+                @if($p->paid_online ?? false)
+                <span style="background:#eff6ff;color:#2563eb;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:4px;margin-left:4px;">Online</span>
+                @endif
             </div>
         </div>
         <div style="display:flex;align-items:center;gap:.6rem;">
@@ -356,6 +363,47 @@
         </div>
     </div>
     @endforeach
+    @endif
+
+    {{-- Messaging credit payments --}}
+    @if($creditPayments->count())
+    <div style="padding:.75rem 1.5rem;background:#f8fafc;border-bottom:1px solid #f1f5f9;border-top:1px solid #f1f5f9;">
+        <span style="font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#94a3b8;">
+            <i class="fas fa-sms me-1"></i> Messaging Credit Payments
+        </span>
+    </div>
+    @foreach($creditPayments as $p)
+    <div class="pmt-row">
+        <div>
+            <div style="font-size:.875rem;font-weight:700;color:#1e293b;">
+                GHS {{ number_format($p->amount, 2) }}
+                <span style="font-size:.72rem;color:#3b82f6;font-weight:600;margin-left:6px;">
+                    +{{ number_format($p->sms_credits_added) }} SMS
+                </span>
+                <span style="font-size:.72rem;color:#16a34a;font-weight:600;margin-left:4px;">
+                    +{{ number_format($p->whatsapp_credits_added) }} WA
+                </span>
+            </div>
+            <div style="font-size:.72rem;color:#94a3b8;margin-top:2px;">
+                <code style="background:#f1f5f9;padding:1px 6px;border-radius:4px;font-size:.65rem;">{{ $p->receipt_number }}</code>
+                &nbsp; {{ $p->created_at->format('d M Y') }}
+                @if($p->payment_method === 'paystack')
+                <span style="background:#eff6ff;color:#2563eb;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:4px;margin-left:4px;">Online</span>
+                @endif
+            </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:.6rem;">
+            <span class="pmt-badge" style="background:#fef3c7;color:#d97706;">
+                {{ ucfirst(str_replace('_',' ', $p->payment_method)) }}
+            </span>
+            <span class="pmt-badge" style="background:{{ $p->status === 'completed' ? '#dcfce7' : '#fef2f2' }};color:{{ $p->status === 'completed' ? '#16a34a' : '#dc2626' }};">
+                {{ ucfirst($p->status) }}
+            </span>
+        </div>
+    </div>
+    @endforeach
+    @endif
+
     @else
     <div style="text-align:center;padding:2.5rem 1rem;color:#94a3b8;">
         <i class="fas fa-receipt" style="font-size:2rem;opacity:.3;display:block;margin-bottom:.75rem;"></i>
@@ -365,7 +413,7 @@
     @endif
 </div>
 
-@push('scripts')
+@push('scripts')@push('scripts')
 <script>
 function selectPkg(id, el) {
     document.querySelectorAll('.pkg-card').forEach(function(c) {

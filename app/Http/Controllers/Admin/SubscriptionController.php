@@ -27,6 +27,20 @@ class SubscriptionController extends Controller
 
         $tenant->load('plan');
 
+        // Load payments from CENTRAL DB (pgsql) — not tenant DB
+        // OwnerPayment and MessagingCreditPayment always use pgsql connection
+        $subscriptionPayments = \App\Models\OwnerPayment::on('pgsql')
+            ->where('tenant_id', $tenant->id)
+            ->orderByDesc('payment_date')
+            ->limit(10)
+            ->get();
+
+        $creditPayments = \App\Models\MessagingCreditPayment::on('pgsql')
+            ->where('tenant_id', $tenant->id)
+            ->orderByDesc('created_at')
+            ->limit(10)
+            ->get();
+
         // Get messaging credits from central DB
         // NOTE: Do NOT use ::on('pgsql') here — forTenant() is a custom static method
         // that returns a Builder via Model::__callStatic, and calling it on a Builder
@@ -47,7 +61,7 @@ class SubscriptionController extends Controller
             \Log::error('Failed to load messaging packages: ' . $e->getMessage());
         }
 
-        return view('admin.subscription.show', compact('tenant', 'msgCredits', 'msgPackages'));
+        return view('admin.subscription.show', compact('tenant', 'msgCredits', 'msgPackages', 'subscriptionPayments', 'creditPayments'));
     }
 
     /**

@@ -6,11 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class OwnerPayment extends Model
 {
+    // Always query the central DB — never the tenant DB
+    protected $connection = 'pgsql';
+
     protected $fillable = [
         'tenant_id', 'receipt_number', 'amount', 'currency',
         'payment_date', 'payment_method', 'reference', 'description',
         'months_paid', 'notes', 'receipt_path',
         'receipt_emailed', 'receipt_emailed_at',
+        'paystack_reference', 'paystack_status', 'paystack_channel', 'paid_online',
     ];
 
     protected $casts = [
