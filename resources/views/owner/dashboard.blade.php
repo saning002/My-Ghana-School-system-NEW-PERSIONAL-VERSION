@@ -170,35 +170,67 @@
                 <a href="{{ route('owner.payments.index') }}" class="btn btn-sm btn-outline-secondary" style="font-size:0.75rem;">View All</a>
             </div>
             <div class="card-body p-0">
-                {{-- Subscription payments --}}
-                @forelse($recentPayments as $p)
-                <div class="d-flex align-items-center justify-content-between px-3 py-2 border-bottom">
-                    <div>
-                        <div style="font-weight:600;font-size:0.8rem;">{{ $p->tenant->name ?? '—' }}</div>
-                        <small class="text-muted">{{ $p->payment_date->format('d M Y') }} · {{ $p->receipt_number }}</small>
-                        <span class="badge ms-1" style="background:#eff6ff;color:#3b82f6;font-size:0.65rem;">Subscription</span>
-                    </div>
-                    <span style="font-weight:700;color:#16a34a;font-size:0.875rem;">GHS {{ number_format($p->amount, 2) }}</span>
-                </div>
-                @empty
-                <div class="text-center text-muted py-2" style="font-size:0.8rem;">No subscription payments yet</div>
-                @endforelse
+            @php
+                // Merge both payment types into one chronological list (most recent first)
+                $allRecent = collect();
 
-                {{-- Messaging credit payments --}}
-                @foreach($recentMessagingPayments as $mp)
-                <div class="d-flex align-items-center justify-content-between px-3 py-2 border-bottom">
-                    <div>
-                        <div style="font-weight:600;font-size:0.8rem;">{{ $mp->tenant->name ?? '—' }}</div>
-                        <small class="text-muted">{{ $mp->created_at->format('d M Y') }} · {{ $mp->receipt_number }}</small>
-                        <span class="badge ms-1" style="background:#fef3c7;color:#d97706;font-size:0.65rem;">Messaging</span>
-                    </div>
-                    <span style="font-weight:700;color:#16a34a;font-size:0.875rem;">GHS {{ number_format($mp->amount, 2) }}</span>
-                </div>
-                @endforeach
+                foreach ($recentPayments as $p) {
+                    $allRecent->push([
+                        'school'      => $p->tenant->name ?? '—',
+                        'date'        => $p->payment_date,
+                        'amount'      => $p->amount,
+                        'receipt'     => $p->receipt_number,
+                        'type'        => 'subscription',
+                        'type_label'  => 'Subscription',
+                        'type_color'  => '#eff6ff',
+                        'type_text'   => '#2563eb',
+                        'method'      => $p->payment_method,
+                    ]);
+                }
 
-                @if($recentPayments->isEmpty() && $recentMessagingPayments->isEmpty())
-                <div class="text-center text-muted py-4" style="font-size:0.875rem;">No payments yet</div>
-                @endif
+                foreach ($recentMessagingPayments as $mp) {
+                    $allRecent->push([
+                        'school'      => $mp->tenant->name ?? '—',
+                        'date'        => $mp->created_at,
+                        'amount'      => $mp->amount,
+                        'receipt'     => $mp->receipt_number,
+                        'type'        => 'messaging',
+                        'type_label'  => 'Messaging',
+                        'type_color'  => '#fef3c7',
+                        'type_text'   => '#d97706',
+                        'method'      => $mp->payment_method ?? 'paystack',
+                    ]);
+                }
+
+                // Sort by date descending, take 10
+                $allRecent = $allRecent->sortByDesc('date')->take(10)->values();
+            @endphp
+
+            @forelse($allRecent as $p)
+            <div class="d-flex align-items-center justify-content-between px-3 py-2 border-bottom">
+                <div style="min-width:0;flex:1;">
+                    <div style="font-weight:600;font-size:0.82rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                        {{ $p['school'] }}
+                    </div>
+                    <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin-top:2px;">
+                        <small class="text-muted" style="font-size:0.72rem;">
+                            {{ $p['date'] ? $p['date']->format('d M Y') : '—' }}
+                        </small>
+                        <span class="badge" style="background:{{ $p['type_color'] }};color:{{ $p['type_text'] }};font-size:0.62rem;">
+                            {{ $p['type_label'] }}
+                        </span>
+                        <span style="font-size:0.65rem;color:#94a3b8;text-transform:capitalize;">
+                            {{ str_replace('_',' ', $p['method']) }}
+                        </span>
+                    </div>
+                </div>
+                <span style="font-weight:800;color:#16a34a;font-size:0.9rem;white-space:nowrap;margin-left:8px;">
+                    GHS {{ number_format($p['amount'], 2) }}
+                </span>
+            </div>
+            @empty
+            <div class="text-center text-muted py-4" style="font-size:0.875rem;">No payments yet</div>
+            @endforelse
             </div>
         </div>
     </div>

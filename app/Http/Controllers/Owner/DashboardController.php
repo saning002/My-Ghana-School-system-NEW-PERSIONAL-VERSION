@@ -21,10 +21,11 @@ class DashboardController extends Controller
             'expired'   => Tenant::where('status', 'expired')->count(),
         ];
 
-        // Revenue this month — subscriptions + messaging credits
+        // Revenue this month — subscriptions only (exclude messaging credit records) + messaging credits
         $revenueThisMonth =
             OwnerPayment::whereMonth('payment_date', now()->month)
                 ->whereYear('payment_date', now()->year)
+                ->where(function ($q) { $q->whereNull('description')->orWhere('description', 'not like', 'Messaging Credits%'); })
                 ->sum('amount')
             +
             MessagingCreditPayment::where('status', 'completed')
@@ -32,18 +33,22 @@ class DashboardController extends Controller
                 ->whereYear('created_at', now()->year)
                 ->sum('amount');
 
-        // Revenue all time — subscriptions + messaging credits
+        // Revenue all time — subscriptions (clean) + messaging credits
         $revenueTotal =
-            OwnerPayment::sum('amount')
+            OwnerPayment::where(function ($q) { $q->whereNull('description')->orWhere('description', 'not like', 'Messaging Credits%'); })
+                ->sum('amount')
             +
             MessagingCreditPayment::where('status', 'completed')->sum('amount');
 
         // Revenue split for info cards
-        $subscriptionRevenueTotal = OwnerPayment::sum('amount');
-        $messagingRevenueTotal    = MessagingCreditPayment::where('status', 'completed')->sum('amount');
+        $subscriptionRevenueTotal = OwnerPayment::where(function ($q) {
+            $q->whereNull('description')->orWhere('description', 'not like', 'Messaging Credits%');
+        })->sum('amount');
+        $messagingRevenueTotal = MessagingCreditPayment::where('status', 'completed')->sum('amount');
 
-        // Recent payments — merge subscription + messaging, show last 8
+        // Recent subscription payments (clean — no messaging credit duplicates)
         $recentPayments = OwnerPayment::with('tenant')
+            ->where(function ($q) { $q->whereNull('description')->orWhere('description', 'not like', 'Messaging Credits%'); })
             ->orderByDesc('payment_date')
             ->limit(8)
             ->get();
@@ -86,12 +91,13 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
-        // Monthly revenue for chart (last 12 months) — combined
+        // Monthly revenue for chart (last 12 months) — combined, no duplicates
         $monthlyRevenue = collect(range(11, 0))->map(function ($monthsAgo) {
             $date = now()->subMonths($monthsAgo);
 
             $subscriptions = OwnerPayment::whereMonth('payment_date', $date->month)
                 ->whereYear('payment_date', $date->year)
+                ->where(function ($q) { $q->whereNull('description')->orWhere('description', 'not like', 'Messaging Credits%'); })
                 ->sum('amount');
 
             $messaging = MessagingCreditPayment::where('status', 'completed')
