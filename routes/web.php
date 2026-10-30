@@ -1738,7 +1738,8 @@ Route::get('/setup/recover-payments', function () {
                 }
 
                 $tx->update(['owner_payment_id' => $payment->id]);
-                $results[] = "  [SUB] Created payment #{$payment->receipt_number} for {$tenant->name ?? $tx->tenant_id} — GHS {$tx->amount}";
+                $__tn = $tenant ? $tenant->name : $tx->tenant_id;
+                $results[] = "  [SUB] Created payment #{$payment->receipt_number} for {$__tn} — GHS {$tx->amount}";
 
             } elseif ($tx->type === 'messaging_credits') {
                 // Check if MessagingCreditPayment already exists
@@ -1775,7 +1776,8 @@ Route::get('/setup/recover-payments', function () {
                         'status'                 => 'completed',
                     ]);
                     $tenant = $tx->tenant;
-                    $results[] = "  [MSG] Created credit payment for {$tenant->name ?? $tx->tenant_id} — {$package->name} — GHS {$tx->amount}";
+                    $__tn2 = $tenant ? $tenant->name : $tx->tenant_id;
+                    $results[] = "  [MSG] Created credit payment for {$__tn2} — {$package->name} — GHS {$tx->amount}";
                 } else {
                     $results[] = "  [MSG] SKIPPED (no package found) — ref {$tx->reference} — GHS {$tx->amount}";
                 }
