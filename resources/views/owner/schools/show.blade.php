@@ -70,8 +70,9 @@
 {{-- Stats row --}}
 @php
     // Use variables passed from controller — no relationship calls in the view
-    $paymentsCollection = $paymentsCollection ?? collect();
-    $backupsCollection  = $backupsCollection  ?? collect();
+    $paymentsCollection       = $paymentsCollection       ?? collect();
+    $creditPaymentsCollection = $creditPaymentsCollection ?? collect();
+    $backupsCollection        = $backupsCollection        ?? collect();
 @endphp
 <div class="row g-3 mb-4">
     <div class="col-6 col-md-3">
@@ -82,7 +83,7 @@
     </div>
     <div class="col-6 col-md-3">
         <div class="stat-card text-center">
-            <div class="stat-value">{{ $paymentsCollection->count() }}</div>
+            <div class="stat-value">{{ $paymentsCollection->count() + $creditPaymentsCollection->count() }}</div>
             <div class="stat-label">Payments</div>
         </div>
     </div>
@@ -411,10 +412,15 @@
                 <i class="fas fa-plus me-1"></i> Record Payment
             </a>
         </div>
-        <div class="owner-table">
+
+        {{-- Subscription Payments --}}
+        <p style="font-size:0.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;margin-bottom:.5rem;">
+            <i class="fas fa-shield-alt me-1"></i> Subscription Payments
+        </p>
+        <div class="owner-table mb-3">
             <table class="table">
                 <thead>
-                    <tr><th>Receipt #</th><th>Date</th><th>Amount</th><th>Method</th><th>Description</th><th>Actions</th></tr>
+                    <tr><th>Receipt #</th><th>Date</th><th>Amount</th><th>Method</th><th>Months</th><th>Actions</th></tr>
                 </thead>
                 <tbody>
                 @forelse($paymentsCollection as $p)
@@ -422,8 +428,8 @@
                     <td><code style="font-size:0.8rem;">{{ $p->receipt_number }}</code></td>
                     <td>{{ $p->payment_date ? $p->payment_date->format('d M Y') : '—' }}</td>
                     <td><strong style="color:#16a34a;">GHS {{ number_format($p->amount, 2) }}</strong></td>
-                    <td>{{ ucfirst(str_replace('_', ' ', $p->payment_method)) }}</td>
-                    <td>{{ $p->description ?? '—' }}</td>
+                    <td>{{ ucfirst(str_replace('_',' ', $p->payment_method)) }}</td>
+                    <td>{{ $p->months_paid ?? '—' }}</td>
                     <td>
                         <a href="{{ route('owner.payments.receipt', $p) }}" class="btn btn-sm btn-outline-secondary" title="Receipt">
                             <i class="fas fa-file-pdf"></i>
@@ -431,7 +437,39 @@
                     </td>
                 </tr>
                 @empty
-                <tr><td colspan="6" class="text-center text-muted py-3">No payments recorded yet</td></tr>
+                <tr><td colspan="6" class="text-center text-muted py-3">No subscription payments yet</td></tr>
+                @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        {{-- Messaging Credit Payments --}}
+        <p style="font-size:0.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;margin-bottom:.5rem;">
+            <i class="fas fa-sms me-1"></i> Messaging Credit Payments
+        </p>
+        <div class="owner-table">
+            <table class="table">
+                <thead>
+                    <tr><th>Receipt #</th><th>Date</th><th>Amount</th><th>SMS</th><th>WhatsApp</th><th>Method</th><th>Status</th></tr>
+                </thead>
+                <tbody>
+                @php $creditPaymentsCollection = $creditPaymentsCollection ?? collect(); @endphp
+                @forelse($creditPaymentsCollection as $p)
+                <tr>
+                    <td><code style="font-size:0.8rem;">{{ $p->receipt_number }}</code></td>
+                    <td>{{ $p->created_at->format('d M Y') }}</td>
+                    <td><strong style="color:#16a34a;">GHS {{ number_format($p->amount, 2) }}</strong></td>
+                    <td><span style="color:#2563eb;font-weight:700;">+{{ number_format($p->sms_credits_added) }}</span></td>
+                    <td><span style="color:#16a34a;font-weight:700;">+{{ number_format($p->whatsapp_credits_added) }}</span></td>
+                    <td>{{ ucfirst(str_replace('_',' ', $p->payment_method)) }}</td>
+                    <td>
+                        <span class="badge {{ $p->status === 'completed' ? 'bg-success' : 'bg-warning text-dark' }}" style="font-size:0.7rem;">
+                            {{ ucfirst($p->status) }}
+                        </span>
+                    </td>
+                </tr>
+                @empty
+                <tr><td colspan="7" class="text-center text-muted py-3">No messaging credit payments yet</td></tr>
                 @endforelse
                 </tbody>
             </table>
@@ -469,7 +507,12 @@
                     <td>
                         <div class="d-flex gap-1 flex-wrap">
                             @if($b->status === 'completed')
-                                <a href="{{ route('owner.backups.download', $b) }}" class="btn btn-sm btn-outline-primary" title="Download"><i class="fas fa-download"></i></a>
+                                <a href="{{ route('owner.backups.download', $b) }}" class="btn btn-sm btn-outline-primary" title="Download SQL">
+                                    <i class="fas fa-download"></i> SQL
+                                </a>
+                                <a href="{{ route('owner.backups.csv', $b) }}" class="btn btn-sm btn-outline-success" title="Export CSV/Excel ZIP">
+                                    <i class="fas fa-file-excel"></i> CSV
+                                </a>
                                 <form method="POST" action="{{ route('owner.backups.restore', $b) }}" onsubmit="return confirm('Restore? This will OVERWRITE all current data.')">
                                     @csrf
                                     <button class="btn btn-sm btn-outline-warning" title="Restore"><i class="fas fa-undo"></i></button>

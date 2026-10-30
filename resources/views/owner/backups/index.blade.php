@@ -39,9 +39,12 @@
                 @endforeach
             </select>
             <button type="button" class="btn btn-sm btn-owner-primary" onclick="triggerBackup()">
-                <i class="fas fa-database me-1"></i> Backup Now
+                <i class="fas fa-database me-1"></i> Backup Now (SQL)
             </button>
-            <small class="text-muted">Runs mysqldump, compresses to .sql.gz and saves to local storage.</small>
+            <button type="button" class="btn btn-sm btn-outline-success" onclick="triggerCsvExport()">
+                <i class="fas fa-file-excel me-1"></i> Export CSV
+            </button>
+            <small class="text-muted">SQL backup: full PostgreSQL dump (gzipped). CSV: ZIP of all tables as Excel-ready spreadsheets.</small>
         </form>
     </div>
 </div>
@@ -154,7 +157,23 @@
 function triggerBackup() {
     const tenantId = document.getElementById('quickBackupSchool').value;
     if (!tenantId) { alert('Please select a school first.'); return; }
-    if (!confirm('Start backup now for selected school?')) return;
+    if (!confirm('Start SQL backup now for selected school?')) return;
+
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/owner/backups/' + tenantId;
+    form.innerHTML = '<input type="hidden" name="_token" value="{{ csrf_token() }}">';
+    document.body.appendChild(form);
+    form.submit();
+}
+
+function triggerCsvExport() {
+    const tenantId = document.getElementById('quickBackupSchool').value;
+    if (!tenantId) { alert('Please select a school first.'); return; }
+
+    // CSV export requires an existing completed backup — first create one, then download CSV
+    // The CSV download is available on any completed backup row directly
+    if (!confirm('To export CSV, first run a backup then click the green CSV button on the backup row. Or select a school and click Backup Now first.\n\nContinue to run backup now?')) return;
 
     const form = document.createElement('form');
     form.method = 'POST';

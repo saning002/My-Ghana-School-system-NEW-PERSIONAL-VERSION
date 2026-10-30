@@ -99,18 +99,52 @@ class TenantController extends Controller
         // Load plan safely
         try { $tenant->load('plan'); } catch (\Throwable $e) {}
 
-        // Load payments safely
+        // Load subscription payments from central DB — exclude messaging credit payments
+        $paymentsCollection = collect();
         try {
-            $tenant->load(['payments' => fn($q) => $q->orderByDesc('payment_date')->limit(10)]);
+            $paymentsCollection = \App\Models\OwnerPayment::on('pgsql')
+                ->where('tenant_id', $tenant->id)
+                ->where(function ($q) {
+                    $q->whereNull('description')
+                      ->orWhere('description', 'not like', 'Messaging Credits%');
+                })
+                ->orderByDesc('payment_date')
+                ->limit(10)
+                ->get();
+        } catch (\Throwable $e) {}
+
+        // Load messaging credit payments separately
+        $creditPaymentsCollection = collect();
+        try {
+            $creditPaymentsCollection = \App\Models\MessagingCreditPayment::on('pgsql')
+                ->where('tenant_id', $tenant->id)
+                ->where('status', 'completed')
+                ->orderByDesc('created_at')
+                ->limit(10)
+                ->get();
         } catch (\Throwable $e) {}
 
         // Load backups safely
+        $backupsCollection = collect();
         try {
-            $tenant->load(['backups' => fn($q) => $q->orderByDesc('created_at')->limit(5)]);
+            $backupsCollection = \App\Models\Backup::on('pgsql')
+                ->where('tenant_id', $tenant->id)
+                ->orderByDesc('created_at')
+                ->limit(5)
+                ->get();
         } catch (\Throwable $e) {}
 
-        // Get features grouped
-        $features = collect();
+        // Total paid (subscription only, not messaging credits)
+        $totalPaid = 0;
+        try {
+            $totalPaid = DB::table('owner_payments')
+                ->where('tenant_id', (int) $tenant->id)
+                ->where(function ($q) {
+                    $q->whereNull('description')
+                      ->orWhere('description', 'not like', 'Messaging Credits%');
+                })
+                ->sum('amount');
+        } catch (\Throwable $e) {}
         try {
             $rawFeatures = Feature::orderBy('group')->orderBy('sort_order')->get();
             $features    = $rawFeatures->groupBy('group');
@@ -142,13 +176,10 @@ class TenantController extends Controller
                 ->sum('amount');
         } catch (\Throwable $e) {}
 
-        // Collections for view
-        $paymentsCollection = $tenant->relationLoaded('payments') ? $tenant->payments : collect();
-        $backupsCollection  = $tenant->relationLoaded('backups')  ? $tenant->backups  : collect();
-
+        // Collections for view — already loaded above
         return view('owner.schools.show', compact(
             'tenant', 'features', 'planFeatureIds', 'tenantOverrides',
-            'totalPaid', 'paymentsCollection', 'backupsCollection'
+            'totalPaid', 'paymentsCollection', 'creditPaymentsCollection', 'backupsCollection'
         ));
     }
 
