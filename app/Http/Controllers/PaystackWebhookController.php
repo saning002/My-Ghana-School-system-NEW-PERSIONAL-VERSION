@@ -94,6 +94,8 @@ class PaystackWebhookController extends Controller
         // Route to the correct post-payment action
         if ($transaction->type === 'subscription') {
             $this->processSubscriptionPayment($transaction, $amountGhs, $channel, $data);
+        } elseif ($transaction->type === 'messaging_credits') {
+            $this->processMessagingCreditsPayment($transaction, $amountGhs, $channel, $data);
         } elseif ($transaction->type === 'school_fee') {
             $this->processFeePayment($transaction, $amountGhs, $channel, $data);
         }
@@ -165,6 +167,64 @@ class PaystackWebhookController extends Controller
 
         } catch (\Throwable $e) {
             Log::error('Webhook processSubscriptionPayment failed: ' . $e->getMessage());
+        }
+    }
+
+    private function processMessagingCreditsPayment(
+        PaystackTransaction $tx,
+        float $amount,
+        ?string $channel,
+        array $data
+    ): void {
+        try {
+            // Skip if already processed
+            if ($tx->status === 'success') return;
+
+            $metadata = [];
+            try { $metadata = json_decode($tx->metadata ?? '{}', true) ?? []; } catch (\Throwable $e) {}
+
+            // Find the package — try stored metadata first, then price match
+            $package = null;
+            if (!empty($metadata['package_id'])) {
+                $package = \App\Models\MessagingCreditPackage::find((int)$metadata['package_id']);
+            }
+            if (!$package && $tx->amount) {
+                $package = \App\Models\MessagingCreditPackage::where('price', $tx->amount)
+                    ->where('is_active', true)
+                    ->orderBy('sort_order')->first();
+            }
+
+            if ($package && $tx->tenant_id) {
+                $credits = \App\Models\MessagingCredit::forTenant($tx->tenant_id);
+                $credits->addCredits($package->sms_credits, $package->whatsapp_credits);
+
+                \App\Models\MessagingCreditPayment::create([
+                    'tenant_id'              => $tx->tenant_id,
+                    'package_id'             => $package->id,
+                    'receipt_number'         => \App\Models\MessagingCreditPayment::generateReceiptNumber(),
+                    'amount'                 => $amount,
+                    'sms_credits_added'      => $package->sms_credits,
+                    'whatsapp_credits_added' => $package->whatsapp_credits,
+                    'payment_method'         => 'paystack',
+                    'paystack_reference'     => $tx->reference,
+                    'paystack_status'        => 'success',
+                    'status'                 => 'completed',
+                ]);
+
+                $tx->update(['status' => 'success', 'paid_at' => now()]);
+
+                AuditLog::record(
+                    'messaging.credits_webhook',
+                    "Webhook: {$package->name} credits applied for tenant ID {$tx->tenant_id}",
+                    $tx->tenant_id
+                );
+            } else {
+                // Package not found — mark paid but flag for manual review
+                $tx->update(['status' => 'success', 'paid_at' => now()]);
+                Log::warning("Webhook messaging_credits: package not found for tx {$tx->reference}, amount {$amount}");
+            }
+        } catch (\Throwable $e) {
+            Log::error('Webhook processMessagingCreditsPayment failed: ' . $e->getMessage());
         }
     }
 

@@ -129,7 +129,7 @@ class MessagingCreditController extends Controller
         $reference = PaystackService::generateReference('MSG');
 
         PaystackTransaction::create([
-            'type'        => 'subscription',
+            'type'        => 'messaging_credits',
             'tenant_id'   => $tenant->id,
             'payer_email' => $validated['payer_email'],
             'payer_name'  => $validated['payer_name'] ?? $tenant->admin_name,

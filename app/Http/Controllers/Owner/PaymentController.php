@@ -30,10 +30,33 @@ class PaymentController extends Controller
         }
 
         $payments    = $query->paginate(25)->withQueryString();
-        $totalAmount = $query->sum('amount');
-        $schools     = Tenant::orderBy('name')->get(['id', 'name']);
+        $totalAmount = OwnerPayment::when($request->filled('tenant_id'), fn($q) => $q->where('tenant_id', $request->tenant_id))
+                                   ->when($request->filled('from'), fn($q) => $q->whereDate('payment_date', '>=', $request->from))
+                                   ->when($request->filled('to'),   fn($q) => $q->whereDate('payment_date', '<=', $request->to))
+                                   ->sum('amount');
 
-        return view('owner.payments.index', compact('payments', 'totalAmount', 'schools'));
+        // Messaging credit payments (separate table) — shown alongside subscription payments
+        $msgQuery = \App\Models\MessagingCreditPayment::with('tenant')
+            ->where('status', 'completed')
+            ->orderByDesc('created_at');
+
+        if ($request->filled('tenant_id')) {
+            $msgQuery->where('tenant_id', $request->tenant_id);
+        }
+        if ($request->filled('from')) {
+            $msgQuery->whereDate('created_at', '>=', $request->from);
+        }
+        if ($request->filled('to')) {
+            $msgQuery->whereDate('created_at', '<=', $request->to);
+        }
+
+        $msgPayments     = $msgQuery->get();
+        $msgTotalAmount  = $msgPayments->sum('amount');
+        $grandTotal      = $totalAmount + $msgTotalAmount;
+
+        $schools = Tenant::orderBy('name')->get(['id', 'name']);
+
+        return view('owner.payments.index', compact('payments', 'totalAmount', 'msgPayments', 'msgTotalAmount', 'grandTotal', 'schools'));
     }
 
     public function create(Request $request)

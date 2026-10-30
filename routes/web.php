@@ -1590,6 +1590,114 @@ Route::get('/setup/clear-cache', function () {
     );
 })->middleware('web');
 
+// ── Recover missed payments — re-process any paid transactions not yet recorded ─
+Route::get('/setup/recover-payments', function () {
+    $results = [];
+
+    // Find all 'success' transactions that don't have a corresponding payment record
+    $unrecorded = \App\Models\PaystackTransaction::where('status', 'success')
+        ->whereNull('owner_payment_id')
+        ->whereIn('type', ['subscription', 'messaging_credits'])
+        ->get();
+
+    $results[] = "Found {$unrecorded->count()} unrecorded successful transactions.";
+
+    foreach ($unrecorded as $tx) {
+        try {
+            if ($tx->type === 'subscription') {
+                // Check if an OwnerPayment already exists with this reference
+                $existing = \App\Models\OwnerPayment::where('paystack_reference', $tx->reference)->first();
+                if ($existing) {
+                    $tx->update(['owner_payment_id' => $existing->id]);
+                    $results[] = "  [SUB] Linked existing payment for ref {$tx->reference}";
+                    continue;
+                }
+
+                $payment = \App\Models\OwnerPayment::create([
+                    'tenant_id'          => $tx->tenant_id,
+                    'receipt_number'     => \App\Models\OwnerPayment::generateReceiptNumber(),
+                    'amount'             => $tx->amount,
+                    'currency'           => 'GHS',
+                    'payment_date'       => $tx->paid_at?->toDateString() ?? now()->toDateString(),
+                    'payment_method'     => 'paystack',
+                    'reference'          => $tx->reference,
+                    'description'        => $tx->description,
+                    'months_paid'        => $tx->months_paid ?? 1,
+                    'paystack_reference' => $tx->reference,
+                    'paystack_status'    => 'success',
+                    'paid_online'        => true,
+                ]);
+
+                // Extend subscription
+                $tenant = $tx->tenant;
+                if ($tenant) {
+                    $base = ($tenant->subscription_ends_at && $tenant->subscription_ends_at->isFuture())
+                        ? $tenant->subscription_ends_at : now();
+                    $tenant->update([
+                        'subscription_ends_at' => $base->addMonths($tx->months_paid ?? 1),
+                        'status' => 'active',
+                    ]);
+                }
+
+                $tx->update(['owner_payment_id' => $payment->id]);
+                $results[] = "  [SUB] Created payment #{$payment->receipt_number} for {$tenant->name ?? $tx->tenant_id} — GHS {$tx->amount}";
+
+            } elseif ($tx->type === 'messaging_credits') {
+                // Check if MessagingCreditPayment already exists
+                $existing = \App\Models\MessagingCreditPayment::where('paystack_reference', $tx->reference)->first();
+                if ($existing) {
+                    $results[] = "  [MSG] Already exists for ref {$tx->reference}";
+                    continue;
+                }
+
+                // Find package
+                $metadata = json_decode($tx->metadata ?? '{}', true) ?? [];
+                $package = null;
+                if (!empty($metadata['package_id'])) {
+                    $package = \App\Models\MessagingCreditPackage::find($metadata['package_id']);
+                }
+                if (!$package) {
+                    $package = \App\Models\MessagingCreditPackage::where('price', $tx->amount)->first();
+                }
+
+                if ($package) {
+                    $credits = \App\Models\MessagingCredit::forTenant($tx->tenant_id);
+                    $credits->addCredits($package->sms_credits, $package->whatsapp_credits);
+
+                    \App\Models\MessagingCreditPayment::create([
+                        'tenant_id'              => $tx->tenant_id,
+                        'package_id'             => $package->id,
+                        'receipt_number'         => \App\Models\MessagingCreditPayment::generateReceiptNumber(),
+                        'amount'                 => $tx->amount,
+                        'sms_credits_added'      => $package->sms_credits,
+                        'whatsapp_credits_added' => $package->whatsapp_credits,
+                        'payment_method'         => 'paystack',
+                        'paystack_reference'     => $tx->reference,
+                        'paystack_status'        => 'success',
+                        'status'                 => 'completed',
+                    ]);
+                    $tenant = $tx->tenant;
+                    $results[] = "  [MSG] Created credit payment for {$tenant->name ?? $tx->tenant_id} — {$package->name} — GHS {$tx->amount}";
+                } else {
+                    $results[] = "  [MSG] SKIPPED (no package found) — ref {$tx->reference} — GHS {$tx->amount}";
+                }
+            }
+        } catch (\Throwable $e) {
+            $results[] = "  ERROR for ref {$tx->reference}: " . $e->getMessage();
+        }
+    }
+
+    $results[] = '';
+    $results[] = 'Recovery complete.';
+
+    return response(
+        '<pre style="font-family:monospace;padding:20px;background:#0f172a;color:#94a3b8;min-height:100vh;">'
+        . implode("\n", $results)
+        . "\n\n<span style='color:#4ade80;font-weight:bold;'>Done. Visit /owner/payments to verify all payments are showing.</span>"
+        . '</pre>'
+    );
+})->middleware('web');
+
 // ── Setup: run central DB migration + seed module features ───────────────
 // Hit: /setup/run-migrations-and-seed
 // This adds modules_json + theme_json to tenants table and seeds all 18 modules.
