@@ -27,20 +27,14 @@ class SubscriptionController extends Controller
 
         $tenant->load('plan');
 
-        // Load payments from CENTRAL DB (pgsql) — not tenant DB
-        // OwnerPayment and MessagingCreditPayment always use pgsql connection
+        // Load subscription payments from central DB
+        // Exclude records that are actually messaging credit purchases
+        // (identified by description starting with "Messaging Credits")
         $subscriptionPayments = \App\Models\OwnerPayment::on('pgsql')
             ->where('tenant_id', $tenant->id)
             ->where(function ($q) {
-                // Exclude any payment that also exists in messaging_credit_payments
-                // (these were incorrectly saved as subscription payments due to the old type bug)
-                $msgRefs = \App\Models\MessagingCreditPayment::on('pgsql')
-                    ->whereNotNull('paystack_reference')
-                    ->pluck('paystack_reference')
-                    ->toArray();
-                if (!empty($msgRefs)) {
-                    $q->whereNotIn('paystack_reference', $msgRefs);
-                }
+                $q->whereNull('description')
+                  ->orWhere('description', 'not like', 'Messaging Credits%');
             })
             ->orderByDesc('payment_date')
             ->limit(10)

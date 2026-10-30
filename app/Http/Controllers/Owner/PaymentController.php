@@ -16,15 +16,12 @@ class PaymentController extends Controller
     {
         $query = OwnerPayment::on('pgsql')->with('tenant')->orderByDesc('payment_date');
 
-        // Exclude payments that are actually messaging credit purchases
-        // (some were incorrectly saved as OwnerPayment due to the old type bug)
-        $msgRefs = \App\Models\MessagingCreditPayment::on('pgsql')
-            ->whereNotNull('paystack_reference')
-            ->pluck('paystack_reference')
-            ->toArray();
-        if (!empty($msgRefs)) {
-            $query->whereNotIn('paystack_reference', $msgRefs);
-        }
+        // Exclude records that are actually messaging credit purchases
+        // (identified by description starting with "Messaging Credits")
+        $query->where(function ($q) {
+            $q->whereNull('description')
+              ->orWhere('description', 'not like', 'Messaging Credits%');
+        });
 
         if ($request->filled('tenant_id')) {
             $query->where('tenant_id', $request->tenant_id);
@@ -40,7 +37,9 @@ class PaymentController extends Controller
         }
 
         $payments    = $query->paginate(25)->withQueryString();
-        $totalAmount = OwnerPayment::when($request->filled('tenant_id'), fn($q) => $q->where('tenant_id', $request->tenant_id))
+        $totalAmount = OwnerPayment::on('pgsql')
+                                   ->where(function ($q) { $q->whereNull('description')->orWhere('description', 'not like', 'Messaging Credits%'); })
+                                   ->when($request->filled('tenant_id'), fn($q) => $q->where('tenant_id', $request->tenant_id))
                                    ->when($request->filled('from'), fn($q) => $q->whereDate('payment_date', '>=', $request->from))
                                    ->when($request->filled('to'),   fn($q) => $q->whereDate('payment_date', '<=', $request->to))
                                    ->sum('amount');
