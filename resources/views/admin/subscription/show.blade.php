@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@extends('layouts.app')
 @section('title', 'Subscription & Credits')
 @section('subtitle', 'Manage your platform access and messaging credits')
 
@@ -413,7 +414,7 @@
     @endif
 </div>
 
-@push('scripts')@push('scripts')
+@push('scripts')
 <script>
 function selectPkg(id, el) {
     document.querySelectorAll('.pkg-card').forEach(function(c) {
