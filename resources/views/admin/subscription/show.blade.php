@@ -1,5 +1,4 @@
 @extends('layouts.app')
-@extends('layouts.app')
 @section('title', 'Subscription & Credits')
 @section('subtitle', 'Manage your platform access and messaging credits')
 
