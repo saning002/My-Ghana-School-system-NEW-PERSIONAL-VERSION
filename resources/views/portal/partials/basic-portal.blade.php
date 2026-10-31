@@ -365,6 +365,12 @@
   </div>
   @else
   @foreach($attendanceSummary as $summary)
+    @php
+      $pct = $summary['percentage'] ?? 0;
+      $attBarColor = $pct >= 75 ? '#16a34a' : ($pct >= 50 ? '#f59e0b' : '#dc2626');
+      $attPillBg   = $pct >= 75 ? '#dcfce7' : ($pct >= 50 ? '#fef3c7' : '#fee2e2');
+      $attPillText  = $pct >= 75 ? '#16a34a' : ($pct >= 50 ? '#92400e' : '#dc2626');
+    @endphp
     <div class="bp-card">
       <div class="bp-card-title">
         <i class="fas fa-book" style="color:{{ $mc['primary'] }};"></i>
@@ -374,11 +380,11 @@
       <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
         <div style="flex:1;min-width:100px;">
           <div class="bp-progress-bar" style="height:10px;">
-            <div class="bp-progress-fill" style="width:{{ $summary['percentage'] }}%;background:{{ $summary['percentage'] >= 75 ? '#16a34a' : ($summary['percentage'] >= 50 ? '#f59e0b' : '#dc2626') }};"></div>
+            <div class="bp-progress-fill" style="width:{{ $pct }}%;background:{{ $attBarColor }};"></div>
           </div>
         </div>
-        <span class="bp-score-pill" style="background:{{ $summary['percentage'] >= 75 ? '#dcfce7' : ($summary['percentage'] >= 50 ? '#fef3c7' : '#fee2e2' }};color:{{ $summary['percentage'] >= 75 ? '#16a34a' : ($summary['percentage'] >= 50 ? '#92400e' : '#dc2626') }};">
-          {{ $summary['percentage'] }}%
+        <span class="bp-score-pill" style="background:{{ $attPillBg }};color:{{ $attPillText }};">
+          {{ $pct }}%
         </span>
       </div>
       <div style="display:flex;gap:16px;margin-top:10px;">
