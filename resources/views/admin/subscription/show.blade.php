@@ -239,9 +239,23 @@
 
         {{-- Credit balance tiles --}}
         <div style="display:flex;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap;">
+            @php
+                // For branch admin — show their branch pool; for super admin — show shared pool
+                $displayCredits = ($currentBranchId ?? null) && $branchMsgCredits
+                    ? $branchMsgCredits
+                    : $msgCredits;
+                $smsQty  = ($displayCredits ?? null)?->sms_credits      ?? 0;
+                $waQty   = ($displayCredits ?? null)?->whatsapp_credits  ?? 0;
+                $smsUsed = ($displayCredits ?? null)?->sms_used          ?? 0;
+                $waUsed  = ($displayCredits ?? null)?->whatsapp_used     ?? 0;
+                $poolLabel = ($currentBranchId ?? null) && $branchMsgCredits && !$branchMsgCredits->isShared()
+                    ? 'Branch Pool'
+                    : 'School-wide Shared Pool';
+            @endphp
             <div class="credit-tile" style="background:#eff6ff;border-color:#bfdbfe;">
                 <div class="big" style="color:#3b82f6;">{{ number_format($smsQty) }}</div>
                 <div class="tag" style="color:#3b82f6;"><i class="fas fa-sms me-1"></i> SMS Credits</div>
+                <div class="warn-txt" style="color:#64748b;font-size:.65rem;">{{ $poolLabel }}</div>
                 @if($smsQty == 0)
                     <div class="warn-txt" style="color:#ef4444;font-weight:600;">No credits &mdash; top up below</div>
                 @elseif($smsQty < 20)
@@ -253,6 +267,7 @@
             <div class="credit-tile" style="background:#f0fdf4;border-color:#bbf7d0;">
                 <div class="big" style="color:#16a34a;">{{ number_format($waQty) }}</div>
                 <div class="tag" style="color:#16a34a;"><i class="fab fa-whatsapp me-1"></i> WhatsApp Credits</div>
+                <div class="warn-txt" style="color:#64748b;font-size:.65rem;">{{ $poolLabel }}</div>
                 @if($waQty == 0)
                     <div class="warn-txt" style="color:#ef4444;font-weight:600;">No credits &mdash; top up below</div>
                 @elseif($waQty < 10)
@@ -263,6 +278,45 @@
             </div>
         </div>
 
+        {{-- Branch credit pools (super admin only) --}}
+        @if(!($currentBranchId ?? null) && isset($allBranchCredits) && $allBranchCredits->count())
+        <div style="background:#f8fafc;border-radius:.9rem;border:1px solid #e2e8f0;padding:1rem 1.25rem;margin-bottom:1.25rem;">
+            <p style="font-size:.72rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.75rem;">
+                <i class="fas fa-code-branch mr-1"></i> Branch-Specific Credit Pools
+            </p>
+            <div style="display:flex;flex-direction:column;gap:.5rem;">
+                @foreach($allBranchCredits as $bc)
+                @php
+                    $bcBranch = ($branches ?? collect())->firstWhere('id', $bc->branch_id);
+                @endphp
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:.6rem .75rem;background:#fff;border-radius:.6rem;border:1px solid #f1f5f9;">
+                    <div>
+                        <span style="font-size:.82rem;font-weight:700;color:#1e293b;">
+                            {{ $bcBranch->name ?? 'Branch ' . $bc->branch_id }}
+                        </span>
+                    </div>
+                    <div style="display:flex;gap:1rem;align-items:center;">
+                        <span style="font-size:.78rem;color:#3b82f6;font-weight:700;">
+                            <i class="fas fa-sms mr-1"></i>{{ number_format($bc->sms_credits) }} SMS
+                        </span>
+                        <span style="font-size:.78rem;color:#16a34a;font-weight:700;">
+                            <i class="fab fa-whatsapp mr-1"></i>{{ number_format($bc->whatsapp_credits) }} WA
+                        </span>
+                        <span style="font-size:.65rem;color:#94a3b8;">
+                            {{ number_format($bc->sms_used + $bc->whatsapp_used) }} used
+                        </span>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+            <p style="font-size:.7rem;color:#94a3b8;margin-top:.6rem;">
+                <i class="fas fa-info-circle mr-1"></i>
+                Top up individual branches from the <strong>Owner Panel → Messaging Credits</strong>.
+                When a branch has its own pool, it uses that pool exclusively. Otherwise it draws from the school-wide shared pool above.
+            </p>
+        </div>
+        @endif
+
         {{-- Package selector --}}
         @if(isset($msgPackages) && $msgPackages->count())
         <p style="font-size:.78rem;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.75rem;">
@@ -272,6 +326,26 @@
             @csrf
             <input type="hidden" name="payer_email" value="{{ $tenant->admin_email }}">
             <input type="hidden" name="payer_name"  value="{{ $tenant->admin_name }}">
+
+            {{-- Branch selector — shown if school has branches --}}
+            @if(isset($branches) && $branches->count())
+            <div style="margin-bottom:1rem;">
+                <p style="font-size:.78rem;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem;">
+                    Allocate Credits To
+                </p>
+                <select name="branch_id" style="width:100%;padding:.65rem 1rem;border:1px solid #e2e8f0;border-radius:.75rem;font-size:.85rem;background:#fff;">
+                    <option value="">School-wide shared pool (all branches)</option>
+                    @foreach($branches as $b)
+                    <option value="{{ $b->id }}" {{ ($currentBranchId ?? null) == $b->id ? 'selected' : '' }}>
+                        {{ $b->name }} only
+                    </option>
+                    @endforeach
+                </select>
+                <p style="font-size:.68rem;color:#94a3b8;margin-top:.4rem;">
+                    Choosing a branch gives it a private credit pool that other branches cannot access.
+                </p>
+            </div>
+            @endif
 
             <div style="display:flex;flex-direction:column;gap:.6rem;margin-bottom:1.25rem;">
                 @foreach($msgPackages as $pkg)

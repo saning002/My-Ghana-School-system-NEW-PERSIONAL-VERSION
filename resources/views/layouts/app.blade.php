@@ -305,7 +305,7 @@
                     ['route'=>'admin.portal-settings',          'icon'=>'fa-graduation-cap',     'label'=>$sidebarLabels['portals'],    'perm'=>'portal_settings','module'=>'portals'],
                     ['route'=>'admin.settings',                 'icon'=>'fa-sliders-h',          'label'=>$sidebarLabels['settings'],   'perm'=>'settings',       'module'=>null],
                     ['route'=>'admin.guide',                    'icon'=>'fa-question-circle',    'label'=>$sidebarLabels['guide'],      'perm'=>null,             'module'=>null],
-                    ['route'=>'admin.subscription.show',        'icon'=>'fa-shield-alt',         'label'=>'Subscription',              'perm'=>'subscription',   'module'=>null],
+                    ['route'=>'admin.subscription.show',        'icon'=>'fa-shield-alt',         'label'=>'Subscription',              'perm'=>'__always__',     'module'=>null],
                     ['route'=>'admin.profile',                  'icon'=>'fa-user-circle',        'label'=>'My Profile',                'perm'=>'__always__',     'module'=>null],
                 ];
 

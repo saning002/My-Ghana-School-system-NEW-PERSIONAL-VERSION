@@ -46,16 +46,32 @@ class SubscriptionController extends Controller
             ->limit(10)
             ->get();
 
-        // Get messaging credits from central DB
-        // NOTE: Do NOT use ::on('pgsql') here — forTenant() is a custom static method
-        // that returns a Builder via Model::__callStatic, and calling it on a Builder
-        // via on() throws BadMethodCallException. The model already has
-        // protected $connection = 'pgsql' so it always hits the central DB.
-        $msgCredits = null;
+        // Get messaging credits — shared pool + all branch pools
+        $msgCredits       = null;
+        $allBranchCredits = collect();
         try {
             $msgCredits = \App\Models\MessagingCredit::forTenant($tenant->id);
+
+            // Load branch-specific credit pools if any exist
+            $allBranchCredits = \App\Models\MessagingCredit::allForTenant($tenant->id)
+                ->filter(fn($c) => !$c->isShared()); // only branch-specific ones
         } catch (\Throwable $e) {
-            \Log::error('Failed to load messaging credits for tenant ' . $tenant->id . ': ' . $e->getMessage());
+            \Log::error('Failed to load messaging credits: ' . $e->getMessage());
+        }
+
+        // Load branches for the branch credit display
+        $branches = collect();
+        try {
+            $branches = \App\Models\ChurchBranch::orderBy('name')->get();
+        } catch (\Throwable $e) {}
+
+        // Is this a branch admin? They only see their own branch credits
+        $currentBranchId = auth()->user()?->church_branch_id ?? null;
+        if ($currentBranchId) {
+            // Branch admin — show their branch pool (or shared if no dedicated pool)
+            $branchMsgCredits = \App\Models\MessagingCredit::forBranch($tenant->id, $currentBranchId);
+        } else {
+            $branchMsgCredits = null; // Super admin sees all pools
         }
 
         // Get messaging packages — active() is a scope so on('pgsql') works here
@@ -66,7 +82,11 @@ class SubscriptionController extends Controller
             \Log::error('Failed to load messaging packages: ' . $e->getMessage());
         }
 
-        return view('admin.subscription.show', compact('tenant', 'msgCredits', 'msgPackages', 'subscriptionPayments', 'creditPayments'));
+        return view('admin.subscription.show', compact(
+            'tenant', 'msgCredits', 'msgPackages',
+            'subscriptionPayments', 'creditPayments',
+            'allBranchCredits', 'branches', 'branchMsgCredits', 'currentBranchId'
+        ));
     }
 
     /**

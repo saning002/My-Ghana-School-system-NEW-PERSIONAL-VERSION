@@ -82,10 +82,27 @@ class MessagingCreditController extends Controller
             'notes'            => 'nullable|string',
             'payment_method'   => 'required|in:cash,mobile_money,bank_transfer,card,paystack,other',
             'amount'           => 'required|numeric|min:0',
+            'branch_id'        => 'nullable|integer', // null = school-wide shared pool
         ]);
 
-        $credits = MessagingCredit::forTenant($tenant->id);
+        // Get the right credit pool — branch-specific or shared
+        $branchId = $validated['branch_id'] ? (int) $validated['branch_id'] : null;
+        if ($branchId) {
+            $credits = \App\Models\MessagingCredit::forBranchDedicated($tenant->id, $branchId);
+        } else {
+            $credits = \App\Models\MessagingCredit::forTenant($tenant->id);
+        }
+
         $credits->addCredits($validated['sms_credits'], $validated['whatsapp_credits']);
+
+        // Get branch name for audit log
+        $branchLabel = 'shared pool';
+        if ($branchId) {
+            try {
+                $b = \App\Models\ChurchBranch::find($branchId);
+                $branchLabel = $b?->name ?? "branch #{$branchId}";
+            } catch (\Throwable $e) {}
+        }
 
         MessagingCreditPayment::create([
             'tenant_id'              => $tenant->id,
@@ -95,12 +112,16 @@ class MessagingCreditController extends Controller
             'whatsapp_credits_added' => $validated['whatsapp_credits'],
             'payment_method'         => $validated['payment_method'],
             'status'                 => 'completed',
-            'notes'                  => $validated['notes'] ?? null,
+            'notes'                  => ($validated['notes'] ?? '') . ($branchId ? " [Branch: {$branchLabel}]" : ''),
         ]);
 
-        AuditLog::record('messaging.credits_added', "Added {$validated['sms_credits']} SMS + {$validated['whatsapp_credits']} WA credits to {$tenant->name}", $tenant->id);
+        AuditLog::record(
+            'messaging.credits_added',
+            "Added {$validated['sms_credits']} SMS + {$validated['whatsapp_credits']} WA credits to {$tenant->name} ({$branchLabel})",
+            $tenant->id
+        );
 
-        return back()->with('success', "Credits added to {$tenant->name}.");
+        return back()->with('success', "Credits added to {$tenant->name} ({$branchLabel}).");
     }
 
     // ── School-facing: buy credits page ────────────────────────────────────
@@ -123,10 +144,12 @@ class MessagingCreditController extends Controller
             'package_id'  => 'required|exists:messaging_credit_packages,id',
             'payer_email' => 'required|email',
             'payer_name'  => 'nullable|string|max:255',
+            'branch_id'   => 'nullable|integer',
         ]);
 
         $package   = MessagingCreditPackage::findOrFail($validated['package_id']);
         $reference = PaystackService::generateReference('MSG');
+        $branchId  = $validated['branch_id'] ?? null;
 
         PaystackTransaction::create([
             'type'        => 'messaging_credits',
@@ -141,6 +164,7 @@ class MessagingCreditController extends Controller
                 'type'             => 'messaging_credits',
                 'package_id'       => $package->id,
                 'tenant_id'        => $tenant->id,
+                'branch_id'        => $branchId,
                 'sms_credits'      => $package->sms_credits,
                 'whatsapp_credits' => $package->whatsapp_credits,
             ]),
@@ -260,7 +284,14 @@ class MessagingCreditController extends Controller
         // ── Apply credits if package found ────────────────────────────────
 
         if ($package && $tx->tenant_id) {
-            $credits = MessagingCredit::forTenant($tx->tenant_id);
+            // Get branch_id from metadata — apply to branch pool if specified
+            $branchId = (int) ($localMeta['branch_id'] ?? $paystackMeta['branch_id'] ?? 0) ?: null;
+
+            if ($branchId) {
+                $credits = MessagingCredit::forBranchDedicated($tx->tenant_id, $branchId);
+            } else {
+                $credits = MessagingCredit::forTenant($tx->tenant_id);
+            }
             $credits->addCredits($package->sms_credits, $package->whatsapp_credits);
 
             MessagingCreditPayment::create([

@@ -64,6 +64,30 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                         </div>
                         <div class="modal-body">
+                            {{-- Branch selector --}}
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Allocate To</label>
+                                <select name="branch_id" class="form-select">
+                                    <option value="">School-wide Shared Pool (all branches draw from here)</option>
+                                    @php
+                                        try {
+                                            // Get branches from tenant DB
+                                            \Illuminate\Support\Facades\DB::purge('tenant');
+                                            \Illuminate\Support\Facades\Config::set('database.connections.tenant', $tenant->dbConfig());
+                                            \Illuminate\Support\Facades\DB::setDefaultConnection('tenant');
+                                            $tenantBranches = \Illuminate\Support\Facades\DB::connection('tenant')->table('church_branches')->orderBy('name')->get(['id','name']);
+                                            \Illuminate\Support\Facades\DB::setDefaultConnection('pgsql');
+                                        } catch (\Throwable $e) {
+                                            $tenantBranches = collect();
+                                            \Illuminate\Support\Facades\DB::setDefaultConnection('pgsql');
+                                        }
+                                    @endphp
+                                    @foreach($tenantBranches as $b)
+                                    <option value="{{ $b->id }}">Branch: {{ $b->name }} (dedicated pool)</option>
+                                    @endforeach
+                                </select>
+                                <div class="form-text">Choose a branch to give it its own private credit pool, or leave as School-wide to top up the shared pool.</div>
+                            </div>
                             {{-- Quick package select --}}
                             <div class="mb-3">
                                 <label class="form-label fw-semibold">Quick Select Package</label>

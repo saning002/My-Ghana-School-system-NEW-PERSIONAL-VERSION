@@ -35,14 +35,19 @@ class SmsService
      * Send SMS to multiple phone numbers.
      * Returns ['sent'=>n, 'failed'=>n, 'errors'=>[...]]
      */
-    public function sendBulk(array $phones, string $message, ?int $tenantId = null): array
+    public function sendBulk(array $phones, string $message, ?int $tenantId = null, ?int $branchId = null): array
     {
         $sent   = 0;
         $failed = 0;
         $errors = [];
 
-        // Get credits once
-        $credits = $tenantId ? MessagingCredit::forTenant($tenantId) : null;
+        // Get the right credit pool — branch-specific if available, else shared
+        $credits = null;
+        if ($tenantId) {
+            $credits = $branchId
+                ? MessagingCredit::forBranch($tenantId, $branchId)
+                : MessagingCredit::forTenant($tenantId);
+        }
 
         foreach ($phones as $phone) {
             if (!$phone) {
