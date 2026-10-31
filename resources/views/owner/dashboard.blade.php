@@ -303,20 +303,27 @@ new Chart(ctx, {
     data: {
         labels: {!! json_encode($monthlyRevenue->pluck('month')) !!},
         datasets: [{
-            label: 'Revenue (GHS)',
-            data: {!! json_encode($monthlyRevenue->pluck('amount')) !!},
-            backgroundColor: 'rgba(233,69,96,0.15)',
+            label: 'Subscriptions',
+            data: {!! json_encode($monthlyRevenue->pluck('subscriptions')) !!},
+            backgroundColor: 'rgba(233,69,96,0.6)',
             borderColor: '#e94560',
+            borderWidth: 2,
+            borderRadius: 6,
+        }, {
+            label: 'Messaging Credits',
+            data: {!! json_encode($monthlyRevenue->pluck('messaging')) !!},
+            backgroundColor: 'rgba(217,119,6,0.6)',
+            borderColor: '#d97706',
             borderWidth: 2,
             borderRadius: 6,
         }]
     },
     options: {
         responsive: true, maintainAspectRatio: true,
-        plugins: { legend: { display: false } },
+        plugins: { legend: { display: true, position: 'top', labels: { font: { size: 11 } } } },
         scales: {
-            y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { font: { size: 11 } } },
-            x: { grid: { display: false }, ticks: { font: { size: 11 } } }
+            x: { stacked: true, grid: { display: false }, ticks: { font: { size: 11 } } },
+            y: { stacked: true, beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { font: { size: 11 } } }
         }
     }
 });
