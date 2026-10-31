@@ -82,7 +82,8 @@ $modeLabel = $modeLabels[$portalMode] ?? 'Student Portal';
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html { scroll-behavior: smooth; min-height: 100%; }
-    body { font-family: "Inter", sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; position: relative; transition: background 0.3s, color 0.3s; }
+    body { font-family: "Inter", sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; position: relative; transition: background 0.3s, color 0.3s; overflow: hidden; }
+    @media (max-width: 768px) { body { overflow: auto; } }
 
     .portal-bg {
       position: fixed; inset: 0; z-index: 0;
@@ -239,12 +240,24 @@ $modeLabel = $modeLabels[$portalMode] ?? 'Student Portal';
 
     /* RESPONSIVE */
     @media (min-width: 769px) {
-      .app-shell { flex-direction: row; }
-      .sidebar { position: relative; transform: translateX(0); width: 260px; box-shadow: 2px 0 16px rgba(0,0,0,0.1); }
+      .app-shell { flex-direction: row; height: 100vh; overflow: hidden; }
+      .sidebar {
+        position: sticky; top: 0; height: 100vh;
+        transform: translateX(0); width: 260px;
+        box-shadow: 2px 0 16px rgba(0,0,0,0.1);
+        display: flex; flex-direction: column;
+        overflow-y: auto; overflow-x: hidden;
+      }
       .sidebar-overlay { display: none !important; }
       .hamburger { display: none; }
-      .main-content { flex: 1; padding: 24px; max-width: calc(100% - 260px); }
-      .header { position: sticky; top: 0; }
+      .main-content {
+        flex: 1; padding: 24px;
+        max-width: calc(100% - 260px);
+        height: 100vh;
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+      .header { position: sticky; top: 0; z-index: 100; }
       .analytics-grid { grid-template-columns: repeat(4, 1fr); }
     }
 
@@ -330,6 +343,21 @@ $modeLabel = $modeLabels[$portalMode] ?? 'Student Portal';
         <button class="theme-toggle" id="themeToggleBtn" title="Switch theme">
           <span id="themeIcon">🌙</span>
         </button>
+        {{-- Academic Session Selector --}}
+        @if(isset($allSessions) && $allSessions->count() > 0)
+        <form method="GET" style="margin-left:8px;display:inline-flex;align-items:center;">
+          <select name="session_id" onchange="this.form.submit()"
+            style="padding:6px 10px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.1);color:#fff;font-size:11px;font-weight:700;cursor:pointer;max-width:140px;">
+            <option value="" style="color:#000;">All Sessions</option>
+            @foreach($allSessions as $sess)
+            <option value="{{ $sess->id }}" style="color:#000;"
+              {{ (isset($selectedSessionId) && $selectedSessionId == $sess->id) ? 'selected' : '' }}>
+              {{ $sess->year }}{{ $sess->name ? ' — ' . $sess->name : '' }}
+            </option>
+            @endforeach
+          </select>
+        </form>
+        @endif
         <a href="{{ route('portal.change-password') }}" class="button button-secondary" style="margin-left:8px; padding:8px 10px; font-size:12px; display:inline-flex; align-items:center; gap:8px;"><i class="fas fa-key"></i> Change Password</a>
       </div>
 

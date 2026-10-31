@@ -273,42 +273,93 @@ class PortalController extends Controller
     {
         $student = $this->getPortalStudent();
 
+        // ── Get active academic session and period ─────────────────────────────
+        $activePeriod  = \App\Models\AcademicPeriod::where('is_active', true)->first();
+        $activeSession = $activePeriod?->session ?? null;
+        $activeSessionId = $activeSession?->id ?? null;
+
+        // Allow student to select a different session via query param
+        $selectedSessionId = request()->query('session_id', $activeSessionId);
+        if ($selectedSessionId) {
+            $selectedSession = \App\Models\AcademicSession::find($selectedSessionId);
+        }
+        $selectedSession = $selectedSession ?? $activeSession;
+        $selectedSessionId = $selectedSession?->id ?? null;
+
+        // All sessions for the session switcher dropdown
+        $allSessions = \App\Models\AcademicSession::orderByDesc('id')->get();
+
         $student->load([
             'user', 'program', 'churchBranch',
             'payments',
-            'attendances.course',
             'enrollments.course',
             'examScores.course',
         ]);
 
-        // Fee summary
-        $fees = $this->feeService->calculate($student);
-
-        // All programs this student has exam scores in (for history view)
-        $programIds = ExamScore::where('student_id', $student->id)
-            ->distinct()
-            ->pluck('program_id')
-            ->merge(collect([$student->program_id]))
-            ->filter()
-            ->unique();
-        $programs = Program::whereIn('id', $programIds)->orderBy('sequence')->get();
-
-        // Most recent report card preview — find the latest program the student has scores in, or fallback to current program
-        $latestScore = ExamScore::where('student_id', $student->id)->latest('id')->first();
-        $mostRecentProgram = $latestScore
-            ? $programs->firstWhere('id', $latestScore->program_id)
-            : null;
-        if (!$mostRecentProgram) {
-            $mostRecentProgram = $programs->sortByDesc('sequence')->first();
+        // Load attendance filtered by the selected session's periods (if available)
+        if ($selectedSessionId) {
+            $periodIds = \App\Models\AcademicPeriod::where('academic_session_id', $selectedSessionId)
+                ->pluck('id')->toArray();
+            if (!empty($periodIds)) {
+                $student->load(['attendances' => function ($q) use ($periodIds) {
+                    $q->whereIn('academic_period_id', $periodIds)->with('course');
+                }]);
+            } else {
+                $student->load(['attendances.course']);
+            }
+        } else {
+            $student->load(['attendances.course']);
         }
 
-        $reportCardPreview  = null;
-        $previewAttempt     = 1;
+        // Fee summary — use TermFeeService for session-specific fees
+        if ($selectedSessionId) {
+            try {
+                $termFeeService = app(\App\Services\TermFeeService::class);
+                $termSummary = $termFeeService->getStudentTermSummary($student, $selectedSessionId);
+                $fees = [
+                    'total'         => (float) ($termSummary['total_billed'] ?? 0),
+                    'total_billed'  => (float) ($termSummary['total_billed'] ?? 0),
+                    'paid'          => (float) ($termSummary['total_paid'] ?? 0),
+                    'total_paid'    => (float) ($termSummary['total_paid'] ?? 0),
+                    'balance'       => (float) ($termSummary['balance'] ?? 0),
+                    'is_owing'      => ($termSummary['balance'] ?? 0) > 0,
+                    'is_paid'       => ($termSummary['balance'] ?? 0) <= 0,
+                ];
+            } catch (\Throwable $e) {
+                $fees = $this->feeService->calculate($student);
+            }
+        } else {
+            $fees = $this->feeService->calculate($student);
+        }
+
+        // Programs this student has exam scores in for the selected session
+        $examScoreQuery = ExamScore::where('student_id', $student->id);
+        if ($selectedSessionId) {
+            $examScoreQuery->where('academic_session_id', $selectedSessionId);
+        }
+
+        $programIds = (clone $examScoreQuery)->distinct()->pluck('program_id')
+            ->merge(collect([$student->program_id]))->filter()->unique();
+        $programs = Program::whereIn('id', $programIds)->orderBy('sequence')->get();
+
+        // Most recent report card — for the selected session
+        $latestScore = (clone $examScoreQuery)->latest('id')->first();
+        $mostRecentProgram = $latestScore
+            ? $programs->firstWhere('id', $latestScore->program_id)
+            : $programs->sortByDesc('sequence')->first();
+
+        $reportCardPreview = null;
+        $previewAttempt    = 1;
         if ($mostRecentProgram) {
-            $previewAttempt = ExamScore::where('student_id', $student->id)
-                ->where('program_id', $mostRecentProgram->id)
-                ->max('attempt') ?? 1;
-            $reportCardPreview = $this->reportCardService->generate($student, $mostRecentProgram, $previewAttempt);
+            $attemptQuery = ExamScore::where('student_id', $student->id)
+                ->where('program_id', $mostRecentProgram->id);
+            if ($selectedSessionId) {
+                $attemptQuery->where('academic_session_id', $selectedSessionId);
+            }
+            $previewAttempt = $attemptQuery->max('attempt') ?? 1;
+            $reportCardPreview = $this->reportCardService->generate(
+                $student, $mostRecentProgram, $previewAttempt
+            );
         }
 
         $cgpa = $this->reportCardService->calculateCgpa($student);
@@ -335,7 +386,12 @@ class PortalController extends Controller
         $portalMode  = \App\Models\Setting::get('portal_mode', 'university');
         $portalTheme = \App\Models\Setting::get('portal_theme', 'gold');
 
-        return view('portal.dashboard', compact('student', 'fees', 'programs', 'reportCardPreview', 'previewAttempt', 'attendanceSummary', 'notifications', 'unreadCount', 'cgpa', 'portalMode', 'portalTheme'));
+        return view('portal.dashboard', compact(
+            'student', 'fees', 'programs', 'reportCardPreview', 'previewAttempt',
+            'attendanceSummary', 'notifications', 'unreadCount', 'cgpa',
+            'portalMode', 'portalTheme',
+            'activeSession', 'selectedSession', 'selectedSessionId', 'allSessions'
+        ));
     }
 
     /** View report card for a specific program */
