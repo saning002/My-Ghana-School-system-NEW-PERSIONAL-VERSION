@@ -349,6 +349,30 @@ $modeLabel = $modeLabels[$portalMode] ?? 'Student Portal';
         $cgpa = $cgpa ?? 0;
       @endphp
 
+      {{-- ═══════════════════════════════════════════════════════════════════
+          BASIC / JHS / SHS PORTAL — completely redesigned view
+          University mode continues below unchanged.
+          ═══════════════════════════════════════════════════════════════════ --}}
+      @if($portalMode !== 'university')
+        @include('portal.partials.basic-portal', [
+          'student' => $student,
+          'fees' => $fees,
+          'programs' => $programs,
+          'reportCardPreview' => $reportCardPreview,
+          'previewAttempt' => $previewAttempt,
+          'attendanceSummary' => $attendanceSummary,
+          'notifications' => $notifications,
+          'unreadCount' => $unreadCount,
+          'portalMode' => $portalMode,
+          'modeLabel' => $modeLabel,
+          'tc' => $tc,
+        ])
+      @else
+
+      {{-- ═══════════════════════════════════════════════════════════════════
+          UNIVERSITY PORTAL — original view below
+          ═══════════════════════════════════════════════════════════════════ --}}
+
       <!-- DASHBOARD PAGE -->
       <div id="page-dashboard" class="page-content active">
         <div class="page-header">
@@ -950,6 +974,8 @@ $modeLabel = $modeLabels[$portalMode] ?? 'Student Portal';
 
     </div>
   </div>
+
+  @endif {{-- end if portalMode !== 'university' --}}
 
   <script>
     // ── Sidebar ──────────────────────────────────────────────────
