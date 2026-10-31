@@ -312,20 +312,24 @@ Route::get('/', function (\Illuminate\Http\Request $request) {
 
     // If this is NOT our platform domain, it might be a custom domain
     if ($appDomain && !str_ends_with($host, '.' . $appDomain) && $host !== $appDomain) {
-        $tenant = \App\Models\Tenant::on('pgsql')->where('custom_domain', $host)->first();
-        if ($tenant) {
-            // Set up the tenant session and serve the website
-            session(['tenant_slug' => $tenant->slug, 'tenant_id' => $tenant->id]);
+        try {
+            $tenant = \App\Models\Tenant::on('pgsql')->where('custom_domain', $host)->first();
+            if ($tenant) {
+                // Set up the tenant session and serve the website
+                session(['tenant_slug' => $tenant->slug, 'tenant_id' => $tenant->id]);
 
-            // Boot the tenant DB and serve the website home page
-            \Illuminate\Support\Facades\DB::purge('tenant');
-            \Illuminate\Support\Facades\Config::set('database.connections.tenant', $tenant->dbConfig());
-            \Illuminate\Support\Facades\DB::setDefaultConnection('tenant');
-            app()->instance('tenant', $tenant);
+                // Boot the tenant DB and serve the website home page
+                \Illuminate\Support\Facades\DB::purge('tenant');
+                \Illuminate\Support\Facades\Config::set('database.connections.tenant', $tenant->dbConfig());
+                \Illuminate\Support\Facades\DB::setDefaultConnection('tenant');
+                app()->instance('tenant', $tenant);
 
-            $response = app(\App\Http\Controllers\WebsiteController::class)->home();
-            \Illuminate\Support\Facades\DB::setDefaultConnection('pgsql');
-            return $response;
+                $response = app(\App\Http\Controllers\WebsiteController::class)->home();
+                \Illuminate\Support\Facades\DB::setDefaultConnection('pgsql');
+                return $response;
+            }
+        } catch (\Throwable $e) {
+            // custom_domain column may not exist yet — fall through to login
         }
     }
 

@@ -203,17 +203,20 @@ class TenantMiddleware
         // IMPORTANT: Tenant model must ALWAYS query the central DB (pgsql)
         // Never query it on the tenant connection — tenants table doesn't exist there
 
-        $host = $request->getHost();
+        $host      = $request->getHost();
         $appDomain = config('app.domain', parse_url(config('app.url'), PHP_URL_HOST));
 
-        // 0. Custom domain — highest priority.
-        // If the incoming host is NOT the app domain (not a subdomain of our platform),
-        // check if it matches a tenant's custom_domain.
-        if ($appDomain && !str_ends_with($host, '.' . $appDomain) && $host !== $appDomain) {
-            $custom = Tenant::on('pgsql')->where('custom_domain', $host)->first();
-            if ($custom) {
-                session(['tenant_slug' => $custom->slug, 'tenant_id' => $custom->id]);
-                return $custom;
+        // 0. Custom domain — only if the host is NOT our platform domain.
+        // Wrapped in try-catch in case the custom_domain column doesn't exist yet.
+        if ($appDomain && $host !== $appDomain && !str_ends_with($host, '.' . $appDomain)) {
+            try {
+                $custom = Tenant::on('pgsql')->where('custom_domain', $host)->first();
+                if ($custom) {
+                    session(['tenant_slug' => $custom->slug, 'tenant_id' => $custom->id]);
+                    return $custom;
+                }
+            } catch (\Throwable $e) {
+                // custom_domain column may not exist yet — skip gracefully
             }
         }
 
@@ -243,8 +246,7 @@ class TenantMiddleware
         }
 
         // 2. Try subdomain — e.g. "accra-academy" from "accra-academy.yourdomain.com"
-        $host      = $request->getHost();
-        $appDomain = config('app.domain', parse_url(config('app.url'), PHP_URL_HOST));
+        // (host and appDomain already set above)
 
         if ($appDomain && str_ends_with($host, '.' . $appDomain)) {
             $subdomain = str_replace('.' . $appDomain, '', $host);
