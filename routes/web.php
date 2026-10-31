@@ -304,7 +304,33 @@ Route::get('/fix-periods', function () {
 });
 
 // ── Root ──────────────────────────────────────────────────────────────────
-Route::get('/', fn() => redirect()->route('login'));
+// If the request comes from a custom domain (not the platform domain),
+// show the school's website. Otherwise redirect to login.
+Route::get('/', function (\Illuminate\Http\Request $request) {
+    $host      = $request->getHost();
+    $appDomain = config('app.domain', parse_url(config('app.url'), PHP_URL_HOST));
+
+    // If this is NOT our platform domain, it might be a custom domain
+    if ($appDomain && !str_ends_with($host, '.' . $appDomain) && $host !== $appDomain) {
+        $tenant = \App\Models\Tenant::on('pgsql')->where('custom_domain', $host)->first();
+        if ($tenant) {
+            // Set up the tenant session and serve the website
+            session(['tenant_slug' => $tenant->slug, 'tenant_id' => $tenant->id]);
+
+            // Boot the tenant DB and serve the website home page
+            \Illuminate\Support\Facades\DB::purge('tenant');
+            \Illuminate\Support\Facades\Config::set('database.connections.tenant', $tenant->dbConfig());
+            \Illuminate\Support\Facades\DB::setDefaultConnection('tenant');
+            app()->instance('tenant', $tenant);
+
+            $response = app(\App\Http\Controllers\WebsiteController::class)->home();
+            \Illuminate\Support\Facades\DB::setDefaultConnection('pgsql');
+            return $response;
+        }
+    }
+
+    return redirect()->route('login');
+});
 
 // ═══════════════════════════════════════════════════════════════════════════
 // LECTURER PORTAL

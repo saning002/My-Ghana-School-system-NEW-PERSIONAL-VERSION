@@ -737,6 +737,7 @@
                         'School Phone'       => $tenant->phone ?? '—',
                         'Address'            => $tenant->address ?? '—',
                         'Plan'               => optional($tenant->relationLoaded('plan') ? $tenant->plan : null)->name ?? '—',
+                        'Custom Domain'      => $tenant->custom_domain ?? 'Not set (using slug URL)',
                         'DB Host'            => ($tenant->db_host ?? '—') . ':' . ($tenant->db_port ?? '5432'),
                         'DB Name'            => $tenant->db_name ?? '—',
                         'DB Username'        => $tenant->db_username ?? '—',
@@ -754,6 +755,40 @@
                     </div>
                     @endforeach
                 </div>
+
+                {{-- Custom Domain DNS Instructions --}}
+                @if($tenant->custom_domain)
+                <div class="mt-4 p-4 rounded-xl" style="background:#f0fdf4;border:1px solid #bbf7d0;">
+                    <h6 class="fw-bold text-success mb-3">
+                        <i class="fas fa-globe me-2"></i> Custom Domain Setup — {{ $tenant->custom_domain }}
+                    </h6>
+                    <div style="font-size:0.85rem;color:#475569;line-height:1.6;">
+                        <p class="mb-2"><strong>Step 1:</strong> The school needs to add a DNS record with their domain registrar:</p>
+                        <div class="bg-white rounded-lg p-3 mb-3 border" style="font-family:monospace;font-size:0.8rem;">
+                            <span class="text-muted">Type:</span> CNAME<br>
+                            <span class="text-muted">Name/Host:</span> @ (or www)<br>
+                            <span class="text-muted">Value/Target:</span> {{ config('app.url') ? parse_url(config('app.url'), PHP_URL_HOST) : 'kmc-college-v136.onrender.com' }}
+                        </div>
+                        <p class="mb-2"><strong>Step 2:</strong> In Render dashboard, add the custom domain {{ $tenant->custom_domain }} to this web service's Custom Domains section.</p>
+                        <p class="mb-2"><strong>Step 3:</strong> Wait for DNS to propagate (can take up to 48 hours, usually 15 minutes).</p>
+                        <p class="mb-2"><strong>Step 4:</strong> Once live, visiting <code>{{ $tenant->custom_domain }}</code> will automatically load this school's website.</p>
+                    </div>
+                    <div class="mt-2">
+                        <a href="http://{{ $tenant->custom_domain }}" target="_blank" class="btn btn-sm btn-success">
+                            <i class="fas fa-external-link-alt me-1"></i> Test Domain
+                        </a>
+                    </div>
+                </div>
+                @else
+                <div class="mt-4 p-3 rounded-xl" style="background:#f8fafc;border:1px solid #e2e8f0;">
+                    <p style="font-size:0.8rem;color:#64748b;margin:0;">
+                        <i class="fas fa-info-circle me-1 text-info"></i>
+                        To give this school its own domain (e.g. <code>saningsschoolacademy.com</code>),
+                        edit the school and set the Custom Domain field. The school must point a CNAME to this server.
+                    </p>
+                </div>
+                @endif
+
             </div>
         </div>
     </div>

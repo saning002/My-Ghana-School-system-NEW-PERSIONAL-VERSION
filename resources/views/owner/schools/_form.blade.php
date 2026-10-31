@@ -22,7 +22,12 @@
                         <div class="form-text">Letters, numbers, hyphens only.</div>
                         @error('subdomain')<div class="text-danger" style="font-size:0.8rem;">{{ $message }}</div>@enderror
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Custom Domain</label>
+                        <input type="text" name="custom_domain" class="form-control" value="{{ old('custom_domain', $t->custom_domain ?? '') }}" placeholder="saningsschoolacademy.com">
+                        <div class="form-text">Optional. School's own domain. They must point a CNAME to this server.</div>
+                    </div>
+                    <div class="col-md-4">
                         <label class="form-label fw-semibold">Phone</label>
                         <input type="text" name="phone" class="form-control" value="{{ old('phone', $t->phone ?? '') }}">
                     </div>

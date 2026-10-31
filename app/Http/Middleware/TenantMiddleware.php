@@ -203,6 +203,20 @@ class TenantMiddleware
         // IMPORTANT: Tenant model must ALWAYS query the central DB (pgsql)
         // Never query it on the tenant connection — tenants table doesn't exist there
 
+        $host = $request->getHost();
+        $appDomain = config('app.domain', parse_url(config('app.url'), PHP_URL_HOST));
+
+        // 0. Custom domain — highest priority.
+        // If the incoming host is NOT the app domain (not a subdomain of our platform),
+        // check if it matches a tenant's custom_domain.
+        if ($appDomain && !str_ends_with($host, '.' . $appDomain) && $host !== $appDomain) {
+            $custom = Tenant::on('pgsql')->where('custom_domain', $host)->first();
+            if ($custom) {
+                session(['tenant_slug' => $custom->slug, 'tenant_id' => $custom->id]);
+                return $custom;
+            }
+        }
+
         // 1. Session-based (Option A — slug login at /school/{slug}/login)
         $sessionSlug = session('tenant_slug');
         if ($sessionSlug) {

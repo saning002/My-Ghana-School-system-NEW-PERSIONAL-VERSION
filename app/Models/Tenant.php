@@ -15,7 +15,7 @@ class Tenant extends Model
         'db_host', 'db_port', 'db_name', 'db_username', 'db_password',
         'plan_id', 'status', 'trial_ends_at', 'subscription_ends_at',
         'backup_frequency', 'last_backup_at', 'notes',
-        'modules_json', 'theme_json',
+        'modules_json', 'theme_json', 'custom_domain',
         // Cloudinary per school
         'cloudinary_cloud_name', 'cloudinary_api_key', 'cloudinary_api_secret',
         // Backblaze B2 per school

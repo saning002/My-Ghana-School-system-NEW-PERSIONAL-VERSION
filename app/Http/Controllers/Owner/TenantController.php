@@ -45,6 +45,7 @@ class TenantController extends Controller
         $validated = $request->validate([
             'name'          => 'required|string|max:255',
             'subdomain'     => 'required|string|max:100|unique:tenants,subdomain|alpha_dash',
+            'custom_domain' => 'nullable|string|max:255|unique:tenants,custom_domain',
             'admin_name'    => 'required|string|max:255',
             'admin_email'   => 'required|email|max:255',
             'admin_phone'   => 'nullable|string|max:30',
@@ -198,6 +199,7 @@ class TenantController extends Controller
         $validated = $request->validate([
             'name'          => 'required|string|max:255',
             'subdomain'     => 'required|string|max:100|alpha_dash|unique:tenants,subdomain,' . $tenant->id,
+            'custom_domain' => 'nullable|string|max:255|unique:tenants,custom_domain,' . $tenant->id,
             'admin_name'    => 'required|string|max:255',
             'admin_email'   => 'required|email|max:255',
             'admin_phone'   => 'nullable|string|max:30',
