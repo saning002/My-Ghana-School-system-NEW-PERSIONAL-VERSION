@@ -134,6 +134,35 @@ class StaffPortalUser extends Authenticatable
         // ── Settings ──────────────────────────────────────────────────────────
         'settings'               => 'View Portal & School Settings',
         'settings_manage'        => 'Edit Portal Settings',
+
+        // ── Notifications (SMS) ───────────────────────────────────────────────
+        'notifications_sms'      => 'Send SMS Notifications (uses credits)',
+
+        // ── Fee Reminders ─────────────────────────────────────────────────────
+        'fee_reminders'          => 'View Fee Reminder Logs',
+        'fee_reminders_send'     => 'Send Fee Reminders (SMS / Email / WhatsApp)',
+
+        // ── Term Fee Ledger ───────────────────────────────────────────────────
+        'fees_term_ledger'       => 'View Term Fee Ledger',
+        'fees_term_bills'        => 'Create / Manage Term Fee Bills',
+
+        // ── Website CMS ───────────────────────────────────────────────────────
+        'website'                => 'View School Website CMS',
+        'website_manage'         => 'Edit Website Content (blog, events, gallery, staff)',
+        'website_settings'       => 'Edit Website Settings & Theme',
+        'website_applications'   => 'View & Manage Online Admissions',
+        'website_messages'       => 'View Contact Messages',
+
+        // ── Student Portal Settings ───────────────────────────────────────────
+        'portal_settings'        => 'View Student Portal Settings',
+        'portal_settings_manage' => 'Change Portal Mode & Theme',
+
+        // ── Subscription & Credits ────────────────────────────────────────────
+        'subscription'           => 'View Subscription & Credit Balance',
+
+        // ── Admins Management ─────────────────────────────────────────────────
+        'admins'                 => 'View School Administrators',
+        'admins_manage'          => 'Create / Edit School Administrators',
     ];
 
     /**
