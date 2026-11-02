@@ -125,11 +125,11 @@
         .card-hover{transition:all .12s cubic-bezier(.4,0,.2,1)}
         .card-hover:active{transform:scale(.98)}
         @media(min-width:1024px){.card-hover:hover{transform:translateY(-4px);box-shadow:0 22px 44px -16px rgba(15,23,42,.12),0 2px 6px rgba(15,23,42,.04)}}
-        .bottom-nav{background:#ffffff;border-top:1px solid rgba(15,23,42,.08);padding-bottom:env(safe-area-inset-bottom,0px)}
+        .bottom-nav{background:#ffffff;border-top:1px solid rgba(15,23,42,.08);padding-bottom:env(safe-area-inset-bottom,0px);box-shadow:0 -4px 20px -4px rgba(15,23,42,.12);}
         .bottom-nav-item.active .nav-icon{color:var(--brand-2);transform:scale(1.08)}
         .bottom-nav-item.active .nav-label{color:var(--brand-2);font-weight:700}
-        .bottom-nav-item .nav-icon{color:#64748b;font-size:1.1rem;transition:all .12s}
-        .bottom-nav-item .nav-label{color:#64748b;font-size:.6rem;margin-top:2px;transition:all .12s}
+        .bottom-nav-item .nav-icon{color:#64748b;font-size:1.2rem;transition:all .12s}
+        .bottom-nav-item .nav-label{color:#64748b;font-size:.62rem;margin-top:3px;transition:all .12s;font-weight:600;}
         ::-webkit-scrollbar{width:5px;height:5px}
         ::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:10px}
         ::-webkit-scrollbar-thumb:hover{background:#94a3b8}
@@ -207,9 +207,111 @@
         .to-primary-pale { --tw-gradient-to: var(--primary-pale) !important; }
         .peer:checked ~ .peer-checked\:border-brand { border-color: var(--brand) !important; }
         .peer:checked ~ .peer-checked\:bg-primary-pale { background: var(--primary-pale) !important; }
-        .file\:bg-primary-pale::file-selector-button { background: var(--primary-pale) !important; }
-        .file\:text-brand::file-selector-button { color: var(--brand) !important; }
-    </style>
+        /* ── MOBILE RESPONSIVE FIXES ──────────────────────────────────── */
+        /* Applied globally to all admin pages */
+
+        /* Page hero banner — stack on mobile */
+        @media(max-width:768px){
+            .page-hero-banner{
+                padding:1.1rem 1.25rem;
+                border-radius:.9rem;
+                margin-bottom:1rem;
+                flex-direction:column;
+                align-items:flex-start;
+                gap:.75rem;
+            }
+            .page-hero-banner h1{font-size:1.1rem;}
+            .page-hero-banner .hero-actions{width:100%;gap:.5rem;}
+            .btn-primary-action,.btn-secondary-action{
+                padding:.5rem .9rem;font-size:.78rem;flex:1;justify-content:center;
+            }
+        }
+
+        /* Stats grid — 2 col on mobile */
+        @media(max-width:640px){
+            .stats-grid{grid-template-columns:repeat(2,1fr);gap:.75rem;}
+            .stat-tile .st-val{font-size:1.3rem;}
+        }
+
+        /* Cards — reduce padding on mobile */
+        @media(max-width:640px){
+            .card{border-radius:1rem;padding:.875rem!important;}
+        }
+
+        /* Tables — horizontal scroll on mobile */
+        @media(max-width:768px){
+            table{min-width:600px;}
+            .table-wrap,.overflow-x-auto{-webkit-overflow-scrolling:touch;}
+            th,td{padding:.6rem .75rem!important;font-size:.75rem!important;}
+        }
+
+        /* Flex rows — stack on mobile */
+        @media(max-width:640px){
+            .flex.items-center.justify-between{flex-wrap:wrap;gap:.5rem;}
+            .flex.gap-2,.flex.gap-3,.flex.gap-4{flex-wrap:wrap;}
+        }
+
+        /* Grid cols — collapse on mobile */
+        @media(max-width:640px){
+            .grid-cols-2,.grid-cols-3,.grid-cols-4{grid-template-columns:1fr!important;}
+            .grid.grid-cols-2{grid-template-columns:repeat(2,1fr)!important;}
+            .sm\:grid-cols-2{grid-template-columns:1fr!important;}
+        }
+
+        /* Inputs — full width on mobile */
+        @media(max-width:640px){
+            input[type="text"],input[type="email"],input[type="number"],
+            input[type="date"],input[type="search"],select,textarea{
+                width:100%!important;max-width:100%!important;
+                font-size:16px!important; /* prevent zoom on iOS */
+            }
+        }
+
+        /* Buttons — readable size on mobile */
+        @media(max-width:640px){
+            .btn,.button,.btn-sm{
+                font-size:.8rem!important;
+                padding:.45rem .8rem!important;
+            }
+        }
+
+        /* Typography — scale down on mobile */
+        @media(max-width:640px){
+            .text-2xl{font-size:1.25rem!important;}
+            .text-xl{font-size:1.1rem!important;}
+            .text-3xl{font-size:1.4rem!important;}
+            h1.text-xl,h1.text-2xl{font-size:1.1rem!important;}
+        }
+
+        /* Page main padding on mobile */
+        @media(max-width:640px){
+            main{padding:.875rem!important;padding-bottom:5.5rem!important;}
+        }
+
+        /* Sub-section cards — tighten on mobile */
+        @media(max-width:640px){
+            .sub-section-body,.card-body{padding:.875rem!important;}
+            .sub-section-hd{padding:.75rem 1rem!important;}
+            .info-grid{grid-template-columns:repeat(2,1fr)!important;gap:.6rem!important;}
+            .info-tile{padding:.85rem!important;}
+            .info-tile .val{font-size:.95rem!important;}
+        }
+
+        /* Overflowing long text */
+        @media(max-width:640px){
+            code{word-break:break-all;font-size:.7rem;}
+            .truncate{max-width:140px;}
+        }
+
+        /* Header — tighter on mobile */
+        @media(max-width:640px){
+            header .text-base{font-size:.875rem!important;}
+        }
+
+        /* Bottom nav — ensure it doesn't overlap content */
+        @media(max-width:1024px){
+            main{padding-bottom:5.5rem!important;}
+        }
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
     <script>
