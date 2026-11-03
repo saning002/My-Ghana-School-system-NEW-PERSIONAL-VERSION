@@ -280,6 +280,7 @@ class PortalController extends Controller
 
         // Allow student to select a different session via query param
         $selectedSessionId = request()->query('session_id', $activeSessionId);
+        $selectedSession = null;
         if ($selectedSessionId) {
             $selectedSession = \App\Models\AcademicSession::find($selectedSessionId);
         }

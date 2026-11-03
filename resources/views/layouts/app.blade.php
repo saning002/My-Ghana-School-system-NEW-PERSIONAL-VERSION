@@ -312,6 +312,7 @@
         @media(max-width:1024px){
             main{padding-bottom:5.5rem!important;}
         }
+    </style>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
     <script>
