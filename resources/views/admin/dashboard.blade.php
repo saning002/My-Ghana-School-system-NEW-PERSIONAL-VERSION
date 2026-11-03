@@ -541,7 +541,7 @@ $firstName   = explode(' ', auth()->user()->full_name ?? 'Administrator')[0];
                     Daily Attendance Overview
                 </h3>
                 <p style="font-size:.7rem;color:rgba(255,255,255,.45);font-weight:500;">
-                    Green = students present &nbsp;|&nbsp; Red = students absent each day
+                    Each bar = one day — green shows students who came, red shows those absent
                 </p>
             </div>
             <span class="att-live-dot">
@@ -549,16 +549,22 @@ $firstName   = explode(' ', auth()->user()->full_name ?? 'Administrator')[0];
                 Live
             </span>
         </div>
+        {{-- Summary pills --}}
         <div class="px-6 pb-4 flex flex-wrap gap-3 mt-2">
             <div class="att-stat">
-                <span style="width:10px;height:10px;border-radius:50%;background:#34d399;flex-shrink:0"></span>
-                <span style="color:#a7f3d0;font-size:.7rem;">Present total: <strong id="att-p">–</strong></span>
+                <span style="width:11px;height:11px;border-radius:3px;background:#34d399;flex-shrink:0"></span>
+                <span style="color:#a7f3d0;font-size:.7rem;">Present (14 days): <strong id="att-p">–</strong></span>
             </div>
             <div class="att-stat">
-                <span style="width:10px;height:10px;border-radius:50%;background:#f87171;flex-shrink:0"></span>
-                <span style="color:#fca5a5;font-size:.7rem;">Absent total: <strong id="att-a">–</strong></span>
+                <span style="width:11px;height:11px;border-radius:3px;background:#f87171;flex-shrink:0"></span>
+                <span style="color:#fca5a5;font-size:.7rem;">Absent (14 days): <strong id="att-a">–</strong></span>
+            </div>
+            <div class="att-stat">
+                <span style="width:11px;height:11px;border-radius:50%;background:#facc15;flex-shrink:0"></span>
+                <span style="color:#fde68a;font-size:.7rem;">Period rate: <strong id="att-rate-val">–</strong></span>
             </div>
         </div>
+        {{-- Chart --}}
         <div class="att-chart-wrap" style="height:235px">
             <canvas id="chart-att"></canvas>
         </div>
@@ -841,35 +847,37 @@ new Chart(document.getElementById('chart-status'),{
 });
 
 /* ════════════════════════════════════════════════════════════
-   CHART 3 — DAILY ATTENDANCE  (dual-area line)
-   Chart type: Line with fill=true (smooth area)
-   Why: Shows the trend over 14 days clearly.
-        Tooltip shows exact counts for each day.
-        Green area = present, Red area = absent.
+   CHART 3 — DAILY ATTENDANCE  (grouped column — clearest for GH admin)
+   Each day = two side-by-side bars: Present (green) | Absent (red)
+   Tooltip shows plain English: "Oct 08 — 42 present, 6 absent"
    ════════════════════════════════════════════════════════════ */
 const attCtxEl = document.getElementById('chart-att');
 new Chart(attCtxEl,{
-    type:'line',
+    type:'bar',
     data:{
         labels:attLabels,
         datasets:[
             {
                 label:'Present',
                 data:presentArr,
-                borderColor:'#34d399',
-                backgroundColor(ctx){ return vGrad(ctx,ctx.chart, 52,211,153, .3,.02); },
-                pointBackgroundColor:'#34d399', pointBorderColor:'#fff',
-                pointBorderWidth:2, pointRadius:4, pointHoverRadius:7,
-                borderWidth:2.5, tension:0.4, fill:true,
+                backgroundColor:'rgba(52,211,153,.85)',
+                borderColor:'#10b981',
+                borderWidth:1.5,
+                borderRadius:{ topLeft:5,topRight:5 },
+                borderSkipped:false,
+                barPercentage:.8,
+                categoryPercentage:.7,
             },
             {
                 label:'Absent',
                 data:absentArr,
-                borderColor:'#f87171',
-                backgroundColor(ctx){ return vGrad(ctx,ctx.chart, 248,113,113, .25,.02); },
-                pointBackgroundColor:'#f87171', pointBorderColor:'#fff',
-                pointBorderWidth:2, pointRadius:4, pointHoverRadius:7,
-                borderWidth:2.5, tension:0.4, fill:true,
+                backgroundColor:'rgba(248,113,113,.85)',
+                borderColor:'#ef4444',
+                borderWidth:1.5,
+                borderRadius:{ topLeft:5,topRight:5 },
+                borderSkipped:false,
+                barPercentage:.8,
+                categoryPercentage:.7,
             }
         ]
     },
@@ -880,45 +888,63 @@ new Chart(attCtxEl,{
             legend:{
                 display:true, position:'top', align:'end',
                 labels:{
-                    color:'#64748b', boxWidth:10, boxHeight:10,
+                    color:'#64748b', boxWidth:11, boxHeight:11,
                     borderRadius:3, useBorderRadius:true,
-                    font:{size:10,weight:'700'}, padding:12,
+                    font:{size:10,weight:'700'}, padding:14,
                 }
             },
             tooltip:{
                 backgroundColor:'rgba(13,10,46,.94)',
-                titleColor: BRAND, bodyColor:'#e2e8f0',
-                padding:12, cornerRadius:12,
+                titleColor:'#a5f3fc', bodyColor:'#e2e8f0',
+                padding:13, cornerRadius:12,
                 callbacks:{
-                    title: ctx=>`Date: ${ctx[0].label}`,
-                    label: ctx=>`   ${ctx.dataset.label}: ${ctx.parsed.y} student${ctx.parsed.y!==1?'s':''}`
+                    title: ctx => `Date: ${ctx[0].label}`,
+                    label: ctx => {
+                        const n = ctx.parsed.y;
+                        return `   ${ctx.dataset.label}: ${n} student${n!==1?'s':''}`;
+                    },
+                    afterBody: ctx => {
+                        const p = ctx[0]?.parsed?.y ?? 0;
+                        const a = ctx[1]?.parsed?.y ?? 0;
+                        const tot = p + a;
+                        if(tot === 0) return '';
+                        const rate = Math.round(p/tot*100);
+                        return [``, `   Attendance rate: ${rate}%`];
+                    }
                 }
             }
         },
         scales:{
             x:{
-                grid:{display:false}, border:{display:false},
-                ticks:{ color:'#64748b', font:{size:9}, maxRotation:0, maxTicksLimit:10 }
+                grid:{ display:false },
+                border:{ display:false },
+                ticks:{ color:'#64748b', font:{size:9}, maxRotation:0, maxTicksLimit:14 }
             },
             y:{
-                beginAtZero:true, border:{display:false},
+                beginAtZero:true,
+                border:{ display:false },
                 grid:{ color:'rgba(148,163,184,.1)' },
                 ticks:{
                     color:'#64748b', font:{size:9},
-                    callback: v=>Number.isInteger(v)?v:''
+                    callback: v => Number.isInteger(v) ? v : ''
                 }
             }
         }
     }
 });
 
-/* Totals strip */
+/* Totals + rate strip */
 const tp=presentArr.reduce((a,b)=>a+b,0);
 const ta=absentArr.reduce((a,b)=>a+b,0);
 const elP=document.getElementById('att-p');
 const elA=document.getElementById('att-a');
+const elR=document.getElementById('att-rate-val');
 if(elP) elP.textContent=tp.toLocaleString();
 if(elA) elA.textContent=ta.toLocaleString();
+if(elR){
+    const tot14 = tp+ta;
+    elR.textContent = tot14>0 ? Math.min(100,Math.round(tp/tot14*100))+'%' : '–';
+}
 
 /* ════════════════════════════════════════════════════════════
    CHART 4 — FEE COLLECTION GAUGE  (doughnut half-ring)

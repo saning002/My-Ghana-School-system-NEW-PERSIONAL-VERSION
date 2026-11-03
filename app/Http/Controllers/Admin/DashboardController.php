@@ -37,44 +37,43 @@ class DashboardController extends Controller
             'total_courses'   => Course::count(),
         ];
 
-        // Overall attendance rate — deduplicated per student per date using a safe subquery
+        // Overall attendance rate — based on status column ('present'/'absent')
+        // attendances table has: student_id, date, status (enum: present|absent)
+        // No present_days/absent_days columns exist.
         try {
             if ($isBranchAdmin) {
-                $totalDeduped = \DB::selectOne("
-                    SELECT COUNT(*) as cnt FROM (
-                        SELECT student_id, date
-                        FROM attendances
-                        INNER JOIN students ON students.id = attendances.student_id
-                        WHERE students.church_branch_id = ?
-                        GROUP BY student_id, date
-                    ) sub
+                $totalRows = \DB::selectOne("
+                    SELECT COUNT(*) as cnt
+                    FROM attendances a
+                    INNER JOIN students s ON s.id = a.student_id
+                    WHERE s.church_branch_id = ?
                 ", [$branchId])->cnt ?? 0;
 
-                $presentDeduped = \DB::selectOne("
-                    SELECT SUM(present_days) as cnt FROM attendances
-                    INNER JOIN students ON students.id = attendances.student_id
-                    WHERE students.church_branch_id = ?
+                $presentRows = \DB::selectOne("
+                    SELECT COUNT(*) as cnt
+                    FROM attendances a
+                    INNER JOIN students s ON s.id = a.student_id
+                    WHERE s.church_branch_id = ?
+                      AND a.status = 'present'
                 ", [$branchId])->cnt ?? 0;
             } else {
-                $totalDeduped = \DB::selectOne("
-                    SELECT COUNT(*) as cnt FROM (
-                        SELECT student_id, date FROM attendances GROUP BY student_id, date
-                    ) sub
+                $totalRows = \DB::selectOne("
+                    SELECT COUNT(*) as cnt FROM attendances
                 ")->cnt ?? 0;
 
-                $presentDeduped = \DB::selectOne("
-                    SELECT SUM(present_days) as cnt FROM attendances
+                $presentRows = \DB::selectOne("
+                    SELECT COUNT(*) as cnt FROM attendances WHERE status = 'present'
                 ")->cnt ?? 0;
             }
-            $attendanceRate = $totalDeduped > 0 ? round(($presentDeduped / $totalDeduped) * 100) : 0;
+            $attendanceRate = $totalRows > 0 ? min(100, round(($presentRows / $totalRows) * 100)) : 0;
         } catch (\Throwable $e) {
             \Log::warning('Attendance rate query failed: ' . $e->getMessage());
-            // Safe fallback using present_days/absent_days columns
             try {
-                $presentDays = Attendance::when($isBranchAdmin, fn($q) => $q->whereHas('student', fn($s) => $s->where('church_branch_id', $branchId)))->sum('present_days');
-                $absentDays  = Attendance::when($isBranchAdmin, fn($q) => $q->whereHas('student', fn($s) => $s->where('church_branch_id', $branchId)))->sum('absent_days');
-                $totalDays   = $presentDays + $absentDays;
-                $attendanceRate = $totalDays > 0 ? round(($presentDays / $totalDays) * 100) : 0;
+                $q = Attendance::when($isBranchAdmin, fn($q) => $q->whereHas('student',
+                    fn($s) => $s->where('church_branch_id', $branchId)));
+                $total   = (clone $q)->count();
+                $present = (clone $q)->where('status', 'present')->count();
+                $attendanceRate = $total > 0 ? min(100, round(($present / $total) * 100)) : 0;
             } catch (\Throwable $e2) {
                 $attendanceRate = 0;
             }
@@ -96,26 +95,30 @@ class DashboardController extends Controller
         try {
             $since = now()->subDays(13)->toDateString();
 
-            // Raw SQL subquery — works on PostgreSQL and MySQL without mergeBindings
+            // Count rows by status — schema has status enum('present','absent'), no present_days column
             if ($isBranchAdmin) {
                 $rows = \DB::select("
-                    SELECT date,
-                        SUM(a.present_days) as present_count,
-                        SUM(a.absent_days)  as absent_count
+                    SELECT
+                        a.date,
+                        COUNT(CASE WHEN a.status = 'present' THEN 1 END) AS present_count,
+                        COUNT(CASE WHEN a.status = 'absent'  THEN 1 END) AS absent_count
                     FROM attendances a
                     INNER JOIN students s ON s.id = a.student_id
                     WHERE a.date >= ?
                       AND s.church_branch_id = ?
-                    GROUP BY date
+                    GROUP BY a.date
+                    ORDER BY a.date ASC
                 ", [$since, $branchId]);
             } else {
                 $rows = \DB::select("
-                    SELECT date,
-                        SUM(present_days) as present_count,
-                        SUM(absent_days)  as absent_count
+                    SELECT
+                        date,
+                        COUNT(CASE WHEN status = 'present' THEN 1 END) AS present_count,
+                        COUNT(CASE WHEN status = 'absent'  THEN 1 END) AS absent_count
                     FROM attendances
                     WHERE date >= ?
                     GROUP BY date
+                    ORDER BY date ASC
                 ", [$since]);
             }
 
