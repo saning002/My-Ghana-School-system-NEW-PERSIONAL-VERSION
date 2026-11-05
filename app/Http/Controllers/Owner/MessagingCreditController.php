@@ -121,6 +121,9 @@ class MessagingCreditController extends Controller
             $tenant->id
         );
 
+        // Alert owner if Arkesel balance is low relative to what was just allocated
+        $this->checkAndAlertArkeselBalance((int) $validated['sms_credits'], $tenant->name);
+
         return back()->with('success', "Credits added to {$tenant->name} ({$branchLabel}).");
     }
 
@@ -321,6 +324,9 @@ class MessagingCreditController extends Controller
                 $tx->tenant_id
             );
 
+            // Alert owner if Arkesel balance is low relative to what was just allocated
+            $this->checkAndAlertArkeselBalance((int) $package->sms_credits, $tx->tenant->name ?? 'Unknown School');
+
             return view('paystack.status', [
                 'status'      => 'success',
                 'message'     => "Credits added! SMS: +{$package->sms_credits} | WhatsApp: +{$package->whatsapp_credits}",
@@ -352,7 +358,88 @@ class MessagingCreditController extends Controller
         ]);
     }
 
-    // ── Receipt ────────────────────────────────────────────────────────────
+    // ── Private: check Arkesel balance and alert owner if low ─────────────
+
+    /**
+     * Fetch the owner's Arkesel balance and send an email alert if the
+     * balance has dropped below the requested SMS credits.
+     * Called after every credit allocation so you never miss a low-stock situation.
+     */
+    private function checkAndAlertArkeselBalance(int $smsCreditsJustAllocated, string $schoolName): void
+    {
+        try {
+            $apiKey = env('ARKESEL_API_KEY', '');
+            if (empty($apiKey)) {
+                return; // Not configured — nothing to check
+            }
+
+            $res = \Illuminate\Support\Facades\Http::timeout(8)
+                ->withHeaders(['api-key' => $apiKey])
+                ->get('https://sms.arkesel.com/api/v2/clients/balance-details');
+
+            if (!$res->successful()) {
+                return;
+            }
+
+            $data       = $res->json();
+            $balance    = (float) ($data['data']['sms_balance']
+                                ?? $data['data']['balance']
+                                ?? $data['sms_balance']
+                                ?? 0);
+
+            // Alert thresholds:
+            // 1. Balance is LESS than what was just allocated
+            // 2. Balance falls below 200 credits (configurable via env LOW_SMS_BALANCE_THRESHOLD)
+            $threshold      = (int) env('LOW_SMS_BALANCE_THRESHOLD', 200);
+            $isBelowRequest = $balance < $smsCreditsJustAllocated;
+            $isBelowThreshold = $balance <= $threshold;
+
+            if (!$isBelowRequest && !$isBelowThreshold) {
+                return; // Balance is fine — no alert needed
+            }
+
+            // Get owner email
+            $owner = \App\Models\OwnerUser::first();
+            if (!$owner?->email) {
+                return;
+            }
+
+            $subject = $isBelowRequest
+                ? "⚠️ URGENT: Arkesel balance too low to cover {$schoolName}'s request"
+                : "⚠️ Low Arkesel SMS Balance — Top Up Required";
+
+            $body = $isBelowRequest
+                ? "A credit allocation was just made to <strong>{$schoolName}</strong>.<br><br>"
+                  . "<strong>Credits just allocated:</strong> {$smsCreditsJustAllocated}<br>"
+                  . "<strong>Your Arkesel balance:</strong> " . number_format($balance) . " credits<br><br>"
+                  . "⚠️ <strong>Your Arkesel balance is lower than what was allocated.</strong> "
+                  . "The school's credits have been recorded in the system, but you need to top up "
+                  . "your Arkesel account immediately so their messages can actually be delivered.<br><br>"
+                  . "<a href='https://arkesel.com/login' style='background:#dc2626;color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:bold;'>→ Top Up on Arkesel Now</a>"
+                : "Your Arkesel SMS balance has dropped to <strong>" . number_format($balance) . " credits</strong>, "
+                  . "which is at or below your alert threshold of {$threshold}.<br><br>"
+                  . "A credit allocation of <strong>{$smsCreditsJustAllocated} SMS</strong> was just made to {$schoolName}.<br><br>"
+                  . "Top up your Arkesel account to ensure schools can continue sending messages without interruption.<br><br>"
+                  . "<a href='https://arkesel.com/login' style='background:#d97706;color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:bold;'>→ Top Up on Arkesel</a>";
+
+            \Illuminate\Support\Facades\Mail::html(
+                "<html><body style='font-family:Arial,sans-serif;font-size:14px;color:#1e293b;padding:24px;'>"
+                . "<h2 style='color:" . ($isBelowRequest ? '#dc2626' : '#d97706') . ";'>{$subject}</h2>"
+                . "<p>{$body}</p>"
+                . "<hr style='border:1px solid #f1f5f9;margin-top:32px;'>"
+                . "<p style='font-size:11px;color:#94a3b8;'>Sent automatically by your School Management System.</p>"
+                . "</body></html>",
+                fn ($m) => $m->to($owner->email, $owner->name ?? 'Owner')
+                             ->subject($subject)
+            );
+
+            \Log::info("Arkesel low-balance alert sent to {$owner->email}. Balance: {$balance}, Allocated: {$smsCreditsJustAllocated}");
+
+        } catch (\Throwable $e) {
+            // Never crash the credit allocation if alert fails
+            \Log::warning('Arkesel balance alert failed: ' . $e->getMessage());
+        }
+    }
 
     public function receipt(MessagingCreditPayment $payment)
     {
