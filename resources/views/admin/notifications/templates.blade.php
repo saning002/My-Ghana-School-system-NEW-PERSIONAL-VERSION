@@ -48,11 +48,11 @@
             </div>
 
             <div class="sc-body space-y-4">
-                <form method="POST" :action="editId
-                    ? '{{ url('admin/notifications/templates') }}/' + editId
-                    : '{{ route('admin.notifications.templates.store') }}'">
+                <form method="POST"
+                      action="{{ route('admin.notifications.templates.store') }}"
+                      id="tpl-form">
                     @csrf
-                    <input type="hidden" name="_method" :value="editId ? 'PUT' : 'POST'">
+                    <input type="hidden" name="_method" value="POST" id="tpl-method">
 
                     {{-- Template name --}}
                     <div>
@@ -289,6 +289,14 @@ function templateForm() {
         resetForm() {
             this.editId = null;
             this.form   = { name:'', category:'general', title:'', body:'' };
+
+            // Reset the form action back to store route
+            const formEl = document.getElementById('tpl-form');
+            if (formEl) formEl.action = '{{ route('admin.notifications.templates.store') }}';
+
+            const methodInput = document.getElementById('tpl-method');
+            if (methodInput) methodInput.value = 'POST';
+
             // Clear the raw textarea too
             const ta = document.getElementById('tpl-body');
             if (ta) { ta.value = ''; }
@@ -304,8 +312,15 @@ function templateForm() {
 
 // ── Edit — fill form from row data ────────────────────────────────────────
 function editTemplate(id, name, category, title, body) {
-    const formEl = document.getElementById('template-form-card');
+    const formEl = document.getElementById('tpl-form');
     if (!formEl) return;
+
+    // Set the form action to the update URL with the ID
+    formEl.action = '{{ url('admin/notifications/templates') }}/' + id;
+
+    // Set _method to PUT for Laravel route model binding
+    const methodInput = document.getElementById('tpl-method');
+    if (methodInput) methodInput.value = 'PUT';
 
     // Find the Alpine component that owns the form card
     const alpineEl = formEl.querySelector('[x-data]') ?? formEl;
