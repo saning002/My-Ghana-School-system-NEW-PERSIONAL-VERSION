@@ -48,13 +48,11 @@
             </div>
 
             <div class="sc-body space-y-4">
-                    <form method="POST" :action="editId
+                <form method="POST" :action="editId
                     ? '{{ url('admin/notifications/templates') }}/' + editId
                     : '{{ route('admin.notifications.templates.store') }}'">
                     @csrf
-                    <span x-show="editId" x-cloak>
-                        <input type="hidden" name="_method" value="PUT">
-                    </span>
+                    <input type="hidden" name="_method" :value="editId ? 'PUT' : 'POST'">
 
                     {{-- Template name --}}
                     <div>
