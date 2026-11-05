@@ -1601,19 +1601,16 @@ Route::get('/health-check', [\App\Http\Controllers\HealthCheckController::class,
 Route::get('/setup/migrate-notification-templates', function () {
     $results = [];
 
-    // 1. Run on main DB (in case any global migrations exist)
-    try {
-        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
-        $results[] = '✅ Main DB migrations ran: ' . trim(\Illuminate\Support\Facades\Artisan::output());
-    } catch (\Throwable $e) {
-        $results[] = '⚠️ Main DB error: ' . $e->getMessage();
-    }
+    $migrationPaths = [
+        'database/migrations/2026_11_01_000001_create_notification_templates_table.php',
+        'database/migrations/2026_11_01_000002_create_attendance_alert_settings_table.php',
+    ];
 
-    // 2. Run on every tenant DB
     $tenants = \App\Models\Tenant::whereNotNull('db_name')->get();
+
     foreach ($tenants as $tenant) {
         try {
-            // Configure tenant connection
+            // Configure tenant connection dynamically
             config(['database.connections.tenant' => [
                 'driver'   => 'pgsql',
                 'host'     => $tenant->db_host,
@@ -1629,17 +1626,53 @@ Route::get('/setup/migrate-notification-templates', function () {
             \Illuminate\Support\Facades\DB::purge('tenant');
             \Illuminate\Support\Facades\DB::reconnect('tenant');
 
-            \Illuminate\Support\Facades\Artisan::call('migrate', [
-                '--force'    => true,
-                '--database' => 'tenant',
-            ]);
-            $results[] = "✅ [{$tenant->name}] Tenant migrations ran: " . trim(\Illuminate\Support\Facades\Artisan::output());
+            $tenantResults = [];
+
+            foreach ($migrationPaths as $path) {
+                $tableName = '';
+                if (str_contains($path, 'notification_templates')) {
+                    $tableName = 'notification_templates';
+                } elseif (str_contains($path, 'attendance_alert_settings')) {
+                    $tableName = 'attendance_alert_settings';
+                }
+
+                // Check if table already exists — skip if it does
+                $exists = \Illuminate\Support\Facades\DB::connection('tenant')
+                    ->select("SELECT to_regclass('public.{$tableName}') as tbl");
+
+                if (!empty($exists[0]->tbl)) {
+                    $tenantResults[] = "⏭ {$tableName} — already exists, skipped";
+                    continue;
+                }
+
+                // Run only this specific migration file
+                \Illuminate\Support\Facades\Artisan::call('migrate', [
+                    '--force'    => true,
+                    '--database' => 'tenant',
+                    '--path'     => $path,
+                ]);
+
+                $output = trim(\Illuminate\Support\Facades\Artisan::output());
+                $tenantResults[] = "✅ {$tableName} — created. " . $output;
+            }
+
+            $results[] = "<strong>[{$tenant->name}]</strong>";
+            foreach ($tenantResults as $tr) {
+                $results[] = "&nbsp;&nbsp;{$tr}";
+            }
+
         } catch (\Throwable $e) {
             $results[] = "⚠️ [{$tenant->name}] Error: " . $e->getMessage();
         }
     }
 
-    return response('<pre>' . implode("\n", $results) . '</pre>');
+    return response(
+        '<html><body style="font-family:monospace;padding:20px;background:#0f172a;color:#e2e8f0;">'
+        . '<h2 style="color:#34d399">Notification Templates Migration</h2>'
+        . '<pre>' . implode("\n", $results) . '</pre>'
+        . '<br><a href="/setup/clear-cache" style="color:#60a5fa">→ Clear cache now</a>'
+        . '</body></html>'
+    );
 });
 
 // ── Clear all caches (view, config, route, opcache) ───────────────────────
