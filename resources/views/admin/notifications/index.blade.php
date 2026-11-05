@@ -4,110 +4,174 @@
 
 @section('content')
 
-<div class="page-hero-banner">
+{{-- ── Hero ──────────────────────────────────────────────────────────────── --}}
+<div class="page-hero-banner mb-5">
     <div class="hero-left">
-        <h1><i class="fas fa-bell mr-2" style="color:var(--primary);"></i>{{ $sidebarLabels['notifications'] ?? 'Notifications' }}</h1>
+        <h1><i class="fas fa-bell mr-2" style="color:var(--brand)"></i>{{ $sidebarLabels['notifications'] ?? 'Notifications' }}</h1>
         <p>Send alerts and messages to students and teachers</p>
+    </div>
+    <div class="hero-actions">
+        <a href="{{ route('admin.notifications.templates.index') }}" class="btn-secondary-action">
+            <i class="fas fa-file-alt"></i> Message Templates
+        </a>
     </div>
 </div>
 
-<div class="grid grid-cols-1 lg:grid-cols-5 gap-5">
+{{-- ── Flash ────────────────────────────────────────────────────────────────── --}}
+@if(session('success'))
+<div class="flex items-center gap-3 px-5 py-3.5 rounded-2xl bg-green-50 border border-green-200 text-green-800 text-sm font-semibold mb-5">
+    <i class="fas fa-check-circle text-green-500 flex-shrink-0"></i> {{ session('success') }}
+</div>
+@endif
+@if(session('warning'))
+<div class="flex items-center gap-3 px-5 py-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-amber-800 text-sm font-semibold mb-5">
+    <i class="fas fa-exclamation-triangle text-amber-500 flex-shrink-0"></i> {{ session('warning') }}
+</div>
+@endif
 
-    {{-- �"?�"? SEND FORM �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
+<div class="grid grid-cols-1 lg:grid-cols-5 gap-5"
+     x-data="{
+        recipientType: '{{ old('recipient_type','student') }}',
+        audience: '{{ old('audience','all') }}',
+        showPicker: false,
+     }">
+
+    {{-- ════════════════════════════════════════════════════════════════════════
+         SEND FORM  — left 2 cols
+    ════════════════════════════════════════════════════════════════════════ --}}
     <div class="lg:col-span-2">
-        <div class="card overflow-hidden sticky top-20"
-             x-data="{
-                recipientType: '{{ old('recipient_type', 'student') }}',
-                audience: '{{ old('audience', 'all') }}'
-             }">
-            <div class="px-5 py-4 border-b border-[var(--primary-pale)]" style="background:var(--primary-pale)">
-                <h3 class="text-sm font-bold" style="color:var(--primary-text)">
-                    <i class="fas fa-paper-plane mr-2"></i>Send Notification
-                </h3>
+        <div class="sc sticky top-20">
+
+            {{-- Card header --}}
+            <div class="sc-hd">
+                <div>
+                    <p class="sc-title">Send Notification</p>
+                    <p class="sc-sub">Compose or pick a saved template</p>
+                </div>
+                @if($templates->isNotEmpty())
+                <button type="button" @click="showPicker = !showPicker"
+                        class="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-lg border transition-all whitespace-nowrap"
+                        :class="showPicker
+                            ? 'border-[var(--brand)] bg-[var(--primary-pale)] text-[var(--brand)]'
+                            : 'border-slate-200 bg-white text-slate-500 hover:border-[var(--brand)]'">
+                    <i class="fas fa-file-alt text-[10px]"></i> Use Template
+                    <i class="fas fa-chevron-down text-[9px] transition-transform duration-200"
+                       :class="showPicker ? 'rotate-180':''"></i>
+                </button>
+                @endif
             </div>
+
+            {{-- ── Template picker ──────────────────────────────────────── --}}
+            @if($templates->isNotEmpty())
+            <div x-show="showPicker" x-cloak
+                 x-transition:enter="transition ease-out duration-150"
+                 x-transition:enter-start="opacity-0 -translate-y-1"
+                 x-transition:enter-end="opacity-100 translate-y-0"
+                 class="border-b border-slate-100 bg-slate-50 px-5 py-4">
+                <p class="text-xs font-bold text-slate-500 uppercase tracking-wide mb-2.5">
+                    Choose a template — it will fill the form instantly
+                </p>
+                <div class="space-y-1.5 max-h-52 overflow-y-auto pr-0.5">
+                    @php
+                    $cc = [
+                        'general'    => ['#ede9fe','#7c3aed'],
+                        'attendance' => ['#cffafe','#0891b2'],
+                        'fee'        => ['#fef3c7','#d97706'],
+                        'results'    => ['#dcfce7','#16a34a'],
+                        'custom'     => ['#f1f5f9','#475569'],
+                    ];
+                    @endphp
+                    @foreach($templates as $tpl)
+                    @php [$cbg,$clr] = $cc[$tpl->category] ?? $cc['custom']; @endphp
+                    <button type="button"
+                            @click="showPicker = false"
+                            onclick="applyTemplate({{ json_encode($tpl->title) }}, {{ json_encode($tpl->body) }})"
+                            class="w-full text-left flex items-center gap-3 px-3 py-2.5 rounded-xl border border-transparent
+                                   hover:border-[var(--brand)] hover:bg-white transition-all group">
+                        <span class="flex-shrink-0 text-[10px] font-bold px-2 py-0.5 rounded-full"
+                              style="background:{{ $cbg }};color:{{ $clr }}">{{ ucfirst($tpl->category) }}</span>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-xs font-bold text-slate-800 truncate group-hover:text-[var(--brand)] transition-colors">{{ $tpl->name }}</p>
+                            <p class="text-[10px] text-slate-400 truncate">{{ Str::limit($tpl->title, 52) }}</p>
+                        </div>
+                        <i class="fas fa-arrow-right text-[10px] text-slate-300 group-hover:text-[var(--brand)] flex-shrink-0 transition-colors"></i>
+                    </button>
+                    @endforeach
+                </div>
+                <a href="{{ route('admin.notifications.templates.index') }}"
+                   class="mt-3 inline-flex items-center gap-1.5 text-[11px] font-semibold hover:underline"
+                   style="color:var(--brand)">
+                    <i class="fas fa-plus-circle text-[10px]"></i> Create a new template
+                </a>
+            </div>
+            @endif
+
+            {{-- ── The form ─────────────────────────────────────────────── --}}
             <form method="POST" action="{{ route('admin.notifications.store') }}" class="px-5 py-5 space-y-4">
                 @csrf
 
                 @if($errors->any())
-                <div class="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-xs text-red-700 space-y-1">
-                    @foreach($errors->all() as $e)<div>–� {{ $e }}</div>@endforeach
+                <div class="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-xs text-red-700 space-y-0.5">
+                    @foreach($errors->all() as $e)<p>• {{ $e }}</p>@endforeach
                 </div>
                 @endif
 
-                {{-- �"?�"? Step 1: Who to notify �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
+                {{-- Who to notify --}}
                 <div>
-                    <label class="block text-xs font-semibold text-gray-600 mb-2">Notify *</label>
+                    <label class="form-label">Notify <span class="text-red-400">*</span></label>
                     <div class="grid grid-cols-2 gap-2">
+                        @foreach([['student','fa-user-graduate','Students','Student portal'],['lecturer','fa-chalkboard-user','Teachers','Teacher portal']] as [$val,$icon,$lbl,$sub])
                         <label class="cursor-pointer">
-                            <input type="radio" name="recipient_type" value="student"
-                                   x-model="recipientType" class="sr-only peer">
+                            <input type="radio" name="recipient_type" value="{{ $val }}"
+                                   x-model="recipientType" class="sr-only peer"
+                                   {{ old('recipient_type','student') === $val ? 'checked' : '' }}>
                             <div class="flex items-center gap-2 p-3 rounded-xl border-2 transition-all
-                                        peer-checked:border-[var(--brand)] peer-checked:bg-[var(--primary-pale)] border-gray-200">
-                                <i class="fas fa-user-graduate text-sm" style="color:var(--brand)"></i>
+                                        peer-checked:border-[var(--brand)] peer-checked:bg-[var(--primary-pale)] border-slate-200">
+                                <i class="fas {{ $icon }} text-sm" style="color:var(--brand)"></i>
                                 <div>
-                                    <p class="text-xs font-bold text-gray-800">Students</p>
-                                    <p class="text-xs text-gray-400">Student portal</p>
+                                    <p class="text-xs font-bold text-slate-800">{{ $lbl }}</p>
+                                    <p class="text-xs text-slate-400">{{ $sub }}</p>
                                 </div>
                             </div>
                         </label>
-                        <label class="cursor-pointer">
-                            <input type="radio" name="recipient_type" value="lecturer"
-                                   x-model="recipientType" class="sr-only peer">
-                            <div class="flex items-center gap-2 p-3 rounded-xl border-2 transition-all
-                                        peer-checked:border-purple-500 peer-checked:bg-purple-50 border-gray-200">
-                                <i class="fas fa-chalkboard-user text-sm text-purple-600"></i>
-                                <div>
-                                    <p class="text-xs font-bold text-gray-800">Teachers</p>
-                                    <p class="text-xs text-gray-400">Teacher portal</p>
-                                </div>
-                            </div>
-                        </label>
+                        @endforeach
                     </div>
                 </div>
 
-                {{-- �"?�"? Step 2: Audience scope �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
+                {{-- Audience --}}
                 <div>
-                    <label class="block text-xs font-semibold text-gray-600 mb-2">Send To *</label>
+                    <label class="form-label">Send To <span class="text-red-400">*</span></label>
                     <div class="grid grid-cols-2 gap-2">
+                        @foreach([['all','fa-users','All'],['individual','fa-user','Individual']] as [$val,$icon,$lbl])
                         <label class="cursor-pointer">
-                            <input type="radio" name="audience" value="all"
-                                   x-model="audience" class="sr-only peer" checked>
+                            <input type="radio" name="audience" value="{{ $val }}"
+                                   x-model="audience" class="sr-only peer"
+                                   {{ old('audience','all') === $val ? 'checked' : '' }}>
                             <div class="flex items-center gap-2 p-3 rounded-xl border-2 transition-all
-                                        peer-checked:border-[var(--brand)] peer-checked:bg-[var(--primary-pale)] border-gray-200">
-                                <i class="fas fa-users text-sm" style="color:var(--brand)"></i>
+                                        peer-checked:border-[var(--brand)] peer-checked:bg-[var(--primary-pale)] border-slate-200">
+                                <i class="fas {{ $icon }} text-sm" style="color:var(--brand)"></i>
                                 <div>
-                                    <p class="text-xs font-bold text-gray-800">All</p>
-                                    <p class="text-xs text-gray-400" x-text="recipientType === 'lecturer' ? 'All teachers' : 'All students'"></p>
+                                    <p class="text-xs font-bold text-slate-800">{{ $lbl }}</p>
+                                    @if($val === 'all')
+                                    <p class="text-xs text-slate-400" x-text="recipientType==='lecturer' ? 'All teachers' : 'All students'"></p>
+                                    @else
+                                    <p class="text-xs text-slate-400">One person</p>
+                                    @endif
                                 </div>
                             </div>
                         </label>
-                        <label class="cursor-pointer">
-                            <input type="radio" name="audience" value="individual"
-                                   x-model="audience" class="sr-only peer">
-                            <div class="flex items-center gap-2 p-3 rounded-xl border-2 transition-all
-                                        peer-checked:border-[var(--brand)] peer-checked:bg-[var(--primary-pale)] border-gray-200">
-                                <i class="fas fa-user text-sm" style="color:var(--brand)"></i>
-                                <div>
-                                    <p class="text-xs font-bold text-gray-800">Individual</p>
-                                    <p class="text-xs text-gray-400">One person</p>
-                                </div>
-                            </div>
-                        </label>
+                        @endforeach
                     </div>
 
-                    {{-- Student picker --}}
-                    <div class="mt-3" x-show="audience === 'individual' && recipientType === 'student'" x-cloak>
+                    <div class="mt-3" x-show="audience==='individual' && recipientType==='student'" x-cloak>
                         <x-student-search name="student_id" placeholder="Search student..." :required="false" />
                     </div>
-
-                    {{-- Lecturer picker --}}
-                    <div class="mt-3" x-show="audience === 'individual' && recipientType === 'lecturer'" x-cloak>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">Select Teacher *</label>
-                        <select name="lecturer_id"
-                                class="w-full px-4 py-3 border border-[var(--brand)] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 bg-white">
-                            <option value="">– Choose a teacher –</option>
+                    <div class="mt-3" x-show="audience==='individual' && recipientType==='lecturer'" x-cloak>
+                        <label class="form-label">Select Teacher <span class="text-red-400">*</span></label>
+                        <select name="lecturer_id" class="form-input">
+                            <option value="">— Choose a teacher —</option>
                             @foreach($lecturers as $lecturer)
-                            <option value="{{ $lecturer->id }}" {{ old('lecturer_id') == $lecturer->id ? 'selected' : '' }}>
+                            <option value="{{ $lecturer->id }}" {{ old('lecturer_id')==$lecturer->id ? 'selected':'' }}>
                                 {{ $lecturer->full_name }}
                             </option>
                             @endforeach
@@ -115,176 +179,204 @@
                     </div>
                 </div>
 
-                {{-- �"?�"? Type �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
-                
-                {{-- Channel Selector --}}
+                {{-- Channel --}}
                 <div>
-                    <label class="block text-xs font-semibold text-gray-600 mb-2">Delivery Channel *</label>
+                    <label class="form-label">Delivery Channel <span class="text-red-400">*</span></label>
                     <div class="grid grid-cols-3 gap-2">
                         <label class="cursor-pointer">
                             <input type="radio" name="channel" value="in_app" class="sr-only peer" checked>
-                            <div class="flex flex-col items-center gap-1 p-2.5 rounded-xl border-2 transition-all text-center peer-checked:border-[var(--brand)] peer-checked:bg-[var(--primary-pale)] border-gray-200">
+                            <div class="flex flex-col items-center gap-1 p-2.5 rounded-xl border-2 text-center transition-all
+                                        peer-checked:border-[var(--brand)] peer-checked:bg-[var(--primary-pale)] border-slate-200">
                                 <i class="fas fa-bell text-sm" style="color:var(--brand)"></i>
-                                <p class="text-xs font-bold text-gray-800">In-App</p>
-                                <p class="text-[10px] text-gray-400">Portal only</p>
+                                <p class="text-xs font-bold text-slate-800">In-App</p>
+                                <p class="text-[10px] text-slate-400">Portal only</p>
                             </div>
                         </label>
                         <label class="cursor-pointer {{ $smsAvailable ? '' : 'opacity-50' }}">
-                            <input type="radio" name="channel" value="sms" class="sr-only peer" {{ $smsAvailable ? '' : 'disabled' }}>
-                            <div class="flex flex-col items-center gap-1 p-2.5 rounded-xl border-2 transition-all text-center peer-checked:border-emerald-500 peer-checked:bg-emerald-50 border-gray-200">
+                            <input type="radio" name="channel" value="sms"
+                                   class="sr-only peer" {{ $smsAvailable ? '' : 'disabled' }}>
+                            <div class="flex flex-col items-center gap-1 p-2.5 rounded-xl border-2 text-center transition-all
+                                        peer-checked:border-emerald-500 peer-checked:bg-emerald-50 border-slate-200">
                                 <i class="fas fa-sms text-sm text-emerald-600"></i>
-                                <p class="text-xs font-bold text-gray-800">SMS Only</p>
-                                <p class="text-[10px] text-gray-400">{{ $smsAvailable ? $smsCredits . ' credits' : 'No credits' }}</p>
+                                <p class="text-xs font-bold text-slate-800">SMS Only</p>
+                                <p class="text-[10px] text-slate-400">
+                                    {{ $smsAvailable ? $smsCredits.' credits' : 'No credits' }}
+                                </p>
                             </div>
                         </label>
                         <label class="cursor-pointer {{ $smsAvailable ? '' : 'opacity-50' }}">
-                            <input type="radio" name="channel" value="both" class="sr-only peer" {{ $smsAvailable ? '' : 'disabled' }}>
-                            <div class="flex flex-col items-center gap-1 p-2.5 rounded-xl border-2 transition-all text-center peer-checked:border-blue-500 peer-checked:bg-blue-50 border-gray-200">
+                            <input type="radio" name="channel" value="both"
+                                   class="sr-only peer" {{ $smsAvailable ? '' : 'disabled' }}>
+                            <div class="flex flex-col items-center gap-1 p-2.5 rounded-xl border-2 text-center transition-all
+                                        peer-checked:border-blue-500 peer-checked:bg-blue-50 border-slate-200">
                                 <i class="fas fa-share-alt text-sm text-blue-600"></i>
-                                <p class="text-xs font-bold text-gray-800">Both</p>
-                                <p class="text-[10px] text-gray-400">App + SMS</p>
+                                <p class="text-xs font-bold text-slate-800">Both</p>
+                                <p class="text-[10px] text-slate-400">App + SMS</p>
                             </div>
                         </label>
                     </div>
                     @if(!$smsAvailable)
                     <p class="text-[10px] text-amber-600 mt-1.5 flex items-center gap-1">
                         <i class="fas fa-exclamation-triangle"></i>
-                        SMS unavailable â€” {{ $smsCredits === 0 ? 'top up credits in Subscription' : 'no SMS provider configured' }}
+                        {{ $smsCredits === 0 ? 'Top up SMS credits in Subscription' : 'No SMS provider configured' }}
                     </p>
                     @endif
                 </div>
-<div>
-                    <label class="block text-xs font-semibold text-gray-600 mb-2">Notification Type *</label>
-                    <select name="type" required
-                            class="w-full px-4 py-3 border border-[var(--brand)] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
+
+                {{-- Type --}}
+                <div>
+                    <label class="form-label">Notification Type <span class="text-red-400">*</span></label>
+                    <select name="type" required class="form-input">
                         <option value="general">General Announcement</option>
                         <option value="fee">Fee Reminder</option>
                         <option value="emergency">Emergency Alert</option>
-                        <option value="result">�Y"< Result Notice</option>
+                        <option value="result">Result Notice</option>
                         <option value="attendance">Attendance Notice</option>
                     </select>
                 </div>
 
-                {{-- �"?�"? Title �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
+                {{-- Title --}}
                 <div>
-                    <label class="block text-xs font-semibold text-gray-600 mb-2">Title *</label>
-                    <input type="text" name="title" value="{{ old('title') }}" required
-                           class="w-full px-4 py-3 border border-[var(--brand)] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
+                    <label class="form-label">Title / Subject <span class="text-red-400">*</span></label>
+                    <input type="text" name="title" id="notif-title"
+                           value="{{ old('title','') }}" required
+                           class="form-input"
                            placeholder="e.g. Important Announcement">
                 </div>
 
-                {{-- �"?�"? Message �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
+                {{-- Message --}}
                 <div>
-                    <label class="block text-xs font-semibold text-gray-600 mb-2">Message *</label>
-                    <textarea name="message" rows="4" required
-                              class="w-full px-4 py-3 border border-[var(--brand)] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white resize-none"
-                              placeholder="Write your message here...">{{ old('message') }}</textarea>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label class="form-label mb-0">Message <span class="text-red-400">*</span></label>
+                        <span class="text-[10px] text-slate-400 font-semibold" id="msg-counter">
+                            {{ strlen(old('message','')) }} / 3000
+                        </span>
+                    </div>
+                    <textarea name="message" id="notif-message" rows="5" required
+                              class="form-input resize-none"
+                              oninput="document.getElementById('msg-counter').textContent=this.value.length+' / 3000'"
+                              placeholder="Write your message here...">{{ old('message','') }}</textarea>
+                    <p class="text-[10px] text-slate-400 mt-1">
+                        <i class="fas fa-info-circle mr-0.5"></i>
+                        To use smart placeholders like {student_name}, save a template first.
+                    </p>
                 </div>
 
-                <button type="submit" class="btn-gold w-full py-3 rounded-xl text-sm font-bold shadow-sm">
-                    <i class="fas fa-paper-plane mr-2"></i> Send Notification
+                <button type="submit"
+                        class="btn-primary-action w-full justify-center py-3 rounded-xl text-sm font-bold">
+                    <i class="fas fa-paper-plane mr-1.5"></i> Send Notification
                 </button>
+
+                @if($templates->isEmpty())
+                <a href="{{ route('admin.notifications.templates.index') }}"
+                   class="flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-semibold text-slate-500
+                          border border-dashed border-slate-300 hover:border-[var(--brand)] hover:text-[var(--brand)] transition-all">
+                    <i class="fas fa-plus-circle"></i> Create message templates
+                </a>
+                @endif
             </form>
         </div>
     </div>
 
-    {{-- �"?�"? NOTIFICATIONS LIST �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
+    {{-- ════════════════════════════════════════════════════════════════════════
+         NOTIFICATIONS LIST  — right 3 cols
+    ════════════════════════════════════════════════════════════════════════ --}}
     <div class="lg:col-span-3">
         <div class="flex items-center justify-between mb-4">
-            <h3 class="text-sm font-bold text-gray-700">
+            <h3 class="text-sm font-bold text-slate-700">
                 Sent Notifications
-                <span class="ml-2 text-xs bg-[var(--primary-pale)] text-[var(--primary-text)] px-2 py-0.5 rounded-full font-semibold">
+                <span class="ml-2 text-xs px-2 py-0.5 rounded-full font-bold"
+                      style="background:var(--primary-pale);color:var(--brand)">
                     {{ $notifications->total() }}
                 </span>
             </h3>
         </div>
 
         @if($notifications->isEmpty())
-        <div class="card p-12 text-center">
-            <i class="fas fa-bell-slash text-gray-200 text-5xl mb-4 block"></i>
-            <p class="text-gray-400 font-medium text-sm">No notifications sent yet.</p>
+        <div class="sc">
+            <div class="empty-state">
+                <div class="empty-state-icon"><i class="fas fa-bell-slash"></i></div>
+                <p class="empty-state-title">No notifications sent yet</p>
+                <p class="empty-state-sub">Use the form to send your first notification.</p>
+            </div>
         </div>
         @else
         <div class="space-y-3">
             @foreach($notifications as $notif)
             @php
                 $tc = [
-                    'general'    => ['icon'=>'fa-bullhorn',            'color'=>'#6366f1','bg'=>'#ede9fe','label'=>'General'],
-                    'fee'        => ['icon'=>'fa-coins',               'color'=>'#d97706','bg'=>'#fef3c7','label'=>'Fee'],
-                    'emergency'  => ['icon'=>'fa-exclamation-triangle','color'=>'#dc2626','bg'=>'#fee2e2','label'=>'Emergency'],
-                    'result'     => ['icon'=>'fa-file-alt',            'color'=>'#059669','bg'=>'#d1fae5','label'=>'Result'],
-                    'attendance' => ['icon'=>'fa-clipboard-check',     'color'=>'#0891b2','bg'=>'#cffafe','label'=>'Attendance'],
-                ][$notif->type] ?? ['icon'=>'fa-bell','color'=>'#6b7280','bg'=>'#f3f4f6','label'=>'Notice'];
+                    'general'    => ['fa-bullhorn',            '#6366f1','#ede9fe','General'],
+                    'fee'        => ['fa-coins',               '#d97706','#fef3c7','Fee'],
+                    'emergency'  => ['fa-exclamation-triangle','#dc2626','#fee2e2','Emergency'],
+                    'result'     => ['fa-file-alt',            '#059669','#d1fae5','Result'],
+                    'attendance' => ['fa-clipboard-check',     '#0891b2','#cffafe','Attendance'],
+                ][$notif->type] ?? ['fa-bell','#6b7280','#f3f4f6','Notice'];
+                [$tIcon,$tColor,$tBg,$tLabel] = $tc;
                 $isTeacher = ($notif->recipient_type ?? 'student') === 'lecturer';
             @endphp
-            <div class="card p-4">
+            <div class="sc p-4">
                 <div class="flex items-start gap-3">
                     <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                         style="background:{{ $tc['bg'] }}">
-                        <i class="fas {{ $tc['icon'] }}" style="color:{{ $tc['color'] }};font-size:14px"></i>
+                         style="background:{{ $tBg }}">
+                        <i class="fas {{ $tIcon }}" style="color:{{ $tColor }};font-size:.85rem"></i>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <div class="flex items-center gap-2 flex-wrap mb-1">
-                            <span class="text-sm font-bold text-gray-800">{{ $notif->title }}</span>
-                            <span class="text-xs px-2 py-0.5 rounded-full font-semibold"
-                                  style="background:{{ $tc['bg'] }};color:{{ $tc['color'] }}">
-                                {{ $tc['label'] }}
-                            </span>
+                        <div class="flex items-center flex-wrap gap-1.5 mb-1">
+                            <span class="text-sm font-bold text-slate-800">{{ $notif->title }}</span>
+                            <span class="badge" style="background:{{ $tBg }};color:{{ $tColor }}">{{ $tLabel }}</span>
                             {{-- Recipient badge --}}
                             @if($isTeacher)
-                                @if($notif->audience === 'all')
-                                <span class="text-xs px-2 py-0.5 rounded-full font-semibold bg-purple-100 text-purple-700">
-                                    <i class="fas fa-chalkboard-user mr-1"></i>All Teachers
+                                <span class="badge badge-purple">
+                                    <i class="fas fa-chalkboard-user"></i>
+                                    {{ $notif->audience === 'all' ? 'All Teachers' : ($notif->lecturer->full_name ?? 'Teacher') }}
                                 </span>
-                                @else
-                                <span class="text-xs px-2 py-0.5 rounded-full font-semibold bg-purple-100 text-purple-700">
-                                    <i class="fas fa-chalkboard-user mr-1"></i>{{ $notif->lecturer->full_name ?? 'Teacher' }}
-                                </span>
-                                @endif
                             @else
-                                @if($notif->audience === 'all')
-                                <span class="text-xs px-2 py-0.5 rounded-full font-semibold bg-blue-100 text-blue-700">
-                                    <i class="fas fa-users mr-1"></i>All Students
+                                <span class="badge badge-blue">
+                                    <i class="fas fa-user-graduate"></i>
+                                    {{ $notif->audience === 'all' ? 'All Students' : ($notif->student->user->full_name ?? 'Student') }}
                                 </span>
-                                @else
-                                <span class="text-xs px-2 py-0.5 rounded-full font-semibold bg-green-100 text-green-700">
-                                    <i class="fas fa-user-graduate mr-1"></i>{{ $notif->student->user->full_name ?? 'Student' }}
-                                </span>
-                                @endif
                             @endif
                         </div>
-                        <p class="text-xs text-gray-600 mb-2 leading-relaxed">{{ $notif->message }}</p>
-                        <div class="flex items-center justify-between">
-                            <p class="text-xs text-gray-400">
+                        <p class="text-xs text-slate-600 leading-relaxed mb-2">{{ $notif->message }}</p>
+                        <div class="flex items-center justify-between flex-wrap gap-2">
+                            <p class="text-xs text-slate-400">
                                 <i class="fas fa-clock mr-1"></i>
-                                {{ $notif->created_at->diffForHumans() }} – by {{ $notif->sender->full_name ?? 'Admin' }}
+                                {{ $notif->created_at->diffForHumans() }}
+                                — by {{ $notif->sender->full_name ?? 'Admin' }}
                             </p>
-                            {{-- Channel badges --}}
-                            <div class="flex items-center gap-1 mt-1 flex-wrap">
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                                {{-- Channel badges --}}
                                 @if(in_array($notif->channel ?? 'in_app', ['in_app','both']))
-                                <span class="text-[10px] px-1.5 py-0.5 rounded font-semibold bg-indigo-50 text-indigo-600">
-                                    <i class="fas fa-bell mr-0.5"></i>In-App
+                                <span class="badge badge-purple">
+                                    <i class="fas fa-bell"></i> In-App
                                 </span>
                                 @endif
                                 @if(in_array($notif->channel ?? 'in_app', ['sms','both']))
-                                <span class="text-[10px] px-1.5 py-0.5 rounded font-semibold {{ ($notif->sms_status ?? '') === 'sent' ? 'bg-emerald-50 text-emerald-700' : (($notif->sms_status ?? '') === 'failed' ? 'bg-red-50 text-red-600' : 'bg-gray-100 text-gray-500') }}">
-                                    <i class="fas fa-sms mr-0.5"></i>
+                                @php
+                                    $ss = $notif->sms_status ?? '';
+                                    $smsClass = $ss==='sent' ? 'badge-green' : ($ss==='failed' ? 'badge-red' : 'badge-gray');
+                                @endphp
+                                <span class="badge {{ $smsClass }}">
+                                    <i class="fas fa-sms"></i>
                                     SMS
-                                    @if($notif->sms_sent_count ?? 0)
-                                        <span class="opacity-70">({{ $notif->sms_sent_count }} sent{{ ($notif->sms_failed_count ?? 0) > 0 ? ', ' . $notif->sms_failed_count . ' failed' : '' }})</span>
-                                    @elseif(($notif->sms_status ?? '') === 'failed')
-                                        <span class="opacity-70" title="{{ $notif->sms_error }}">Failed</span>
+                                    @if(($notif->sms_sent_count ?? 0) > 0)
+                                    ({{ $notif->sms_sent_count }} sent
+                                    @if(($notif->sms_failed_count ?? 0) > 0), {{ $notif->sms_failed_count }} failed @endif)
+                                    @elseif($ss === 'failed')
+                                    (Failed)
                                     @endif
                                 </span>
                                 @endif
+                                {{-- Delete --}}
+                                <form method="POST"
+                                      action="{{ route('admin.notifications.destroy', $notif) }}"
+                                      onsubmit="return confirm('Delete this notification?')">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="action-btn action-btn-delete">
+                                        <i class="fas fa-trash" style="font-size:.7rem"></i>
+                                    </button>
+                                </form>
                             </div>
-                            <form method="POST" action="{{ route('admin.notifications.destroy', $notif) }}"
-                                  onsubmit="return confirm('Delete this notification?')">
-                                @csrf @method('DELETE')
-                                <button class="w-7 h-7 flex items-center justify-center rounded-lg bg-red-50 text-red-500 hover:bg-red-100 transition-colors">
-                                    <i class="fas fa-trash text-xs"></i>
-                                </button>
-                            </form>
                         </div>
                     </div>
                 </div>
@@ -297,4 +389,38 @@
         @endif
     </div>
 </div>
+
+@push('scripts')
+<script>
+/**
+ * Fill the send form's title + message fields from a saved template.
+ * Called when admin clicks a template in the picker.
+ */
+function applyTemplate(title, body) {
+    const titleEl = document.getElementById('notif-title');
+    const msgEl   = document.getElementById('notif-message');
+    const counter = document.getElementById('msg-counter');
+
+    if (titleEl) titleEl.value = title;
+    if (msgEl) {
+        msgEl.value = body;
+        if (counter) counter.textContent = body.length + ' / 3000';
+        // Scroll into view so the admin sees the filled form
+        msgEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        msgEl.focus();
+    }
+}
+
+// Pre-fill from URL param if coming from "Use in notification" on templates page
+@if(request('template_id'))
+(function() {
+    fetch('{{ url('admin/notifications/templates') }}/{{ request('template_id') }}/load')
+        .then(r => r.json())
+        .then(data => applyTemplate(data.title, data.body))
+        .catch(() => {}); // Silent fail — form still usable
+})();
+@endif
+</script>
+@endpush
+
 @endsection

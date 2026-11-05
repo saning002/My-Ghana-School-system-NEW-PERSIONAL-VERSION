@@ -9,6 +9,9 @@ use App\Models\AcademicPeriod;
 use App\Models\Enrollment;
 use App\Models\Attendance;
 use App\Models\Student;
+use App\Models\AttendanceAlertSetting;
+use App\Models\NotificationTemplate;
+use App\Services\SmsService;
 use App\Exports\AttendanceTemplateExport;
 use App\Imports\AttendanceImport;
 use Illuminate\Http\Request;
@@ -16,6 +19,7 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class AttendanceController extends Controller
 {
+    public function __construct(private SmsService $sms) {}
     public function index(Request $request)
     {
         $user          = auth()->user();
@@ -222,8 +226,88 @@ class AttendanceController extends Controller
             );
         }
 
+        // ── Fire automatic attendance SMS alerts if enabled ─────────────────
+        $this->fireAttendanceAlerts(
+            $request->attendances,   // [student_id => 'present'|'absent']
+            $request->academic_period_id,
+            $request->date
+        );
+
         return redirect()->route('admin.attendance.index')
             ->with('success', 'Attendance recorded successfully.');
+    }
+
+    // ── Auto-alert helper ──────────────────────────────────────────────────
+
+    /**
+     * After attendance is saved, check if auto-SMS alerts are enabled
+     * and send personalised messages to each student's parent/guardian.
+     */
+    private function fireAttendanceAlerts(array $attendances, int $periodId, string $date): void
+    {
+        try {
+            $settings = AttendanceAlertSetting::current();
+
+            if (! $settings->enabled) {
+                return;
+            }
+
+            // Need at least one template message configured
+            if (empty($settings->present_message) && empty($settings->absent_message)) {
+                return;
+            }
+
+            $tenantId = session('tenant_id');
+
+            // Load all students in one query
+            $studentIds = array_keys($attendances);
+            $students   = Student::with(['user', 'program', 'attendances', 'payments'])
+                ->whereIn('id', $studentIds)
+                ->get()
+                ->keyBy('id');
+
+            foreach ($attendances as $studentId => $status) {
+                $student = $students->get($studentId);
+                if (! $student) {
+                    continue;
+                }
+
+                // Pick the right message template
+                $rawMessage = $status === 'present'
+                    ? $settings->present_message
+                    : $settings->absent_message;
+
+                if (empty($rawMessage)) {
+                    continue;
+                }
+
+                // Resolve placeholders into real values
+                $message = NotificationTemplate::resolvePlaceholders($rawMessage, $student);
+
+                // Resolve the parent phone number
+                $phone = $settings->resolvePhone($student);
+                if (empty($phone)) {
+                    \Log::info("Attendance alert skipped for student {$studentId} — no parent phone on record.");
+                    continue;
+                }
+
+                // Send — respects send_delay_minutes via a queued job if > 0
+                if ($settings->send_delay_minutes > 0) {
+                    // Dispatch delayed — uses the default queue
+                    \App\Jobs\SendAttendanceAlertSms::dispatch(
+                        $phone,
+                        $message,
+                        $tenantId ? (int) $tenantId : null
+                    )->delay(now()->addMinutes($settings->send_delay_minutes));
+                } else {
+                    // Send immediately (synchronous — safe for small classes)
+                    $this->sms->sendBulk([$phone], $message, $tenantId ? (int) $tenantId : null);
+                }
+            }
+        } catch (\Throwable $e) {
+            // Never let alert failures break the attendance save
+            \Log::error('Attendance auto-alert failed: ' . $e->getMessage());
+        }
     }
 
     public function template(Request $request)

@@ -68,6 +68,7 @@
             ['permissions',  'fa-shield-halved',    'Teacher Permissions'],
             ['login-bg',     'fa-image',            'Login Background'],
             ['portal',       'fa-graduation-cap',   'Student Portal'],
+            ['alerts',       'fa-bell',             'Attendance Alerts'],
         ] as [$id, $icon, $label])
         <button type="button"
                 onclick="showTab('{{ $id }}')"
@@ -1059,6 +1060,281 @@
 </div>
 
 {{-- ═══════════════════════════════════════════════════════════════
+     TAB: ATTENDANCE ALERTS
+═══════════════════════════════════════════════════════════════ --}}
+<div id="panel-alerts" class="settings-panel hidden">
+@php
+    try {
+        $alertSettings = \App\Models\AttendanceAlertSetting::current();
+    } catch (\Throwable $e) {
+        $alertSettings = null;
+    }
+    $placeholders = \App\Models\NotificationTemplate::placeholders();
+@endphp
+
+<form method="POST" action="{{ route('admin.notifications.templates.save-alerts') }}">
+@csrf
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-5">
+
+    {{-- Left: main settings ──────────────────────────────────────────── --}}
+    <div class="xl:col-span-2 space-y-5">
+
+        {{-- Enable toggle card --}}
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+            <div class="flex items-center gap-3 px-6 py-4 border-b border-gray-100"
+                 style="background:linear-gradient(135deg,#ecfdf5,#f0fdf4)">
+                <div class="w-8 h-8 rounded-xl bg-emerald-500 flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-bell text-white text-sm"></i>
+                </div>
+                <div class="flex-1">
+                    <h3 class="text-sm font-bold text-emerald-900">Automatic Attendance SMS Alerts</h3>
+                    <p class="text-xs text-emerald-700 mt-0.5">
+                        When enabled, parents receive an SMS the moment a teacher marks their ward present or absent.
+                    </p>
+                </div>
+                {{-- Big ON/OFF toggle --}}
+                <label class="relative flex-shrink-0 cursor-pointer" title="Enable or disable auto alerts">
+                    <input type="checkbox" name="enabled" value="1" class="sr-only peer"
+                           id="alert-toggle"
+                           {{ ($alertSettings && $alertSettings->enabled) ? 'checked' : '' }}>
+                    <div class="w-14 h-7 rounded-full border-2 transition-all duration-200
+                                bg-gray-200 border-gray-300
+                                peer-checked:bg-emerald-500 peer-checked:border-emerald-500">
+                        <div class="absolute top-1 left-1 w-5 h-5 bg-white rounded-full shadow
+                                    transition-all duration-200
+                                    peer-checked:translate-x-7"></div>
+                    </div>
+                </label>
+            </div>
+
+            <div class="px-6 py-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+                {{-- Who to send to --}}
+                <div>
+                    <label class="form-label">Send SMS to <span class="text-red-400">*</span></label>
+                    <select name="recipient_field" class="form-input">
+                        @foreach([
+                            ['guardian_phone', 'Guardian / Parent Phone (default)'],
+                            ['mother_phone',   'Mother\'s Phone'],
+                            ['father_phone',   'Father\'s Phone'],
+                            ['student_phone',  'Student\'s Own Phone'],
+                        ] as [$val, $lbl])
+                        <option value="{{ $val }}"
+                            {{ ($alertSettings && $alertSettings->recipient_field === $val) ? 'selected' : '' }}>
+                            {{ $lbl }}
+                        </option>
+                        @endforeach
+                    </select>
+                    <p class="text-xs text-gray-400 mt-1">
+                        The phone number field on the student's profile that will be used to send the SMS.
+                    </p>
+                </div>
+
+                {{-- Send delay --}}
+                <div>
+                    <label class="form-label">Send delay after register is submitted</label>
+                    <div class="flex items-center gap-2">
+                        <input type="number" name="send_delay_minutes"
+                               value="{{ $alertSettings->send_delay_minutes ?? 0 }}"
+                               min="0" max="120" step="5"
+                               class="form-input w-24 text-center">
+                        <span class="text-sm text-gray-600 font-semibold">minutes</span>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-1">
+                        Set to <strong>0</strong> to send immediately. Up to 120 min delay allowed
+                        — useful if teachers need time to correct mistakes before alerts go out.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        {{-- Present message ──────────────────────────────────────────── --}}
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+            <div class="flex items-center gap-3 px-6 py-4 border-b border-gray-100"
+                 style="background:linear-gradient(135deg,#f0fdf4,#dcfce7)">
+                <div class="w-8 h-8 rounded-xl bg-emerald-500 flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-check text-white text-sm"></i>
+                </div>
+                <div>
+                    <h3 class="text-sm font-bold text-emerald-900">Message — When Student is <span class="text-emerald-600">PRESENT</span></h3>
+                    <p class="text-xs text-emerald-700 mt-0.5">Sent to parent when their ward is marked present</p>
+                </div>
+            </div>
+            <div class="px-6 py-5">
+                <div class="flex items-center justify-between mb-1.5">
+                    <label class="form-label mb-0">Message text</label>
+                    <span class="text-[10px] text-gray-400 font-semibold" id="present-counter">
+                        {{ strlen($alertSettings->present_message ?? '') }} / 320
+                    </span>
+                </div>
+                <textarea name="present_message" id="present-msg" rows="4"
+                          class="form-input resize-none"
+                          maxlength="320"
+                          oninput="document.getElementById('present-counter').textContent=this.value.length+' / 320'"
+                          placeholder="Dear {parent_name}, {student_name} has been marked PRESENT at {school_name} today...">{{ $alertSettings->present_message ?? '' }}</textarea>
+
+                {{-- Placeholder buttons --}}
+                <div class="flex flex-wrap gap-1.5 mt-2.5">
+                    @foreach($placeholders as $tag => $desc)
+                    <button type="button" title="{{ $desc }}"
+                            onclick="insertAtCursor('present-msg', '{{ $tag }}')"
+                            class="text-[10px] font-bold px-2 py-0.5 rounded-md border border-dashed transition-all
+                                   hover:border-solid hover:-translate-y-0.5"
+                            style="background:#f0fdf4;color:#16a34a;border-color:#86efac">
+                        {{ $tag }}
+                    </button>
+                    @endforeach
+                </div>
+                <p class="text-xs text-gray-400 mt-2">
+                    <i class="fas fa-info-circle mr-1 text-emerald-400"></i>
+                    Click any tag to insert it. Keep under 160 characters for a single SMS credit.
+                    Under 320 characters for two credits.
+                </p>
+            </div>
+        </div>
+
+        {{-- Absent message ───────────────────────────────────────────── --}}
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+            <div class="flex items-center gap-3 px-6 py-4 border-b border-gray-100"
+                 style="background:linear-gradient(135deg,#fff1f2,#fee2e2)">
+                <div class="w-8 h-8 rounded-xl bg-red-500 flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-times text-white text-sm"></i>
+                </div>
+                <div>
+                    <h3 class="text-sm font-bold text-red-900">Message — When Student is <span class="text-red-600">ABSENT</span></h3>
+                    <p class="text-xs text-red-700 mt-0.5">Sent to parent when their ward is marked absent</p>
+                </div>
+            </div>
+            <div class="px-6 py-5">
+                <div class="flex items-center justify-between mb-1.5">
+                    <label class="form-label mb-0">Message text</label>
+                    <span class="text-[10px] text-gray-400 font-semibold" id="absent-counter">
+                        {{ strlen($alertSettings->absent_message ?? '') }} / 320
+                    </span>
+                </div>
+                <textarea name="absent_message" id="absent-msg" rows="4"
+                          class="form-input resize-none"
+                          maxlength="320"
+                          oninput="document.getElementById('absent-counter').textContent=this.value.length+' / 320'"
+                          placeholder="Dear {parent_name}, {student_name} was marked ABSENT at {school_name} today...">{{ $alertSettings->absent_message ?? '' }}</textarea>
+
+                {{-- Placeholder buttons --}}
+                <div class="flex flex-wrap gap-1.5 mt-2.5">
+                    @foreach($placeholders as $tag => $desc)
+                    <button type="button" title="{{ $desc }}"
+                            onclick="insertAtCursor('absent-msg', '{{ $tag }}')"
+                            class="text-[10px] font-bold px-2 py-0.5 rounded-md border border-dashed transition-all
+                                   hover:border-solid hover:-translate-y-0.5"
+                            style="background:#fff1f2;color:#dc2626;border-color:#fca5a5">
+                        {{ $tag }}
+                    </button>
+                    @endforeach
+                </div>
+                <p class="text-xs text-gray-400 mt-2">
+                    <i class="fas fa-info-circle mr-1 text-red-400"></i>
+                    Keep under 160 characters for a single SMS credit. Under 320 for two.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    {{-- Right: info + save ───────────────────────────────────────────── --}}
+    <div class="self-start space-y-5">
+
+        {{-- Status card --}}
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
+            <h4 class="text-sm font-bold text-gray-700 mb-3">Current Status</h4>
+            <div class="space-y-3 text-xs">
+                <div class="flex items-center justify-between">
+                    <span class="text-gray-600 font-semibold">Auto Alerts</span>
+                    @if($alertSettings && $alertSettings->enabled)
+                    <span class="badge badge-green"><i class="fas fa-check-circle"></i> Active</span>
+                    @else
+                    <span class="badge badge-gray">Off</span>
+                    @endif
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-gray-600 font-semibold">Send To</span>
+                    <span class="font-bold text-gray-800">
+                        {{ match($alertSettings->recipient_field ?? 'guardian_phone') {
+                            'mother_phone'  => 'Mother',
+                            'father_phone'  => 'Father',
+                            'student_phone' => 'Student',
+                            default         => 'Guardian'
+                        } }}
+                    </span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-gray-600 font-semibold">Delay</span>
+                    <span class="font-bold text-gray-800">
+                        {{ ($alertSettings->send_delay_minutes ?? 0) === 0 ? 'Immediate' : ($alertSettings->send_delay_minutes . ' min') }}
+                    </span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-gray-600 font-semibold">Present msg</span>
+                    @if(!empty($alertSettings->present_message))
+                    <span class="badge badge-green">Set ✓</span>
+                    @else
+                    <span class="badge badge-yellow">Not set</span>
+                    @endif
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-gray-600 font-semibold">Absent msg</span>
+                    @if(!empty($alertSettings->absent_message))
+                    <span class="badge badge-green">Set ✓</span>
+                    @else
+                    <span class="badge badge-yellow">Not set</span>
+                    @endif
+                </div>
+            </div>
+        </div>
+
+        {{-- How it works card --}}
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
+            <h4 class="text-sm font-bold text-gray-700 mb-3">
+                <i class="fas fa-info-circle text-blue-400 mr-1"></i> How it works
+            </h4>
+            <ol class="space-y-3 text-xs text-gray-500 list-none">
+                @foreach([
+                    ['fa-toggle-on','text-emerald-500', 'Turn on the toggle above'],
+                    ['fa-pen',      'text-blue-400',    'Write your present and absent messages using {placeholders}'],
+                    ['fa-clipboard-check','text-purple-400', 'Teacher marks the register as normal'],
+                    ['fa-sms',      'text-emerald-500', 'System fires personalised SMS to every parent instantly'],
+                    ['fa-history',  'text-gray-400',    'All alerts are logged for review'],
+                ] as [$icon,$color,$text])
+                <li class="flex items-start gap-2.5">
+                    <i class="fas {{ $icon }} {{ $color }} mt-0.5 flex-shrink-0"></i>
+                    <span>{{ $text }}</span>
+                </li>
+                @endforeach
+            </ol>
+        </div>
+
+        {{-- Requirements card --}}
+        <div class="bg-amber-50 rounded-2xl border border-amber-200 p-5">
+            <h4 class="text-sm font-bold text-amber-800 mb-2.5">
+                <i class="fas fa-exclamation-triangle text-amber-500 mr-1"></i> Requirements
+            </h4>
+            <ul class="text-xs text-amber-700 space-y-1.5 list-disc list-inside">
+                <li>SMS credits must be available in this branch</li>
+                <li>Parent phone numbers must be saved on each student's profile</li>
+                <li>At least one message template must be configured above</li>
+                <li>Students without a saved phone number will be skipped silently</li>
+            </ul>
+        </div>
+
+        {{-- Save button --}}
+        <button type="submit"
+                class="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl text-sm font-bold text-white shadow-lg transition-all hover:shadow-xl hover:-translate-y-0.5"
+                style="background:linear-gradient(135deg,#059669,#16a34a)">
+            <i class="fas fa-save"></i> Save Alert Settings
+        </button>
+    </div>
+</div>
+</form>
+</div>
+
+{{-- ═══════════════════════════════════════════════════════════════
      SCRIPTS
 ═══════════════════════════════════════════════════════════════ --}}
 <style>
@@ -1073,7 +1349,7 @@
 
 <script>
 /* ── Tab switching ───────────────────────────────────────────────── */
-var TABS = ['branding','theme','grading','sba','expectations','permissions','login-bg','portal'];
+var TABS = ['branding','theme','grading','sba','expectations','permissions','login-bg','portal','alerts'];
 function showTab(id) {
     TABS.forEach(function(t) {
         var panel = document.getElementById('panel-' + t);
@@ -1229,6 +1505,20 @@ function selectPortalTheme(key) {
         var radio = swatch.querySelector('input[type="radio"]');
         if (radio) radio.checked = sel;
     });
+}
+
+/* ── Attendance alert: insert placeholder at cursor ──────────────── */
+function insertAtCursor(fieldId, tag) {
+    var ta = document.getElementById(fieldId);
+    if (!ta) return;
+    var s = ta.selectionStart, e = ta.selectionEnd;
+    ta.value = ta.value.slice(0, s) + tag + ta.value.slice(e);
+    ta.focus();
+    ta.selectionStart = ta.selectionEnd = s + tag.length;
+    // Update counter
+    var counterId = fieldId === 'present-msg' ? 'present-counter' : 'absent-counter';
+    var counter = document.getElementById(counterId);
+    if (counter) counter.textContent = ta.value.length + ' / 320';
 }
 </script>
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\MessagingCredit;
+use App\Models\NotificationTemplate;
 use App\Models\Student;
 use App\Models\StudentNotification;
 use App\Models\User;
@@ -22,6 +23,11 @@ class NotificationController extends Controller
         $students  = Student::with('user')->orderBy('id')->get();
         $lecturers = User::where('role', 'lecturer')->orderBy('full_name')->get();
 
+        // Templates for the "Use a Template" picker
+        $templates = NotificationTemplate::active()
+            ->orderBy('category')->orderBy('name')
+            ->get(['id', 'name', 'category', 'title', 'body']);
+
         // Get SMS credit balance for this tenant
         $smsCredits   = 0;
         $smsAvailable = false;
@@ -35,7 +41,8 @@ class NotificationController extends Controller
         }
 
         return view('admin.notifications.index', compact(
-            'notifications', 'students', 'lecturers', 'smsCredits', 'smsAvailable'
+            'notifications', 'students', 'lecturers',
+            'smsCredits', 'smsAvailable', 'templates'
         ));
     }
 

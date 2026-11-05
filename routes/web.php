@@ -633,6 +633,15 @@ Route::middleware(['tenant', 'role:admin'])->prefix('admin')->name('admin.')->gr
     Route::post('/notifications',                   [NotificationController::class, 'store'])->name('notifications.store');
     Route::delete('/notifications/{notification}',  [NotificationController::class, 'destroy'])->name('notifications.destroy');
 
+    // Notification Templates
+    Route::get('/notifications/templates',                          [\App\Http\Controllers\Admin\NotificationTemplateController::class, 'index'])->name('notifications.templates.index');
+    Route::post('/notifications/templates',                         [\App\Http\Controllers\Admin\NotificationTemplateController::class, 'store'])->name('notifications.templates.store');
+    Route::put('/notifications/templates/{template}',               [\App\Http\Controllers\Admin\NotificationTemplateController::class, 'update'])->name('notifications.templates.update');
+    Route::delete('/notifications/templates/{template}',            [\App\Http\Controllers\Admin\NotificationTemplateController::class, 'destroy'])->name('notifications.templates.destroy');
+    Route::get('/notifications/templates/list',                     [\App\Http\Controllers\Admin\NotificationTemplateController::class, 'list'])->name('notifications.templates.list');
+    Route::get('/notifications/templates/{template}/load',          [\App\Http\Controllers\Admin\NotificationTemplateController::class, 'load'])->name('notifications.templates.load');
+    Route::post('/notifications/templates/alert-settings',          [\App\Http\Controllers\Admin\NotificationTemplateController::class, 'saveAlertSettings'])->name('notifications.templates.save-alerts');
+
     // Reports
     Route::get('/reports',                    [ReportController::class, 'index'])->name('reports.index');
     Route::get('/reports/students',           [ReportController::class, 'students'])->name('reports.students');
