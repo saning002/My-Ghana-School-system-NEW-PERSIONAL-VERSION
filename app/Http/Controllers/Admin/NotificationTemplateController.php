@@ -13,9 +13,16 @@ class NotificationTemplateController extends Controller
 
     public function index()
     {
-        $templates = NotificationTemplate::latest()->get();
+        $templates    = collect();
+        $alertSettings = null;
+        try {
+            $templates = NotificationTemplate::latest()->get();
+        } catch (\Throwable $e) {}
+        try {
+            $alertSettings = AttendanceAlertSetting::current();
+        } catch (\Throwable $e) {}
+
         $placeholders = NotificationTemplate::placeholders();
-        $alertSettings = AttendanceAlertSetting::current();
 
         return view('admin.notifications.templates', compact(
             'templates', 'placeholders', 'alertSettings'

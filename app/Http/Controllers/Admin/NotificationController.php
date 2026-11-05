@@ -24,9 +24,15 @@ class NotificationController extends Controller
         $lecturers = User::where('role', 'lecturer')->orderBy('full_name')->get();
 
         // Templates for the "Use a Template" picker
-        $templates = NotificationTemplate::active()
-            ->orderBy('category')->orderBy('name')
-            ->get(['id', 'name', 'category', 'title', 'body']);
+        // Wrapped in try-catch — table may not exist until migration runs
+        $templates = collect();
+        try {
+            $templates = NotificationTemplate::active()
+                ->orderBy('category')->orderBy('name')
+                ->get(['id', 'name', 'category', 'title', 'body']);
+        } catch (\Throwable $e) {
+            // Table doesn't exist yet — migration pending
+        }
 
         // Get SMS credit balance for this tenant
         $smsCredits   = 0;

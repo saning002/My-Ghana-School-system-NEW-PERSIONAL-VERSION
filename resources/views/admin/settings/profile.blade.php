@@ -1069,7 +1069,11 @@
     } catch (\Throwable $e) {
         $alertSettings = null;
     }
-    $placeholders = \App\Models\NotificationTemplate::placeholders();
+    try {
+        $placeholders = \App\Models\NotificationTemplate::placeholders();
+    } catch (\Throwable $e) {
+        $placeholders = [];
+    }
 @endphp
 
 <form method="POST" action="{{ route('admin.notifications.templates.save-alerts') }}">

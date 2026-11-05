@@ -1596,6 +1596,52 @@ Route::get('/debug/test-save-settings', function (\Illuminate\Http\Request $requ
 // ── Go-Live Health Check ──────────────────────────────────────────────────
 Route::get('/health-check', [\App\Http\Controllers\HealthCheckController::class, 'check'])->middleware('web');
 
+// ── Run new notification templates + attendance alert migrations on ALL tenant DBs ──
+// Hit: /setup/migrate-notification-templates
+Route::get('/setup/migrate-notification-templates', function () {
+    $results = [];
+
+    // 1. Run on main DB (in case any global migrations exist)
+    try {
+        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        $results[] = '✅ Main DB migrations ran: ' . trim(\Illuminate\Support\Facades\Artisan::output());
+    } catch (\Throwable $e) {
+        $results[] = '⚠️ Main DB error: ' . $e->getMessage();
+    }
+
+    // 2. Run on every tenant DB
+    $tenants = \App\Models\Tenant::whereNotNull('db_name')->get();
+    foreach ($tenants as $tenant) {
+        try {
+            // Configure tenant connection
+            config(['database.connections.tenant' => [
+                'driver'   => 'pgsql',
+                'host'     => $tenant->db_host,
+                'port'     => $tenant->db_port ?? 5432,
+                'database' => $tenant->db_name,
+                'username' => $tenant->db_username,
+                'password' => $tenant->db_password,
+                'charset'  => 'utf8',
+                'prefix'   => '',
+                'schema'   => 'public',
+                'sslmode'  => 'require',
+            ]]);
+            \Illuminate\Support\Facades\DB::purge('tenant');
+            \Illuminate\Support\Facades\DB::reconnect('tenant');
+
+            \Illuminate\Support\Facades\Artisan::call('migrate', [
+                '--force'    => true,
+                '--database' => 'tenant',
+            ]);
+            $results[] = "✅ [{$tenant->name}] Tenant migrations ran: " . trim(\Illuminate\Support\Facades\Artisan::output());
+        } catch (\Throwable $e) {
+            $results[] = "⚠️ [{$tenant->name}] Error: " . $e->getMessage();
+        }
+    }
+
+    return response('<pre>' . implode("\n", $results) . '</pre>');
+});
+
 // ── Clear all caches (view, config, route, opcache) ───────────────────────
 Route::get('/setup/clear-cache', function () {
     $results = [];
