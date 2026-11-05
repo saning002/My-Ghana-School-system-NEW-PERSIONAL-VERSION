@@ -22,8 +22,6 @@ return new class extends Migration
             $table->boolean('is_active')->default(true);
 
             $table->timestamps();
-
-            $table->foreign('created_by')->references('id')->on('users')->nullOnDelete();
         });
     }
 

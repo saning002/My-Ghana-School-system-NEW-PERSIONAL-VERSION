@@ -1637,13 +1637,25 @@ Route::get('/setup/migrate-notification-templates', function () {
                 }
 
                 // Check if table already exists — skip if it does
-                $exists = \Illuminate\Support\Facades\DB::connection('tenant')
-                    ->select("SELECT to_regclass('public.{$tableName}') as tbl");
+                try {
+                    $exists = \Illuminate\Support\Facades\DB::connection('tenant')
+                        ->select("SELECT to_regclass('public.{$tableName}') as tbl");
+                } catch (\Throwable $ex) {
+                    // Connection may be in bad state — reconnect and retry
+                    \Illuminate\Support\Facades\DB::purge('tenant');
+                    \Illuminate\Support\Facades\DB::reconnect('tenant');
+                    $exists = \Illuminate\Support\Facades\DB::connection('tenant')
+                        ->select("SELECT to_regclass('public.{$tableName}') as tbl");
+                }
 
                 if (!empty($exists[0]->tbl)) {
                     $tenantResults[] = "⏭ {$tableName} — already exists, skipped";
                     continue;
                 }
+
+                // Drop any partial table left by a failed previous attempt
+                \Illuminate\Support\Facades\DB::connection('tenant')
+                    ->statement("DROP TABLE IF EXISTS \"{$tableName}\" CASCADE");
 
                 // Run only this specific migration file
                 \Illuminate\Support\Facades\Artisan::call('migrate', [
