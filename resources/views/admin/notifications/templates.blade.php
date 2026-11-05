@@ -48,10 +48,9 @@
             </div>
 
             <div class="sc-body space-y-4">
-                <form method="POST" :action="editId
+                    <form method="POST" :action="editId
                     ? '{{ url('admin/notifications/templates') }}/' + editId
-                    : '{{ route('admin.notifications.templates.store') }}'"
-                    @submit.prevent="submitForm($event)">
+                    : '{{ route('admin.notifications.templates.store') }}'">
                     @csrf
                     <span x-show="editId" x-cloak>
                         <input type="hidden" name="_method" value="PUT">
@@ -90,6 +89,7 @@
                         <label class="form-label">Message Body <span class="text-red-400">*</span></label>
                         <textarea name="body" x-model="form.body" id="tpl-body" rows="6" required
                                   class="form-input resize-none"
+                                  @input="syncBody($event)"
                                   placeholder="Dear {parent_name}, {student_name} of {class}..."></textarea>
                         <div class="flex justify-between mt-1">
                             <p class="text-xs text-slate-400">Click a placeholder below to insert it at cursor</p>
@@ -291,18 +291,28 @@ function templateForm() {
         resetForm() {
             this.editId = null;
             this.form   = { name:'', category:'general', title:'', body:'' };
-            document.getElementById('tpl-body').focus();
+            // Clear the raw textarea too
+            const ta = document.getElementById('tpl-body');
+            if (ta) { ta.value = ''; }
+            document.getElementById('tpl-body')?.focus();
         },
 
-        submitForm(e) {
-            e.target.submit();
+        // Keep body in sync when user types directly in the textarea
+        syncBody(e) {
+            this.form.body = e.target.value;
         }
     };
 }
 
 // ── Edit — fill form from row data ────────────────────────────────────────
 function editTemplate(id, name, category, title, body) {
-    const comp = Alpine.$data(document.querySelector('[x-data]'));
+    const formEl = document.getElementById('template-form-card');
+    if (!formEl) return;
+
+    // Find the Alpine component that owns the form card
+    const alpineEl = formEl.querySelector('[x-data]') ?? formEl;
+    const comp = Alpine.$data(alpineEl);
+
     if (comp) {
         comp.editId        = id;
         comp.form.name     = name;
@@ -310,7 +320,15 @@ function editTemplate(id, name, category, title, body) {
         comp.form.title    = title;
         comp.form.body     = body;
     }
-    document.getElementById('template-form-card').scrollIntoView({ behavior:'smooth', block:'start' });
+
+    // Also set the raw textarea value so it matches before Alpine re-renders
+    const ta = document.getElementById('tpl-body');
+    if (ta) {
+        ta.value = body;
+        ta.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+
+    formEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
     setTimeout(() => document.getElementById('tpl-body')?.focus(), 300);
 }
 
@@ -319,22 +337,22 @@ function insertPlaceholder(tag) {
     const ta = document.getElementById('tpl-body');
     if (!ta) return;
 
-    const start = ta.selectionStart;
-    const end   = ta.selectionEnd;
-    const before = ta.value.slice(0, start);
-    const after  = ta.value.slice(end);
-    const newVal = before + tag + after;
+    const start = ta.selectionStart ?? ta.value.length;
+    const end   = ta.selectionEnd   ?? ta.value.length;
+    const newVal = ta.value.slice(0, start) + tag + ta.value.slice(end);
 
-    // Update the Alpine x-model
-    const comp = Alpine.$data(document.querySelector('[x-data]'));
-    if (comp) comp.form.body = newVal;
+    // Update the native textarea value
+    ta.value = newVal;
 
-    // Restore focus and cursor
+    // Sync Alpine x-model by dispatching an input event
+    ta.dispatchEvent(new Event('input', { bubbles: true }));
+
+    // Restore focus and cursor position after the tag
     ta.focus();
-    setTimeout(() => {
+    requestAnimationFrame(() => {
         ta.selectionStart = start + tag.length;
         ta.selectionEnd   = start + tag.length;
-    }, 10);
+    });
 }
 
 // ── Category filter ───────────────────────────────────────────────────────

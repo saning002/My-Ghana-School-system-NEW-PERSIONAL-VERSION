@@ -2388,6 +2388,7 @@ Route::prefix('owner')->name('owner.')->group(function () {
         Route::delete('/messaging/packages/{package}',       [\App\Http\Controllers\Owner\MessagingCreditController::class, 'destroyPackage'])->name('messaging.packages.destroy');
         Route::get('/messaging/credits',                     [\App\Http\Controllers\Owner\MessagingCreditController::class, 'allCredits'])->name('messaging.credits');
         Route::post('/messaging/credits/{tenant}',           [\App\Http\Controllers\Owner\MessagingCreditController::class, 'addCredits'])->name('messaging.add-credits');
+        Route::post('/messaging/credits/activate/{payment}', [\App\Http\Controllers\Owner\MessagingCreditController::class, 'activatePending'])->name('messaging.activate');
         Route::get('/messaging/receipts/{payment}',          [\App\Http\Controllers\Owner\MessagingCreditController::class, 'receipt'])->name('messaging.receipt');
 
         // Owner Profile

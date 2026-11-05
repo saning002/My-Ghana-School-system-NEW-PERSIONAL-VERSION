@@ -8,7 +8,114 @@
     </a>
 @endsection
 
+@section('title','School Credit Balances')
+@section('page-title','Messaging Credit Balances')
+
+@section('topbar-actions')
+    <a href="{{ route('owner.messaging.packages') }}" class="btn btn-sm btn-outline-secondary">
+        <i class="fas fa-box me-1"></i> Packages
+    </a>
+@endsection
+
 @section('content')
+
+{{-- ── Flash messages ───────────────────────────────────────────────────── --}}
+@if(session('success'))
+<div class="alert alert-success alert-dismissible d-flex align-items-center gap-2 mb-4 rounded-3" role="alert">
+    <i class="fas fa-check-circle flex-shrink-0"></i>
+    <span>{{ session('success') }}</span>
+    <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+</div>
+@endif
+@if(session('error'))
+<div class="alert alert-danger alert-dismissible d-flex align-items-center gap-2 mb-4 rounded-3" role="alert">
+    <i class="fas fa-times-circle flex-shrink-0"></i>
+    <span>{{ session('error') }}</span>
+    <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+</div>
+@endif
+
+{{-- ── PENDING ACTIVATION PANEL ─────────────────────────────────────────── --}}
+@php
+    $pendingPayments = collect();
+    try {
+        $pendingPayments = \App\Models\MessagingCreditPayment::with('tenant')
+            ->where('credits_pending', true)
+            ->orderByDesc('created_at')
+            ->get();
+    } catch (\Throwable $e) {}
+@endphp
+
+@if($pendingPayments->count())
+<div class="owner-card mb-4" style="border:2px solid #dc2626;background:#fffbeb;">
+    <div class="card-header d-flex align-items-center gap-2"
+         style="background:linear-gradient(135deg,#dc2626,#b91c1c);color:#fff;border-radius:.75rem .75rem 0 0;">
+        <i class="fas fa-exclamation-triangle"></i>
+        <h5 class="mb-0 fw-bold">{{ $pendingPayments->count() }} Payment{{ $pendingPayments->count() > 1 ? 's' : '' }} Awaiting Credit Activation</h5>
+        <span class="ms-auto badge bg-white text-danger fw-bold">ACTION REQUIRED</span>
+    </div>
+    <div class="p-3">
+        <p style="font-size:.85rem;color:#92400e;margin-bottom:1rem;">
+            <i class="fas fa-info-circle me-1"></i>
+            These schools paid for SMS credits but their credits are on hold because your Arkesel balance was insufficient at the time.
+            Top up your <a href="https://arkesel.com/login" target="_blank" class="fw-bold text-danger">Arkesel account</a>,
+            then click <strong>Activate</strong> for each school below.
+        </p>
+        <div class="table-responsive">
+            <table class="table table-sm" style="margin:0;">
+                <thead style="background:#f8fafc;">
+                    <tr>
+                        <th style="font-size:.75rem;text-transform:uppercase;letter-spacing:.5px;color:#64748b;">School</th>
+                        <th style="font-size:.75rem;text-transform:uppercase;letter-spacing:.5px;color:#64748b;">SMS Credits</th>
+                        <th style="font-size:.75rem;text-transform:uppercase;letter-spacing:.5px;color:#64748b;">Amount Paid</th>
+                        <th style="font-size:.75rem;text-transform:uppercase;letter-spacing:.5px;color:#64748b;">Date Paid</th>
+                        <th style="font-size:.75rem;text-transform:uppercase;letter-spacing:.5px;color:#64748b;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach($pendingPayments as $pp)
+                <tr style="border-bottom:1px solid #fef3c7;">
+                    <td class="fw-semibold" style="vertical-align:middle;">
+                        {{ $pp->tenant?->name ?? '—' }}
+                    </td>
+                    <td style="vertical-align:middle;">
+                        <span class="badge bg-warning text-dark fw-bold" style="font-size:.8rem;">
+                            {{ number_format($pp->sms_credits_added) }} SMS
+                        </span>
+                        @if($pp->whatsapp_credits_added > 0)
+                        <span class="badge bg-success ms-1 fw-bold" style="font-size:.8rem;">
+                            +{{ number_format($pp->whatsapp_credits_added) }} WA
+                        </span>
+                        @endif
+                    </td>
+                    <td style="vertical-align:middle;font-weight:700;color:#16a34a;">
+                        GHS {{ number_format($pp->amount, 2) }}
+                    </td>
+                    <td style="vertical-align:middle;color:#64748b;font-size:.82rem;">
+                        {{ $pp->created_at?->format('d M Y, g:ia') ?? '—' }}
+                    </td>
+                    <td style="vertical-align:middle;">
+                        <form method="POST"
+                              action="{{ route('owner.messaging.activate', $pp) }}"
+                              onsubmit="return confirm('Activate {{ $pp->sms_credits_added }} SMS credits for {{ addslashes($pp->tenant?->name ?? '') }}?\n\nMake sure you have topped up Arkesel first.')">
+                            @csrf
+                            <button type="submit"
+                                    class="btn btn-sm fw-bold"
+                                    style="background:#16a34a;color:#fff;border:none;padding:.35rem .9rem;border-radius:.5rem;">
+                                <i class="fas fa-check me-1"></i> Activate
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+@endif
+
+{{-- ── School balances table ─────────────────────────────────────────────── --}}
 <div class="owner-table">
     <table class="table">
         <thead>

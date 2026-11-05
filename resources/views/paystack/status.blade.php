@@ -143,9 +143,11 @@
 <div class="status-card">
 
     {{-- Status band --}}
-    <div class="band band-{{ $status }}">
+    <div class="band band-{{ $status === 'success' && ($pending ?? false) ? 'pending' : $status }}">
         <div class="icon-circle">
-            @if($status === 'success')
+            @if($status === 'success' && ($pending ?? false))
+                <i class="fas fa-hourglass-half"></i>
+            @elseif($status === 'success')
                 <i class="fas fa-check"></i>
             @elseif($status === 'failed')
                 <i class="fas fa-times"></i>
@@ -154,15 +156,38 @@
             @endif
         </div>
         <h2>
-            @if($status === 'success') Payment Successful!
-            @elseif($status === 'failed') Payment Failed
-            @else Payment Pending
+            @if($status === 'success' && ($pending ?? false))
+                Payment Received!
+            @elseif($status === 'success')
+                Payment Successful!
+            @elseif($status === 'failed')
+                Payment Failed
+            @else
+                Payment Pending
             @endif
         </h2>
         <p>{{ $message ?? '' }}</p>
     </div>
 
     <div class="card-body">
+
+        {{-- Pending activation warm notice --}}
+        @if($status === 'success' && ($pending ?? false))
+        <div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:12px;padding:1.25rem 1.5rem;margin-bottom:1.5rem;text-align:center;">
+            <div style="font-size:2rem;margin-bottom:.5rem;">⏳</div>
+            <p style="font-weight:700;color:#92400e;margin:0 0 .4rem;font-size:1rem;">
+                Your credits are being activated
+            </p>
+            <p style="color:#b45309;font-size:.85rem;margin:0;">
+                Your payment has been received and confirmed. Your messaging credits will be
+                added to your account within a few hours. You will be able to send messages
+                as soon as they are ready.
+            </p>
+            <p style="color:#d97706;font-size:.78rem;margin-top:.75rem;">
+                If you have not received your credits within 24 hours, please contact support.
+            </p>
+        </div>
+        @endif
 
         {{-- Transaction details (if available) --}}
         @if(isset($transaction) && $transaction)
@@ -295,7 +320,7 @@
     </div>
 </div>
 
-@if($status === 'success')
+@if($status === 'success' && !($pending ?? false))
 <script>
 // Simple confetti burst on success
 const colors = ['#10b981','#3b82f6','#f59e0b','#e94560','#8b5cf6'];
