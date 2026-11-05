@@ -113,6 +113,40 @@ class DashboardController extends Controller
             ];
         });
 
+        // ── Arkesel SMS provider balance ──────────────────────────────────────
+        $arkeselBalance = null;
+        try {
+            $apiKey = env('ARKESEL_API_KEY', '');
+            if (!empty($apiKey)) {
+                $res = \Illuminate\Support\Facades\Http::timeout(6)
+                    ->withHeaders(['api-key' => $apiKey])
+                    ->get('https://sms.arkesel.com/api/v2/clients/balance-details');
+                if ($res->successful()) {
+                    $data = $res->json();
+                    // Response: {"status":"success","data":{"sms_balance":"1234.50","currency":"GHS"}}
+                    $arkeselBalance = [
+                        'sms_balance' => $data['data']['sms_balance']
+                                      ?? $data['data']['balance']
+                                      ?? $data['sms_balance']
+                                      ?? null,
+                        'currency'    => $data['data']['currency'] ?? 'GHS',
+                        'raw'         => $data,
+                    ];
+                }
+            }
+        } catch (\Throwable $e) {
+            // Non-fatal — dashboard still loads if Arkesel is unreachable
+            \Log::warning('Arkesel balance check failed: ' . $e->getMessage());
+        }
+
+        // ── Total SMS credits currently held by all schools ────────────────────
+        $totalCreditsAllocated = 0;
+        $totalCreditsSent      = 0;
+        try {
+            $totalCreditsAllocated = \App\Models\MessagingCredit::sum('sms_credits');
+            $totalCreditsSent      = \App\Models\MessagingCredit::sum('sms_used');
+        } catch (\Throwable $e) {}
+
         return view('owner.dashboard', compact(
             'stats',
             'revenueThisMonth',
@@ -125,7 +159,10 @@ class DashboardController extends Controller
             'trialsExpiringSoon',
             'recentSchools',
             'recentBackups',
-            'monthlyRevenue'
+            'monthlyRevenue',
+            'arkeselBalance',
+            'totalCreditsAllocated',
+            'totalCreditsSent'
         ));
     }
 }

@@ -102,6 +102,147 @@
     </div>
 </div>
 
+{{-- ── Arkesel SMS Provider Balance ──────────────────────────────────────── --}}
+<div class="row g-3 mb-4">
+    {{-- Your Arkesel balance (what YOU have left to sell) --}}
+    <div class="col-md-4">
+        @if($arkeselBalance && $arkeselBalance['sms_balance'] !== null)
+        @php
+            $bal = (float) $arkeselBalance['sms_balance'];
+            $balColor = $bal > 500 ? '#16a34a' : ($bal > 100 ? '#d97706' : '#dc2626');
+            $balBg    = $bal > 500 ? '#f0fdf4'  : ($bal > 100 ? '#fffbeb'  : '#fef2f2');
+            $balLabel = $bal > 500 ? 'Good stock' : ($bal > 100 ? 'Running low' : 'Very low — top up now');
+        @endphp
+        <div class="owner-card p-0 overflow-hidden">
+            <div class="p-4" style="background:linear-gradient(135deg,#0f172a,#1e3a5f);">
+                <div class="d-flex align-items-start justify-content-between mb-3">
+                    <div>
+                        <div style="font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.45);margin-bottom:.3rem;">
+                            Your Arkesel Account
+                        </div>
+                        <div style="font-size:.9rem;font-weight:800;color:#fff;">SMS Credits Available to Sell</div>
+                    </div>
+                    <div style="width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <i class="fas fa-satellite-dish" style="color:#60a5fa;font-size:.9rem;"></i>
+                    </div>
+                </div>
+                <div style="font-size:2.4rem;font-weight:900;color:#fff;letter-spacing:-.03em;line-height:1;">
+                    {{ number_format($bal, 0) }}
+                </div>
+                <div style="font-size:.72rem;color:rgba(255,255,255,.45);margin-top:.2rem;">
+                    credits in your Arkesel wallet
+                </div>
+                <div style="margin-top:.85rem;display:inline-flex;align-items:center;gap:.35rem;font-size:.7rem;font-weight:700;border-radius:99px;padding:.25rem .75rem;background:{{ $balBg }};color:{{ $balColor }};">
+                    <i class="fas {{ $bal > 500 ? 'fa-check-circle' : ($bal > 100 ? 'fa-exclamation-circle' : 'fa-times-circle') }}" style="font-size:.65rem;"></i>
+                    {{ $balLabel }}
+                </div>
+            </div>
+            <div style="padding:.75rem 1rem;background:#f8fafc;border-top:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between;">
+                <span style="font-size:.7rem;color:#94a3b8;font-weight:600;">
+                    <i class="fas fa-sync-alt me-1"></i> Live from Arkesel API
+                </span>
+                <a href="https://arkesel.com" target="_blank"
+                   style="font-size:.7rem;font-weight:700;color:#3b82f6;text-decoration:none;">
+                    Top up →
+                </a>
+            </div>
+        </div>
+        @else
+        <div class="owner-card p-4 text-center">
+            <i class="fas fa-satellite-dish text-muted mb-2" style="font-size:1.8rem;opacity:.3;"></i>
+            <p class="text-muted mb-1" style="font-size:.82rem;font-weight:600;">Arkesel balance unavailable</p>
+            <p class="text-muted" style="font-size:.72rem;">
+                Set <code>ARKESEL_API_KEY</code> in your Render environment variables.
+            </p>
+        </div>
+        @endif
+    </div>
+
+    {{-- Credits allocated to all schools vs sent --}}
+    <div class="col-md-4">
+        <div class="owner-card p-4">
+            <div style="font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:#94a3b8;margin-bottom:.85rem;">
+                <i class="fas fa-chart-bar me-1"></i> Credits Across All Schools
+            </div>
+            <div class="d-flex flex-column gap-3">
+                <div>
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.3rem;">
+                        <span style="font-size:.75rem;font-weight:700;color:#475569;">
+                            <span style="width:10px;height:10px;border-radius:3px;background:#6366f1;display:inline-block;margin-right:6px;"></span>
+                            Allocated to schools
+                        </span>
+                        <span style="font-size:.85rem;font-weight:900;color:#0f172a;">{{ number_format($totalCreditsAllocated) }}</span>
+                    </div>
+                    <div style="height:7px;background:#f1f5f9;border-radius:99px;overflow:hidden;">
+                        <div style="height:100%;width:100%;background:#6366f1;border-radius:99px;"></div>
+                    </div>
+                </div>
+                <div>
+                    @php $usedPct = $totalCreditsAllocated > 0 ? min(100, round($totalCreditsSent / $totalCreditsAllocated * 100)) : 0; @endphp
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.3rem;">
+                        <span style="font-size:.75rem;font-weight:700;color:#475569;">
+                            <span style="width:10px;height:10px;border-radius:3px;background:#10b981;display:inline-block;margin-right:6px;"></span>
+                            Messages sent by schools
+                        </span>
+                        <span style="font-size:.85rem;font-weight:900;color:#0f172a;">{{ number_format($totalCreditsSent) }}</span>
+                    </div>
+                    <div style="height:7px;background:#f1f5f9;border-radius:99px;overflow:hidden;">
+                        <div style="height:100%;width:{{ $usedPct }}%;background:#10b981;border-radius:99px;transition:width .8s;"></div>
+                    </div>
+                    <p style="font-size:.67rem;color:#94a3b8;margin-top:.3rem;">{{ $usedPct }}% of allocated credits used</p>
+                </div>
+                <div style="border-top:1px solid #f1f5f9;padding-top:.85rem;">
+                    @php $remaining = max(0, $totalCreditsAllocated - $totalCreditsSent); @endphp
+                    <div style="display:flex;align-items:center;justify-content:space-between;">
+                        <span style="font-size:.75rem;font-weight:700;color:#475569;">
+                            <span style="width:10px;height:10px;border-radius:3px;background:#f59e0b;display:inline-block;margin-right:6px;"></span>
+                            Still unused by schools
+                        </span>
+                        <span style="font-size:.85rem;font-weight:900;color:#d97706;">{{ number_format($remaining) }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Quick SMS credit management links --}}
+    <div class="col-md-4">
+        <div class="owner-card p-4">
+            <div style="font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:#94a3b8;margin-bottom:.85rem;">
+                <i class="fas fa-bolt me-1"></i> SMS Management
+            </div>
+            <div class="d-flex flex-column gap-2">
+                @foreach([
+                    [route('owner.messaging.credits'),   'fa-coins',     'View all school balances',   '#ecfdf5','#16a34a'],
+                    [route('owner.messaging.packages'),  'fa-box-open',  'Manage credit packages',     '#eff6ff','#3b82f6'],
+                    [route('owner.payments.index'),      'fa-receipt',   'View all credit payments',   '#faf5ff','#7c3aed'],
+                ] as [$href,$icon,$label,$bg,$clr])
+                <a href="{{ $href }}"
+                   style="display:flex;align-items:center;gap:.75rem;padding:.75rem 1rem;border-radius:.875rem;background:{{ $bg }};text-decoration:none;border:1px solid transparent;transition:all .15s;"
+                   onmouseover="this.style.borderColor='{{ $clr }}'"
+                   onmouseout="this.style.borderColor='transparent'">
+                    <div style="width:34px;height:34px;border-radius:.65rem;background:{{ $clr }}22;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <i class="fas {{ $icon }}" style="color:{{ $clr }};font-size:.8rem;"></i>
+                    </div>
+                    <span style="font-size:.8rem;font-weight:700;color:#1e293b;">{{ $label }}</span>
+                    <i class="fas fa-chevron-right ms-auto" style="color:#cbd5e1;font-size:.65rem;"></i>
+                </a>
+                @endforeach
+                <a href="https://arkesel.com/login" target="_blank"
+                   style="display:flex;align-items:center;gap:.75rem;padding:.75rem 1rem;border-radius:.875rem;background:#fff7ed;text-decoration:none;border:1px solid transparent;transition:all .15s;"
+                   onmouseover="this.style.borderColor='#f97316'"
+                   onmouseout="this.style.borderColor='transparent'">
+                    <div style="width:34px;height:34px;border-radius:.65rem;background:#f9731622;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <i class="fas fa-external-link-alt" style="color:#f97316;font-size:.8rem;"></i>
+                    </div>
+                    <span style="font-size:.8rem;font-weight:700;color:#1e293b;">Top up on Arkesel.com</span>
+                    <i class="fas fa-chevron-right ms-auto" style="color:#cbd5e1;font-size:.65rem;"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
 {{-- Alerts: Expiring soon --}}
 @if($expiringSoon->count() || $trialsExpiringSoon->count())
 <div class="row g-3 mb-4">
