@@ -282,7 +282,16 @@ class AttendanceController extends Controller
                 }
 
                 // Resolve placeholders into real values
-                $message = NotificationTemplate::resolvePlaceholders($rawMessage, $student);
+                // Pass today's status so {today_status} and {today_status_label} resolve correctly
+                $todayLabel = $status === 'present'
+                    ? 'was marked PRESENT'
+                    : 'was marked ABSENT';
+
+                $message = NotificationTemplate::resolvePlaceholders($rawMessage, $student, [
+                    '{today_status}'        => strtoupper($status),          // PRESENT or ABSENT
+                    '{today_status_label}'  => $todayLabel,                  // "was marked PRESENT"
+                    '{today_date}'          => now()->format('l, d F Y'),    // Monday, 08 October 2026
+                ]);
 
                 // Resolve the parent phone number
                 $phone = $settings->resolvePhone($student);

@@ -53,20 +53,34 @@ class NotificationTemplate extends Model
     public static function placeholders(): array
     {
         return [
+            // ── Today's attendance (most important for auto-alerts) ──────────
+            '{today_status}'        => 'PRESENT or ABSENT — what was marked today',
+            '{today_status_label}'  => 'Full sentence: "was marked PRESENT" or "was marked ABSENT"',
+            '{today_date}'          => "Today's date in full (e.g. Monday, 08 October 2026)",
+
+            // ── Student identity ────────────────────────────────────────────
             '{student_name}'        => 'Full name of the student',
+            '{student_id}'          => 'Student ID number',
             '{parent_name}'         => 'Parent / guardian name',
             '{class}'               => 'Programme / class name',
+
+            // ── School ──────────────────────────────────────────────────────
             '{school_name}'         => 'Name of the school',
             '{term}'                => 'Current term (e.g. Term 1, 2025/2026)',
+            '{date}'                => "Today's date (short: 08 Oct 2026)",
+
+            // ── Term attendance totals ──────────────────────────────────────
             '{present_count}'       => 'Number of days present this term',
             '{absent_count}'        => 'Number of days absent this term',
             '{total_days}'          => 'Total school days so far this term',
             '{attendance_rate}'     => 'Attendance rate as a percentage',
+
+            // ── Fees ────────────────────────────────────────────────────────
             '{fee_balance}'         => 'Outstanding fee balance (GH₵)',
             '{fee_paid}'            => 'Amount paid so far (GH₵)',
             '{fee_total}'           => 'Total fee billed (GH₵)',
-            '{date}'                => "Today's date",
-            '{student_id}'          => 'Student ID number',
+
+            // ── Extra ───────────────────────────────────────────────────────
             '{custom_note}'         => 'Extra note typed at send time',
         ];
     }
@@ -132,7 +146,13 @@ class NotificationTemplate extends Model
 
         // ── Map ─────────────────────────────────────────────────────────────
         $map = array_merge([
+            // Today's attendance status — resolved from $extra if provided by auto-alert
+            '{today_status}'        => 'PRESENT',               // overridden by $extra
+            '{today_status_label}'  => 'was marked PRESENT',    // overridden by $extra
+            '{today_date}'          => now()->format('l, d F Y'),
+
             '{student_name}'    => $student->user?->full_name ?? 'Student',
+            '{student_id}'      => $student->student_id ?? '—',
             '{parent_name}'     => $parentName,
             '{class}'           => $student->program?->name ?? '—',
             '{school_name}'     => $schoolName,
@@ -145,7 +165,6 @@ class NotificationTemplate extends Model
             '{fee_paid}'        => 'GH₵ ' . number_format($feePaid, 2),
             '{fee_total}'       => 'GH₵ ' . number_format($feeTotal, 2),
             '{date}'            => now()->format('d M Y'),
-            '{student_id}'      => $student->student_id ?? '—',
             '{custom_note}'     => '',
         ], $extra);
 

@@ -50,6 +50,7 @@ $permGroups = [
     'Scheme of Learning'     => ['scheme_of_learning','scheme_manage','scheme_upload_pdf'],
     'Timetable & Calendar'   => ['timetable','timetable_manage','calendar','calendar_manage'],
     'Notifications'          => ['notifications','notifications_send','notifications_sms'],
+    'Attendance Alerts'      => ['attendance_alerts','attendance_alerts_manage','message_templates','message_templates_manage'],
     'Branches'               => ['branches','branches_manage'],
     'Work Monitoring'        => ['work_logs','work_logs_manage','work_logs_comment'],
     'Promotions'             => ['promotions','promotions_manage'],

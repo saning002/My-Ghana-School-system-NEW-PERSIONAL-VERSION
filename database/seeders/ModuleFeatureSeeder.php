@@ -37,9 +37,11 @@ class ModuleFeatureSeeder extends Seeder
             ['key' => 'fee_reminders',    'label' => 'Fee Reminders (SMS/Email)', 'description' => 'Send automated fee reminder messages to parents.',        'group' => 'Finance', 'sort_order' => 40],
 
             // ── Communication ─────────────────────────────────────────────────
-            ['key' => 'notifications',    'label' => 'Notifications & Messaging', 'description' => 'Send school-wide or targeted notifications to students.', 'group' => 'Communication', 'sort_order' => 10],
-            ['key' => 'portals',          'label' => 'Student / Parent Portal', 'description' => 'Student portal for viewing results, fees and notifications.','group' => 'Communication', 'sort_order' => 20],
-            ['key' => 'staff_portal',     'label' => 'Staff Portals (Accountant / HM)', 'description' => 'Limited-access portals for accountants and headmasters.', 'group' => 'Communication', 'sort_order' => 30],
+            ['key' => 'notifications',         'label' => 'Notifications & Messaging',          'description' => 'Send school-wide or targeted notifications to students.',                                           'group' => 'Communication', 'sort_order' => 10],
+            ['key' => 'message_templates',     'label' => 'Message Templates',                  'description' => 'Create reusable message drafts with smart placeholders for faster notification sending.',           'group' => 'Communication', 'sort_order' => 15],
+            ['key' => 'attendance_alerts',     'label' => 'Auto Attendance SMS Alerts',         'description' => 'Automatically SMS parents when a teacher marks their ward present or absent on the register.',      'group' => 'Communication', 'sort_order' => 18],
+            ['key' => 'portals',               'label' => 'Student / Parent Portal',            'description' => 'Student portal for viewing results, fees and notifications.',                                       'group' => 'Communication', 'sort_order' => 20],
+            ['key' => 'staff_portal',          'label' => 'Staff Portals (Accountant / HM)',    'description' => 'Limited-access portals for accountants and headmasters.',                                          'group' => 'Communication', 'sort_order' => 30],
 
             // ── Reports ───────────────────────────────────────────────────────
             ['key' => 'reports',          'label' => 'Reports & Analytics',     'description' => 'Generate attendance, financial and academic reports.',      'group' => 'Reports', 'sort_order' => 10],

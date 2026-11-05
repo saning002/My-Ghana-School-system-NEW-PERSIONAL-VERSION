@@ -107,11 +107,19 @@ class StaffPortalUser extends Authenticatable
         'calendar_manage'        => 'Add / Edit School Events',
 
         // ── Notifications ─────────────────────────────────────────────────────
-        'notifications'          => 'View Notifications',
-        'notifications_send'     => 'Send Notifications to Students',
+        'notifications'               => 'View Notifications',
+        'notifications_send'          => 'Send Notifications to Students',
+
+        // ── Notifications (SMS) ───────────────────────────────────────────────
+        'notifications_sms'           => 'Send SMS Notifications (uses credits)',
+
+        // ── Attendance Alerts (Auto SMS to parents) ───────────────────────────
+        'attendance_alerts'           => 'View Attendance Alert Settings',
+        'attendance_alerts_manage'    => 'Configure Auto SMS Alerts to Parents',
+        'message_templates'           => 'View Message Templates',
+        'message_templates_manage'    => 'Create / Edit / Delete Message Templates',
 
         // ── Branches ──────────────────────────────────────────────────────────
-        'branches'               => 'View School Branches',
         'branches_manage'        => 'Create / Edit / Delete Branches',
 
         // ── Work Monitoring ───────────────────────────────────────────────────
@@ -134,9 +142,6 @@ class StaffPortalUser extends Authenticatable
         // ── Settings ──────────────────────────────────────────────────────────
         'settings'               => 'View Portal & School Settings',
         'settings_manage'        => 'Edit Portal Settings',
-
-        // ── Notifications (SMS) ───────────────────────────────────────────────
-        'notifications_sms'      => 'Send SMS Notifications (uses credits)',
 
         // ── Fee Reminders ─────────────────────────────────────────────────────
         'fee_reminders'          => 'View Fee Reminder Logs',

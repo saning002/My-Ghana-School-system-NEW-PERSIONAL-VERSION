@@ -30,11 +30,11 @@ class AttendanceAlertSetting extends Model
     public static function current(): static
     {
         return static::firstOrCreate([], [
-            'enabled'             => false,
-            'present_message'     => 'Dear {parent_name}, {student_name} of {class} has been marked PRESENT at {school_name} today ({date}). Term attendance: {present_count} present, {absent_count} absent out of {total_days} days.',
-            'absent_message'      => 'Dear {parent_name}, {student_name} of {class} was marked ABSENT at {school_name} today ({date}). Total absences this term: {absent_count} out of {total_days} days. Please contact the school if needed.',
-            'recipient_field'     => 'guardian_phone',
-            'send_delay_minutes'  => 0,
+            'enabled'            => false,
+            'present_message'    => 'Dear {parent_name}, {student_name} of {class} {today_status_label} at {school_name} on {today_date}. Term attendance so far: {present_count} days present, {absent_count} days absent ({attendance_rate} rate). — {school_name}',
+            'absent_message'     => 'Dear {parent_name}, {student_name} of {class} {today_status_label} at {school_name} on {today_date}. Term absences so far: {absent_count} out of {total_days} days. Please contact the school if needed. — {school_name}',
+            'recipient_field'    => 'guardian_phone',
+            'send_delay_minutes' => 0,
         ]);
     }
 
