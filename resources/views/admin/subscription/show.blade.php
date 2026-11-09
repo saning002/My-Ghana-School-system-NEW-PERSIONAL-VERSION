@@ -171,11 +171,60 @@
         <span class="sub-badge active ms-auto">Per-Student</span>
     </div>
     <div class="sub-section-body">
+
+        {{-- Tier table ──────────────────────────────────────────────────── --}}
+        @if(!empty($billing['all_tiers']))
+        <div class="mb-4">
+            <p class="fw-bold mb-2" style="font-size:.82rem;color:#475569;">
+                <i class="fas fa-layer-group me-1"></i> Your Billing Tiers
+            </p>
+            <div class="table-responsive">
+                <table class="table table-sm" style="margin:0;">
+                    <thead style="background:#f8fafc;">
+                        <tr>
+                            <th style="font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8;padding:.5rem .75rem;">Tier</th>
+                            <th style="font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8;padding:.5rem .75rem;">Students</th>
+                            <th style="font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8;padding:.5rem .75rem;">Rate / Student</th>
+                            <th style="font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8;padding:.5rem .75rem;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($billing['all_tiers'] as $tierData)
+                        @php
+                            $isCurrent = !empty($billing['tier']) && $billing['tier']['id'] === $tierData['id'];
+                            $range = $tierData['max_students']
+                                ? $tierData['min_students'] . ' – ' . $tierData['max_students']
+                                : $tierData['min_students'] . '+';
+                        @endphp
+                        <tr style="border-bottom:1px solid #f8fafc;{{ $isCurrent ? 'background:#f0fdf4;' : '' }}">
+                            <td style="padding:.6rem .75rem;">
+                                <span class="badge {{ $isCurrent ? 'bg-success' : 'bg-secondary' }}" style="font-size:.68rem;">
+                                    Tier {{ $loop->iteration }}
+                                </span>
+                            </td>
+                            <td style="padding:.6rem .75rem;font-weight:600;color:#475569;font-size:.82rem;">{{ $range }}</td>
+                            <td style="padding:.6rem .75rem;font-weight:700;color:#0f172a;font-size:.85rem;">GHS {{ number_format($tierData['rate_per_student'], 2) }}</td>
+                            <td style="padding:.6rem .75rem;">
+                                @if($isCurrent)
+                                <span class="sub-badge active" style="font-size:.62rem;">Current</span>
+                                @else
+                                <span style="font-size:.62rem;color:#cbd5e1;">—</span>
+                                @endif
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        @endif
+
+        {{-- Billing summary ──────────────────────────────────────────────── --}}
         <div class="info-grid">
             <div class="info-tile ok">
-                <div class="lbl">Rate per Student</div>
+                <div class="lbl">Matched Rate</div>
                 <div class="val">GHS {{ number_format($billing['rate'], 2) }}</div>
-                <div class="sub">per term</div>
+                <div class="sub">per student per term</div>
             </div>
             <div class="info-tile">
                 <div class="lbl">Active Students</div>
@@ -193,16 +242,21 @@
                 <div class="sub">{{ $tenant->billing_terms_per_year ?? 3 }} terms per year</div>
             </div>
         </div>
+
         @if($billing['includes_sms'])
         <div class="alert alert-success d-flex align-items-center gap-2 mb-0" style="font-size:.82rem;border-radius:.75rem;">
             <i class="fas fa-sms text-success"></i>
             <span><strong>SMS Attendance Alerts included</strong> — automated parent SMS alerts are part of your subscription. No separate credit top-up needed.</span>
         </div>
         @endif
+
         <p class="text-muted mb-0 mt-3" style="font-size:.78rem;">
             <i class="fas fa-info-circle me-1"></i>
             Your bill is calculated at the start of each term based on the number of active students enrolled.
-            Students who join or leave mid-term are counted at the next billing cycle.
+            Mid-term admissions within the same tier don't change your bill until the next term.
+            @if(!empty($billing['all_tiers']))
+            Your school currently falls in the tier highlighted above.
+            @endif
         </p>
     </div>
 </div>

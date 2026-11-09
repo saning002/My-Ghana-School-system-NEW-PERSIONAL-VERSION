@@ -282,21 +282,48 @@ class Tenant extends Model
     /**
      * Calculate the amount owed per term for this school.
      * For flat billing: returns the plan price (annual / terms per year).
-     * For per-student billing: returns per_student_rate × active student count.
+     * For per-student billing with tiers: finds matching tier, returns count × tier rate.
+     * For per-student billing without tiers: returns per_student_rate × count.
      */
     public function calculateTermAmount(): array
     {
-        if ($this->isPerStudentBilling() && $this->per_student_rate > 0) {
+        if ($this->isPerStudentBilling()) {
             $studentCount = $this->countActiveStudents();
-            $amount       = $studentCount * (float) $this->per_student_rate;
+
+            // Try tiers first
+            $tier = \App\Models\BillingTier::resolveTier($this->id, $studentCount);
+
+            if ($tier) {
+                // Tiered billing
+                $rate       = (float) $tier->rate_per_student;
+                $amount     = $studentCount * $rate;
+                $allTiers   = \App\Models\BillingTier::forTenant($this->id);
+
+                return [
+                    'model'         => 'per_student',
+                    'student_count' => $studentCount,
+                    'rate'          => $rate,
+                    'term_amount'   => $amount,
+                    'annual_amount' => $amount * ($this->billing_terms_per_year ?? 3),
+                    'includes_sms'  => (bool) $this->billing_includes_sms,
+                    'tier'          => $tier->toArray(),
+                    'all_tiers'     => $allTiers->toArray(),
+                ];
+            }
+
+            // No tiers — use flat per_student_rate
+            $rate   = (float) $this->per_student_rate;
+            $amount = $studentCount * $rate;
 
             return [
-                'model'        => 'per_student',
-                'student_count'=> $studentCount,
-                'rate'         => (float) $this->per_student_rate,
-                'term_amount'  => $amount,
-                'annual_amount'=> $amount * ($this->billing_terms_per_year ?? 3),
-                'includes_sms' => (bool) $this->billing_includes_sms,
+                'model'         => 'per_student',
+                'student_count' => $studentCount,
+                'rate'          => $rate,
+                'term_amount'   => $amount,
+                'annual_amount' => $amount * ($this->billing_terms_per_year ?? 3),
+                'includes_sms'  => (bool) $this->billing_includes_sms,
+                'tier'          => null,
+                'all_tiers'     => [],
             ];
         }
 
@@ -305,12 +332,14 @@ class Tenant extends Model
         $termsPerYr = $this->billing_terms_per_year ?? 3;
 
         return [
-            'model'        => 'flat',
-            'student_count'=> null,
-            'rate'         => null,
-            'term_amount'  => $termsPerYr > 0 ? $planPrice / $termsPerYr : $planPrice,
-            'annual_amount'=> $planPrice,
-            'includes_sms' => false,
+            'model'         => 'flat',
+            'student_count' => null,
+            'rate'          => null,
+            'term_amount'   => $termsPerYr > 0 ? $planPrice / $termsPerYr : $planPrice,
+            'annual_amount' => $planPrice,
+            'includes_sms'  => false,
+            'tier'          => null,
+            'all_tiers'     => [],
         ];
     }
 }

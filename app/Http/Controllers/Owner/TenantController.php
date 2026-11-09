@@ -93,6 +93,11 @@ class TenantController extends Controller
             $this->syncPlanFeaturesToTenant($tenant);
         }
 
+        // Save billing tiers if per_student billing model
+        if ($validated['billing_model'] === 'per_student' && $request->has('tier_rate')) {
+            $this->syncBillingTiers($request, $tenant->id);
+        }
+
         AuditLog::record(
             'tenant.created',
             "School '{$tenant->name}' created with subdomain '{$tenant->subdomain}'",
@@ -260,6 +265,14 @@ class TenantController extends Controller
         $oldValues = $tenant->toArray();
         $tenant->update($validated);
 
+        // Save billing tiers if per_student billing model
+        if (($validated['billing_model'] ?? 'flat') === 'per_student' && $request->has('tier_rate')) {
+            $this->syncBillingTiers($request, $tenant->id);
+        } elseif (($validated['billing_model'] ?? 'flat') === 'flat') {
+            // Clear tiers if switching back to flat
+            \App\Models\BillingTier::where('tenant_id', $tenant->id)->delete();
+        }
+
         AuditLog::record('tenant.updated', "School '{$tenant->name}' updated", $tenant->id, $oldValues, $validated);
 
         return redirect()->route('owner.schools.show', $tenant)
@@ -275,6 +288,29 @@ class TenantController extends Controller
 
         return redirect()->route('owner.schools.index')
             ->with('success', "School '{$name}' deleted.");
+    }
+
+    // ── Private: sync billing tiers from form input ──────────────────────
+
+    private function syncBillingTiers(Request $request, int $tenantId): void
+    {
+        $mins  = $request->input('tier_min', []);
+        $maxs  = $request->input('tier_max', []);
+        $rates = $request->input('tier_rate', []);
+
+        $tiers = [];
+        for ($i = 0; $i < count($rates); $i++) {
+            if (empty($rates[$i]) || $rates[$i] <= 0) {
+                continue; // Skip empty
+            }
+            $tiers[] = [
+                'min_students'     => (int) ($mins[$i] ?? 0),
+                'max_students'     => isset($maxs[$i]) && $maxs[$i] !== '' ? (int) $maxs[$i] : null,
+                'rate_per_student' => (float) $rates[$i],
+            ];
+        }
+
+        \App\Models\BillingTier::syncForTenant($tenantId, $tiers);
     }
 
     public function updateStatus(Request $request, Tenant $tenant)

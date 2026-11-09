@@ -200,10 +200,10 @@
                      x-transition:enter-end="opacity-100 translate-y-0"
                      class="border-top pt-3" style="border-color:#f1f5f9;">
 
-                    {{-- Rate input --}}
+                    {{-- Default flat rate (used if no tiers set) --}}
                     <div class="mb-3">
                         <label class="form-label fw-semibold">
-                            Rate per Student per Term (GHS) <span class="text-danger">*</span>
+                            Default Rate per Student per Term (GHS)
                         </label>
                         <div class="input-group" style="max-width:200px;">
                             <span class="input-group-text fw-bold">GHS</span>
@@ -213,7 +213,134 @@
                                    placeholder="8.00">
                         </div>
                         <div class="form-text" style="font-size:.75rem;">
-                            Set any amount. Example: GHS 8 per student per term.
+                            Used if no tiers are set below. Set any amount per school.
+                        </div>
+                    </div>
+
+                    {{-- Tiered pricing ──────────────────────────────────────────── --}}
+                    <div class="mb-3" x-data="{
+                        tiers: {{ json_encode(
+                            ($t && $t->exists)
+                                ? \App\Models\BillingTier::forTenant($t->id)->map(fn($t) => [
+                                    'min' => $t->min_students,
+                                    'max' => $t->max_students ?? '',
+                                    'rate' => $t->rate_per_student,
+                                ])->toArray()
+                                : [['min'=>1,'max'=>100,'rate'=>8],['min'=>101,'max'=>200,'rate'=>7],['min'=>201,'max'=>'','rate'=>6]]
+                        ) }},
+                        previewStudents: 150,
+                        previewTerms: 3,
+
+                        addTier() {
+                            var lastMax = this.tiers.length ? (this.tiers[this.tiers.length-1].max || 100) : 0;
+                            this.tiers.push({ min: lastMax+1, max: '', rate: 5 });
+                        },
+                        removeTier(i) {
+                            this.tiers.splice(i, 1);
+                        },
+                        matchingTier() {
+                            var s = this.previewStudents;
+                            for (var i = 0; i < this.tiers.length; i++) {
+                                var t = this.tiers[i];
+                                var max = t.max === '' || t.max === null ? 999999 : parseInt(t.max);
+                                if (s >= parseInt(t.min) && s <= max) return t;
+                            }
+                            return this.tiers[0] || { rate: parseFloat(this.rate) || 0 };
+                        },
+                        previewAmount() {
+                            var t = this.matchingTier();
+                            var r = parseFloat(t.rate) || parseFloat(this.rate) || 0;
+                            return this.previewStudents * r;
+                        },
+                        previewAnnual() {
+                            return this.previewAmount() * parseInt(this.terms || 3);
+                        },
+                        previewRate() {
+                            var t = this.matchingTier();
+                            return parseFloat(t.rate) || parseFloat(this.rate) || 0;
+                        }
+                    }">
+
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <label class="form-label fw-semibold mb-0">
+                                Billing Tiers <span class="text-muted" style="font-size:.72rem;font-weight:400;">
+                                    (set student ranges with different rates)
+                                </span>
+                            </label>
+                            <button type="button" @click="addTier()"
+                                class="btn btn-sm btn-outline-success" style="font-size:.75rem;">
+                                <i class="fas fa-plus me-1"></i> Add Tier
+                            </button>
+                        </div>
+
+                        {{-- Tier rows --}}
+                        <template x-for="(tier, i) in tiers" :key="i">
+                            <div class="d-flex align-items-center gap-2 mb-2 p-2 rounded"
+                                 style="background:#f8fafc;border:1px solid #f1f5f9;">
+                                <span class="badge bg-secondary" style="font-size:.7rem;min-width:28px;" x-text="'Tier ' + (i+1)"></span>
+
+                                {{-- Min --}}
+                                <div style="width:90px;">
+                                    <label style="font-size:.65rem;color:#94a3b8;font-weight:700;text-transform:uppercase;">Min</label>
+                                    <input type="number" x-model.number="tier.min" name="tier_min[]"
+                                        class="form-control form-control-sm" min="0" placeholder="0">
+                                </div>
+
+                                {{-- Max --}}
+                                <div style="width:90px;">
+                                    <label style="font-size:.65rem;color:#94a3b8;font-weight:700;text-transform:uppercase;">Max</label>
+                                    <input type="number" x-model="tier.max" name="tier_max[]"
+                                        class="form-control form-control-sm" min="0" placeholder="blank = unlimited">
+                                </div>
+
+                                {{-- Rate --}}
+                                <div style="width:100px;">
+                                    <label style="font-size:.65rem;color:#94a3b8;font-weight:700;text-transform:uppercase;">GHS/Student</label>
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text" style="font-size:.7rem;">₵</span>
+                                        <input type="number" x-model.number="tier.rate" name="tier_rate[]"
+                                            class="form-control form-control-sm" step="0.5" min="0" placeholder="8">
+                                    </div>
+                                </div>
+
+                                {{-- Remove button --}}
+                                <button type="button" @click="removeTier(i)" x-show="tiers.length > 1"
+                                    class="btn btn-sm text-danger ms-1" style="font-size:.7rem;padding:.2rem .4rem;"
+                                    title="Remove tier">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </template>
+
+                        <p class="text-muted mb-0" style="font-size:.72rem;">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Leave "Max" blank on the last tier to include all students above that range.
+                            Mid-term admissions within the same tier don't change the bill until next term.
+                        </p>
+
+                        {{-- Live preview --}}
+                        <div class="mt-3 p-3 rounded" style="background:#f0fdf4;border:1px solid #bbf7d0;">
+                            <p class="fw-bold mb-2" style="font-size:.8rem;color:#15803d;">
+                                <i class="fas fa-calculator me-1"></i> Billing Preview
+                            </p>
+                            <div class="d-flex align-items-center gap-3 mb-2">
+                                <div style="flex:1;">
+                                    <label class="mb-0" style="font-size:.72rem;color:#64748b;">Active Students</label>
+                                    <input type="number" x-model.number="previewStudents" class="form-control form-control-sm" style="max-width:120px;" min="0">
+                                </div>
+                                <div class="text-center" style="flex:1;">
+                                    <p class="mb-0" style="font-size:.68rem;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;">Matched Tier Rate</p>
+                                    <p class="fw-bold mb-0" style="font-size:1.1rem;color:#16a34a;" x-text="'GHS ' + previewRate().toFixed(2)"></p>
+                                </div>
+                                <div class="text-center" style="flex:1;">
+                                    <p class="mb-0" style="font-size:.68rem;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;">Per Term</p>
+                                    <p class="fw-bold mb-0" style="font-size:1.15rem;color:#16a34a;" x-text="'GHS ' + previewAmount().toFixed(2)"></p>
+                                </div>
+                                <div class="text-center" style="flex:1;">
+                                    <p class="mb-0" style="font-size:.68rem;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;">Per Year</p>
+                                    <p class="fw-bold mb-0" style="font-size:1.15rem;color:#0f172a;" x-text="'GHS ' + previewAnnual().toFixed(2)"></p>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -238,34 +365,9 @@
                                 Include SMS Attendance Alerts
                             </p>
                             <p class="text-muted mb-0" style="font-size:.72rem;">
-                                SMS costs are bundled into the per-student rate. School doesn't buy credits separately.
+                                SMS costs bundled into the per-student rate. School doesn't buy credits separately.
                             </p>
                         </div>
-                    </div>
-
-                    {{-- Live calculation preview --}}
-                    <div class="mt-3 p-3 rounded-lg" style="background:#f8fafc;border:1px solid #f1f5f9;">
-                        <p class="fw-bold mb-2" style="font-size:.8rem;color:#475569;">
-                            <i class="fas fa-calculator me-1"></i> Estimated Billing
-                        </p>
-                        <div class="d-flex align-items-center gap-3 mb-2">
-                            <div style="flex:1;">
-                                <label class="form-label mb-0" style="font-size:.72rem;">Active Students</label>
-                                <input type="number" x-model.number="students" class="form-control form-control-sm" style="max-width:120px;" min="0">
-                            </div>
-                            <div class="text-center" style="flex:1;">
-                                <p class="mb-0" style="font-size:.7rem;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;">Per Term</p>
-                                <p class="fw-bold mb-0" style="font-size:1.15rem;color:#16a34a;" x-text="'GHS ' + (students * parseFloat(rate || 0)).toFixed(2)"></p>
-                            </div>
-                            <div class="text-center" style="flex:1;">
-                                <p class="mb-0" style="font-size:.7rem;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;">Per Year</p>
-                                <p class="fw-bold mb-0" style="font-size:1.15rem;color:#0f172a;" x-text="'GHS ' + (students * parseFloat(rate || 0) * parseInt(terms || 3)).toFixed(2)"></p>
-                            </div>
-                        </div>
-                        <p class="mb-0 mt-2" style="font-size:.72rem;color:#94a3b8;">
-                            <i class="fas fa-info-circle me-1"></i>
-                            Actual billing is calculated at the start of each term using the real active student count.
-                        </p>
                     </div>
                 </div>
 
