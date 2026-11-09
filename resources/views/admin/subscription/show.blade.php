@@ -260,6 +260,141 @@
         </p>
     </div>
 </div>
+
+{{-- ── PER-STUDENT INVOICE SECTION ─────────────────────────────────────── --}}
+@if($tenant->isPerStudentBilling())
+
+{{-- Generate invoice button --}}
+@if(!$currentInvoice)
+<div class="sub-section mb-4" style="border:2px solid #f59e0b;">
+    <div class="sub-section-body text-center py-4">
+        <i class="fas fa-file-invoice-dollar" style="font-size:2rem;color:#f59e0b;margin-bottom:.5rem;"></i>
+        <h4 style="font-size:1rem;font-weight:800;color:#1e293b;margin-bottom:.3rem;">No invoice generated for this term yet</h4>
+        <p style="font-size:.82rem;color:#94a3b8;margin-bottom:1.2rem;">
+            Click below to generate your term invoice based on your current active student count.
+        </p>
+        <form method="POST" action="{{ route('admin.subscription.generate-invoice') }}">
+            @csrf
+            <button type="submit" class="pay-btn renew" style="max-width:280px;margin:0 auto;">
+                <i class="fas fa-file-invoice me-1"></i> Generate Term Invoice
+            </button>
+        </form>
+    </div>
+</div>
+@else
+{{-- Current pending invoice ─────────────────────────────────────────────── --}}
+<div class="sub-section" style="border:2px solid #f59e0b;background:#fffbeb;">
+    <div class="sub-section-hd" style="background:#fef3c7;">
+        <div class="hd-icon" style="background:#fde68a;color:#d97706;">
+            <i class="fas fa-file-invoice-dollar"></i>
+        </div>
+        <div>
+            <h3>Current Term Invoice</h3>
+            <p>Invoice {{$currentInvoice->invoice_number}} — due {{$currentInvoice->due_date?->format('d M Y') ?? '—'}}</p>
+        </div>
+        <span class="sub-badge" style="background:#fef3c7;color:#b45309;">Pending Payment</span>
+    </div>
+    <div class="sub-section-body">
+
+        <div class="info-grid">
+            <div class="info-tile">
+                <div class="lbl">Invoice Number</div>
+                <div class="val" style="font-size:.95rem;">{{$currentInvoice->invoice_number}}</div>
+            </div>
+            <div class="info-tile">
+                <div class="lbl">Term</div>
+                <div class="val" style="font-size:.95rem;">{{$currentInvoice->term_label ?? 'Current Term'}}</div>
+            </div>
+            <div class="info-tile">
+                <div class="lbl">Students Counted</div>
+                <div class="val">{{number_format($currentInvoice->student_count)}}</div>
+            </div>
+            <div class="info-tile">
+                <div class="lbl">Rate Applied</div>
+                <div class="val">GHS {{number_format($currentInvoice->rate_per_student, 2)}}</div>
+            </div>
+            <div class="info-tile ok">
+                <div class="lbl">Amount Due</div>
+                <div class="val" style="font-size:1.3rem;color:#d97706;">GHS {{number_format($currentInvoice->amount, 2)}}</div>
+                <div class="sub">{{$currentInvoice->student_count}} × GHS {{number_format($currentInvoice->rate_per_student, 2)}}</div>
+            </div>
+        </div>
+
+        {{-- Overdue warning --}}
+        @if($currentInvoice->due_date && $currentInvoice->due_date < now()->toDateString())
+        <div class="alert alert-danger d-flex align-items-center gap-2" style="font-size:.82rem;border-radius:.75rem;">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span><strong>This invoice is overdue.</strong> Please pay immediately to avoid suspension of access.</span>
+        </div>
+        @endif
+
+        {{-- Pay Now button --}}
+        <a href="{{ route('admin.subscription.pay-invoice', $currentInvoice) }}"
+           class="pay-btn renew" style="max-width:100%;margin-top:1rem;">
+            <i class="fas fa-credit-card me-1"></i> Pay GHS {{number_format($currentInvoice->amount, 2)}} Now via Paystack
+        </a>
+        <p class="text-muted text-center mt-2" style="font-size:.72rem;">
+            <i class="fas fa-shield-alt me-1"></i> Secure payment via Paystack — Card, MoMo, Bank Transfer
+        </p>
+    </div>
+</div>
+@endif
+
+{{-- Invoice history ──────────────────────────────────────────────────────── --}}
+@if($perStudentInvoices->count() > 0)
+<div class="sub-section">
+    <div class="sub-section-hd">
+        <div class="hd-icon" style="background:#eff6ff;color:#3b82f6;">
+            <i class="fas fa-history"></i>
+        </div>
+        <div>
+            <h3>Invoice History</h3>
+            <p>All per-student invoices for your school</p>
+        </div>
+    </div>
+    <div class="sub-section-body p-0">
+        <div class="table-responsive">
+            <table class="table table-sm mb-0">
+                <thead style="background:#f8fafc;">
+                    <tr>
+                        <th style="font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8;padding:.6rem .75rem;">Invoice #</th>
+                        <th style="font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8;padding:.6rem .75rem;">Term</th>
+                        <th style="font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8;padding:.6rem .75rem;">Students</th>
+                        <th style="font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8;padding:.6rem .75rem;">Rate</th>
+                        <th style="font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8;padding:.6rem .75rem;">Amount</th>
+                        <th style="font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8;padding:.6rem .75rem;">Date</th>
+                        <th style="font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8;padding:.6rem .75rem;">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($perStudentInvoices as $inv)
+                    <tr style="border-bottom:1px solid #f8fafc;">
+                        <td style="padding:.5rem .75rem;font-weight:600;font-size:.78rem;">{{$inv->invoice_number}}</td>
+                        <td style="padding:.5rem .75rem;font-size:.78rem;color:#64748b;">{{$inv->term_label ?? '—'}}</td>
+                        <td style="padding:.5rem .75rem;font-size:.78rem;">{{number_format($inv->student_count)}}</td>
+                        <td style="padding:.5rem .75rem;font-size:.78rem;">GHS {{number_format($inv->rate_per_student, 2)}}</td>
+                        <td style="padding:.5rem .75rem;font-weight:700;font-size:.82rem;">GHS {{number_format($inv->amount, 2)}}</td>
+                        <td style="padding:.5rem .75rem;font-size:.72rem;color:#94a3b8;">{{$inv->created_at->format('d M Y')}}</td>
+                        <td style="padding:.5rem .75rem;">
+                            @if($inv->status === 'paid')
+                            <span class="sub-badge active" style="font-size:.6rem;">Paid</span>
+                            @elseif($inv->status === 'pending' && $inv->due_date && $inv->due_date < now()->toDateString())
+                            <span class="sub-badge expired" style="font-size:.6rem;">Overdue</span>
+                            @elseif($inv->status === 'pending')
+                            <span class="sub-badge trial" style="font-size:.6rem;">Pending</span>
+                            @else
+                            <span class="sub-badge suspended" style="font-size:.6rem;">{{ucfirst($inv->status)}}</span>
+                            @endif
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+@endif
+@endif
 @endif
 
 {{-- ── SUBSCRIPTION DETAILS ────────────────────────────────────────── --}}

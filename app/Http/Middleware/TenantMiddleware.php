@@ -59,6 +59,21 @@ class TenantMiddleware
             return response()->view('tenant.expired', compact('tenant'), 403);
         }
 
+        // ── Check for overdue per-student invoices ───────────────────────────
+        // If a school on per-student billing has an invoice past its due date
+        // and unpaid, suspend their access until they pay.
+        try {
+            if ($tenant->isPerStudentBilling() && \App\Models\PerStudentInvoice::hasOverdue($tenant->id)) {
+                // Only block on admin/portal routes, not on payment routes
+                $routeName = $request->route()?->getName() ?? '';
+                if (!str_contains($routeName, 'subscription') && !str_contains($routeName, 'paystack')) {
+                    return response()->view('tenant.overdue', compact('tenant'), 403);
+                }
+            }
+        } catch (\Throwable $e) {
+            // Table may not exist yet — don't block
+        }
+
         // Switch database connection to this tenant's DB
         $this->switchDatabase($tenant);
 

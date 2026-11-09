@@ -613,6 +613,8 @@ Route::middleware(['tenant', 'role:admin'])->prefix('admin')->name('admin.')->gr
     // Subscription — only super admins can access
     Route::get('/subscription',  [\App\Http\Controllers\Admin\SubscriptionController::class, 'show'])->name('subscription.show');
     Route::get('/subscription/pay', [\App\Http\Controllers\Admin\SubscriptionController::class, 'pay'])->name('subscription.pay');
+    Route::post('/subscription/generate-invoice', [\App\Http\Controllers\Admin\SubscriptionController::class, 'generateInvoice'])->name('subscription.generate-invoice');
+    Route::get('/subscription/pay-invoice/{invoice}', [\App\Http\Controllers\Admin\SubscriptionController::class, 'payInvoice'])->name('subscription.pay-invoice');
 
     // ── Term Fee Ledger ────────────────────────────────────────────────────
     Route::get('/fees/term-ledger',                [\App\Http\Controllers\Admin\TermFeeBillController::class, 'index'])->name('fees.term.index');
@@ -2449,6 +2451,9 @@ Route::prefix('pay-subscription')->name('paystack.subscription.')->group(functio
     Route::post('/{tenant}',        [\App\Http\Controllers\Owner\SubscriptionPaymentController::class, 'initialize'])->name('initialize');
     Route::get('/callback/confirm', [\App\Http\Controllers\Owner\SubscriptionPaymentController::class, 'callback'])->name('callback');
 });
+
+// ── Per-student invoice Paystack callback ────────────────────────────────
+Route::get('/pay-invoice/callback/confirm', [\App\Http\Controllers\Admin\SubscriptionController::class, 'invoiceCallback'])->name('paystack.per-student.callback');
 
 // ── 3. School fee payments (student/parent pays school fees) ──────────────
 Route::prefix('portal')->name('portal.fees.')->middleware(['tenant', 'portal.auth'])->group(function () {
