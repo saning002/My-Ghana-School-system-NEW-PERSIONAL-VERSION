@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class BillingTier extends Model
 {
+    // billing_tiers lives on the MAIN database, not the tenant DB
+    protected $connection = 'pgsql';
+
     protected $fillable = [
         'tenant_id',
         'min_students',

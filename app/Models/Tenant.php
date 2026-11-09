@@ -290,14 +290,21 @@ class Tenant extends Model
         if ($this->isPerStudentBilling()) {
             $studentCount = $this->countActiveStudents();
 
-            // Try tiers first
-            $tier = \App\Models\BillingTier::resolveTier($this->id, $studentCount);
+            // Try tiers first — billing_tiers is on main DB
+            try {
+                $tier = \App\Models\BillingTier::resolveTier($this->id, $studentCount);
+            } catch (\Throwable $e) {
+                $tier = null;
+            }
 
             if ($tier) {
                 // Tiered billing
                 $rate       = (float) $tier->rate_per_student;
                 $amount     = $studentCount * $rate;
-                $allTiers   = \App\Models\BillingTier::forTenant($this->id);
+                $allTiers   = collect();
+                try {
+                    $allTiers = \App\Models\BillingTier::forTenant($this->id);
+                } catch (\Throwable $e) {}
 
                 return [
                     'model'         => 'per_student',

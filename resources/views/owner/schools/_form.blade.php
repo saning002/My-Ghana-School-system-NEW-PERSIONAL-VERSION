@@ -247,22 +247,22 @@
                                 <span class="badge bg-secondary" style="font-size:.7rem;min-width:28px;" x-text="'Tier ' + (i+1)"></span>
 
                                 {{-- Min --}}
-                                <div style="width:90px;">
+                                <div style="width:120px;">
                                     <label style="font-size:.65rem;color:#94a3b8;font-weight:700;text-transform:uppercase;">Min</label>
                                     <input type="number" :value="tier.min" @input="tier.min = parseInt($event.target.value) || 0" name="tier_min[]"
                                         class="form-control form-control-sm" min="0" placeholder="0">
                                 </div>
 
                                 {{-- Max --}}
-                                <div style="width:90px;">
-                                    <label style="font-size:.65rem;color:#94a3b8;font-weight:700;text-transform:uppercase;">Max</label>
+                                <div style="width:140px;">
+                                    <label style="font-size:.65rem;color:#94a3b8;font-weight:700;text-transform:uppercase;">Max (blank = unlimited)</label>
                                     <input type="number" :value="tier.max" @input="tier.max = $event.target.value === '' ? '' : parseInt($event.target.value)" name="tier_max[]"
                                         class="form-control form-control-sm" min="0" placeholder="blank = unlimited">
                                 </div>
 
                                 {{-- Rate --}}
-                                <div style="width:100px;">
-                                    <label style="font-size:.65rem;color:#94a3b8;font-weight:700;text-transform:uppercase;">GHS/Student</label>
+                                <div style="width:140px;">
+                                    <label style="font-size:.65rem;color:#94a3b8;font-weight:700;text-transform:uppercase;">GHS per Student</label>
                                     <div class="input-group input-group-sm">
                                         <span class="input-group-text" style="font-size:.7rem;">₵</span>
                                         <input type="number" :value="tier.rate" @input="tier.rate = parseFloat($event.target.value) || 0" name="tier_rate[]"

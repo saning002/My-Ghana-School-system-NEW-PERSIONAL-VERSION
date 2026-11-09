@@ -7,6 +7,9 @@ use Illuminate\Support\Str;
 
 class PerStudentInvoice extends Model
 {
+    // per_student_invoices lives on the MAIN database
+    protected $connection = 'pgsql';
+
     protected $fillable = [
         'tenant_id',
         'academic_period_id',

@@ -2547,6 +2547,9 @@ Route::prefix('owner')->name('owner.')->group(function () {
         Route::post('/messaging/credits/activate/{payment}', [\App\Http\Controllers\Owner\MessagingCreditController::class, 'activatePending'])->name('messaging.activate');
         Route::get('/messaging/receipts/{payment}',          [\App\Http\Controllers\Owner\MessagingCreditController::class, 'receipt'])->name('messaging.receipt');
 
+        // Per-Student Invoice Overview
+        Route::get('/invoices',  [\App\Http\Controllers\Owner\InvoiceOverviewController::class, 'index'])->name('invoices.index');
+
         // Owner Profile
         Route::get('/profile',  [\App\Http\Controllers\Owner\ProfileController::class, 'edit'])->name('profile.edit');
         Route::post('/profile', [\App\Http\Controllers\Owner\ProfileController::class, 'update'])->name('profile.update');
