@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class PaystackTransaction extends Model
 {
+    protected $connection = 'pgsql'; // central DB
+
     protected $fillable = [
         'type', 'tenant_id', 'student_id', 'student_name',
         'payer_email', 'payer_name', 'reference',

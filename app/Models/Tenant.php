@@ -9,6 +9,8 @@ class Tenant extends Model
 {
     use SoftDeletes;
 
+    protected $connection = 'pgsql'; // central DB
+
     protected $fillable = [
         'name', 'slug', 'subdomain', 'logo_path', 'address', 'phone',
         'admin_name', 'admin_email', 'admin_phone',

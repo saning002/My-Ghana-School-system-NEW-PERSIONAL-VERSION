@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Backup extends Model
 {
+    protected $connection = 'pgsql'; // central DB
+
     protected $fillable = [
         'tenant_id', 'filename', 'file_path', 'file_size',
         'storage_type', 'trigger', 'status', 'error_message',

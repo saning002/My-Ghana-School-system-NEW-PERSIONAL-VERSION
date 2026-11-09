@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Plan extends Model
 {
+    protected $connection = 'pgsql'; // central DB
+
     protected $fillable = [
         'name', 'slug', 'description', 'price',
         'billing_cycle', 'is_active', 'max_students', 'max_lecturers',

@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Feature extends Model
 {
+    protected $connection = 'pgsql'; // central DB
+
     protected $fillable = [
         'key', 'label', 'description', 'group', 'is_active', 'sort_order',
     ];
