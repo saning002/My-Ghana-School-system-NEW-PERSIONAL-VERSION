@@ -613,6 +613,10 @@ Route::middleware(['tenant', 'role:admin'])->prefix('admin')->name('admin.')->gr
     // Subscription — only super admins can access
     Route::get('/subscription',  [\App\Http\Controllers\Admin\SubscriptionController::class, 'show'])->name('subscription.show');
     Route::get('/subscription/pay', [\App\Http\Controllers\Admin\SubscriptionController::class, 'pay'])->name('subscription.pay');
+
+    // Student ID Cards
+    Route::get('/id-cards',  [\App\Http\Controllers\Admin\IDCardController::class, 'index'])->name('id-cards.index');
+    Route::post('/id-cards/print', [\App\Http\Controllers\Admin\IDCardController::class, 'print'])->name('id-cards.print');
     Route::post('/subscription/generate-invoice', [\App\Http\Controllers\Admin\SubscriptionController::class, 'generateInvoice'])->name('subscription.generate-invoice');
     Route::get('/subscription/pay-invoice/{invoice}', [\App\Http\Controllers\Admin\SubscriptionController::class, 'payInvoice'])->name('subscription.pay-invoice');
 

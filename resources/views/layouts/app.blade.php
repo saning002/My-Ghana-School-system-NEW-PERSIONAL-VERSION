@@ -616,6 +616,7 @@
                 : [
                     ['route'=>'admin.dashboard',                'icon'=>'fa-chart-pie',          'label'=>'Dashboard',                   'perm'=>'dashboard',      'module'=>null],
                     ['route'=>'admin.students.index',           'icon'=>'fa-user-graduate',      'label'=>$sidebarLabels['students'],     'perm'=>'students',       'module'=>'students'],
+                    ['route'=>'admin.id-cards.index',            'icon'=>'fa-id-card',            'label'=>'ID Cards',                    'perm'=>'students',       'module'=>'students'],
                     ['route'=>'admin.lecturers.index',          'icon'=>'fa-chalkboard-user',    'label'=>$sidebarLabels['teachers'],     'perm'=>'lecturers',      'module'=>'teachers'],
                     ['route'=>'admin.class-teachers.index',     'icon'=>'fa-user-tie',           'label'=>'Class Teachers',              'perm'=>'class_teachers', 'module'=>'teachers'],
                     ['route'=>'admin.work-monitoring.index',    'icon'=>'fa-tasks',              'label'=>'Teacher Work Logs',           'perm'=>'work_logs',      'module'=>'teachers'],
