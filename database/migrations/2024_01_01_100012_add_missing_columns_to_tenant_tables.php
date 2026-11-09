@@ -131,6 +131,9 @@ return new class extends Migration
                 }
             });
         }
+
+        // programs — add missing columns
+        if (Schema::hasTable('programs')) {
             Schema::table('programs', function (Blueprint $table) {
                 if (!Schema::hasColumn('programs', 'code')) {
                     $table->string('code')->nullable();
