@@ -1689,7 +1689,124 @@ Route::get('/setup/migrate-notification-templates', function () {
     );
 });
 
-// ── Run billing model migration on main DB ────────────────────────────────
+// ── Sync migrations table for an existing school database ────────────────
+// Hit: /setup/sync-existing-db/{tenant_id}
+// Use this when connecting a database that already has school data in it.
+// It creates the migrations tracking table and marks all current migrations as "already run"
+// so only genuinely new migrations will be applied.
+Route::get('/setup/sync-existing-db/{tenantId}', function (int $tenantId) {
+    $results = [];
+    $tenant = \App\Models\Tenant::find($tenantId);
+
+    if (!$tenant) {
+        return response('<pre style="color:red;">Tenant not found.</pre>');
+    }
+
+    $results[] = "School: {$tenant->name}";
+
+    // Configure tenant connection
+    config(['database.connections.tenant' => [
+        'driver'   => 'pgsql',
+        'host'     => $tenant->db_host,
+        'port'     => $tenant->db_port ?? 5432,
+        'database' => $tenant->db_name,
+        'username' => $tenant->db_username,
+        'password' => $tenant->db_password,
+        'charset'  => 'utf8',
+        'prefix'   => '',
+        'schema'   => 'public',
+        'sslmode'  => 'require',
+    ]]);
+
+    try {
+        \Illuminate\Support\Facades\DB::purge('tenant');
+        \Illuminate\Support\Facades\DB::reconnect('tenant');
+        $pdo = \Illuminate\Support\Facades\DB::connection('tenant')->getPdo();
+        $results[] = "✅ Connected to {$tenant->db_name}";
+    } catch (\Throwable $e) {
+        $results[] = "❌ Connection failed: " . $e->getMessage();
+        return response('<pre>' . implode("\n", $results) . '</pre>');
+    }
+
+    // 1. Create migrations table if it doesn't exist
+    try {
+        \Illuminate\Support\Facades\DB::connection('tenant')->statement("
+            CREATE TABLE IF NOT EXISTS migrations (
+                id SERIAL PRIMARY KEY,
+                migration VARCHAR(255) NOT NULL,
+                batch INTEGER NOT NULL DEFAULT 1
+            );
+        ");
+        $results[] = "✅ migrations table ready";
+    } catch (\Throwable $e) {
+        $results[] = "❌ Could not create migrations table: " . $e->getMessage();
+        return response('<pre>' . implode("\n", $results) . '</pre>');
+    }
+
+    // 2. Check which migrations are already recorded
+    $existing = \Illuminate\Support\Facades\DB::connection('tenant')
+        ->table('migrations')->pluck('migration')->toArray();
+
+    $results[] = "📋 Already recorded: " . count($existing) . " migrations";
+
+    // 3. Get all migration filenames from the codebase
+    $migrationFiles = array_map(function($f) {
+        return basename($f, '.php');
+    }, glob(database_path('migrations/*.php')));
+
+    // 4. Insert any that aren't already recorded
+    $toInsert = array_diff($migrationFiles, $existing);
+
+    if (empty($toInsert)) {
+        $results[] = "✅ All migrations already recorded — nothing to sync";
+    } else {
+        $results[] = "📝 Inserting " . count($toInsert) . " migration records...";
+
+        foreach ($toInsert as $migration) {
+            \Illuminate\Support\Facades\DB::connection('tenant')
+                ->table('migrations')
+                ->insert([
+                    'migration' => $migration,
+                    'batch'     => 1,
+                ]);
+        }
+        $results[] = "✅ Inserted " . count($toInsert) . " records";
+    }
+
+    // 5. Now check which tables actually exist vs which migrations claim to have run
+    $tables = \Illuminate\Support\Facades\DB::connection('tenant')
+        ->select("SELECT tablename FROM pg_tables WHERE schemaname = 'public' ORDER BY tablename");
+
+    $existingTables = array_column($tables, 'tablename');
+    $results[] = "📋 Tables in database: " . count($existingTables) . " — " . implode(', ', array_slice($existingTables, 0, 15)) . (count($existingTables) > 15 ? '...' : '');
+
+    // 6. Now run migrate to apply any genuinely new migrations
+    $results[] = "";
+    $results[] = "Running migrations (only new ones will apply)...";
+
+    try {
+        \Illuminate\Support\Facades\Artisan::call('migrate', [
+            '--force'    => true,
+            '--database' => 'tenant',
+        ]);
+        $output = trim(\Illuminate\Support\Facades\Artisan::output());
+        $results[] = "✅ " . ($output ?: "Nothing to migrate — all up to date.");
+    } catch (\Throwable $e) {
+        $results[] = "⚠️ Migration output: " . trim(\Illuminate\Support\Facades\Artisan::output() ?: '');
+        $results[] = "⚠️ Error: " . $e->getMessage();
+    }
+
+    $results[] = "";
+    $results[] = "✅ Done! The school database is synced and ready.";
+
+    return response(
+        '<html><body style="font-family:monospace;padding:20px;background:#0f172a;color:#e2e8f0;">'
+        . '<h2 style="color:#34d399">Database Sync — ' . e($tenant->name) . '</h2>'
+        . '<pre>' . implode("\n", $results) . '</pre>'
+        . '<br><a href="/setup/clear-cache" style="color:#60a5fa">→ Clear cache now</a>'
+        . '</body></html>'
+    );
+});
 // Hit: /setup/migrate-billing-model
 Route::get('/setup/migrate-billing-model', function () {
     $results = [];
