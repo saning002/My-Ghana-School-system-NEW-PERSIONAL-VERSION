@@ -6,25 +6,27 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::table('courses', function (Blueprint $table) {
-            $table->integer('expected_classworks')->nullable();
-            $table->integer('expected_homeworks')->nullable();
-            $table->integer('expected_tests')->nullable();
+            if (!Schema::hasColumn('courses', 'expected_classworks')) {
+                $table->integer('expected_classworks')->nullable();
+            }
+            if (!Schema::hasColumn('courses', 'expected_homeworks')) {
+                $table->integer('expected_homeworks')->nullable();
+            }
+            if (!Schema::hasColumn('courses', 'expected_tests')) {
+                $table->integer('expected_tests')->nullable();
+            }
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::table('courses', function (Blueprint $table) {
-            $table->dropColumn(['expected_classworks', 'expected_homeworks', 'expected_tests']);
+            foreach (['expected_classworks', 'expected_homeworks', 'expected_tests'] as $col) {
+                if (Schema::hasColumn('courses', $col)) $table->dropColumn($col);
+            }
         });
     }
 };

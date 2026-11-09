@@ -8,30 +8,48 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // Add extra fields to users table
         Schema::table('users', function (Blueprint $table) {
-            $table->enum('gender', ['male', 'female', 'other'])->nullable()->after('address');
-            $table->enum('marital_status', ['single', 'married', 'divorced', 'widowed'])->nullable()->after('gender');
-            $table->string('nationality')->nullable()->after('marital_status');
+            if (!Schema::hasColumn('users', 'gender')) {
+                $table->enum('gender', ['male', 'female', 'other'])->nullable();
+            }
+            if (!Schema::hasColumn('users', 'marital_status')) {
+                $table->enum('marital_status', ['single', 'married', 'divorced', 'widowed'])->nullable();
+            }
+            if (!Schema::hasColumn('users', 'nationality')) {
+                $table->string('nationality')->nullable();
+            }
         });
 
-        // Add extra fields to students table
         Schema::table('students', function (Blueprint $table) {
-            $table->string('qualifications')->nullable()->after('date_issued');
-            $table->string('native_town')->nullable()->after('qualifications');
-            $table->string('enrollment_year')->nullable()->after('native_town');
-            $table->enum('study_mode', ['full_time', 'part_time'])->default('full_time')->after('enrollment_year');
-            $table->string('profession')->nullable()->after('study_mode');
+            if (!Schema::hasColumn('students', 'qualifications')) {
+                $table->string('qualifications')->nullable();
+            }
+            if (!Schema::hasColumn('students', 'native_town')) {
+                $table->string('native_town')->nullable();
+            }
+            if (!Schema::hasColumn('students', 'enrollment_year')) {
+                $table->string('enrollment_year')->nullable();
+            }
+            if (!Schema::hasColumn('students', 'study_mode')) {
+                $table->enum('study_mode', ['full_time', 'part_time'])->default('full_time');
+            }
+            if (!Schema::hasColumn('students', 'profession')) {
+                $table->string('profession')->nullable();
+            }
         });
     }
 
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn(['gender', 'marital_status', 'nationality']);
+            foreach (['gender', 'marital_status', 'nationality'] as $col) {
+                if (Schema::hasColumn('users', $col)) $table->dropColumn($col);
+            }
         });
         Schema::table('students', function (Blueprint $table) {
-            $table->dropColumn(['qualifications', 'native_town', 'enrollment_year', 'study_mode', 'profession']);
+            foreach (['qualifications', 'native_town', 'enrollment_year', 'study_mode', 'profession'] as $col) {
+                if (Schema::hasColumn('students', $col)) $table->dropColumn($col);
+            }
         });
     }
 };

@@ -9,34 +9,36 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // ── academic_sessions: add mode (semester|term) ──────────────────────
         Schema::table('academic_sessions', function (Blueprint $table) {
-            $table->enum('mode', ['semester', 'term'])->default('semester')->after('year');
+            if (!Schema::hasColumn('academic_sessions', 'mode')) {
+                $table->enum('mode', ['semester', 'term'])->default('semester')->after('year');
+            }
         });
 
-        // ── academic_periods: add name + is_active ───────────────────────────
-        // 'month' column already exists as free-text — we add a proper 'name'
-        // column (for "Semester 1", "Term 2", etc.) and is_active flag.
         Schema::table('academic_periods', function (Blueprint $table) {
-            $table->string('name')->nullable()->after('month');
-            $table->boolean('is_active')->default(false)->after('name');
-            $table->unsignedTinyInteger('sequence')->default(1)->after('is_active');
+            if (!Schema::hasColumn('academic_periods', 'name')) {
+                $table->string('name')->nullable()->after('month');
+            }
+            if (!Schema::hasColumn('academic_periods', 'is_active')) {
+                $table->boolean('is_active')->default(false)->after('name');
+            }
+            if (!Schema::hasColumn('academic_periods', 'sequence')) {
+                $table->unsignedTinyInteger('sequence')->default(1)->after('is_active');
+            }
         });
 
-        // Back-fill name from month for all existing periods
-        DB::table('academic_periods')->update([
-            'name' => DB::raw('month'),
-        ]);
+        try { DB::table('academic_periods')->update(['name' => DB::raw('month')]); } catch (\Throwable $e) {}
     }
 
     public function down(): void
     {
         Schema::table('academic_periods', function (Blueprint $table) {
-            $table->dropColumn(['name', 'is_active', 'sequence']);
+            foreach (['name', 'is_active', 'sequence'] as $col) {
+                if (Schema::hasColumn('academic_periods', $col)) $table->dropColumn($col);
+            }
         });
-
         Schema::table('academic_sessions', function (Blueprint $table) {
-            $table->dropColumn('mode');
+            if (Schema::hasColumn('academic_sessions', 'mode')) $table->dropColumn('mode');
         });
     }
 };

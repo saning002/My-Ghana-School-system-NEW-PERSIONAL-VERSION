@@ -6,31 +6,28 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::table('program_fees', function (Blueprint $table) {
-            $table->decimal('exam_fee', 10, 2)->default(0.00)->after('amount');
+            if (!Schema::hasColumn('program_fees', 'exam_fee')) {
+                $table->decimal('exam_fee', 10, 2)->default(0.00);
+            }
         });
 
         Schema::table('students', function (Blueprint $table) {
-            $table->boolean('results_blocked')->default(false)->after('status');
+            if (!Schema::hasColumn('students', 'results_blocked')) {
+                $table->boolean('results_blocked')->default(false);
+            }
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::table('program_fees', function (Blueprint $table) {
-            $table->dropColumn('exam_fee');
+            if (Schema::hasColumn('program_fees', 'exam_fee')) $table->dropColumn('exam_fee');
         });
-
         Schema::table('students', function (Blueprint $table) {
-            $table->dropColumn('results_blocked');
+            if (Schema::hasColumn('students', 'results_blocked')) $table->dropColumn('results_blocked');
         });
     }
 };

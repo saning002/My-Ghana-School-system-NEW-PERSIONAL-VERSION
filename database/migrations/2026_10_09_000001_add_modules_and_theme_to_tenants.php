@@ -9,20 +9,21 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('tenants', function (Blueprint $table) {
-            // Cached JSON of enabled module keys — avoids join on every request
-            // e.g. ["students","fees","exams","website"]
-            $table->json('modules_json')->nullable()->after('notes');
-
-            // Admin panel theme set from owner panel
-            // e.g. {"adminPrimary":"#e94560","adminNav":"#0f3460","primary":"#f59e0b",...}
-            $table->json('theme_json')->nullable()->after('modules_json');
+            if (!Schema::hasColumn('tenants', 'modules_json')) {
+                $table->json('modules_json')->nullable();
+            }
+            if (!Schema::hasColumn('tenants', 'theme_json')) {
+                $table->json('theme_json')->nullable();
+            }
         });
     }
 
     public function down(): void
     {
         Schema::table('tenants', function (Blueprint $table) {
-            $table->dropColumn(['modules_json', 'theme_json']);
+            foreach (['modules_json', 'theme_json'] as $col) {
+                if (Schema::hasColumn('tenants', $col)) $table->dropColumn($col);
+            }
         });
     }
 };

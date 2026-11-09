@@ -9,15 +9,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('site_settings', function (Blueprint $table) {
-            // JSON blob: { primary, secondary, accent, text, bg, navBg }
-            $table->json('theme_colors')->nullable()->after('logo_path');
+            if (!Schema::hasColumn('site_settings', 'theme_colors')) {
+                $table->json('theme_colors')->nullable();
+            }
         });
     }
 
     public function down(): void
     {
         Schema::table('site_settings', function (Blueprint $table) {
-            $table->dropColumn('theme_colors');
+            if (Schema::hasColumn('site_settings', 'theme_colors')) {
+                $table->dropColumn('theme_colors');
+            }
         });
     }
 };

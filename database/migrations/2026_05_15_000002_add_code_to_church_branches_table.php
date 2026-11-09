@@ -9,15 +9,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('church_branches', function (Blueprint $table) {
-            // Short uppercase code used in student IDs, e.g. KA, HO, AC
-            $table->string('code', 10)->nullable()->after('name');
+            if (!Schema::hasColumn('church_branches', 'code')) {
+                $table->string('code', 10)->nullable()->after('name');
+            }
         });
     }
 
     public function down(): void
     {
         Schema::table('church_branches', function (Blueprint $table) {
-            $table->dropColumn('code');
+            if (Schema::hasColumn('church_branches', 'code')) {
+                $table->dropColumn('code');
+            }
         });
     }
 };
