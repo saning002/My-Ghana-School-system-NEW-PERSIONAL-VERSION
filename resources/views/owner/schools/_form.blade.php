@@ -147,12 +147,20 @@
         </div>
 
         {{-- ── Billing Model ─────────────────────────────────────────────── --}}
-        <div class="owner-card mb-4" x-data="{
+        <div class="owner-card mb-4" x-data="billingForm({
             model: '{{ old('billing_model', $t->billing_model ?? 'flat') }}',
             rate: '{{ old('per_student_rate', $t->per_student_rate ?? 0) }}',
-            students: 200,
             terms: '{{ old('billing_terms_per_year', $t->billing_terms_per_year ?? 3) }}',
-        }">
+            tiers: {{ json_encode(
+                ($t && $t->exists)
+                    ? \App\Models\BillingTier::forTenant($t->id)->map(fn($t) => [
+                        'min' => $t->min_students,
+                        'max' => $t->max_students ?? '',
+                        'rate' => $t->rate_per_student,
+                    ])->toArray()
+                    : [['min'=>1,'max'=>100,'rate'=>8],['min'=>101,'max'=>200,'rate'=>7],['min'=>201,'max'=>'','rate'=>6]]
+            ) }}
+        })">
             <div class="card-header d-flex align-items-center gap-2">
                 <i class="fas fa-file-invoice-dollar" style="color:#16a34a;"></i> Billing Model
             </div>
@@ -218,48 +226,7 @@
                     </div>
 
                     {{-- Tiered pricing ──────────────────────────────────────────── --}}
-                    <div class="mb-3" x-data="{
-                        tiers: {{ json_encode(
-                            ($t && $t->exists)
-                                ? \App\Models\BillingTier::forTenant($t->id)->map(fn($t) => [
-                                    'min' => $t->min_students,
-                                    'max' => $t->max_students ?? '',
-                                    'rate' => $t->rate_per_student,
-                                ])->toArray()
-                                : [['min'=>1,'max'=>100,'rate'=>8],['min'=>101,'max'=>200,'rate'=>7],['min'=>201,'max'=>'','rate'=>6]]
-                        ) }},
-                        previewStudents: 150,
-                        previewTerms: 3,
-
-                        addTier() {
-                            var lastMax = this.tiers.length ? (this.tiers[this.tiers.length-1].max || 100) : 0;
-                            this.tiers.push({ min: lastMax+1, max: '', rate: 5 });
-                        },
-                        removeTier(i) {
-                            this.tiers.splice(i, 1);
-                        },
-                        matchingTier() {
-                            var s = this.previewStudents;
-                            for (var i = 0; i < this.tiers.length; i++) {
-                                var t = this.tiers[i];
-                                var max = t.max === '' || t.max === null ? 999999 : parseInt(t.max);
-                                if (s >= parseInt(t.min) && s <= max) return t;
-                            }
-                            return this.tiers[0] || { rate: parseFloat(this.rate) || 0 };
-                        },
-                        previewAmount() {
-                            var t = this.matchingTier();
-                            var r = parseFloat(t.rate) || parseFloat(this.rate) || 0;
-                            return this.previewStudents * r;
-                        },
-                        previewAnnual() {
-                            return this.previewAmount() * parseInt(this.terms || 3);
-                        },
-                        previewRate() {
-                            var t = this.matchingTier();
-                            return parseFloat(t.rate) || parseFloat(this.rate) || 0;
-                        }
-                    }">
+                    <div class="mb-3">
 
                         <div class="d-flex align-items-center justify-content-between mb-2">
                             <label class="form-label fw-semibold mb-0">
@@ -282,14 +249,14 @@
                                 {{-- Min --}}
                                 <div style="width:90px;">
                                     <label style="font-size:.65rem;color:#94a3b8;font-weight:700;text-transform:uppercase;">Min</label>
-                                    <input type="number" x-model.number="tier.min" name="tier_min[]"
+                                    <input type="number" :value="tier.min" @input="tier.min = parseInt($event.target.value) || 0" name="tier_min[]"
                                         class="form-control form-control-sm" min="0" placeholder="0">
                                 </div>
 
                                 {{-- Max --}}
                                 <div style="width:90px;">
                                     <label style="font-size:.65rem;color:#94a3b8;font-weight:700;text-transform:uppercase;">Max</label>
-                                    <input type="number" x-model="tier.max" name="tier_max[]"
+                                    <input type="number" :value="tier.max" @input="tier.max = $event.target.value === '' ? '' : parseInt($event.target.value)" name="tier_max[]"
                                         class="form-control form-control-sm" min="0" placeholder="blank = unlimited">
                                 </div>
 
@@ -298,7 +265,7 @@
                                     <label style="font-size:.65rem;color:#94a3b8;font-weight:700;text-transform:uppercase;">GHS/Student</label>
                                     <div class="input-group input-group-sm">
                                         <span class="input-group-text" style="font-size:.7rem;">₵</span>
-                                        <input type="number" x-model.number="tier.rate" name="tier_rate[]"
+                                        <input type="number" :value="tier.rate" @input="tier.rate = parseFloat($event.target.value) || 0" name="tier_rate[]"
                                             class="form-control form-control-sm" step="0.5" min="0" placeholder="8">
                                     </div>
                                 </div>
@@ -378,6 +345,60 @@
                 </div>
             </div>
         </div>
+
+        <script>
+        function billingForm(data) {
+            return {
+                model: data.model || 'flat',
+                rate: data.rate || 8,
+                terms: data.terms || 3,
+                tiers: data.tiers || [],
+                previewStudents: 150,
+
+                init() {
+                    if (!this.tiers || !this.tiers.length) {
+                        this.tiers = [
+                            {min: 1, max: 100, rate: 8},
+                            {min: 101, max: 200, rate: 7},
+                            {min: 201, max: '', rate: 6}
+                        ];
+                    }
+                },
+
+                addTier() {
+                    var lastMax = this.tiers.length ? (this.tiers[this.tiers.length-1].max || 100) : 0;
+                    this.tiers.push({min: parseInt(lastMax)+1, max: '', rate: 5});
+                },
+
+                removeTier(i) {
+                    this.tiers.splice(i, 1);
+                },
+
+                matchingTier() {
+                    var s = this.previewStudents;
+                    for (var i = 0; i < this.tiers.length; i++) {
+                        var t = this.tiers[i];
+                        var max = (t.max === '' || t.max === null) ? 999999 : parseInt(t.max);
+                        if (s >= parseInt(t.min) && s <= max) return t;
+                    }
+                    return this.tiers[0] || {rate: parseFloat(this.rate) || 0};
+                },
+
+                previewRate() {
+                    var t = this.matchingTier();
+                    return parseFloat(t.rate) || parseFloat(this.rate) || 0;
+                },
+
+                previewAmount() {
+                    return this.previewStudents * this.previewRate();
+                },
+
+                previewAnnual() {
+                    return this.previewAmount() * parseInt(this.terms || 3);
+                }
+            };
+        }
+        </script>
 
         <div class="owner-card">
             <div class="card-header">Backup Settings</div>
