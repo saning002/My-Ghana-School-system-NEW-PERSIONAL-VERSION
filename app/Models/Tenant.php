@@ -20,6 +20,10 @@ class Tenant extends Model
         'cloudinary_cloud_name', 'cloudinary_api_key', 'cloudinary_api_secret',
         // Backblaze B2 per school
         'b2_key_id', 'b2_application_key', 'b2_bucket_name', 'b2_bucket_id', 'b2_endpoint',
+        // Billing model
+        'billing_model', 'per_student_rate', 'billing_terms_per_year',
+        'billing_includes_sms',
+        'last_invoice_amount', 'last_invoice_student_count', 'last_invoiced_at',
     ];
 
     protected $casts = [
@@ -241,5 +245,72 @@ class Tenant extends Model
             'expired'   => 'secondary',
             default     => 'secondary',
         };
+    }
+
+    // ── Per-Student Billing Helpers ──────────────────────────────────────────
+
+    /**
+     * Is this school on per-student billing?
+     */
+    public function isPerStudentBilling(): bool
+    {
+        return ($this->billing_model ?? 'flat') === 'per_student';
+    }
+
+    /**
+     * Count active students in this school's tenant DB.
+     * Connects to the tenant database, counts students with status = 'active'.
+     * Returns 0 if the DB is unreachable.
+     */
+    public function countActiveStudents(): int
+    {
+        try {
+            config(['database.connections.tenant' => $this->dbConfig()]);
+            \Illuminate\Support\Facades\DB::purge('tenant');
+            \Illuminate\Support\Facades\DB::reconnect('tenant');
+
+            return \Illuminate\Support\Facades\DB::connection('tenant')
+                ->table('students')
+                ->where('status', 'active')
+                ->count();
+        } catch (\Throwable $e) {
+            \Log::warning("countActiveStudents failed for {$this->name}: " . $e->getMessage());
+            return 0;
+        }
+    }
+
+    /**
+     * Calculate the amount owed per term for this school.
+     * For flat billing: returns the plan price (annual / terms per year).
+     * For per-student billing: returns per_student_rate × active student count.
+     */
+    public function calculateTermAmount(): array
+    {
+        if ($this->isPerStudentBilling() && $this->per_student_rate > 0) {
+            $studentCount = $this->countActiveStudents();
+            $amount       = $studentCount * (float) $this->per_student_rate;
+
+            return [
+                'model'        => 'per_student',
+                'student_count'=> $studentCount,
+                'rate'         => (float) $this->per_student_rate,
+                'term_amount'  => $amount,
+                'annual_amount'=> $amount * ($this->billing_terms_per_year ?? 3),
+                'includes_sms' => (bool) $this->billing_includes_sms,
+            ];
+        }
+
+        // Flat billing — derive from plan
+        $planPrice  = (float) ($this->plan?->price ?? 0);
+        $termsPerYr = $this->billing_terms_per_year ?? 3;
+
+        return [
+            'model'        => 'flat',
+            'student_count'=> null,
+            'rate'         => null,
+            'term_amount'  => $termsPerYr > 0 ? $planPrice / $termsPerYr : $planPrice,
+            'annual_amount'=> $planPrice,
+            'includes_sms' => false,
+        ];
     }
 }

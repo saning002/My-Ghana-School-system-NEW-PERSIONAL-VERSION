@@ -154,6 +154,60 @@
     </div>
 </div>
 
+{{-- ── PER-STUDENT BILLING INFO ─────────────────────────────────────── --}}
+@php
+    $billing = $tenant->calculateTermAmount();
+@endphp
+@if($billing['model'] === 'per_student')
+<div class="sub-section" style="border:2px solid #16a34a;">
+    <div class="sub-section-hd" style="background:#f0fdf4;">
+        <div class="hd-icon" style="background:#dcfce7;color:#16a34a;">
+            <i class="fas fa-user-graduate"></i>
+        </div>
+        <div>
+            <h3>Per-Student Billing</h3>
+            <p>You are billed per active student each term</p>
+        </div>
+        <span class="sub-badge active ms-auto">Per-Student</span>
+    </div>
+    <div class="sub-section-body">
+        <div class="info-grid">
+            <div class="info-tile ok">
+                <div class="lbl">Rate per Student</div>
+                <div class="val">GHS {{ number_format($billing['rate'], 2) }}</div>
+                <div class="sub">per term</div>
+            </div>
+            <div class="info-tile">
+                <div class="lbl">Active Students</div>
+                <div class="val">{{ number_format($billing['student_count']) }}</div>
+                <div class="sub">currently enrolled</div>
+            </div>
+            <div class="info-tile">
+                <div class="lbl">Amount This Term</div>
+                <div class="val" style="color:#16a34a;">GHS {{ number_format($billing['term_amount'], 2) }}</div>
+                <div class="sub">{{ $billing['student_count'] }} × GHS {{ number_format($billing['rate'], 2) }}</div>
+            </div>
+            <div class="info-tile">
+                <div class="lbl">Estimated Annual</div>
+                <div class="val">GHS {{ number_format($billing['annual_amount'], 2) }}</div>
+                <div class="sub">{{ $tenant->billing_terms_per_year ?? 3 }} terms per year</div>
+            </div>
+        </div>
+        @if($billing['includes_sms'])
+        <div class="alert alert-success d-flex align-items-center gap-2 mb-0" style="font-size:.82rem;border-radius:.75rem;">
+            <i class="fas fa-sms text-success"></i>
+            <span><strong>SMS Attendance Alerts included</strong> — automated parent SMS alerts are part of your subscription. No separate credit top-up needed.</span>
+        </div>
+        @endif
+        <p class="text-muted mb-0 mt-3" style="font-size:.78rem;">
+            <i class="fas fa-info-circle me-1"></i>
+            Your bill is calculated at the start of each term based on the number of active students enrolled.
+            Students who join or leave mid-term are counted at the next billing cycle.
+        </p>
+    </div>
+</div>
+@endif
+
 {{-- ── SUBSCRIPTION DETAILS ────────────────────────────────────────── --}}
 <div class="sub-section">
     <div class="sub-section-hd">

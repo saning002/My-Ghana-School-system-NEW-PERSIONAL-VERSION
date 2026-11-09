@@ -146,6 +146,137 @@
             </div>
         </div>
 
+        {{-- ── Billing Model ─────────────────────────────────────────────── --}}
+        <div class="owner-card mb-4" x-data="{
+            model: '{{ old('billing_model', $t->billing_model ?? 'flat') }}',
+            rate: '{{ old('per_student_rate', $t->per_student_rate ?? 0) }}',
+            students: 200,
+            terms: '{{ old('billing_terms_per_year', $t->billing_terms_per_year ?? 3) }}',
+        }">
+            <div class="card-header d-flex align-items-center gap-2">
+                <i class="fas fa-file-invoice-dollar" style="color:#16a34a;"></i> Billing Model
+            </div>
+            <div class="card-body">
+
+                {{-- Model selector --}}
+                <div class="mb-3">
+                    <label class="form-label fw-semibold mb-2">How does this school pay?</label>
+                    <div class="d-flex gap-2">
+                        <label class="cursor-pointer flex-grow-1" style="display:block;">
+                            <input type="radio" name="billing_model" value="flat" x-model="model" class="sr-only peer">
+                            <div class="p-3 rounded-xl border-2 transition-all peer-checked:border-success peer-checked:bg-light"
+                                 style="border-color:#e2e8f0;border-radius:.75rem;"
+                                 :style="model==='flat' ? 'border-color:#16a34a;background:#f0fdf4;' : ''">
+                                <div class="d-flex align-items-center gap-2">
+                                    <i class="fas fa-calendar-check text-success"></i>
+                                    <div>
+                                        <p class="fw-bold mb-0" style="font-size:.85rem;">Flat Rate (Annual)</p>
+                                        <p class="text-muted mb-0" style="font-size:.72rem;">Fixed yearly subscription per plan</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer flex-grow-1" style="display:block;">
+                            <input type="radio" name="billing_model" value="per_student" x-model="model" class="sr-only peer">
+                            <div class="p-3 rounded-xl border-2 transition-all peer-checked:border-success peer-checked:bg-light"
+                                 style="border-color:#e2e8f0;border-radius:.75rem;"
+                                 :style="model==='per_student' ? 'border-color:#16a34a;background:#f0fdf4;' : ''">
+                                <div class="d-flex align-items-center gap-2">
+                                    <i class="fas fa-user-graduate text-success"></i>
+                                    <div>
+                                        <p class="fw-bold mb-0" style="font-size:.85rem;">Per Student Per Term</p>
+                                        <p class="text-muted mb-0" style="font-size:.72rem;">Charged per active student each term</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                {{-- Per-student config — only shown when per_student selected --}}
+                <div x-show="model === 'per_student'" x-cloak
+                     x-transition:enter="transition ease-out duration-150"
+                     x-transition:enter-start="opacity-0 -translate-y-1"
+                     x-transition:enter-end="opacity-100 translate-y-0"
+                     class="border-top pt-3" style="border-color:#f1f5f9;">
+
+                    {{-- Rate input --}}
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            Rate per Student per Term (GHS) <span class="text-danger">*</span>
+                        </label>
+                        <div class="input-group" style="max-width:200px;">
+                            <span class="input-group-text fw-bold">GHS</span>
+                            <input type="number" name="per_student_rate" x-model="rate"
+                                   class="form-control" step="0.5" min="0" max="100"
+                                   value="{{ old('per_student_rate', $t->per_student_rate ?? 8) }}"
+                                   placeholder="8.00">
+                        </div>
+                        <div class="form-text" style="font-size:.75rem;">
+                            Set any amount. Example: GHS 8 per student per term.
+                        </div>
+                    </div>
+
+                    {{-- Terms per year --}}
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Terms per Academic Year</label>
+                        <select name="billing_terms_per_year" x-model="terms" class="form-select" style="max-width:200px;">
+                            <option value="2">2 terms per year</option>
+                            <option value="3">3 terms per year</option>
+                            <option value="4">4 terms per year</option>
+                        </select>
+                    </div>
+
+                    {{-- SMS add-on toggle --}}
+                    <div class="mb-3 d-flex align-items-center gap-2 p-2.5 rounded-lg"
+                         style="background:#f0fdf4;border:1px solid #bbf7d0;">
+                        <input type="checkbox" name="billing_includes_sms" value="1"
+                               class="form-check-input"
+                               {{ old('billing_includes_sms', $t->billing_includes_sms ?? false) ? 'checked' : '' }}>
+                        <div>
+                            <p class="fw-bold mb-0" style="font-size:.82rem;color:#15803d;">
+                                Include SMS Attendance Alerts
+                            </p>
+                            <p class="text-muted mb-0" style="font-size:.72rem;">
+                                SMS costs are bundled into the per-student rate. School doesn't buy credits separately.
+                            </p>
+                        </div>
+                    </div>
+
+                    {{-- Live calculation preview --}}
+                    <div class="mt-3 p-3 rounded-lg" style="background:#f8fafc;border:1px solid #f1f5f9;">
+                        <p class="fw-bold mb-2" style="font-size:.8rem;color:#475569;">
+                            <i class="fas fa-calculator me-1"></i> Estimated Billing
+                        </p>
+                        <div class="d-flex align-items-center gap-3 mb-2">
+                            <div style="flex:1;">
+                                <label class="form-label mb-0" style="font-size:.72rem;">Active Students</label>
+                                <input type="number" x-model.number="students" class="form-control form-control-sm" style="max-width:120px;" min="0">
+                            </div>
+                            <div class="text-center" style="flex:1;">
+                                <p class="mb-0" style="font-size:.7rem;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;">Per Term</p>
+                                <p class="fw-bold mb-0" style="font-size:1.15rem;color:#16a34a;" x-text="'GHS ' + (students * parseFloat(rate || 0)).toFixed(2)"></p>
+                            </div>
+                            <div class="text-center" style="flex:1;">
+                                <p class="mb-0" style="font-size:.7rem;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;">Per Year</p>
+                                <p class="fw-bold mb-0" style="font-size:1.15rem;color:#0f172a;" x-text="'GHS ' + (students * parseFloat(rate || 0) * parseInt(terms || 3)).toFixed(2)"></p>
+                            </div>
+                        </div>
+                        <p class="mb-0 mt-2" style="font-size:.72rem;color:#94a3b8;">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Actual billing is calculated at the start of each term using the real active student count.
+                        </p>
+                    </div>
+                </div>
+
+                {{-- Flat billing note — only shown when flat selected --}}
+                <div x-show="model === 'flat'" x-cloak class="text-muted" style="font-size:.8rem;">
+                    <i class="fas fa-info-circle me-1"></i>
+                    School pays the plan price listed above. No per-student charges.
+                </div>
+            </div>
+        </div>
+
         <div class="owner-card">
             <div class="card-header">Backup Settings</div>
             <div class="card-body">

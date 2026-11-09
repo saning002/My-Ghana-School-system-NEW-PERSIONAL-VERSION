@@ -1687,6 +1687,43 @@ Route::get('/setup/migrate-notification-templates', function () {
     );
 });
 
+// ── Run billing model migration on main DB ────────────────────────────────
+// Hit: /setup/migrate-billing-model
+Route::get('/setup/migrate-billing-model', function () {
+    $results = [];
+
+    try {
+        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        $results[] = '✅ Main DB migrations ran: ' . trim(\Illuminate\Support\Facades\Artisan::output());
+    } catch (\Throwable $e) {
+        $results[] = '⚠️ Migration error: ' . $e->getMessage();
+    }
+
+    // Verify the columns exist
+    try {
+        $cols = \Illuminate\Support\Facades\DB::connection('pgsql')
+            ->select("SELECT column_name FROM information_schema.columns
+                      WHERE table_name = 'tenants'
+                      AND column_name IN ('billing_model','per_student_rate','billing_terms_per_year','billing_includes_sms','last_invoice_amount','last_invoice_student_count','last_invoiced_at')
+                      ORDER BY column_name");
+
+        $results[] = '📋 New columns found on tenants table: ' . count($cols);
+        foreach ($cols as $c) {
+            $results[] = "   ✓ {$c->column_name}";
+        }
+    } catch (\Throwable $e) {
+        $results[] = '⚠️ Could not verify columns: ' . $e->getMessage();
+    }
+
+    return response(
+        '<html><body style="font-family:monospace;padding:20px;background:#0f172a;color:#e2e8f0;">'
+        . '<h2 style="color:#34d399">Billing Model Migration</h2>'
+        . '<pre>' . implode("\n", $results) . '</pre>'
+        . '<br><a href="/setup/clear-cache" style="color:#60a5fa">→ Clear cache now</a>'
+        . '</body></html>'
+    );
+});
+
 // ── Clear all caches (view, config, route, opcache) ───────────────────────
 Route::get('/setup/clear-cache', function () {
     $results = [];

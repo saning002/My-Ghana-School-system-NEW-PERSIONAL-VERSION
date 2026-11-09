@@ -71,9 +71,20 @@ class TenantController extends Controller
             'b2_bucket_name'         => 'nullable|string|max:255',
             'b2_bucket_id'           => 'nullable|string|max:255',
             'b2_endpoint'            => 'nullable|string|max:255',
+            // Billing model
+            'billing_model'          => 'nullable|in:flat,per_student',
+            'per_student_rate'       => 'nullable|numeric|min:0|max:100',
+            'billing_terms_per_year' => 'nullable|integer|min:1|max:4',
+            'billing_includes_sms'   => 'nullable|boolean',
         ]);
 
         $validated['slug'] = Str::slug($validated['subdomain']);
+
+        // Set billing defaults
+        $validated['billing_model']          = $validated['billing_model'] ?? 'flat';
+        $validated['per_student_rate']         = $validated['per_student_rate'] ?? 0;
+        $validated['billing_terms_per_year']   = $validated['billing_terms_per_year'] ?? 3;
+        $validated['billing_includes_sms']     = ($validated['billing_model'] === 'per_student') ? ($request->boolean('billing_includes_sms')) : false;
 
         $tenant = Tenant::create($validated);
 
@@ -224,6 +235,11 @@ class TenantController extends Controller
             'b2_bucket_name'         => 'nullable|string|max:255',
             'b2_bucket_id'           => 'nullable|string|max:255',
             'b2_endpoint'            => 'nullable|string|max:255',
+            // Billing model
+            'billing_model'          => 'nullable|in:flat,per_student',
+            'per_student_rate'       => 'nullable|numeric|min:0|max:100',
+            'billing_terms_per_year' => 'nullable|integer|min:1|max:4',
+            'billing_includes_sms'   => 'nullable|boolean',
         ]);
 
         $validated['slug'] = Str::slug($validated['subdomain']);
@@ -232,6 +248,14 @@ class TenantController extends Controller
         if (empty($validated['db_password'])) {
             unset($validated['db_password']);
         }
+
+        // Set billing defaults
+        $validated['billing_model']          = $validated['billing_model'] ?? 'flat';
+        $validated['per_student_rate']       = $validated['per_student_rate'] ?? 0;
+        $validated['billing_terms_per_year'] = $validated['billing_terms_per_year'] ?? 3;
+        $validated['billing_includes_sms']   = ($validated['billing_model'] === 'per_student')
+            ? $request->boolean('billing_includes_sms')
+            : false;
 
         $oldValues = $tenant->toArray();
         $tenant->update($validated);
