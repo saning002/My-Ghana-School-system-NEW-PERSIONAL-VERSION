@@ -1611,6 +1611,7 @@ Route::get('/setup/migrate-notification-templates', function () {
     $migrationPaths = [
         'database/migrations/2026_11_01_000001_create_notification_templates_table.php',
         'database/migrations/2026_11_01_000002_create_attendance_alert_settings_table.php',
+        'database/migrations/2026_11_08_000001_add_is_active_to_attribute_definitions.php',
     ];
 
     $tenants = \App\Models\Tenant::whereNotNull('db_name')->get();
@@ -1641,6 +1642,25 @@ Route::get('/setup/migrate-notification-templates', function () {
                     $tableName = 'notification_templates';
                 } elseif (str_contains($path, 'attendance_alert_settings')) {
                     $tableName = 'attendance_alert_settings';
+                } elseif (str_contains($path, 'is_active_to_attribute')) {
+                    // This migration uses ALTER TABLE not CREATE TABLE — run directly
+                    try {
+                        \Illuminate\Support\Facades\Artisan::call('migrate', [
+                            '--force'    => true,
+                            '--database' => 'tenant',
+                            '--path'     => $path,
+                        ]);
+                        $output = trim(\Illuminate\Support\Facades\Artisan::output());
+                        $tenantResults[] = "✅ attribute_definitions.is_active — applied. " . $output;
+                    } catch (\Throwable $ex) {
+                        // Column may already exist — that's fine
+                        if (str_contains($ex->getMessage(), 'already exists')) {
+                            $tenantResults[] = "⏭ attribute_definitions.is_active — already exists, skipped";
+                        } else {
+                            $tenantResults[] = "⚠️ attribute_definitions.is_active — " . $ex->getMessage();
+                        }
+                    }
+                    continue;
                 }
 
                 // Check if table already exists — skip if it does

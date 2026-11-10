@@ -122,8 +122,14 @@ class StudentReportController extends Controller
             'attempt'    => $attempt,
         ]);
 
-        $attributes = AttributeDefinition::where('is_active', true)
-            ->orderBy('sort_order')->orderBy('name')->get();
+        $attributes = collect();
+        try {
+            $attributes = AttributeDefinition::where('is_active', true)
+                ->orderBy('sort_order')->orderBy('name')->get();
+        } catch (\Throwable $e) {
+            // is_active column may not exist yet — run /setup/migrate-notification-templates
+            $attributes = AttributeDefinition::orderBy('sort_order')->orderBy('name')->get();
+        }
 
         $existingRatings = collect();
         if ($report->exists) {
