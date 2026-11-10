@@ -572,6 +572,41 @@
                 <p class="text-xs text-yellow-700 mt-1">The Ghana Standard scale is recommended for schools following the national curriculum. Switch to Custom only if your institution uses a different marking system.</p>
             </div>
         </div>
+
+        {{-- Report Card Template Selector --}}
+        @php $currentTpl = \App\Models\Setting::get('report_card_template', 'standard'); @endphp
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
+            <h4 class="text-sm font-bold text-gray-700 mb-1">
+                <i class="fas fa-file-alt mr-1 text-indigo-500"></i> Report Card Template
+            </h4>
+            <p class="text-xs text-gray-500 mb-3">Choose the Ghana GES report card format used when printing student results.</p>
+            <div class="space-y-2">
+                @foreach([
+                    ['standard','Standard GES Terminal','Full GES terminal report — personality development table, grading scale, 3 signature blocks'],
+                    ['basic','Basic / Primary School','Simplified primary school format — grade key, conduct checkboxes, attendance. Best for Basic 1–6'],
+                    ['jhs','JHS / BECE Style','JHS format — BECE A1–F9 grading, 30% CA + 70% Exam columns, parent signature. Best for JHS 1–3'],
+                ] as [$val,$lbl,$desc])
+                <form method="POST" action="{{ route('admin.settings.update') }}">
+                    @csrf
+                    <input type="hidden" name="report_card_template" value="{{ $val }}">
+                    <button type="submit" class="w-full flex items-start gap-2.5 p-3 rounded-xl border-2 text-left transition-all"
+                        style="{{ $currentTpl===$val ? 'border-color:var(--brand);background:var(--primary-pale);' : 'border-color:#e5e7eb;background:#f9fafb;' }}">
+                        <div class="w-5 h-5 rounded-full border-2 flex-shrink-0 mt-0.5 flex items-center justify-center"
+                             style="{{ $currentTpl===$val ? 'border-color:var(--brand);background:var(--brand);' : 'border-color:#d1d5db;background:#fff;' }}">
+                            @if($currentTpl===$val)
+                            <i class="fas fa-check" style="color:#fff;font-size:8px;"></i>
+                            @endif
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold" style="color:{{ $currentTpl===$val ? 'var(--brand)' : '#374151' }}">{{ $lbl }}</p>
+                            <p class="text-xs text-gray-500 mt-0.5">{{ $desc }}</p>
+                        </div>
+                    </button>
+                </form>
+                @endforeach
+            </div>
+        </div>
+
         <button type="submit"
                 class="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl text-sm font-bold text-white shadow-lg transition-all hover:shadow-xl hover:-translate-y-0.5"
                 style="background:linear-gradient(135deg,#16a34a,#15803d)">

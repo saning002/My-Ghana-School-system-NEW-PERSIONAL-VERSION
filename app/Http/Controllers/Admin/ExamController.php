@@ -284,7 +284,16 @@ class ExamController extends Controller
             @set_time_limit(300);
 
             $filename = 'report_card_' . $student->student_id . '_' . \Str::slug($program->name) . '.pdf';
-            $pdf = Pdf::loadView('pdf.report_card', $data)->setPaper('a4', 'portrait');
+
+            // Pick template based on school setting
+            $templateKey = \App\Models\Setting::get('report_card_template', 'standard');
+            $templateView = match($templateKey) {
+                'basic' => 'pdf.report_card_basic',
+                'jhs'   => 'pdf.report_card_jhs',
+                default => 'pdf.report_card',
+            };
+
+            $pdf = Pdf::loadView($templateView, $data)->setPaper('a4', 'portrait');
 
             if ($request->input('mode') === 'print' || $request->has('print')) {
                 return $pdf->stream($filename);
