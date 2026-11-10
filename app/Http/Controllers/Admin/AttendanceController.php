@@ -249,17 +249,18 @@ class AttendanceController extends Controller
             $settings = AttendanceAlertSetting::current();
 
             if (! $settings->enabled) {
+                \Log::info('Attendance alert skipped: alerts not enabled in settings.');
                 return;
             }
 
-            // Need at least one template message configured
             if (empty($settings->present_message) && empty($settings->absent_message)) {
+                \Log::info('Attendance alert skipped: no message templates configured.');
                 return;
             }
 
             $tenantId = session('tenant_id');
+            \Log::info("Attendance alert firing for " . count($attendances) . " students. TenantId: {$tenantId}");
 
-            // Load all students in one query
             $studentIds = array_keys($attendances);
             $students   = Student::with(['user', 'program', 'attendances', 'payments'])
                 ->whereIn('id', $studentIds)
@@ -269,53 +270,47 @@ class AttendanceController extends Controller
             foreach ($attendances as $studentId => $status) {
                 $student = $students->get($studentId);
                 if (! $student) {
+                    \Log::warning("Attendance alert: student {$studentId} not found.");
                     continue;
                 }
 
-                // Pick the right message template
                 $rawMessage = $status === 'present'
                     ? $settings->present_message
                     : $settings->absent_message;
 
                 if (empty($rawMessage)) {
+                    \Log::info("Attendance alert: no {$status} message template set, skipping student {$studentId}.");
                     continue;
                 }
 
-                // Resolve placeholders into real values
-                // Pass today's status so {today_status} and {today_status_label} resolve correctly
-                $todayLabel = $status === 'present'
-                    ? 'was marked PRESENT'
-                    : 'was marked ABSENT';
+                $todayLabel = $status === 'present' ? 'was marked PRESENT' : 'was marked ABSENT';
 
                 $message = NotificationTemplate::resolvePlaceholders($rawMessage, $student, [
-                    '{today_status}'        => strtoupper($status),          // PRESENT or ABSENT
-                    '{today_status_label}'  => $todayLabel,                  // "was marked PRESENT"
-                    '{today_date}'          => now()->format('l, d F Y'),    // Monday, 08 October 2026
+                    '{today_status}'        => strtoupper($status),
+                    '{today_status_label}'  => $todayLabel,
+                    '{today_date}'          => now()->format('l, d F Y'),
                 ]);
 
-                // Resolve the parent phone number
                 $phone = $settings->resolvePhone($student);
                 if (empty($phone)) {
-                    \Log::info("Attendance alert skipped for student {$studentId} — no parent phone on record.");
+                    \Log::info("Attendance alert: student {$studentId} ({$student->user?->full_name}) has no parent phone — skipped.");
                     continue;
                 }
 
-                // Send — respects send_delay_minutes via a queued job if > 0
+                \Log::info("Attendance alert: sending to {$phone} for student {$studentId} — status: {$status}");
+
                 if ($settings->send_delay_minutes > 0) {
-                    // Dispatch delayed — uses the default queue
                     \App\Jobs\SendAttendanceAlertSms::dispatch(
-                        $phone,
-                        $message,
-                        $tenantId ? (int) $tenantId : null
+                        $phone, $message, $tenantId ? (int) $tenantId : null
                     )->delay(now()->addMinutes($settings->send_delay_minutes));
+                    \Log::info("Attendance alert: queued with {$settings->send_delay_minutes} min delay.");
                 } else {
-                    // Send immediately (synchronous — safe for small classes)
-                    $this->sms->sendBulk([$phone], $message, $tenantId ? (int) $tenantId : null);
+                    $result = $this->sms->sendBulk([$phone], $message, $tenantId ? (int) $tenantId : null);
+                    \Log::info("Attendance alert: SMS result — " . json_encode($result));
                 }
             }
         } catch (\Throwable $e) {
-            // Never let alert failures break the attendance save
-            \Log::error('Attendance auto-alert failed: ' . $e->getMessage());
+            \Log::error('Attendance auto-alert failed: ' . $e->getMessage() . ' | ' . $e->getTraceAsString());
         }
     }
 
