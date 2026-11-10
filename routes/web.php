@@ -1643,22 +1643,27 @@ Route::get('/setup/migrate-notification-templates', function () {
                 } elseif (str_contains($path, 'attendance_alert_settings')) {
                     $tableName = 'attendance_alert_settings';
                 } elseif (str_contains($path, 'is_active_to_attribute')) {
-                    // This migration uses ALTER TABLE not CREATE TABLE — run directly
+                    // ALTER TABLE migration — run raw SQL directly to avoid transaction state issues
                     try {
-                        \Illuminate\Support\Facades\Artisan::call('migrate', [
-                            '--force'    => true,
-                            '--database' => 'tenant',
-                            '--path'     => $path,
-                        ]);
-                        $output = trim(\Illuminate\Support\Facades\Artisan::output());
-                        $tenantResults[] = "✅ attribute_definitions.is_active — applied. " . $output;
-                    } catch (\Throwable $ex) {
-                        // Column may already exist — that's fine
-                        if (str_contains($ex->getMessage(), 'already exists')) {
+                        // Force reconnect to clear any broken transaction state
+                        \Illuminate\Support\Facades\DB::purge('tenant');
+                        \Illuminate\Support\Facades\DB::reconnect('tenant');
+
+                        // Check if column already exists
+                        $cols = \Illuminate\Support\Facades\DB::connection('tenant')
+                            ->select("SELECT column_name FROM information_schema.columns WHERE table_name='attribute_definitions' AND column_name='is_active'");
+
+                        if (!empty($cols)) {
                             $tenantResults[] = "⏭ attribute_definitions.is_active — already exists, skipped";
                         } else {
-                            $tenantResults[] = "⚠️ attribute_definitions.is_active — " . $ex->getMessage();
+                            \Illuminate\Support\Facades\DB::connection('tenant')
+                                ->statement("ALTER TABLE attribute_definitions ADD COLUMN IF NOT EXISTS is_active boolean NOT NULL DEFAULT true");
+                            \Illuminate\Support\Facades\DB::connection('tenant')
+                                ->statement("ALTER TABLE attribute_definitions ADD COLUMN IF NOT EXISTS sort_order smallint NOT NULL DEFAULT 0");
+                            $tenantResults[] = "✅ attribute_definitions.is_active — column added successfully";
                         }
+                    } catch (\Throwable $ex) {
+                        $tenantResults[] = "⚠️ attribute_definitions.is_active — " . $ex->getMessage();
                     }
                     continue;
                 }
