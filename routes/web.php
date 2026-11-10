@@ -1612,6 +1612,7 @@ Route::get('/setup/migrate-notification-templates', function () {
         'database/migrations/2026_11_01_000001_create_notification_templates_table.php',
         'database/migrations/2026_11_01_000002_create_attendance_alert_settings_table.php',
         'database/migrations/2026_11_08_000001_add_is_active_to_attribute_definitions.php',
+        'database/migrations/2026_11_09_000001_fix_promoted_to_column_type.php',
     ];
 
     $tenants = \App\Models\Tenant::whereNotNull('db_name')->get();
@@ -1642,7 +1643,29 @@ Route::get('/setup/migrate-notification-templates', function () {
                     $tableName = 'notification_templates';
                 } elseif (str_contains($path, 'attendance_alert_settings')) {
                     $tableName = 'attendance_alert_settings';
-                } elseif (str_contains($path, 'is_active_to_attribute')) {
+                } elseif (str_contains($path, 'fix_promoted_to')) {
+                    // ALTER COLUMN migration — run raw SQL directly
+                    try {
+                        \Illuminate\Support\Facades\DB::purge('tenant');
+                        \Illuminate\Support\Facades\DB::reconnect('tenant');
+
+                        $cols = \Illuminate\Support\Facades\DB::connection('tenant')
+                            ->select("SELECT data_type FROM information_schema.columns WHERE table_name='student_reports' AND column_name='promoted_to'");
+
+                        if (empty($cols)) {
+                            $tenantResults[] = "⏭ student_reports.promoted_to — column not found, skipped";
+                        } elseif (in_array($cols[0]->data_type ?? '', ['bigint','integer','int8','int4'])) {
+                            \Illuminate\Support\Facades\DB::connection('tenant')
+                                ->statement("ALTER TABLE student_reports ALTER COLUMN promoted_to TYPE varchar(255) USING promoted_to::varchar");
+                            $tenantResults[] = "✅ student_reports.promoted_to — converted from bigint to varchar";
+                        } else {
+                            $tenantResults[] = "⏭ student_reports.promoted_to — already varchar, skipped";
+                        }
+                    } catch (\Throwable $ex) {
+                        $tenantResults[] = "⚠️ student_reports.promoted_to — " . $ex->getMessage();
+                    }
+                    continue;
+                }
                     // ALTER TABLE migration — run raw SQL directly to avoid transaction state issues
                     try {
                         // Force reconnect to clear any broken transaction state
