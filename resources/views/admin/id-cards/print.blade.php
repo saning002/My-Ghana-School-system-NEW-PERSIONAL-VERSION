@@ -128,11 +128,11 @@ body { font-family:'Inter',Arial,sans-serif; background:#94a3b8; padding:0; }
     position:relative; z-index:1; min-height:0;
 }
 
-/* Left column: photo + QR (matches reference — photo top, QR below) */
-.cf-left { display:flex; flex-direction:column; gap:1mm; align-items:center; flex-shrink:0; }
+/* Left column: photo only — QR moved to back */
+.cf-left { display:flex; flex-direction:column; gap:0; align-items:center; justify-content:center; flex-shrink:0; padding-top:1.5mm; }
 
 .cf-photo {
-    width:16.5mm; height:19.5mm; flex-shrink:0;
+    width:16.5mm; height:19.5mm;
     border:1mm solid {{ $navColor }};
     border-radius:.6mm; overflow:hidden; background:#e8e4d8;
     box-shadow:1mm 1mm 3mm rgba(0,0,0,.2);
@@ -154,10 +154,11 @@ body { font-family:'Inter',Arial,sans-serif; background:#94a3b8; padding:0; }
 }
 .cf-qr canvas { width:100% !important; height:100% !important; }
 
-/* Right column: name + fields + sig + ID badge (matches reference exactly) */
+/* Right column: pushed down for better spacing */
 .cf-right {
     flex:1; min-width:0; z-index:1;
-    display:flex; flex-direction:column; justify-content:flex-start;
+    display:flex; flex-direction:column;
+    padding-top:2.5mm;
 }
 
 .cf-name {
@@ -380,7 +381,7 @@ body { font-family:'Inter',Arial,sans-serif; background:#94a3b8; padding:0; }
         {{-- Body --}}
         <div class="cf-body">
 
-            {{-- LEFT: photo then QR --}}
+            {{-- LEFT: photo only (QR removed from front) --}}
             <div class="cf-left">
                 <div class="cf-photo">
                     @if($photoUrl)
@@ -388,9 +389,6 @@ body { font-family:'Inter',Arial,sans-serif; background:#94a3b8; padding:0; }
                     @else
                     <div class="ini"><span>{{ $initials }}</span></div>
                     @endif
-                </div>
-                <div class="cf-qr">
-                    <canvas id="{{ $qrId }}"></canvas>
                 </div>
             </div>
 
@@ -415,9 +413,9 @@ body { font-family:'Inter',Arial,sans-serif; background:#94a3b8; padding:0; }
                 <div class="cf-sig-badge">
                     <div class="cf-sig-block">
                         @if(!empty($headmasterSignatureUrl))
-                        <div style="height:4mm;display:flex;align-items:flex-end;">
+                        <div style="height:6mm;display:flex;align-items:flex-end;margin-bottom:.3mm;">
                             <img src="{{ $headmasterSignatureUrl }}" alt="Sig"
-                                 style="max-height:3.8mm;max-width:14mm;object-fit:contain;opacity:.85;">
+                                 style="max-height:5.5mm;max-width:18mm;object-fit:contain;opacity:.9;">
                         </div>
                         @else
                         <div class="sig-line"></div>
