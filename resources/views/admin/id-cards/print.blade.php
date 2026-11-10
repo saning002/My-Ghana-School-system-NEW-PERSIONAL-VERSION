@@ -403,10 +403,10 @@ body { font-family:'Inter',Arial,sans-serif; background:#94a3b8; padding:0; }
                 @endif
                 <div class="cf-field"><span class="fl">{{ $isStudent ? 'Student ID' : 'Staff ID' }}</span><span class="fcolon">:</span><span class="fv">{{ $idNumber }}</span></div>
                 @if($dept)
-                <div class="cf-field"><span class="fl">{{ $isStudent ? 'Department' : 'Dept' }}</span><span class="fcolon">:</span><span class="fv">{{ $dept }}</span></div>
+                <div class="cf-field"><span class="fl">{{ $isStudent ? 'Programme' : 'Role' }}</span><span class="fcolon">:</span><span class="fv">{{ $dept }}</span></div>
                 @endif
-                @if($isStudent && $dept)
-                <div class="cf-field"><span class="fl">Class</span><span class="fcolon">:</span><span class="fv">{{ $dept }}</span></div>
+                @if($dob)
+                <div class="cf-field"><span class="fl">Date of Birth</span><span class="fcolon">:</span><span class="fv">{{ $dob }}</span></div>
                 @endif
                 <div class="cf-field"><span class="fl">Date Issued</span><span class="fcolon">:</span><span class="fv">{{ $issued }}</span></div>
                 <div class="cf-field"><span class="fl">Date Expiry</span><span class="fcolon">:</span><span class="fv">{{ $expires }}</span></div>

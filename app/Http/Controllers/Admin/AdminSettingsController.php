@@ -49,6 +49,7 @@ class AdminSettingsController extends Controller
 
     public function updatePortal(Request $request)
     {
+        $request->validate([
             'portal_mode'  => 'required|in:basic,jhs,shs,university',
             'portal_theme' => 'required|in:gold,blue,green,purple,red,teal',
         ]);
