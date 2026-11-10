@@ -12,7 +12,13 @@ class ProgramFee extends Model
     use HasFactory;
     use TenantAwareConnection;
 
-    protected $fillable = ['program_id', 'church_branch_id', 'amount', 'exam_fee'];
+    protected $fillable = [
+        'program_id',
+        'church_branch_id',
+        'amount',
+        'exam_fee',
+        'feeding_fee',
+    ];
 
     public function program()
     {
