@@ -22,13 +22,27 @@ class DailyFeesController extends Controller
         try {
         $today      = $request->date ?? today()->toDateString();
         $programs   = Program::orderBy('sequence')->get();
-        $dailyRate  = (float) Setting::get('daily_fee_rate', 5);
+        $globalRate = (float) Setting::get('daily_fee_rate', 5);
 
-        $query = Student::with(['user', 'program', 'feeExemption'])->forExams();
+        $query = Student::with(['user', 'program', 'program.fee', 'feeExemption'])->forExams();
         if ($request->filled('program_id')) {
             $query->where('program_id', $request->program_id);
         }
         $students = $query->orderBy('student_id')->get();
+
+        // Pre-load program fees keyed by program_id for fast lookup
+        $programFees = \App\Models\ProgramFee::all()->keyBy('program_id');
+
+        // Build per-student daily rate:
+        // If the student's programme has a feeding_fee configured → use that (programme+feeding mode)
+        // Otherwise fall back to the global daily_fee_rate (standalone daily fee mode)
+        $studentRates = $students->mapWithKeys(function($s) use ($programFees, $globalRate) {
+            $pfee = $s->program_id ? $programFees->get($s->program_id) : null;
+            $rate = ($pfee && (float)$pfee->feeding_fee > 0)
+                ? (float) $pfee->feeding_fee
+                : $globalRate;
+            return [$s->id => $rate];
+        });
 
         // Pre-load today's records keyed by student_id
         $paid = DailyFeeRecord::where('date', $today)
@@ -37,26 +51,27 @@ class DailyFeesController extends Controller
 
         // Summary for today
         $summary = [
-            'expected' => $students->count(),
-            'paid'     => $paid->count(),
-            'exempted' => $students->filter(fn($s) => $s->feeExemption?->isActive())->count(),
-            'unpaid'   => $students->filter(fn($s) => !$paid->has($s->id) && !$s->feeExemption?->isActive())->count(),
+            'expected'        => $students->count(),
+            'paid'            => $paid->count(),
+            'exempted'        => $students->filter(fn($s) => $s->feeExemption?->isActive())->count(),
+            'unpaid'          => $students->filter(fn($s) => !$paid->has($s->id) && !$s->feeExemption?->isActive())->count(),
             'total_collected' => $paid->sum('amount'),
         ];
 
         return view('admin.daily-fees.index', compact(
-            'students', 'paid', 'today', 'dailyRate', 'programs', 'summary'
+            'students', 'paid', 'today', 'globalRate', 'studentRates', 'programs', 'summary', 'programFees'
         ));
         } catch (\Throwable $e) {
-            // Migration not yet run — show helpful message
             if (str_contains($e->getMessage(), 'daily_fee_records') || str_contains($e->getMessage(), 'student_fee_exemptions')) {
                 return view('admin.daily-fees.index', [
-                    'students'  => collect(),
-                    'paid'      => collect(),
-                    'today'     => today()->toDateString(),
-                    'dailyRate' => 5.0,
-                    'programs'  => Program::orderBy('sequence')->get(),
-                    'summary'   => ['expected'=>0,'paid'=>0,'exempted'=>0,'unpaid'=>0,'total_collected'=>0],
+                    'students'      => collect(),
+                    'paid'          => collect(),
+                    'today'         => today()->toDateString(),
+                    'globalRate'    => 5.0,
+                    'studentRates'  => collect(),
+                    'programFees'   => collect(),
+                    'programs'      => Program::orderBy('sequence')->get(),
+                    'summary'       => ['expected'=>0,'paid'=>0,'exempted'=>0,'unpaid'=>0,'total_collected'=>0],
                     'migrationNeeded' => true,
                 ]);
             }
@@ -67,22 +82,39 @@ class DailyFeesController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'date'        => 'required|date',
-            'student_ids' => 'required|array',
+            'date'          => 'required|date',
+            'student_ids'   => 'required|array',
             'student_ids.*' => 'exists:students,id',
         ]);
 
-        $dailyRate = (float) Setting::get('daily_fee_rate', 5);
-        $count = 0;
+        $globalRate  = (float) Setting::get('daily_fee_rate', 5);
+        $programFees = \App\Models\ProgramFee::all()->keyBy('program_id');
+        $count       = 0;
+
+        // Load students with their programme for per-programme rate lookup
+        $students = Student::whereIn('id', $request->student_ids)
+            ->with('feeExemption')
+            ->get()->keyBy('id');
 
         foreach ($request->student_ids as $sid) {
             // Skip if student has active full exemption
-            $exemption = StudentFeeExemption::where('student_id', $sid)->first();
+            $exemption = optional($students->get($sid))->feeExemption;
             if ($exemption && $exemption->isActive() && $exemption->isFull()) continue;
 
-            $amount = $exemption && $exemption->isActive() && $exemption->daily_override !== null
-                ? (float) $exemption->daily_override
-                : $dailyRate;
+            // Determine daily rate:
+            // 1. Exemption override (partial waiver)
+            // 2. Programme feeding_fee if configured (programme + feeding option)
+            // 3. Global daily_fee_rate (standalone daily fee option)
+            if ($exemption && $exemption->isActive() && $exemption->daily_override !== null) {
+                $amount = (float) $exemption->daily_override;
+            } else {
+                $student  = $students->get($sid);
+                $programId = $student?->program_id;
+                $pfee      = $programId ? $programFees->get($programId) : null;
+                $amount    = ($pfee && (float)$pfee->feeding_fee > 0)
+                    ? (float) $pfee->feeding_fee
+                    : $globalRate;
+            }
 
             DailyFeeRecord::updateOrCreate(
                 ['student_id' => $sid, 'date' => $request->date],
