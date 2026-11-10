@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ID Cards — {{ $schoolName }}</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -10,17 +9,12 @@
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
 
-body {
-    font-family:'Inter','Segoe UI',Arial,sans-serif;
-    background:#cbd5e1;
-    padding:0;
-}
+body { font-family:'Inter',Arial,sans-serif; background:#94a3b8; padding:0; }
 
-/* ══ Toolbar ══ */
+/* ══ Toolbar ══════════════════════════════════════════════════════ */
 .tb {
     position:fixed; top:0; left:0; right:0; z-index:999;
-    background:#0f172a; color:#fff;
-    padding:10px 20px;
+    background:#0f172a; color:#fff; padding:10px 20px;
     display:flex; align-items:center; justify-content:space-between;
     box-shadow:0 4px 20px rgba(0,0,0,.3);
 }
@@ -33,287 +27,264 @@ body {
 .btn-b { background:#2563eb; color:#fff; }
 .btn-s { background:#475569; color:#fff; }
 
-/* ══ A4 Page ══ */
+/* ══ A4 ══════════════════════════════════════════════════════════ */
 .a4 {
-    width:210mm;
-    margin:52px auto 20px;
+    width:210mm; min-height:297mm; margin:52px auto 20px;
     background:#fff;
-    min-height:297mm;
 }
 
-/* ══ Card row ══ */
-/*  Each row = one front card (left half) + one back card (right half)
-    4 rows per A4 page — 60mm height each row  */
+/* ══ Row = one front + one back ══════════════════════════════════ */
 .row {
-    display:flex;
-    width:210mm;
-    height:60mm;
+    display:flex; width:210mm; height:62mm;
     position:relative;
-    /* Dashed bottom cut line */
-    border-bottom:0.5mm dashed #94a3b8;
+    border-bottom:0.4mm dashed #94a3b8;
 }
-.row:last-child {
-    border-bottom:none;
+.row:last-child { border-bottom:none; }
+/* Centre cut line */
+.row .cv {
+    position:absolute; top:0; bottom:0; left:50%;
+    border-left:0.4mm dashed #94a3b8; pointer-events:none;
 }
+/* Corner ticks */
+.row::before { content:''; position:absolute; top:0; left:0; width:4mm; height:4mm; border-left:.4mm solid #64748b; border-top:.4mm solid #64748b; }
+.c-tr { position:absolute; top:0; right:0; width:4mm; height:4mm; border-right:.4mm solid #64748b; border-top:.4mm solid #64748b; pointer-events:none; }
+.c-bl { position:absolute; bottom:0; left:0; width:4mm; height:4mm; border-left:.4mm solid #64748b; border-bottom:.4mm solid #64748b; pointer-events:none; }
+.c-br { position:absolute; bottom:0; right:0; width:4mm; height:4mm; border-right:.4mm solid #64748b; border-bottom:.4mm solid #64748b; pointer-events:none; }
 
-/* Dashed vertical centre cut line */
-.row::after {
-    content:'';
-    position:absolute;
-    top:0; bottom:0;
-    left:50%;
-    border-left:0.5mm dashed #94a3b8;
-    pointer-events:none;
-}
+.card { width:50%; height:62mm; overflow:hidden; display:flex; flex-direction:column; position:relative; }
 
-/* Corner tick marks — 4 corners per row */
-.row::before {
-    content:'';
-    position:absolute;
-    top:0; left:0;
-    width:4mm; height:4mm;
-    border-left:0.4mm solid #64748b;
-    border-top:0.4mm solid #64748b;
-}
-.row .tr-mark {
-    position:absolute; top:0; right:0;
-    width:4mm; height:4mm;
-    border-right:0.4mm solid #64748b;
-    border-top:0.4mm solid #64748b;
-    pointer-events:none;
-}
-.row .bl-mark {
-    position:absolute; bottom:0; left:0;
-    width:4mm; height:4mm;
-    border-left:0.4mm solid #64748b;
-    border-bottom:0.4mm solid #64748b;
-    pointer-events:none;
-}
-.row .br-mark {
-    position:absolute; bottom:0; right:0;
-    width:4mm; height:4mm;
-    border-right:0.4mm solid #64748b;
-    border-bottom:0.4mm solid #64748b;
-    pointer-events:none;
-}
-
-/* ══ Card base ══ */
-.card {
-    width:50%;
-    height:60mm;
-    overflow:hidden;
-    display:flex;
-    flex-direction:column;
-    position:relative;
-}
-
-/* ══════════════════════════════════════════════════
-   FRONT
-══════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════════════
+   FRONT  — matches the reference image exactly
+══════════════════════════════════════════════════════════════════ */
 .cf {
-    background:#fff;
+    background:#f5f5e8;  /* cream/off-white like the reference */
+    position:relative;
 }
 
-/* Header */
-.cf-hd {
-    height:16mm;
-    background:linear-gradient(135deg,
-        {{ $navColor }} 0%,
-        color-mix(in srgb, {{ $navColor }} 60%, {{ $primaryColor }}) 100%
-    );
-    display:flex; align-items:center; padding:0 3mm; gap:2.5mm;
-    position:relative; overflow:hidden; flex-shrink:0;
+/* Dark green header band */
+.cf-top {
+    height:12mm;
+    background:{{ $navColor }};
+    position:relative;
+    display:flex; align-items:center;
+    padding:0 2.5mm;
+    overflow:hidden;
+    flex-shrink:0;
 }
-.cf-hd::before {
-    content:''; position:absolute; right:-8mm; top:-8mm;
-    width:26mm; height:26mm; border-radius:50%;
-    background:{{ $primaryColor }}; opacity:.12; filter:blur(5mm); pointer-events:none;
+/* Wavy right side shape — the decorative wave from the reference */
+.cf-top::after {
+    content:'';
+    position:absolute; right:0; top:0; bottom:0;
+    width:30mm;
+    background:{{ $primaryColor }};
+    clip-path:ellipse(50% 100% at 100% 50%);
+    opacity:.35;
 }
-.cf-hd::after {
-    content:''; position:absolute; inset:0;
-    background-image:radial-gradient(circle, rgba(255,255,255,.07) 1px, transparent 1px);
-    background-size:2mm 2mm; pointer-events:none;
+/* Second wave layer */
+.cf-top::before {
+    content:'';
+    position:absolute; right:5mm; top:0; bottom:0;
+    width:22mm;
+    background:rgba(255,255,255,.08);
+    clip-path:ellipse(50% 100% at 100% 50%);
 }
 
+.cf-sch-name {
+    color:#fff; font-size:3.4mm; font-weight:900;
+    letter-spacing:.2mm; text-transform:uppercase;
+    line-height:1.1; z-index:1; flex:1;
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.cf-sch-sub {
+    color:rgba(255,255,255,.65); font-size:1.6mm; font-weight:500;
+    letter-spacing:1.5mm; text-transform:uppercase; margin-top:.5mm; z-index:1;
+}
+
+/* Logo — top right of header */
 .cf-logo {
-    width:11mm; height:11mm; border-radius:2mm; background:#fff;
+    width:11mm; height:11mm; border-radius:50%;
+    background:#fff; border:.5mm solid {{ $primaryColor }};
     display:flex; align-items:center; justify-content:center;
-    flex-shrink:0; overflow:hidden;
-    box-shadow:0 1mm 3mm rgba(0,0,0,.2);
-    z-index:1;
+    overflow:hidden; flex-shrink:0; z-index:2;
+    box-shadow:0 .5mm 2mm rgba(0,0,0,.2);
 }
 .cf-logo img { width:100%; height:100%; object-fit:contain; padding:.8mm; }
-.cf-logo .init-logo { font-size:5mm; font-weight:900; color:{{ $navColor }}; line-height:1; }
-
-.cf-sch { z-index:1; min-width:0; flex:1; }
-.cf-sch .nm { color:#fff; font-size:2.9mm; font-weight:800; line-height:1.1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; letter-spacing:.05mm; }
-.cf-sch .sb { color:{{ $primaryColor }}; font-size:1.7mm; font-weight:600; margin-top:.4mm; letter-spacing:.4mm; text-transform:uppercase; }
+.cf-logo .li { font-size:4.5mm; font-weight:900; color:{{ $navColor }}; }
 
 /* Body */
-.cf-body { flex:1; display:flex; padding:2mm 3mm; gap:3mm; position:relative; min-height:0; }
+.cf-body {
+    flex:1; display:flex; padding:2mm 2.5mm; gap:2.5mm;
+    position:relative;
+}
 
-/* Watermark letter */
+/* Faint watermark crest behind everything */
 .cf-body::before {
     content:'{{ strtoupper(substr($schoolName,0,1)) }}';
-    position:absolute; top:50%; left:55%;
-    transform:translate(-50%,-50%) rotate(-25deg);
-    font-size:28mm; font-weight:900; color:#f1f5f9;
-    pointer-events:none; z-index:0; line-height:1; opacity:.5;
+    position:absolute; top:50%; right:12mm;
+    transform:translateY(-50%);
+    font-size:22mm; font-weight:900;
+    color:rgba(0,0,0,.04);
+    pointer-events:none; z-index:0; line-height:1;
 }
 
-/* Photo / Initials box */
+/* Left column: photo + QR */
+.cf-left {
+    display:flex; flex-direction:column; gap:1.5mm;
+    align-items:center; flex-shrink:0; z-index:1;
+}
+
 .cf-photo {
-    width:16mm; height:19mm; border-radius:1.8mm;
-    overflow:hidden; flex-shrink:0; z-index:1;
-    border:.5mm solid {{ $primaryColor }};
-    box-shadow:0 .5mm 2mm rgba(0,0,0,.18);
-    align-self:center;
+    width:16mm; height:19mm;
+    border:.4mm solid {{ $navColor }};
+    border-radius:.8mm; overflow:hidden;
+    background:#e8e8d8;
 }
 .cf-photo img { width:100%; height:100%; object-fit:cover; }
-.cf-photo .initials-box {
+.cf-photo .ini {
     width:100%; height:100%;
     display:flex; align-items:center; justify-content:center;
     background:linear-gradient(135deg, {{ $navColor }}, color-mix(in srgb, {{ $navColor }} 70%, {{ $primaryColor }}));
 }
-.cf-photo .initials-box span {
-    font-size:5.5mm; font-weight:900; color:#fff; letter-spacing:-.3mm;
-}
+.cf-photo .ini span { font-size:5mm; font-weight:900; color:#fff; }
 
-/* Info */
-.cf-info { flex:1; z-index:1; display:flex; flex-direction:column; justify-content:center; gap:1mm; min-width:0; }
+/* QR code box below photo */
+.cf-qr-box {
+    width:11mm; height:11mm; background:#fff;
+    border:.3mm solid #ccc; border-radius:.5mm;
+    display:flex; align-items:center; justify-content:center;
+    overflow:hidden;
+}
+.cf-qr-box canvas { width:100% !important; height:100% !important; }
+
+/* Right column: name + fields */
+.cf-right { flex:1; min-width:0; z-index:1; display:flex; flex-direction:column; justify-content:flex-start; padding-top:.5mm; }
 
 .cf-name {
-    font-size:3.2mm; font-weight:800; color:#0f172a;
-    line-height:1.1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
-    padding-bottom:1mm; margin-bottom:.5mm;
-    border-bottom:.4mm solid {{ $primaryColor }};
+    font-size:3.6mm; font-weight:900; color:{{ $primaryColor }};
+    text-transform:uppercase; letter-spacing:.1mm;
+    line-height:1.1; margin-bottom:1.5mm;
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
 }
 
-.cf-row { display:flex; gap:1.2mm; align-items:baseline; font-size:2mm; line-height:1.4; }
-.cf-row .l { color:#94a3b8; font-weight:600; min-width:10mm; font-size:1.5mm; text-transform:uppercase; letter-spacing:.2mm; flex-shrink:0; }
-.cf-row .v { color:#1e293b; font-weight:600; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.cf-row .v.badge {
-    display:inline-block; padding:0 1.5mm;
-    background:color-mix(in srgb, {{ $primaryColor }} 15%, #fff);
-    color:{{ $primaryColor }}; border:.3mm solid color-mix(in srgb, {{ $primaryColor }} 40%, #fff);
-    border-radius:.8mm; font-size:1.7mm; font-weight:700;
+.cf-field {
+    display:flex; align-items:baseline; gap:0;
+    font-size:1.75mm; line-height:1.6;
+    border-bottom:.1mm solid rgba(0,0,0,.07);
+    padding-bottom:.2mm; margin-bottom:.2mm;
+}
+.cf-field:last-child { border-bottom:none; }
+.cf-field .fl {
+    font-size:1.5mm; font-weight:800; color:#1a1a1a;
+    text-transform:uppercase; letter-spacing:.2mm;
+    min-width:17mm; flex-shrink:0;
+}
+.cf-field .fv {
+    font-size:1.75mm; font-weight:600; color:#1a1a1a;
+    flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.cf-field .fv::before { content:': '; font-weight:400; color:#555; }
+
+/* "STUDENT IDENTIFICATION" button bar */
+.cf-id-bar {
+    height:5.5mm; background:{{ $navColor }};
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0; margin:1mm 2.5mm;
+    border-radius:.8mm;
+}
+.cf-id-bar span {
+    color:#fff; font-size:2mm; font-weight:900;
+    letter-spacing:1.5mm; text-transform:uppercase;
 }
 
-/* Footer */
-.cf-ft {
-    height:5.5mm; background:{{ $primaryColor }};
-    display:flex; align-items:center; justify-content:space-between;
-    padding:0 3mm; flex-shrink:0;
+/* Bottom info strip */
+.cf-strip {
+    height:5.5mm; background:{{ $navColor }};
+    display:flex; align-items:center; justify-content:space-around;
+    padding:0 2mm; flex-shrink:0;
 }
-.cf-ft .fl { color:#fff; font-size:1.6mm; font-weight:800; letter-spacing:.6mm; text-transform:uppercase; }
-.cf-ft .fr { color:rgba(255,255,255,.8); font-size:1.6mm; font-weight:700; }
+.cf-strip .si {
+    display:flex; align-items:center; gap:.8mm;
+    color:#fff; font-size:1.6mm; font-weight:600;
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+    max-width:33%;
+}
+.cf-strip .si i { color:{{ $primaryColor }}; font-size:1.8mm; flex-shrink:0; }
 
-/* ══════════════════════════════════════════════════
-   BACK  —  Dark premium
-══════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════════════
+   BACK  — cream/white with rules and regulations
+══════════════════════════════════════════════════════════════════ */
 .cb {
-    background:linear-gradient(155deg,
-        {{ $navColor }} 0%,
-        color-mix(in srgb, {{ $navColor }} 80%, #000) 55%,
-        color-mix(in srgb, {{ $navColor }} 65%, #000) 100%
-    );
-    position:relative; overflow:hidden;
+    background:#fafaf2;
+    display:flex; flex-direction:column;
+    border:.3mm solid #d0d0b8;
+    position:relative;
 }
-/* Dot texture */
-.cb::after {
-    content:''; position:absolute; inset:0;
-    background-image:radial-gradient(circle, rgba(255,255,255,.045) 1px, transparent 1px);
-    background-size:2.5mm 2.5mm; pointer-events:none;
-}
-/* Glow orb top-right */
+
+/* Faint watermark crest in the centre of back */
 .cb::before {
-    content:''; position:absolute; border-radius:50%;
-    width:30mm; height:30mm; top:-12mm; right:-12mm;
-    background:{{ $primaryColor }}; opacity:.10; filter:blur(8mm); pointer-events:none;
-}
-/* Second orb bottom-left */
-.cb .orb2 {
-    position:absolute; border-radius:50%;
-    width:20mm; height:20mm; bottom:-8mm; left:-6mm;
-    background:{{ $primaryColor }}; opacity:.06; filter:blur(6mm); pointer-events:none;
-    z-index:0;
+    content:'{{ strtoupper(substr($schoolName,0,1)) }}';
+    position:absolute; top:50%; left:50%;
+    transform:translate(-50%,-50%);
+    font-size:30mm; font-weight:900;
+    color:rgba(0,0,0,.03);
+    pointer-events:none; z-index:0; line-height:1;
 }
 
-/* Top gold bar */
+/* Top statement */
 .cb-top {
-    height:5mm; background:{{ $primaryColor }};
-    display:flex; align-items:center; justify-content:space-between;
-    padding:0 3mm; flex-shrink:0; position:relative; z-index:2;
+    text-align:center; padding:1.8mm 3mm 1mm; z-index:1;
+    border-bottom:.2mm solid #d0d0b8;
 }
-.cb-top .tl { color:#fff; font-size:1.7mm; font-weight:800; letter-spacing:.5mm; text-transform:uppercase; }
-.cb-top .tr { color:rgba(255,255,255,.7); font-size:1.5mm; font-weight:600; }
-
-/* Body */
-.cb-body {
-    flex:1; padding:1.6mm 3mm 1.2mm; display:flex; flex-direction:column;
-    justify-content:space-between; position:relative; z-index:2; min-height:0;
+.cb-top .bearer {
+    font-size:1.6mm; font-weight:400; color:#333; line-height:1.4;
+}
+.cb-top .bearer strong {
+    font-weight:800; text-transform:uppercase; color:#1a1a1a;
+    display:block; font-size:1.9mm; margin-top:.3mm;
 }
 
-/* School row */
-.cb-sch {
-    display:flex; align-items:center; gap:1.5mm;
-    padding-bottom:1.2mm; margin-bottom:1.2mm;
-    border-bottom:.2mm solid rgba(255,255,255,.12);
-}
-.cb-sch-logo {
-    width:7mm; height:7mm; border-radius:1.2mm;
-    background:rgba(255,255,255,.12); border:.2mm solid rgba(255,255,255,.2);
-    display:flex; align-items:center; justify-content:center; flex-shrink:0; overflow:hidden;
-}
-.cb-sch-logo img { width:100%; height:100%; object-fit:contain; padding:.5mm; }
-.cb-sch-logo .li { font-size:3.5mm; font-weight:900; color:{{ $primaryColor }}; }
-.cb-sch-info { flex:1; min-width:0; }
-.cb-sch-info .n { color:#fff; font-size:1.9mm; font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.cb-sch-info .s { color:{{ $primaryColor }}; font-size:1.4mm; font-weight:600; letter-spacing:.3mm; text-transform:uppercase; margin-top:.2mm; }
-
-/* Info panel */
-.cb-panel {
-    background:rgba(255,255,255,.08);
-    border:.2mm solid rgba(255,255,255,.12);
-    border-radius:1mm; padding:1.1mm 1.8mm;
+/* Rules section */
+.cb-rules { padding:1.5mm 4mm; z-index:1; flex:1; }
+.cb-rules .rtitle {
+    text-align:center; font-size:1.9mm; font-weight:800;
+    letter-spacing:3mm; text-transform:uppercase; color:#1a1a1a;
     margin-bottom:1.2mm;
 }
-.cb-pt { font-size:1.2mm; font-weight:700; text-transform:uppercase; letter-spacing:.4mm; color:{{ $primaryColor }}; margin-bottom:.7mm; }
-.cb-row { display:flex; gap:.8mm; font-size:1.7mm; line-height:1.4; }
-.cb-row .l { color:rgba(255,255,255,.45); font-size:1.3mm; font-weight:700; text-transform:uppercase; letter-spacing:.15mm; min-width:14mm; flex-shrink:0; }
-.cb-row .v { color:rgba(255,255,255,.88); font-weight:500; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-
-/* Contact section */
-.cb-contact { display:flex; flex-direction:column; gap:.6mm; margin-bottom:1mm; }
-.cb-ci { display:flex; gap:1.2mm; align-items:flex-start; font-size:1.6mm; line-height:1.3; }
-.cb-ci i { color:{{ $primaryColor }}; font-size:1.6mm; flex-shrink:0; width:2.5mm; text-align:center; margin-top:.1mm; }
-.cb-ci span { color:rgba(255,255,255,.65); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1; }
-
-/* School URL — neat and compact */
-.cb-url {
-    display:flex; align-items:center; gap:1mm;
-    padding:1mm 1.5mm;
-    background:rgba(255,255,255,.07);
-    border:.2mm solid rgba(255,255,255,.12);
-    border-radius:.8mm; margin-bottom:1mm;
+.cb-rule {
+    font-size:1.6mm; color:#333; line-height:1.5;
+    margin-bottom:.4mm; text-align:center;
 }
-.cb-url i { color:{{ $primaryColor }}; font-size:1.6mm; flex-shrink:0; }
-.cb-url span { color:rgba(255,255,255,.65); font-size:1.6mm; font-weight:500; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 
-/* Signatures */
-.cb-sigs { display:flex; justify-content:space-between; gap:2mm; margin-top:.5mm; }
-.cb-sig { flex:1; text-align:center; }
-.cb-sig .ln { height:3.5mm; border-bottom:.3mm solid rgba(255,255,255,.3); margin-bottom:.5mm; }
-.cb-sig .lb { font-size:1.1mm; color:rgba(255,255,255,.4); font-weight:600; text-transform:uppercase; letter-spacing:.2mm; }
+/* Signature */
+.cb-sig { padding:.5mm 4mm 0; z-index:1; }
+.cb-sig .sig-row {
+    display:flex; align-items:flex-end; gap:1mm;
+    font-size:1.6mm; color:#333; margin-bottom:.5mm;
+}
+.cb-sig .sig-line {
+    flex:1; border-bottom:.4mm solid #333; min-width:25mm; height:4mm;
+}
 
-/* Bottom gold bar */
-.cb-ft {
-    height:4.5mm; background:{{ $primaryColor }};
+/* Return notice */
+.cb-return {
+    text-align:center; padding:.8mm 3mm;
+    border-top:.2mm solid #d0d0b8; z-index:1;
+}
+.cb-return .rt {
+    font-size:1.7mm; font-weight:800; text-transform:uppercase;
+    color:#1a1a1a; letter-spacing:.3mm;
+}
+.cb-return .rc {
+    font-size:1.6mm; font-weight:600; color:#333; margin-top:.2mm;
+}
+
+/* Dark bottom bar */
+.cb-bar {
+    height:4.5mm; background:{{ $navColor }};
     display:flex; align-items:center; justify-content:center;
-    gap:1.5mm; flex-shrink:0; position:relative; z-index:2;
+    flex-shrink:0; z-index:1;
 }
-.cb-ft-t { color:rgba(255,255,255,.9); font-size:1.4mm; font-weight:800; letter-spacing:.4mm; text-transform:uppercase; }
-.cb-ft-d { color:rgba(255,255,255,.35); font-size:1.4mm; }
+.cb-bar span { color:#fff; font-size:1.5mm; font-weight:800; letter-spacing:.4mm; text-transform:uppercase; }
 
 /* ══ Print ══ */
 @media print {
@@ -350,199 +321,159 @@ body {
     $dept       = $p['dept'];
     $dob        = $p['dob'];
     $gender     = $p['gender'];
-    $phone      = $p['phone'];
-    $email      = $p['email'];
     $photoPath  = $p['photo'];
     $guardian   = $p['guardian'];
     $guardianPh = $p['guardianPh'];
-    $qrData     = $p['qr_data'];
     $isStudent  = $p['type'] === 'student';
-    $logoUrl    = $siteLogoUrl ? Storage::disk('public')->url($siteLogoUrl) : null;
-    $photoUrl   = $photoPath ? Storage::disk('public')->url($photoPath) : null;
 
-    // Initials from name
-    $nameParts = array_filter(explode(' ', trim($name)));
-    $initials  = implode('', array_map(fn($w) => strtoupper(substr($w,0,1)), array_slice($nameParts,0,2)));
-    if (empty($initials)) $initials = '?';
+    $logoUrl  = $siteLogoUrl ? Storage::disk('public')->url($siteLogoUrl) : null;
+    $photoUrl = $photoPath ? Storage::disk('public')->url($photoPath) : null;
 
+    // Initials (up to 2 letters)
+    $parts    = array_filter(explode(' ', trim($name)));
+    $initials = implode('', array_map(fn($w) => strtoupper(substr($w,0,1)), array_slice($parts,0,2)));
+    if (!$initials) $initials = '?';
+
+    // Issuance / expiry
+    $issued  = now()->format('d/m/Y');
+    $expires = now()->addYear()->format('d/m/Y');
+
+    $qrId = 'qr_' . $loop->index;
     $count++;
     $isNewPage = $count > 4 && ($count - 1) % 4 === 0;
 @endphp
 
-@if($isNewPage)
-<div class="pg-brk"></div>
-@endif
+@if($isNewPage)<div class="pg-brk"></div>@endif
 
 <div class="row">
-    {{-- Corner tick marks --}}
-    <div class="tr-mark"></div>
-    <div class="bl-mark"></div>
-    <div class="br-mark"></div>
+    <div class="cv"></div>
+    <div class="c-tr"></div>
+    <div class="c-bl"></div>
+    <div class="c-br"></div>
 
-    {{-- ══ FRONT ══ --}}
+    {{-- ════ FRONT ════ --}}
     <div class="card cf">
 
-        <div class="cf-hd">
-            <div class="cf-logo">
-                @if($logoUrl)
-                <img src="{{ $logoUrl }}" alt="Logo">
-                @else
-                <span class="init-logo">{{ strtoupper(substr($schoolName,0,1)) }}</span>
-                @endif
-            </div>
-            <div class="cf-sch">
-                <div class="nm">{{ $schoolName }}</div>
+        {{-- Dark header --}}
+        <div class="cf-top">
+            <div style="flex:1;min-width:0;z-index:1;">
+                <div class="cf-sch-name">{{ $schoolName }}</div>
                 @if($schoolSubtitle)
-                <div class="sb">{{ $schoolSubtitle }}</div>
+                <div class="cf-sch-sub">{{ $schoolSubtitle }}</div>
+                @endif
+            </div>
+            <div class="cf-logo">
+                @if($logoUrl)<img src="{{ $logoUrl }}" alt="Logo">
+                @else<span class="li">{{ strtoupper(substr($schoolName,0,1)) }}</span>
                 @endif
             </div>
         </div>
 
+        {{-- Body --}}
         <div class="cf-body">
-            <div class="cf-photo">
-                @if($photoUrl)
-                <img src="{{ $photoUrl }}" alt="{{ $name }}">
-                @else
-                <div class="initials-box"><span>{{ $initials }}</span></div>
-                @endif
+
+            {{-- Left: photo + QR --}}
+            <div class="cf-left">
+                <div class="cf-photo">
+                    @if($photoUrl)
+                    <img src="{{ $photoUrl }}" alt="{{ $name }}">
+                    @else
+                    <div class="ini"><span>{{ $initials }}</span></div>
+                    @endif
+                </div>
+                <div class="cf-qr-box">
+                    <canvas id="{{ $qrId }}"></canvas>
+                </div>
             </div>
-            <div class="cf-info">
+
+            {{-- Right: name + fields --}}
+            <div class="cf-right">
                 <div class="cf-name">{{ $name }}</div>
-                <div class="cf-row">
-                    <span class="l">{{ $isStudent ? 'ID No' : 'Staff ID' }}</span>
-                    <span class="v">{{ $idNumber }}</span>
-                </div>
-                <div class="cf-row">
-                    <span class="l">{{ $isStudent ? 'Class' : 'Role' }}</span>
-                    <span class="v{{ $isStudent ? '' : ' badge' }}">{{ $isStudent ? ($dept ?? '—') : $role }}</span>
-                </div>
-                @if($dob)
-                <div class="cf-row">
-                    <span class="l">DOB</span>
-                    <span class="v">{{ $dob }}</span>
-                </div>
-                @endif
+
                 @if($gender)
-                <div class="cf-row">
-                    <span class="l">Gender</span>
-                    <span class="v">{{ ucfirst($gender) }}</span>
-                </div>
+                <div class="cf-field"><span class="fl">Gender</span><span class="fv">{{ ucfirst($gender) }}</span></div>
                 @endif
-                @if(!$isStudent && $phone)
-                <div class="cf-row">
-                    <span class="l">Phone</span>
-                    <span class="v">{{ $phone }}</span>
-                </div>
+                <div class="cf-field"><span class="fl">{{ $isStudent ? 'Student ID' : 'Staff ID' }}</span><span class="fv">{{ $idNumber }}</span></div>
+                @if($dept)
+                <div class="cf-field"><span class="fl">{{ $isStudent ? 'Department' : 'Department' }}</span><span class="fv">{{ $dept }}</span></div>
                 @endif
+                @if($isStudent && $dept)
+                <div class="cf-field"><span class="fl">Class</span><span class="fv">{{ $dept }}</span></div>
+                @endif
+                <div class="cf-field"><span class="fl">Date Issued</span><span class="fv">{{ $issued }}</span></div>
+                <div class="cf-field"><span class="fl">Date Expiry</span><span class="fv">{{ $expires }}</span></div>
+
+                {{-- Headmaster signature line --}}
+                <div style="display:flex;align-items:flex-end;justify-content:flex-end;margin-top:1mm;">
+                    <div style="text-align:center;">
+                        <div style="width:16mm;border-bottom:.3mm solid #333;height:3.5mm;"></div>
+                        <div style="font-size:1.3mm;font-weight:700;color:#333;text-align:center;margin-top:.3mm;text-transform:uppercase;letter-spacing:.2mm;">Headmaster</div>
+                    </div>
+                </div>
+
+                {{-- ID bar --}}
+                <div class="cf-id-bar">
+                    <span>{{ $isStudent ? 'Student Identification' : 'Staff Identification' }}</span>
+                </div>
             </div>
         </div>
 
-        <div class="cf-ft">
-            <span class="fl">{{ $isStudent ? 'Student ID Card' : 'Staff ID Card' }}</span>
-            <span class="fr">{{ $academicYear }}</span>
+        {{-- Bottom info strip --}}
+        <div class="cf-strip">
+            @if($schoolAddress)
+            <div class="si"><i class="fas fa-map-marker-alt"></i>{{ Str::limit($schoolAddress, 18) }}</div>
+            @endif
+            @if($schoolPhone)
+            <div class="si"><i class="fas fa-phone"></i>{{ $schoolPhone }}</div>
+            @endif
+            @if($schoolWebsite)
+            <div class="si"><i class="fas fa-globe"></i>{{ rtrim(preg_replace('#^https?://#','',$schoolWebsite),'/') }}</div>
+            @endif
         </div>
+
     </div>
 
-    {{-- ══ BACK ══ --}}
+    {{-- ════ BACK ════ --}}
     <div class="card cb">
-        <div class="orb2"></div>
 
+        {{-- Bearer statement --}}
         <div class="cb-top">
-            <span class="tl">{{ $isStudent ? 'Student Card' : 'Staff Card' }}</span>
-            <span class="tr">{{ $academicYear }}</span>
+            <div class="bearer">
+                The Bearer of this card is a registered {{ $isStudent ? 'student' : 'staff member' }} of
+                <strong>{{ strtoupper($schoolName) }}</strong>
+            </div>
         </div>
 
-        <div class="cb-body">
-
-            {{-- School info --}}
-            <div class="cb-sch">
-                <div class="cb-sch-logo">
-                    @if($logoUrl)
-                    <img src="{{ $logoUrl }}" alt="">
-                    @else
-                    <span class="li">{{ strtoupper(substr($schoolName,0,1)) }}</span>
-                    @endif
-                </div>
-                <div class="cb-sch-info">
-                    <div class="n">{{ $schoolName }}</div>
-                    @if($schoolSubtitle)
-                    <div class="s">{{ $schoolSubtitle }}</div>
-                    @endif
-                </div>
-            </div>
-
-            {{-- Emergency/Staff info panel --}}
-            <div class="cb-panel">
-                <div class="cb-pt">{{ $isStudent ? 'Emergency Contact' : 'Staff Information' }}</div>
-                @if($isStudent)
-                    @if($guardian)
-                    <div class="cb-row"><span class="l">Guardian</span><span class="v">{{ $guardian }}</span></div>
-                    @else
-                    <div class="cb-row"><span class="l">Guardian</span><span class="v" style="opacity:.4;font-style:italic;">Not provided</span></div>
-                    @endif
-                    @if($guardianPh)
-                    <div class="cb-row"><span class="l">Phone</span><span class="v">{{ $guardianPh }}</span></div>
-                    @endif
-                    @if($dept)
-                    <div class="cb-row"><span class="l">Class</span><span class="v">{{ $dept }}</span></div>
-                    @endif
-                    @if($gender)
-                    <div class="cb-row"><span class="l">Gender</span><span class="v">{{ ucfirst($gender) }}</span></div>
-                    @endif
-                @else
-                    @if($phone)
-                    <div class="cb-row"><span class="l">Phone</span><span class="v">{{ $phone }}</span></div>
-                    @endif
-                    @if($email)
-                    <div class="cb-row"><span class="l">Email</span><span class="v">{{ $email }}</span></div>
-                    @endif
-                    @if($dept)
-                    <div class="cb-row"><span class="l">Dept</span><span class="v">{{ $dept }}</span></div>
-                    @endif
-                @endif
-            </div>
-
-            {{-- School contact --}}
-            <div class="cb-contact">
-                @if($schoolAddress)
-                <div class="cb-ci"><i class="fas fa-map-marker-alt"></i><span>{{ $schoolAddress }}</span></div>
-                @endif
-                @if($schoolPhone)
-                <div class="cb-ci"><i class="fas fa-phone"></i><span>{{ $schoolPhone }}</span></div>
-                @endif
-                @if($schoolEmail)
-                <div class="cb-ci"><i class="fas fa-envelope"></i><span>{{ $schoolEmail }}</span></div>
-                @endif
-            </div>
-
-            {{-- School URL — neat text box, no QR --}}
-            @php
-                $displayUrl = rtrim(preg_replace('#^https?://#', '', $schoolWebsite), '/');
-            @endphp
-            <div class="cb-url">
-                <i class="fas fa-globe"></i>
-                <span>{{ $displayUrl }}</span>
-            </div>
-
-            {{-- Signatures --}}
-            <div class="cb-sigs">
-                <div class="cb-sig">
-                    <div class="ln"></div>
-                    <div class="lb">{{ $isStudent ? 'Student' : 'Staff' }}</div>
-                </div>
-                <div class="cb-sig">
-                    <div class="ln"></div>
-                    <div class="lb">Headmaster</div>
-                </div>
-            </div>
-
+        {{-- Rules --}}
+        <div class="cb-rules">
+            <div class="rtitle">R U L E S &nbsp; A N D &nbsp; R E G U L A T I O N S</div>
+            <div class="cb-rule">1. Always carry this card along to school premises.</div>
+            <div class="cb-rule">2. Carry this card to exams hall during examinations.</div>
+            <div class="cb-rule">3. Any altercation, duplication and misuse of this card is prohibited.</div>
+            @if($isStudent && $guardian)
+            <div class="cb-rule" style="margin-top:.5mm;font-weight:600;">Guardian: {{ $guardian }} &nbsp;|&nbsp; {{ $guardianPh }}</div>
+            @endif
         </div>
 
-        <div class="cb-ft">
-            <span class="cb-ft-t">If found, return to school</span>
-            <span class="cb-ft-d">·</span>
-            <span class="cb-ft-t">{{ $schoolName }}</span>
+        {{-- Signature --}}
+        <div class="cb-sig">
+            <div class="sig-row">
+                <span style="font-weight:600;">Signature:</span>
+                <div class="sig-line"></div>
+            </div>
         </div>
+
+        {{-- Return notice --}}
+        <div class="cb-return">
+            <div class="rt">Please return to school authority if found</div>
+            <div class="rc">Call: {{ $schoolPhone ?: 'XXX-XXXX-XXX' }}</div>
+        </div>
+
+        {{-- Dark bottom bar --}}
+        <div class="cb-bar">
+            <span>{{ $schoolName }}</span>
+        </div>
+
     </div>
 
 </div>{{-- end row --}}
@@ -550,6 +481,23 @@ body {
 @endforeach
 
 </div>{{-- end a4 --}}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    @foreach($people as $p)
+    @php $qrId = 'qr_' . $loop->index; @endphp
+    (function() {
+        var c = document.getElementById('{{ $qrId }}');
+        if (!c) return;
+        QRCode.toCanvas(c, '{{ addslashes($p['qr_data']) }}', {
+            width: 44, margin: 1,
+            color: { dark:'#0f172a', light:'#ffffff' },
+            errorCorrectionLevel:'M'
+        });
+    })();
+    @endforeach
+});
+</script>
 
 </body>
 </html>
