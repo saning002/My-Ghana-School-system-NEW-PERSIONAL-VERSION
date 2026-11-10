@@ -151,7 +151,7 @@ class IDCardController extends Controller
                     'id_number'  => $s->student_id ?? '—',
                     'role'       => 'Student',
                     'dept'       => $s->program?->name ?? '—',
-                    'dob'        => $s->date_of_birth?->format('d M Y') ?? null,
+                    'dob'        => $s->date_of_birth ? \Carbon\Carbon::parse($s->date_of_birth)->format('d M Y') : null,
                     'gender'     => $s->gender ?? null,
                     'phone'      => $s->guardian_phone ?? null,
                     'email'      => null,
