@@ -1613,6 +1613,7 @@ Route::get('/setup/migrate-notification-templates', function () {
         'database/migrations/2026_11_01_000002_create_attendance_alert_settings_table.php',
         'database/migrations/2026_11_08_000001_add_is_active_to_attribute_definitions.php',
         'database/migrations/2026_11_09_000001_fix_promoted_to_column_type.php',
+        'database/migrations/2026_11_07_000001_add_recorded_by_to_daily_fee_records.php',
     ];
 
     $tenants = \App\Models\Tenant::whereNotNull('db_name')->get();
@@ -1644,7 +1645,6 @@ Route::get('/setup/migrate-notification-templates', function () {
                 } elseif (str_contains($path, 'attendance_alert_settings')) {
                     $tableName = 'attendance_alert_settings';
                 } elseif (str_contains($path, 'fix_promoted_to')) {
-                    // ALTER COLUMN migration — run raw SQL directly
                     try {
                         \Illuminate\Support\Facades\DB::purge('tenant');
                         \Illuminate\Support\Facades\DB::reconnect('tenant');
@@ -2153,6 +2153,29 @@ Route::get('/setup/run-migrations-and-seed', function () {
         $results[] = '✅ Migrations ran: ' . trim(\Illuminate\Support\Facades\Artisan::output());
     } catch (\Throwable $e) {
         $results[] = '⚠️ Migration error: ' . $e->getMessage();
+    }
+
+    // Step 1b: Add branch_id to messaging_credits if missing
+    try {
+        $hasBranch = \Illuminate\Support\Facades\DB::connection('pgsql')
+            ->select("SELECT column_name FROM information_schema.columns WHERE table_name='messaging_credits' AND column_name='branch_id'");
+        if (empty($hasBranch)) {
+            \Illuminate\Support\Facades\DB::connection('pgsql')
+                ->statement("ALTER TABLE messaging_credits DROP CONSTRAINT IF EXISTS messaging_credits_tenant_id_unique");
+            \Illuminate\Support\Facades\DB::connection('pgsql')
+                ->statement("ALTER TABLE messaging_credits ADD COLUMN IF NOT EXISTS branch_id bigint DEFAULT NULL");
+            \Illuminate\Support\Facades\DB::connection('pgsql')
+                ->statement("ALTER TABLE messaging_credits ADD COLUMN IF NOT EXISTS is_shared boolean NOT NULL DEFAULT true");
+            try {
+                \Illuminate\Support\Facades\DB::connection('pgsql')
+                    ->statement("ALTER TABLE messaging_credits ADD CONSTRAINT messaging_credits_tenant_branch_unique UNIQUE (tenant_id, branch_id)");
+            } catch (\Throwable $e2) {}
+            $results[] = '✅ messaging_credits.branch_id — column added';
+        } else {
+            $results[] = '⏭ messaging_credits.branch_id — already exists, skipped';
+        }
+    } catch (\Throwable $e) {
+        $results[] = '⚠️ messaging_credits.branch_id error: ' . $e->getMessage();
     }
 
     // Step 2: Seed module features

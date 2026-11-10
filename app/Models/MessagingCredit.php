@@ -64,37 +64,57 @@ class MessagingCredit extends Model
     /** Get school-wide shared pool (branch_id = NULL) */
     public static function forTenant(int $tenantId): self
     {
-        return static::firstOrCreate(
-            ['tenant_id' => $tenantId, 'branch_id' => null],
-            ['sms_credits' => 0, 'whatsapp_credits' => 0, 'sms_used' => 0, 'whatsapp_used' => 0]
-        );
+        // Try with branch_id column (new schema)
+        try {
+            return static::firstOrCreate(
+                ['tenant_id' => $tenantId, 'branch_id' => null],
+                ['sms_credits' => 0, 'whatsapp_credits' => 0, 'sms_used' => 0, 'whatsapp_used' => 0]
+            );
+        } catch (\Throwable $e) {
+            // branch_id column doesn't exist yet — fall back to old schema
+            return static::firstOrCreate(
+                ['tenant_id' => $tenantId],
+                ['sms_credits' => 0, 'whatsapp_credits' => 0, 'sms_used' => 0, 'whatsapp_used' => 0]
+            );
+        }
     }
 
     /** Get branch pool, falling back to shared if no dedicated pool exists */
     public static function forBranch(int $tenantId, int $branchId): self
     {
-        $branch = static::where('tenant_id', $tenantId)
-            ->where('branch_id', $branchId)
-            ->first();
-
-        return $branch ?? static::forTenant($tenantId);
+        try {
+            $branch = static::where('tenant_id', $tenantId)
+                ->where('branch_id', $branchId)
+                ->first();
+            return $branch ?? static::forTenant($tenantId);
+        } catch (\Throwable $e) {
+            return static::forTenant($tenantId);
+        }
     }
 
     /** Get or create a dedicated pool for a specific branch */
     public static function forBranchDedicated(int $tenantId, int $branchId): self
     {
-        return static::firstOrCreate(
-            ['tenant_id' => $tenantId, 'branch_id' => $branchId],
-            ['sms_credits' => 0, 'whatsapp_credits' => 0, 'sms_used' => 0, 'whatsapp_used' => 0]
-        );
+        try {
+            return static::firstOrCreate(
+                ['tenant_id' => $tenantId, 'branch_id' => $branchId],
+                ['sms_credits' => 0, 'whatsapp_credits' => 0, 'sms_used' => 0, 'whatsapp_used' => 0]
+            );
+        } catch (\Throwable $e) {
+            return static::forTenant($tenantId);
+        }
     }
 
     /** Get all pools for a tenant (shared first, then branches) */
     public static function allForTenant(int $tenantId): \Illuminate\Database\Eloquent\Collection
     {
-        return static::where('tenant_id', $tenantId)
-            ->orderByRaw('branch_id IS NULL DESC')
-            ->orderBy('branch_id')
-            ->get();
+        try {
+            return static::where('tenant_id', $tenantId)
+                ->orderByRaw('branch_id IS NULL DESC')
+                ->orderBy('branch_id')
+                ->get();
+        } catch (\Throwable $e) {
+            return static::where('tenant_id', $tenantId)->get();
+        }
     }
 }
