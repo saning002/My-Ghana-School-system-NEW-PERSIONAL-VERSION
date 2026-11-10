@@ -215,19 +215,15 @@ body { font-family:'Inter',Arial,sans-serif; background:#94a3b8; padding:0; }
    BACK CARD — premium dark + reference layout
 ══════════════════════════════════════════════════════════════════ */
 .cb {
-    /* Premium: dark gradient + subtle gold tones — not plain white */
-    background:linear-gradient(160deg,
-        color-mix(in srgb, {{ $navColor }} 92%, #fff) 0%,
-        color-mix(in srgb, {{ $navColor }} 85%, #000) 60%,
-        color-mix(in srgb, {{ $navColor }} 75%, #000) 100%
-    );
+    /* Cream/off-white — works on black-and-white printers, signature clearly visible */
+    background: linear-gradient(160deg, #fefdf5 0%, #f7f4e8 50%, #f0ece0 100%);
     display:flex; flex-direction:column; position:relative; overflow:hidden;
 }
 
-/* Dot texture */
+/* Very faint dot texture — still visible on B&W */
 .cb::after {
     content:''; position:absolute; inset:0;
-    background-image:radial-gradient(circle, rgba(255,255,255,.045) 1px, transparent 1px);
+    background-image:radial-gradient(circle, rgba(0,0,0,.04) 1px, transparent 1px);
     background-size:2.5mm 2.5mm; pointer-events:none; z-index:0;
 }
 
@@ -237,28 +233,16 @@ body { font-family:'Inter',Arial,sans-serif; background:#94a3b8; padding:0; }
     position:absolute; top:50%; left:50%;
     transform:translate(-50%,-50%);
     font-size:36mm; font-weight:900; line-height:1;
-    color:rgba(255,255,255,.04); pointer-events:none; z-index:0;
+    color:rgba(0,0,0,.04); pointer-events:none; z-index:0;
     font-family:'Inter',Arial,sans-serif;
 }
 
-/* Glow orb top-right */
-.cb-orb {
-    position:absolute; border-radius:50%;
-    width:28mm; height:28mm; top:-12mm; right:-10mm;
-    background:{{ $primaryColor }}; opacity:.12; filter:blur(8mm);
-    pointer-events:none; z-index:0;
-}
-/* Glow orb bottom-left */
-.cb-orb2 {
-    position:absolute; border-radius:50%;
-    width:20mm; height:20mm; bottom:-8mm; left:-6mm;
-    background:{{ $primaryColor }}; opacity:.08; filter:blur(6mm);
-    pointer-events:none; z-index:0;
-}
+/* NO glow orbs on cream back — not needed */
+.cb-orb, .cb-orb2 { display:none; }
 
 /* Gold top bar */
 .cb-top-bar {
-    height:4.5mm; background:{{ $primaryColor }};
+    height:4.5mm; background:{{ $navColor }};
     display:flex; align-items:center; justify-content:center;
     flex-shrink:0; position:relative; z-index:2;
 }
@@ -270,43 +254,43 @@ body { font-family:'Inter',Arial,sans-serif; background:#94a3b8; padding:0; }
 /* Bearer statement */
 .cb-bearer {
     text-align:center; padding-bottom:1.2mm;
-    border-bottom:.2mm solid rgba(255,255,255,.12);
+    border-bottom:.2mm solid rgba(0,0,0,.12);
     margin-bottom:1mm;
 }
-.cb-bearer .bt { font-size:1.6mm; color:rgba(255,255,255,.65); font-weight:400; line-height:1.5; }
-.cb-bearer .bn { font-size:2mm; color:#fff; font-weight:800; text-transform:uppercase; margin-top:.3mm; letter-spacing:.15mm; }
+.cb-bearer .bt { font-size:1.6mm; color:#444; font-weight:400; line-height:1.5; }
+.cb-bearer .bn { font-size:2mm; color:#111; font-weight:800; text-transform:uppercase; margin-top:.3mm; letter-spacing:.15mm; }
 
 /* Rules */
 .cb-rules-title {
     text-align:center; font-size:1.9mm; font-weight:800;
     letter-spacing:2.5mm; text-transform:uppercase;
-    color:{{ $primaryColor }}; margin-bottom:.8mm;
+    color:{{ $navColor }}; margin-bottom:.8mm;
 }
 .cb-rule {
-    font-size:1.55mm; color:rgba(255,255,255,.75); line-height:1.5;
+    font-size:1.55mm; color:#333; line-height:1.5;
     text-align:center; margin-bottom:.3mm;
 }
-.cb-rule strong { color:{{ $primaryColor }}; font-weight:700; }
+.cb-rule strong { color:{{ $navColor }}; font-weight:700; }
 
 /* Signature */
 .cb-sig {
     display:flex; align-items:flex-end; gap:1mm; margin-top:.5mm;
 }
-.cb-sig .sl { font-size:1.6mm; color:rgba(255,255,255,.65); font-weight:600; white-space:nowrap; }
-.cb-sig .sline { flex:1; border-bottom:.35mm solid rgba(255,255,255,.4); height:3.5mm; }
+.cb-sig .sl { font-size:1.6mm; color:#333; font-weight:600; white-space:nowrap; }
+.cb-sig .sline { flex:1; border-bottom:.4mm solid #333; height:3.5mm; }
 
 /* Return notice */
 .cb-return {
     text-align:center; margin-top:.5mm;
     padding:.6mm 0;
-    border-top:.2mm solid rgba(255,255,255,.12);
+    border-top:.2mm solid rgba(0,0,0,.1);
 }
-.cb-return .rt { font-size:1.6mm; font-weight:800; color:#fff; text-transform:uppercase; letter-spacing:.3mm; }
-.cb-return .rc { font-size:1.6mm; font-weight:600; color:{{ $primaryColor }}; margin-top:.2mm; }
+.cb-return .rt { font-size:1.6mm; font-weight:800; color:#111; text-transform:uppercase; letter-spacing:.3mm; }
+.cb-return .rc { font-size:1.6mm; font-weight:600; color:{{ $navColor }}; margin-top:.2mm; }
 
-/* Gold bottom bar */
+/* Dark bottom bar */
 .cb-bot-bar {
-    height:4.5mm; background:{{ $primaryColor }};
+    height:4.5mm; background:{{ $navColor }};
     display:flex; align-items:center; justify-content:center;
     flex-shrink:0; position:relative; z-index:2;
 }
@@ -430,8 +414,15 @@ body { font-family:'Inter',Arial,sans-serif; background:#94a3b8; padding:0; }
                 {{-- Signature + ID badge on same line --}}
                 <div class="cf-sig-badge">
                     <div class="cf-sig-block">
+                        @if(!empty($headmasterSignatureUrl))
+                        <div style="height:4mm;display:flex;align-items:flex-end;">
+                            <img src="{{ $headmasterSignatureUrl }}" alt="Sig"
+                                 style="max-height:3.8mm;max-width:14mm;object-fit:contain;opacity:.85;">
+                        </div>
+                        @else
                         <div class="sig-line"></div>
-                        <div class="sig-lbl">{{ $isStudent ? 'Headmistress' : 'Director' }}</div>
+                        @endif
+                        <div class="sig-lbl">{{ $isStudent ? 'Headmaster' : 'Director' }}</div>
                     </div>
                     <div class="cf-id-badge">{{ $isStudent ? 'Student Identification' : 'Staff Identification' }}</div>
                 </div>
@@ -484,7 +475,14 @@ body { font-family:'Inter',Arial,sans-serif; background:#94a3b8; padding:0; }
             {{-- Signature --}}
             <div class="cb-sig">
                 <span class="sl">Signature:</span>
+                @if(!empty($headmasterSignatureUrl))
+                <div style="flex:1;height:5mm;display:flex;align-items:flex-end;padding-bottom:.3mm;">
+                    <img src="{{ $headmasterSignatureUrl }}" alt="Signature"
+                         style="max-height:4.5mm;max-width:28mm;object-fit:contain;opacity:.85;">
+                </div>
+                @else
                 <div class="sline"></div>
+                @endif
             </div>
 
             {{-- Return notice --}}

@@ -14,9 +14,41 @@ class AdminSettingsController extends Controller
     /**
      * Save portal mode and theme only — no school_name validation needed.
      */
-    public function updatePortal(Request $request)
+    /**
+     * Update ID card signature
+     */
+    public function updateIdCard(Request $request)
     {
         $request->validate([
+            'headmaster_signature' => 'nullable|image|max:2048',
+        ]);
+
+        // Remove signature
+        if ($request->boolean('remove_signature')) {
+            $old = \App\Models\Setting::get('headmaster_signature', '');
+            if ($old) {
+                try { \Illuminate\Support\Facades\Storage::disk('public')->delete($old); } catch (\Throwable $e) {}
+            }
+            \App\Models\Setting::set('headmaster_signature', '');
+            return back()->with('success', 'Signature removed.');
+        }
+
+        // Upload new signature
+        if ($request->hasFile('headmaster_signature')) {
+            $old = \App\Models\Setting::get('headmaster_signature', '');
+            if ($old) {
+                try { \Illuminate\Support\Facades\Storage::disk('public')->delete($old); } catch (\Throwable $e) {}
+            }
+            $path = $request->file('headmaster_signature')->store('signatures', 'public');
+            \App\Models\Setting::set('headmaster_signature', $path);
+            return back()->with('success', 'Signature uploaded successfully. It will now appear on all ID cards.');
+        }
+
+        return back()->with('info', 'No changes made.');
+    }
+
+    public function updatePortal(Request $request)
+    {
             'portal_mode'  => 'required|in:basic,jhs,shs,university',
             'portal_theme' => 'required|in:gold,blue,green,purple,red,teal',
         ]);

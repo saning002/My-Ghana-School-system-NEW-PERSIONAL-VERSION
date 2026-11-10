@@ -69,6 +69,7 @@
             ['login-bg',     'fa-image',            'Login Background'],
             ['portal',       'fa-graduation-cap',   'Student Portal'],
             ['alerts',       'fa-bell',             'Attendance Alerts'],
+            ['id-card',      'fa-id-card',          'ID Card Settings'],
         ] as [$id, $icon, $label])
         <button type="button"
                 onclick="showTab('{{ $id }}')"
@@ -1339,6 +1340,114 @@
 </div>
 
 {{-- ═══════════════════════════════════════════════════════════════
+     TAB: ID CARD SETTINGS
+═══════════════════════════════════════════════════════════════ --}}
+<div id="panel-id-card" class="settings-panel hidden">
+@php
+    $currentSig = \App\Models\Setting::get('headmaster_signature', '');
+    $sigUrl = $currentSig ? Storage::disk('public')->url($currentSig) : null;
+@endphp
+
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-5">
+    <div class="xl:col-span-2 bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+        <div class="flex items-center gap-3 px-6 py-4 border-b border-gray-100"
+             style="background:linear-gradient(135deg,#eff6ff,#dbeafe)">
+            <div class="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center">
+                <i class="fas fa-id-card text-white text-sm"></i>
+            </div>
+            <div>
+                <h3 class="text-sm font-bold text-blue-900">ID Card — Headmaster Signature</h3>
+                <p class="text-xs text-blue-600 mt-0.5">Upload the headmaster's signature. It will appear automatically on all printed ID cards instead of a blank line.</p>
+            </div>
+        </div>
+
+        <form method="POST" action="{{ route('admin.settings.update-id-card') }}" enctype="multipart/form-data"
+              class="p-6 space-y-5">
+            @csrf
+
+            {{-- Current signature preview --}}
+            @if($sigUrl)
+            <div>
+                <label class="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-2">Current Signature</label>
+                <div class="inline-flex items-center gap-4 p-4 bg-gray-50 border border-gray-200 rounded-xl">
+                    <div class="bg-white border border-gray-200 rounded-lg p-2" style="min-width:80px;min-height:35px;display:flex;align-items:center;justify-content:center;">
+                        <img src="{{ $sigUrl }}" alt="Current signature"
+                             style="max-height:35px;max-width:160px;object-fit:contain;">
+                    </div>
+                    <div>
+                        <p class="text-sm font-semibold text-gray-700">Signature uploaded</p>
+                        <p class="text-xs text-gray-400 mt-0.5">This will appear on ID cards automatically</p>
+                    </div>
+                </div>
+                <div class="mt-2">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" name="remove_signature" value="1" class="rounded text-red-500">
+                        <span class="text-sm text-red-600 font-semibold">Remove current signature</span>
+                    </label>
+                </div>
+            </div>
+            @endif
+
+            {{-- Upload --}}
+            <div>
+                <label class="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-2">
+                    {{ $sigUrl ? 'Upload New Signature' : 'Upload Signature' }}
+                </label>
+                <label class="flex items-center gap-4 px-5 py-4 border-2 border-dashed border-gray-200 rounded-2xl cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-all">
+                    <div class="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-signature text-blue-600"></i>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-sm font-bold text-gray-700" id="sig-label-text">
+                            {{ $sigUrl ? 'Upload a new signature image' : 'Choose signature image' }}
+                        </p>
+                        <p class="text-xs text-gray-400 mt-0.5">PNG with transparent background recommended — max 2 MB. The signature should be on a white or transparent background.</p>
+                    </div>
+                    <input type="file" name="headmaster_signature" accept="image/png,image/jpeg,image/webp"
+                           class="sr-only"
+                           onchange="document.getElementById('sig-label-text').textContent = this.files[0]?.name ?? 'Choose signature image'">
+                </label>
+                <p class="text-xs text-gray-400 mt-2">
+                    <i class="fas fa-lightbulb text-yellow-500 mr-1"></i>
+                    <strong>Tip:</strong> Sign on white paper, photograph it, then use an online background remover to get a PNG with transparent background for the cleanest result.
+                </p>
+            </div>
+
+            <button type="submit"
+                    class="flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold text-white shadow-sm transition-all hover:-translate-y-0.5"
+                    style="background:linear-gradient(135deg,#2563eb,#1d4ed8)">
+                <i class="fas fa-save"></i> Save Signature
+            </button>
+        </form>
+    </div>
+
+    <div class="self-start space-y-4">
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
+            <h4 class="text-sm font-bold text-gray-700 mb-3">How it works</h4>
+            <ol class="space-y-3 text-xs text-gray-500 list-none">
+                @foreach([
+                    ['fa-upload','text-blue-500','Upload the headmaster\'s signature here'],
+                    ['fa-id-card','text-indigo-500','Go to Admin → ID Cards and select students'],
+                    ['fa-print','text-green-500','Click Generate Cards — the signature appears automatically on every card'],
+                    ['fa-scissors','text-orange-500','Print, cut along the dashed lines, and hand out'],
+                ] as [$icon,$color,$text])
+                <li class="flex items-start gap-2.5">
+                    <i class="fas {{ $icon }} {{ $color }} mt-0.5 flex-shrink-0"></i>
+                    <span>{{ $text }}</span>
+                </li>
+                @endforeach
+            </ol>
+        </div>
+
+        <div class="bg-amber-50 rounded-2xl border border-amber-200 p-4">
+            <p class="text-xs font-bold text-amber-800 mb-1"><i class="fas fa-info-circle mr-1"></i> No signature uploaded?</p>
+            <p class="text-xs text-amber-700">The ID card will print with a blank signature line. The headmaster can sign each card manually after printing.</p>
+        </div>
+    </div>
+</div>
+</div>
+
+{{-- ═══════════════════════════════════════════════════════════════
      SCRIPTS
 ═══════════════════════════════════════════════════════════════ --}}
 <style>
@@ -1353,7 +1462,7 @@
 
 <script>
 /* ── Tab switching ───────────────────────────────────────────────── */
-var TABS = ['branding','theme','grading','sba','expectations','permissions','login-bg','portal','alerts'];
+var TABS = ['branding','theme','grading','sba','expectations','permissions','login-bg','portal','alerts','id-card'];
 function showTab(id) {
     TABS.forEach(function(t) {
         var panel = document.getElementById('panel-' + t);

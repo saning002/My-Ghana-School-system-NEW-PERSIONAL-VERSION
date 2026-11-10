@@ -97,6 +97,15 @@ class IDCardController extends Controller
         $siteLogoUrl   = \App\Models\Setting::get('site_logo_url', '');
         $schoolWebsite = request()->getSchemeAndHttpHost();
 
+        // Headmaster signature (uploaded in Settings)
+        $headmasterSignatureUrl = null;
+        try {
+            $sigPath = \App\Models\Setting::get('headmaster_signature', '');
+            if ($sigPath) {
+                $headmasterSignatureUrl = Storage::disk('public')->url($sigPath);
+            }
+        } catch (\Throwable $e) {}
+
         // ── Theme ─────────────────────────────────────────────────────────
         $primaryColor = '#D4A017';
         $navColor     = '#0B1121';
@@ -171,7 +180,8 @@ class IDCardController extends Controller
         return view('admin.id-cards.print', compact(
             'people', 'schoolName', 'schoolSubtitle', 'schoolAddress',
             'schoolPhone', 'schoolEmail', 'siteLogoUrl', 'schoolWebsite',
-            'primaryColor', 'navColor', 'academicYear', 'cardType'
+            'primaryColor', 'navColor', 'academicYear', 'cardType',
+            'headmasterSignatureUrl'
         ));
     }
 }
