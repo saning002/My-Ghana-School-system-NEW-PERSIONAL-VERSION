@@ -24,7 +24,7 @@ class DailyFeesController extends Controller
         $programs   = Program::orderBy('sequence')->get();
         $globalRate = (float) Setting::get('daily_fee_rate', 5);
 
-        $query = Student::with(['user', 'program', 'program.fee', 'feeExemption'])->forExams();
+        $query = Student::with(['user', 'program', 'feeExemption'])->forExams();
         if ($request->filled('program_id')) {
             $query->where('program_id', $request->program_id);
         }
