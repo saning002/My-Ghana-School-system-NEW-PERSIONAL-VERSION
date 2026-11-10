@@ -32,8 +32,9 @@ class TermFeeService
             $examFee     = (float) $bill->exam_fee;
             $otherFees   = (float) $bill->other_fees;
             $otherLabel  = $bill->other_fees_label;
-            $feedingFee  = (float) ($bill->feeding_fee ?? 0);
-            $totalBilled = (float) $bill->total_billed;
+            $feedingFee  = (float) ($bill->feeding_fee ?? 0); // reference only — not in total
+            // Recalculate total excluding feeding_fee (it may have been included in old records)
+            $totalBilled = $programFee + $examFee + $otherFees;
         } else {
             // Auto-calculate from program fees
             $programFeeRow = DB::table('program_fees')
@@ -48,8 +49,10 @@ class TermFeeService
             if ($programFeeRow) {
                 $programFee  = (float) $programFeeRow->amount;
                 $examFee     = (float) $programFeeRow->exam_fee;
+                // feeding_fee is intentionally excluded from totalBilled —
+                // it is a daily rate collected separately, not a fixed term charge
                 $feedingFee  = (float) ($programFeeRow->feeding_fee ?? 0);
-                $totalBilled = $programFee + $examFee + $feedingFee;
+                $totalBilled = $programFee + $examFee; // feeding_fee NOT included
             }
         }
 
@@ -133,14 +136,16 @@ class TermFeeService
      */
     public function billStudent(Student $student, int $sessionId, float $programFee, float $examFee, float $otherFees = 0, ?string $otherLabel = null, float $feedingFee = 0): object
     {
-        $total = $programFee + $examFee + $otherFees + $feedingFee;
+        // feeding_fee is stored for reference (the daily rate) but NEVER added to the term total.
+        // It is collected separately per day attended via the Daily Fees module.
+        $total = $programFee + $examFee + $otherFees;
 
         return (object) DB::table('term_fee_bills')->updateOrInsert(
             ['student_id' => $student->id, 'academic_session_id' => $sessionId],
             [
                 'program_fee'      => $programFee,
                 'exam_fee'         => $examFee,
-                'feeding_fee'      => $feedingFee,
+                'feeding_fee'      => $feedingFee, // stored as reference rate only, not in total
                 'other_fees'       => $otherFees,
                 'other_fees_label' => $otherLabel,
                 'total_billed'     => $total,
