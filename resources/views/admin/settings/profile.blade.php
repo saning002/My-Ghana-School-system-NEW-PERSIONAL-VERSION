@@ -1401,7 +1401,7 @@
                         <p class="text-sm font-bold text-gray-700" id="sig-label-text">
                             {{ $sigUrl ? 'Upload a new signature image' : 'Choose signature image' }}
                         </p>
-                        <p class="text-xs text-gray-400 mt-0.5">PNG with transparent background recommended — max 2 MB. The signature should be on a white or transparent background.</p>
+                        <p class="text-xs text-gray-400 mt-0.5">PNG with transparent background recommended — max 2 MB.</p>
                     </div>
                     <input type="file" name="headmaster_signature" accept="image/png,image/jpeg,image/webp"
                            class="sr-only"
@@ -1409,7 +1409,22 @@
                 </label>
                 <p class="text-xs text-gray-400 mt-2">
                     <i class="fas fa-lightbulb text-yellow-500 mr-1"></i>
-                    <strong>Tip:</strong> Sign on white paper, photograph it, then use an online background remover to get a PNG with transparent background for the cleanest result.
+                    <strong>Tip:</strong> Sign on white paper, photograph it, then use an online tool to remove the background for a clean PNG.
+                </p>
+            </div>
+
+            {{-- Emergency phone on back of card --}}
+            <div>
+                <label class="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-2">
+                    Emergency Phone Number (back of ID card)
+                </label>
+                <input type="text" name="id_card_emergency_phone"
+                       value="{{ old('id_card_emergency_phone', \App\Models\Setting::get('id_card_emergency_phone', $schoolPhone ?? '')) }}"
+                       class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                       placeholder="e.g. 0244123456 or 030-123-4567">
+                <p class="text-xs text-gray-400 mt-1.5">
+                    This number appears at the bottom of the back of every ID card — "If found, call: [number]".
+                    Leave blank to use the general school phone number.
                 </p>
             </div>
 

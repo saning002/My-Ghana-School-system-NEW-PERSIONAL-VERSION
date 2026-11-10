@@ -102,9 +102,20 @@ class IDCardController extends Controller
         try {
             $sigPath = \App\Models\Setting::get('headmaster_signature', '');
             if ($sigPath) {
-                $headmasterSignatureUrl = Storage::disk('public')->url($sigPath);
+                // Try public disk first, fall back to direct asset URL
+                if (\Illuminate\Support\Facades\Storage::disk('public')->exists($sigPath)) {
+                    $headmasterSignatureUrl = \Illuminate\Support\Facades\Storage::disk('public')->url($sigPath);
+                } else {
+                    // Fallback: construct URL from app URL
+                    $headmasterSignatureUrl = rtrim(config('app.url'), '/') . '/storage/' . ltrim($sigPath, '/');
+                }
             }
-        } catch (\Throwable $e) {}
+        } catch (\Throwable $e) {
+            \Log::warning('Signature URL build failed: ' . $e->getMessage());
+        }
+
+        // Emergency phone (ID card specific — may differ from general school phone)
+        $idCardPhone = \App\Models\Setting::get('id_card_emergency_phone', $schoolPhone);
 
         // ── Theme ─────────────────────────────────────────────────────────
         $primaryColor = '#D4A017';
@@ -181,7 +192,7 @@ class IDCardController extends Controller
             'people', 'schoolName', 'schoolSubtitle', 'schoolAddress',
             'schoolPhone', 'schoolEmail', 'siteLogoUrl', 'schoolWebsite',
             'primaryColor', 'navColor', 'academicYear', 'cardType',
-            'headmasterSignatureUrl'
+            'headmasterSignatureUrl', 'idCardPhone'
         ));
     }
 }

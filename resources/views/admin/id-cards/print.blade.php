@@ -488,7 +488,7 @@ body { font-family:'Inter',Arial,sans-serif; background:#94a3b8; padding:0; }
             {{-- Return notice --}}
             <div class="cb-return">
                 <div class="rt">Please Return to School Authority if Found</div>
-                <div class="rc">Call: {{ $schoolPhone ?: 'XXX-XXXX-XXX' }}</div>
+                <div class="rc">Call: {{ $idCardPhone ?: ($schoolPhone ?: 'XXX-XXXX-XXX') }}</div>
             </div>
 
         </div>

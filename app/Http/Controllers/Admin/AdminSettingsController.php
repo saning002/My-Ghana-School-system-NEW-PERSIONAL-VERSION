@@ -15,13 +15,19 @@ class AdminSettingsController extends Controller
      * Save portal mode and theme only — no school_name validation needed.
      */
     /**
-     * Update ID card signature
+     * Update ID card signature and emergency phone
      */
     public function updateIdCard(Request $request)
     {
         $request->validate([
-            'headmaster_signature' => 'nullable|image|max:2048',
+            'headmaster_signature'   => 'nullable|image|max:2048',
+            'id_card_emergency_phone'=> 'nullable|string|max:30',
         ]);
+
+        // Save emergency phone
+        if ($request->filled('id_card_emergency_phone')) {
+            \App\Models\Setting::set('id_card_emergency_phone', $request->id_card_emergency_phone);
+        }
 
         // Remove signature
         if ($request->boolean('remove_signature')) {
@@ -41,10 +47,10 @@ class AdminSettingsController extends Controller
             }
             $path = $request->file('headmaster_signature')->store('signatures', 'public');
             \App\Models\Setting::set('headmaster_signature', $path);
-            return back()->with('success', 'Signature uploaded successfully. It will now appear on all ID cards.');
+            return back()->with('success', 'Signature and settings saved. It will now appear on all ID cards.');
         }
 
-        return back()->with('info', 'No changes made.');
+        return back()->with('success', 'ID card settings saved.');
     }
 
     public function updatePortal(Request $request)
