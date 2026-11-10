@@ -5,13 +5,17 @@ namespace App\Http\Controllers\Lecturer;
 use App\Http\Controllers\Controller;
 use App\Models\AcademicSession;
 use App\Models\Attendance;
+use App\Models\AttendanceAlertSetting;
 use App\Models\ClassTeacherAssignment;
+use App\Models\NotificationTemplate;
 use App\Models\Setting;
 use App\Models\Student;
+use App\Services\SmsService;
 use Illuminate\Http\Request;
 
 class ClassRegisterController extends Controller
 {
+    public function __construct(private SmsService $sms) {}
     /**
      * Show the class register for the lecturer's assigned class.
      * Class teachers mark attendance for ALL students in their program —
@@ -94,9 +98,77 @@ class ClassRegisterController extends Controller
             );
         }
 
+        // Fire automatic SMS attendance alerts to parents
+        $this->fireAttendanceAlerts(
+            $request->attendances,
+            $request->academic_period_id,
+            $request->date
+        );
+
         return redirect()->route('lecturer.class-register.index', [
             'period_id' => $request->academic_period_id,
             'date'      => $request->date,
         ])->with('success', 'Class register saved. You can edit it any time by selecting the same date.');
+    }
+
+    private function fireAttendanceAlerts(array $attendances, int $periodId, string $date): void
+    {
+        try {
+            $settings = AttendanceAlertSetting::current();
+
+            if (!$settings->enabled) {
+                \Log::info('Attendance alert (class register) skipped: alerts not enabled.');
+                return;
+            }
+
+            if (empty($settings->present_message) && empty($settings->absent_message)) {
+                \Log::info('Attendance alert (class register) skipped: no message templates set.');
+                return;
+            }
+
+            $tenantId   = session('tenant_id');
+            $studentIds = array_keys($attendances);
+            $students   = Student::with(['user', 'program', 'attendances', 'payments'])
+                ->whereIn('id', $studentIds)
+                ->get()->keyBy('id');
+
+            foreach ($attendances as $studentId => $status) {
+                $student = $students->get($studentId);
+                if (!$student) continue;
+
+                $rawMessage = $status === 'present'
+                    ? $settings->present_message
+                    : $settings->absent_message;
+
+                if (empty($rawMessage)) continue;
+
+                $todayLabel = $status === 'present' ? 'was marked PRESENT' : 'was marked ABSENT';
+
+                $message = NotificationTemplate::resolvePlaceholders($rawMessage, $student, [
+                    '{today_status}'        => strtoupper($status),
+                    '{today_status_label}'  => $todayLabel,
+                    '{today_date}'          => now()->format('l, d F Y'),
+                ]);
+
+                $phone = $settings->resolvePhone($student);
+                if (empty($phone)) {
+                    \Log::info("Attendance alert (class register): student {$studentId} has no parent phone — skipped.");
+                    continue;
+                }
+
+                \Log::info("Attendance alert (class register): sending to {$phone} for student {$studentId} — {$status}");
+
+                if ($settings->send_delay_minutes > 0) {
+                    \App\Jobs\SendAttendanceAlertSms::dispatch(
+                        $phone, $message, $tenantId ? (int)$tenantId : null
+                    )->delay(now()->addMinutes($settings->send_delay_minutes));
+                } else {
+                    $result = $this->sms->sendBulk([$phone], $message, $tenantId ? (int)$tenantId : null);
+                    \Log::info("Attendance alert (class register): SMS result — " . json_encode($result));
+                }
+            }
+        } catch (\Throwable $e) {
+            \Log::error('Attendance auto-alert (class register) failed: ' . $e->getMessage());
+        }
     }
 }
