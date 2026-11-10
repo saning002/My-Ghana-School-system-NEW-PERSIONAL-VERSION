@@ -165,91 +165,154 @@
     }
 
     /* ════════════════════════════════════════════════════════════════════
-       BACK OF CARD
+       BACK OF CARD  —  Premium dark design
     ════════════════════════════════════════════════════════════════════ */
-    .card-back { display: flex; flex-direction: column; background: #fff; }
+    .card-back {
+        display: flex;
+        flex-direction: column;
+        background: linear-gradient(160deg, {{ $navColor }} 0%, color-mix(in srgb, {{ $navColor }} 80%, #000) 100%);
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Diagonal accent stripe */
+    .card-back::before {
+        content: '';
+        position: absolute;
+        top: -8mm; right: -8mm;
+        width: 30mm; height: 30mm;
+        background: {{ $primaryColor }};
+        opacity: .12;
+        border-radius: 50%;
+        pointer-events: none;
+    }
+
+    /* Dot grid texture */
+    .card-back::after {
+        content: '';
+        position: absolute; inset: 0;
+        background-image: radial-gradient(circle, rgba(255,255,255,.04) 1px, transparent 1px);
+        background-size: 2.5mm 2.5mm;
+        pointer-events: none;
+    }
 
     .bc-top {
-        height: 4mm; background: {{ $navColor }};
-        display: flex; align-items: center; justify-content: center;
+        height: 5mm;
+        background: {{ $primaryColor }};
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 0 2.5mm; position: relative; z-index: 1;
     }
-    .bc-top span {
-        color: #fff; font-size: 1.6mm; font-weight: 700;
+    .bc-top .title {
+        color: #fff; font-size: 1.7mm; font-weight: 800;
         letter-spacing: .5mm; text-transform: uppercase;
+    }
+    .bc-top .year {
+        color: rgba(255,255,255,.7); font-size: 1.5mm; font-weight: 600;
     }
 
     .bc-body {
-        flex: 1; padding: 1.8mm 3mm; display: flex; flex-direction: column;
-        justify-content: space-between; position: relative;
+        flex: 1; padding: 1.8mm 2.5mm 1mm;
+        display: flex; flex-direction: column;
+        justify-content: space-between;
+        position: relative; z-index: 1;
     }
 
-    /* Contact section */
-    .bc-contact { display: flex; flex-direction: column; gap: .6mm; }
+    /* School info row */
+    .bc-school-row {
+        display: flex; align-items: center; gap: 1.5mm;
+        margin-bottom: 1.5mm; padding-bottom: 1mm;
+        border-bottom: .2mm solid rgba(255,255,255,.12);
+    }
+    .bc-mini-logo {
+        width: 7mm; height: 7mm; border-radius: 1mm;
+        background: rgba(255,255,255,.12);
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0; overflow: hidden;
+        border: .2mm solid rgba(255,255,255,.2);
+    }
+    .bc-mini-logo img { width: 100%; height: 100%; object-fit: contain; padding: .5mm; }
+    .bc-mini-logo .init { font-size: 3.5mm; font-weight: 900; color: {{ $primaryColor }}; }
+    .bc-school-name {
+        color: #fff; font-size: 1.8mm; font-weight: 700;
+        line-height: 1.1; flex: 1; min-width: 0;
+        overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+
+    /* Contact items */
+    .bc-contact {
+        display: flex; flex-direction: column; gap: .7mm; margin-bottom: 1mm;
+    }
     .bc-contact .item {
-        display: flex; gap: 1mm; font-size: 1.6mm; line-height: 1.3;
+        display: flex; gap: 1mm; align-items: flex-start; font-size: 1.5mm; line-height: 1.3;
     }
     .bc-contact .item i {
-        color: {{ $primaryColor }}; font-size: 1.8mm; flex-shrink: 0;
-        width: 2.5mm; text-align: center;
+        color: {{ $primaryColor }}; font-size: 1.6mm; flex-shrink: 0;
+        width: 2.5mm; text-align: center; margin-top: .1mm;
     }
-    .bc-contact .item span { color: #475569; }
+    .bc-contact .item span { color: rgba(255,255,255,.7); }
 
-    /* Guardian info section */
-    .bc-guardian {
-        margin-top: 1.5mm; padding-top: 1mm;
-        border-top: .2mm dashed #e2e8f0;
+    /* Info section - student details on back */
+    .bc-info {
+        display: flex; flex-direction: column; gap: .5mm;
+        padding: 1mm 1.5mm;
+        background: rgba(255,255,255,.07);
+        border-radius: 1mm;
+        border: .2mm solid rgba(255,255,255,.1);
+        margin-bottom: 1mm;
     }
-    .bc-guardian .title {
-        font-size: 1.3mm; font-weight: 700; color: #94a3b8;
-        text-transform: uppercase; letter-spacing: .3mm; margin-bottom: .5mm;
+    .bc-info-row {
+        display: flex; gap: 1mm; font-size: 1.5mm; line-height: 1.3;
     }
-    .bc-guardian .row {
-        display: flex; gap: 1mm; font-size: 1.6mm; color: #475569; line-height: 1.3;
+    .bc-info-row .lbl {
+        color: {{ $primaryColor }}; font-weight: 700;
+        min-width: 12mm; font-size: 1.3mm;
+        text-transform: uppercase; letter-spacing: .2mm;
     }
-    .bc-guardian .row strong { color: #1e293b; font-weight: 600; min-width: 14mm; }
+    .bc-info-row .val {
+        color: rgba(255,255,255,.85); font-weight: 500;
+        flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
 
     /* Signature section */
     .bc-sigs {
         display: flex; justify-content: space-between;
-        align-items: flex-end; margin-top: 1mm;
+        align-items: flex-end; gap: 2mm;
     }
-    .bc-sig {
-        width: 22mm; text-align: center;
-    }
+    .bc-sig { flex: 1; text-align: center; }
     .bc-sig .line {
-        border-top: .3mm solid #64748b; margin-bottom: .5mm;
-        height: 4mm;
+        height: 3.5mm;
+        border-bottom: .3mm solid rgba(255,255,255,.35);
+        margin-bottom: .5mm;
     }
     .bc-sig .label {
-        font-size: 1.2mm; color: #94a3b8; font-weight: 600;
-        text-transform: uppercase; letter-spacing: .2mm;
+        font-size: 1.1mm; color: rgba(255,255,255,.45);
+        font-weight: 600; text-transform: uppercase; letter-spacing: .2mm;
     }
 
-    /* QR area */
-    .bc-qr {
-        position: absolute; bottom: 5mm; right: 2.5mm;
-        width: 8mm; height: 8mm; background: #f8fafc;
-        border: .2mm solid #e2e8f0; border-radius: .5mm;
-        display: flex; align-items: center; justify-content: center;
+    /* QR box */
+    .bc-qr-box {
+        width: 10mm; height: 10mm; flex-shrink: 0;
+        background: rgba(255,255,255,.08);
+        border: .2mm solid rgba(255,255,255,.2);
+        border-radius: 1mm;
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center; gap: .2mm;
     }
-    .bc-qr i { font-size: 5mm; color: #cbd5e1; }
+    .bc-qr-box i { font-size: 4.5mm; color: rgba(255,255,255,.5); }
+    .bc-qr-box span { font-size: 1mm; color: rgba(255,255,255,.3); font-weight: 600; }
 
-    /* Footer bar */
+    /* Footer */
     .bc-footer {
-        height: 4mm; background: {{ $navColor }};
-        display: flex; align-items: center; justify-content: center; gap: 1mm;
+        height: 4mm;
+        background: {{ $primaryColor }};
+        display: flex; align-items: center; justify-content: center;
+        gap: 1mm; position: relative; z-index: 1;
     }
-    .bc-footer span {
-        color: {{ $primaryColor }}; font-size: 1.3mm; font-weight: 700;
-        letter-spacing: .2mm;
+    .bc-footer-text {
+        color: rgba(255,255,255,.9); font-size: 1.3mm; font-weight: 700;
+        letter-spacing: .3mm; text-transform: uppercase;
     }
-    .bc-footer .dot { color: rgba(255,255,255,.3); }
-
-    /* Terms text */
-    .bc-terms {
-        font-size: 1.2mm; color: #94a3b8; text-align: center;
-        padding: .5mm 2mm; line-height: 1.2; font-style: italic;
-    }
+    .bc-footer-dot { color: rgba(255,255,255,.35); font-size: 1.5mm; }
 
     /* ── Print ─────────────────────────────────────────────────────────── */
     @media print {
@@ -361,15 +424,40 @@
     {{-- ════ BACK ════ --}}
     <div class="id-card card-back">
 
-        {{-- Top bar --}}
+        {{-- Gold top bar --}}
         <div class="bc-top">
-            <span>{{ $schoolName }}</span>
+            <span class="title">Student Information</span>
+            <span class="year">{{ $academicYear }}</span>
         </div>
 
         {{-- Body --}}
         <div class="bc-body">
 
-            {{-- Contact section --}}
+            {{-- School mini-header --}}
+            <div class="bc-school-row">
+                <div class="bc-mini-logo">
+                    @if($logoUrl)
+                    <img src="{{ $logoUrl }}" alt="Logo">
+                    @else
+                    <span class="init">{{ strtoupper(substr($schoolName, 0, 1)) }}</span>
+                    @endif
+                </div>
+                <div class="bc-school-name">{{ $schoolName }}</div>
+            </div>
+
+            {{-- Student info panel --}}
+            <div class="bc-info">
+                <div class="bc-info-row">
+                    <span class="lbl">Guardian</span>
+                    <span class="val">{{ $guardian }}</span>
+                </div>
+                <div class="bc-info-row">
+                    <span class="lbl">Phone</span>
+                    <span class="val">{{ $guardianPh }}</span>
+                </div>
+            </div>
+
+            {{-- School contact --}}
             <div class="bc-contact">
                 @if($schoolAddress)
                 <div class="item">
@@ -391,43 +479,31 @@
                 @endif
             </div>
 
-            {{-- Guardian info --}}
-            <div class="bc-guardian">
-                <div class="title">Emergency Contact</div>
-                <div class="bc-guardian-rows">
-                    <div class="row"><strong>Guardian:</strong> {{ $guardian }}</div>
-                    <div class="row"><strong>Phone:</strong> {{ $guardianPh }}</div>
+            {{-- Signatures + QR --}}
+            <div style="display:flex;align-items:flex-end;gap:1.5mm;">
+                <div class="bc-sigs" style="flex:1;">
+                    <div class="bc-sig">
+                        <div class="line"></div>
+                        <div class="label">Student</div>
+                    </div>
+                    <div class="bc-sig">
+                        <div class="line"></div>
+                        <div class="label">Headmaster</div>
+                    </div>
+                </div>
+                <div class="bc-qr-box">
+                    <i class="fas fa-qrcode"></i>
+                    <span>Scan</span>
                 </div>
             </div>
 
-            {{-- Terms --}}
-            <div class="bc-terms">
-                This card is the property of {{ $schoolName }}. If found, please return to the school.
-            </div>
-
-            {{-- Signatures --}}
-            <div class="bc-sigs">
-                <div class="bc-sig">
-                    <div class="line"></div>
-                    <div class="label">Student</div>
-                </div>
-                <div class="bc-sig">
-                    <div class="line"></div>
-                    <div class="label">Headmaster</div>
-                </div>
-            </div>
-
-            {{-- QR placeholder --}}
-            <div class="bc-qr">
-                <i class="fas fa-qrcode"></i>
-            </div>
         </div>
 
-        {{-- Footer --}}
+        {{-- Gold footer --}}
         <div class="bc-footer">
-            <span>Powered by SaningTech Solutions</span>
-            <span class="dot">·</span>
-            <span style="color:rgba(255,255,255,.5);">{{ $academicYear }}</span>
+            <span class="bc-footer-text">If found, return to school</span>
+            <span class="bc-footer-dot">·</span>
+            <span class="bc-footer-text">SaningTech Solutions</span>
         </div>
     </div>
 
