@@ -1657,10 +1657,14 @@ Route::get('/setup/migrate-notification-templates', function () {
                             $tenantResults[] = "⏭ attribute_definitions.is_active — already exists, skipped";
                         } else {
                             \Illuminate\Support\Facades\DB::connection('tenant')
-                                ->statement("ALTER TABLE attribute_definitions ADD COLUMN IF NOT EXISTS is_active boolean NOT NULL DEFAULT true");
+                                ->statement("ALTER TABLE attribute_definitions ADD COLUMN IF NOT EXISTS name varchar(255) NOT NULL DEFAULT ''");
+                            \Illuminate\Support\Facades\DB::connection('tenant')
+                                ->statement("ALTER TABLE attribute_definitions ADD COLUMN IF NOT EXISTS type varchar(50) NOT NULL DEFAULT 'personality'");
                             \Illuminate\Support\Facades\DB::connection('tenant')
                                 ->statement("ALTER TABLE attribute_definitions ADD COLUMN IF NOT EXISTS sort_order smallint NOT NULL DEFAULT 0");
-                            $tenantResults[] = "✅ attribute_definitions.is_active — column added successfully";
+                            \Illuminate\Support\Facades\DB::connection('tenant')
+                                ->statement("ALTER TABLE attribute_definitions ADD COLUMN IF NOT EXISTS is_active boolean NOT NULL DEFAULT true");
+                            $tenantResults[] = "✅ attribute_definitions — missing columns added successfully";
                         }
                     } catch (\Throwable $ex) {
                         $tenantResults[] = "⚠️ attribute_definitions.is_active — " . $ex->getMessage();

@@ -82,7 +82,11 @@ class StudentReportController extends Controller
             $attributes = AttributeDefinition::where('is_active', true)
                 ->orderBy('sort_order')->orderBy('name')->get();
         } catch (\Throwable $e) {
-            $attributes = AttributeDefinition::orderBy('sort_order')->orderBy('name')->get();
+            try {
+                $attributes = AttributeDefinition::get();
+            } catch (\Throwable $e2) {
+                $attributes = collect();
+            }
         }
 
         $existingRatings = collect();
