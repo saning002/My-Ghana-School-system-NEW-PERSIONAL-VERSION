@@ -1665,7 +1665,7 @@ Route::get('/setup/migrate-notification-templates', function () {
                         $tenantResults[] = "⚠️ student_reports.promoted_to — " . $ex->getMessage();
                     }
                     continue;
-                }
+                } elseif (str_contains($path, 'is_active_to_attribute') || str_contains($path, 'add_recorded_by')) {
                     // ALTER TABLE migration — run raw SQL directly to avoid transaction state issues
                     try {
                         // Force reconnect to clear any broken transaction state
