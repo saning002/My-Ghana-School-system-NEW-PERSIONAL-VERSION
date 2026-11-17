@@ -91,7 +91,6 @@
     {{-- Step 3: Enter Scores --}}
     @if(($selectedAssignment || $selectedProgram) && $selectedStudent)
         @php
-            $isPreCollegeFinal = ($selectedProgram && $selectedProgram->sequence === 1 && $currentAttempt === 1);
             $totalSubW = $totalSubW ?? 100;
             $subCols = [
                 ['key'=>'test1',     'color'=>'emerald', 'bg'=>'#dcfce7', 'label'=>$sbaSubLabels['test1'] ?? 'Test 1',     'max'=>$sbaSubWeights['test1'] ?? 25],
@@ -154,18 +153,16 @@
                         <thead>
                             <tr class="bg-amber-50/80 text-xs font-bold uppercase tracking-wider text-amber-900 border-b border-slate-200">
                                 <th class="px-5 py-3">Course</th>
-                                @if(!$isPreCollegeFinal)
-                                    @foreach($subCols as $col)
-                                        <th class="px-3 py-3 text-center font-bold text-{{ $col['color'] }}-900" style="background: {{ $col['bg'] }}">
-                                            {{ $col['label'] }}<br>
-                                            <span class="font-normal opacity-75">/{{ $col['max'] }}</span>
-                                        </th>
-                                    @endforeach
-                                    <th class="px-3 py-3 text-center font-bold text-blue-900 bg-blue-100/70">
-                                        Class Score<br>
-                                        <span class="font-normal opacity-75">({{ $quizPercentage }}%)</span>
+                                @foreach($subCols as $col)
+                                    <th class="px-3 py-3 text-center font-bold text-{{ $col['color'] }}-900" style="background: {{ $col['bg'] }}">
+                                        {{ $col['label'] }}<br>
+                                        <span class="font-normal opacity-75">/{{ $col['max'] }}</span>
                                     </th>
-                                @endif
+                                @endforeach
+                                <th class="px-3 py-3 text-center font-bold text-blue-900 bg-blue-100/70">
+                                    Class Score<br>
+                                    <span class="font-normal opacity-75">({{ $quizPercentage }}%)</span>
+                                </th>
                                 <th class="px-4 py-3 text-center font-bold text-amber-900 bg-amber-100/70">
                                     Exam Score<br>
                                     <span class="font-normal opacity-75">({{ $examPercentage }}%)</span>
@@ -183,29 +180,25 @@
                                         <p class="text-xs font-mono text-slate-500">{{ $course->code }}</p>
                                     </td>
 
-                                    @if(!$isPreCollegeFinal)
-                                        @foreach($subCols as $col)
-                                            <td class="px-2 py-3 text-center" style="background: {{ $col['bg'] }}30">
-                                                <input type="number" step="0.5" min="0" max="{{ $col['max'] }}"
-                                                    name="scores[{{ $i }}][{{ $col['key'] }}_score]"
-                                                    id="{{ $col['key'] }}_{{ $i }}"
-                                                    value="{{ old('scores.'.$i.'.'.$col['key'].'_score', $scoreRec?->{$col['key'].'_score'}) }}"
-                                                    oninput="calcRow({{ $i }})"
-                                                    class="w-16 px-2 py-1.5 rounded-lg border border-slate-200 text-center text-xs font-bold focus:border-amber-500 focus:ring-1 focus:ring-amber-500 bg-white"
-                                                    placeholder="—">
-                                            </td>
-                                        @endforeach
-
-                                        {{-- Class Score Readonly Display --}}
-                                        <td class="px-3 py-3 text-center bg-blue-50/40">
-                                            <span id="classScore_{{ $i }}" class="font-bold text-sm text-blue-800">
-                                                {{ $scoreRec ? number_format($scoreRec->getEffectiveSbaScore(), 1) : '—' }}
-                                            </span>
-                                            <input type="hidden" name="scores[{{ $i }}][sba_score]" id="sbaHidden_{{ $i }}" value="{{ $scoreRec?->sba_score }}">
+                                    @foreach($subCols as $col)
+                                        <td class="px-2 py-3 text-center" style="background: {{ $col['bg'] }}30">
+                                            <input type="number" step="0.5" min="0" max="{{ $col['max'] }}"
+                                                name="scores[{{ $i }}][{{ $col['key'] }}_score]"
+                                                id="{{ $col['key'] }}_{{ $i }}"
+                                                value="{{ old('scores.'.$i.'.'.$col['key'].'_score', $scoreRec?->{$col['key'].'_score'}) }}"
+                                                oninput="calcRow({{ $i }})"
+                                                class="w-16 px-2 py-1.5 rounded-lg border border-slate-200 text-center text-xs font-bold focus:border-amber-500 focus:ring-1 focus:ring-amber-500 bg-white"
+                                                placeholder="—">
                                         </td>
-                                    @else
-                                        <input type="hidden" name="scores[{{ $i }}][sba_score]" value="">
-                                    @endif
+                                    @endforeach
+
+                                    {{-- Class Score Readonly Display --}}
+                                    <td class="px-3 py-3 text-center bg-blue-50/40">
+                                        <span id="classScore_{{ $i }}" class="font-bold text-sm text-blue-800">
+                                            {{ $scoreRec ? number_format($scoreRec->getEffectiveSbaScore(), 1) : '—' }}
+                                        </span>
+                                        <input type="hidden" name="scores[{{ $i }}][sba_score]" id="sbaHidden_{{ $i }}" value="{{ $scoreRec?->sba_score }}">
+                                    </td>
 
                                     {{-- Exam Score Input --}}
                                     <td class="px-3 py-3 text-center bg-amber-50/40">

@@ -189,8 +189,6 @@
                         </div>
                         <div class="text-right">
                             <span class="text-xs text-gray-400">{{ $courses->count() }} course(s)</span>
-                            @php $isPreCollegeFinal = ($selectedProgram->sequence === 1 && $currentAttempt === 1); @endphp
-                            @if(!$isPreCollegeFinal)
                             <div class="flex gap-2 mt-1 justify-end">
                                 <span class="px-2 py-0.5 rounded-full text-xs font-bold" style="background:#dbeafe;color:#1e40af">
                                     SBA {{ $quizPercentage }}%
@@ -199,29 +197,14 @@
                                     Exam {{ $examPercentage }}%
                                 </span>
                             </div>
-                            @else
-                            <div class="mt-1">
-                                <span class="px-2 py-0.5 rounded-full text-xs font-bold bg-[var(--primary-pale)] text-[var(--primary-text)]">
-                                    <i class="fas fa-lock mr-1"></i>Final score /100
-                                </span>
-                            </div>
-                            @endif
                         </div>
                     </div>
-
-                    @if($isPreCollegeFinal)
-                    <div class="px-5 py-3 bg-[var(--primary-pale)] border-b border-[var(--primary-pale)] text-xs text-[var(--primary-text)] flex items-center gap-2">
-                        <i class="fas fa-info-circle"></i>
-                        Pre-College attempt 1 scores are final marks out of 100. Enter only the Score column – quiz weighting does not apply.
-                    </div>
-                    @endif
 
                     <div class="table-wrap">
                         <table class="w-full">
                             <thead>
                                 <tr style="background:var(--primary-pale)">
                                     <th class="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider" style="color:var(--primary-text)">Course</th>
-                                    @if(!$isPreCollegeFinal)
                                     {{-- 4 SBA sub-columns --}}
                                     @php
                                         $sbaLabels  = \App\Services\ReportCardService::getSbaSubLabels();
@@ -244,11 +227,8 @@
                                     <th class="text-center px-2 py-3 text-xs font-semibold uppercase tracking-wider" style="color:#1e40af;background:#eff6ff">
                                         Class Score<br><span class="font-normal normal-case opacity-75">({{ $quizPercentage }}%)</span>
                                     </th>
-                                    @endif
                                     <th class="text-center px-4 py-3 text-xs font-semibold uppercase tracking-wider" style="color:#9a3412;background:#fed7aa">
-                                        @if($isPreCollegeFinal)Score (/100)
-                                        @else Exam Score<br><span class="font-normal normal-case opacity-75">({{ $examPercentage }}%)</span>
-                                        @endif
+                                        Exam Score<br><span class="font-normal normal-case opacity-75">({{ $examPercentage }}%)</span>
                                     </th>
                                     <th class="text-center px-3 py-3 text-xs font-semibold uppercase tracking-wider text-gray-500">Aggregate</th>
                                 </tr>
@@ -262,7 +242,6 @@
                                             <p class="text-sm font-semibold text-gray-800">{{ $course->name }}</p>
                                             <p class="text-xs text-gray-400 font-mono">{{ $course->code }}</p>
                                         </td>
-                                        @if(!$isPreCollegeFinal)
                                         {{-- 4 SBA sub-score inputs --}}
                                         @foreach($subCols as $col)
                                         <td class="px-2 py-3 text-center" style="background:{{ $col['bg'] }}20">
@@ -280,12 +259,8 @@
                                         {{-- Computed class score (read-only) --}}
                                         <td class="px-2 py-3 text-center" style="background:#eff6ff">
                                             <span id="classScore_{{ $i }}" class="font-bold text-sm text-blue-700">–</span>
-                                            {{-- Hidden field to submit the class score as sba_score --}}
                                             <input type="hidden" name="scores[{{ $i }}][sba_score]" id="sbaHidden_{{ $i }}" value="">
                                         </td>
-                                        @else
-                                            <input type="hidden" name="scores[{{ $i }}][sba_score]" value="">
-                                        @endif
                                         {{-- Exam score --}}
                                         <td class="px-3 py-3" style="background:#fff7ed">
                                             <input type="number"

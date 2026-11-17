@@ -61,11 +61,6 @@ class ReportCardService
      */
     public static function getPercentages(?Program $program = null, int $attempt = 0): array
     {
-        // Pre-College (sequence 1) attempt 1 — scores are already final aggregates
-        if ($program && $program->sequence === 1 && $attempt === 1) {
-            return [0, 100]; // 0% quiz, 100% exam → exam_score IS the aggregate
-        }
-
         $quizPct = (float) Setting::get('quiz_percentage', 30);
         $examPct = (float) Setting::get('exam_percentage', 70);
 
@@ -78,19 +73,28 @@ class ReportCardService
     }
 
     /**
+     * Get the exam score maximum mark from settings (default 100).
+     * Used as the denominator when converting exam_score to a percentage.
+     */
+    public static function getExamScoreMax(): float
+    {
+        return max(1.0, (float) Setting::get('exam_score_max', 100));
+    }
+
+    /**
      * Calculate the weighted aggregate for a single score row.
      *
      * Formula:
      *   Class Score = (raw_sba_sum / total_sub_weight) × sba_pct
-     *   Exam Score  = exam_score × (exam_pct / 100)
+     *   Exam Score  = (exam_score / exam_score_max) × exam_pct
      *   Total       = Class Score + Exam Score
      *
      * If sub-scores are not used, raw_sba_sum is treated as already
      * normalised (legacy sba_score / quiz_score stored out of 100),
-     * so the formula becomes: sba_score × (sba_pct / 100) + exam × (exam_pct / 100)
+     * so the formula becomes: sba_score × (sba_pct / 100) + (exam / exam_max) × (exam_pct)
      *
      * @param float       $rawSbaSum    sum of sub-scores OR legacy sba/quiz value
-     * @param float       $examScore    raw exam score (0–100)
+     * @param float       $examScore    raw exam score (0–exam_score_max)
      * @param bool        $hasSubScores true if sub-scores were used
      */
     public static function calcAggregate(
@@ -101,19 +105,18 @@ class ReportCardService
         bool $hasSubScores = false
     ): float {
         [$sbaPct, $examPct] = self::getPercentages($program, $attempt);
+        $examMax = self::getExamScoreMax();
 
         if ($hasSubScores) {
             $totalSubWeight = self::getTotalSubWeight();
-            // Class Score = (sum / total_weight) × sba_pct
             $classScore = $totalSubWeight > 0
                 ? ($rawSbaSum / $totalSubWeight) * $sbaPct
                 : 0;
         } else {
-            // Legacy: sba_score is already out of 100
             $classScore = $rawSbaSum * $sbaPct / 100;
         }
 
-        $examContribution = $examScore * $examPct / 100;
+        $examContribution = $examMax > 0 ? ($examScore / $examMax) * $examPct : 0;
         return round($classScore + $examContribution, 2);
     }
 

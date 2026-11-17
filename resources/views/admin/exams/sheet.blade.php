@@ -80,23 +80,12 @@
             </div>
         @else
             {{-- Percentage Settings Card --}}
-            @php $isPreCollegeFinal = ($selectedProgram->sequence === 1 && $currentAttempt === 1); @endphp
-
-            @if($isPreCollegeFinal)
-            <div class="bg-[var(--primary-pale)] border border-[var(--brand)] rounded-xl p-5 flex items-start gap-3">
-                <i class="fas fa-lock text-[var(--brand)] text-lg mt-0.5"></i>
-                <div>
-                    <p class="text-sm font-bold text-[var(--primary-text)]">Pre-College Attempt 1 – Scores are final aggregates (out of 100)</p>
-                    <p class="text-xs text-[var(--primary-text)] mt-1">Scores for this attempt are treated as 100% exam score – no weighting applied.</p>
-                </div>
-            </div>
-            @else
             <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                 <h3 class="font-bold text-gray-800 mb-1 flex items-center gap-2">
                     <i class="fas fa-sliders-h text-purple-600"></i> Score Weighting &amp; SBA Components
                 </h3>
                 <p class="text-sm text-gray-500 mb-4">
-                    Set the SBA vs Exam split (must add to 100%). Then configure each SBA sub-component weight (must add to 100%).
+                    Set the SBA vs Exam split (must add to 100%). Then configure each SBA sub-component weight.
                 </p>
 
                 <form action="{{ route('admin.exams.sheet.percentages') }}" method="POST">
@@ -152,7 +141,6 @@
                     </button>
                 </form>
             </div>
-            @endif
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {{-- Download Template Card --}}
@@ -312,7 +300,7 @@
                                     <th class="px-4 py-3 font-semibold sticky left-0 bg-gray-100 z-10 border-r border-gray-200" rowspan="2">Student</th>
                                     @foreach($courses as $course)
                                         <th class="px-2 py-2 text-center border-r border-gray-200"
-                                            colspan="{{ $isPreCollegeFinal ? 1 : 5 }}"
+                                            colspan="5"
                                             title="{{ $course->name }}">
                                             <div class="truncate max-w-[320px] mx-auto">{{ $course->name }}</div>
                                             <div class="text-[10px] text-gray-500 font-normal">{{ $course->code }}</div>
@@ -321,7 +309,6 @@
                                 </tr>
                                 <tr>
                                     @foreach($courses as $course)
-                                        @if(!$isPreCollegeFinal)
                                         {{-- 4 SBA sub-columns --}}
                                         @foreach([
                                             ['test1',     'green',  'Test 1'],
@@ -334,13 +321,10 @@
                                             <span class="font-normal text-{{ $col }}-400">/{{ $sbaSubWeights[$key] ?? 25 }}</span>
                                         </th>
                                         @endforeach
-                                        @endif
                                         {{-- Exam column --}}
                                         <th class="px-2 py-2 text-center font-semibold text-orange-700 bg-orange-50 border-r border-gray-200 min-w-[80px] text-[10px]">
                                             Exam<br>
-                                            <span class="font-normal text-orange-400">
-                                                @if($isPreCollegeFinal)/100@else{{ $examPercentage }}%@endif
-                                            </span>
+                                            <span class="font-normal text-orange-400">{{ $examPercentage }}%</span>
                                         </th>
                                     @endforeach
                                 </tr>
@@ -354,7 +338,6 @@
                                         </td>
                                         @foreach($courses as $course)
                                             @php $existing = $existingScores[$student->id][$course->id] ?? []; @endphp
-                                            @if(!$isPreCollegeFinal)
                                             {{-- 4 SBA sub-score inputs --}}
                                             @foreach([
                                                 ['test1_score',     'green'],
@@ -366,12 +349,11 @@
                                                 <input type="number"
                                                        name="scores[{{ $student->id }}][{{ $course->id }}][{{ $field }}]"
                                                        value="{{ $existing[$field] ?? '' }}"
-                                                       min="0" max="{{ $sbaSubWeights[str_replace(['_score','_score'], '', $field)] ?? 100 }}" step="0.5"
+                                                       min="0" max="{{ $sbaSubWeights[str_replace('_score', '', $field)] ?? 100 }}" step="0.5"
                                                        class="w-16 text-center rounded border-{{ $col }}-200 text-xs py-1 px-1 focus:border-{{ $col }}-500"
                                                        placeholder="–">
                                             </td>
                                             @endforeach
-                                            @endif
                                             {{-- Exam score --}}
                                             <td class="px-1 py-1.5 text-center border-r border-gray-100 bg-orange-50/20">
                                                 <input type="number"
