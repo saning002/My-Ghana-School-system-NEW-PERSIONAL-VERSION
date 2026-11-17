@@ -127,6 +127,93 @@ class NotificationController extends Controller
         }
 
         // ── Standard student / lecturer notification ──────────────────────────
+
+        // Detect if the message/title contain any placeholders
+        $hasPlaceholders = str_contains($rawMessage, '{') || str_contains($rawTitle, '{');
+
+        // For in-app to ALL STUDENTS with placeholders: create one record per student
+        // so each student sees their own resolved message (e.g. their own {student_name})
+        if (
+            $recipientType === 'student'
+            && $request->audience === 'all'
+            && in_array($channel, ['in_app', 'both'])
+            && $hasPlaceholders
+        ) {
+            $sentBy   = auth()->id();
+            $type     = $request->type;
+            $baseData = [
+                'sent_by'        => $sentBy,
+                'recipient_type' => 'student',
+                'audience'       => 'individual',
+                'type'           => $type,
+                'channel'        => $channel,
+                'is_read'        => false,
+            ];
+
+            $count = 0;
+            Student::with(['user', 'program', 'payments', 'attendances'])
+                ->whereNotIn('status', ['withdrawn', 'suspended'])
+                ->chunk(100, function ($students) use ($baseData, $rawTitle, $rawMessage, &$count) {
+                    $rows = [];
+                    $now  = now();
+                    foreach ($students as $student) {
+                        try {
+                            $msg = NotificationTemplate::resolvePlaceholders($rawMessage, $student);
+                            $ttl = str_contains($rawTitle, '{')
+                                ? NotificationTemplate::resolvePlaceholders($rawTitle, $student)
+                                : $rawTitle;
+                        } catch (\Throwable $e) {
+                            $msg = $rawMessage;
+                            $ttl = $rawTitle;
+                        }
+                        $rows[] = array_merge($baseData, [
+                            'student_id' => $student->id,
+                            'title'      => $ttl,
+                            'message'    => $msg,
+                            'created_at' => $now,
+                            'updated_at' => $now,
+                        ]);
+                        $count++;
+                    }
+                    if ($rows) {
+                        \Illuminate\Support\Facades\DB::connection('tenant')->table('student_notifications')->insert($rows);
+                    }
+                });
+
+            // If channel includes SMS, still send bulk SMS (raw — can't personalise and also send per-record)
+            $successMsg = '';
+            $warningMsg = '';
+            if (in_array($channel, ['sms', 'both'])) {
+                // Create a single log record for the SMS part
+                $logRecord = StudentNotification::create(array_merge($baseData, [
+                    'student_id' => null,
+                    'audience'   => 'all',
+                    'title'      => $rawTitle,
+                    'message'    => $rawMessage,
+                    'channel'    => 'sms',
+                ]));
+                $smsResult = $this->sendSmsNotification($logRecord, $rawMessage, 'student', 'all', null, null);
+                $logRecord->update([
+                    'sms_status'       => $smsResult['sent'] > 0 ? 'sent' : 'failed',
+                    'sms_sent_count'   => $smsResult['sent'],
+                    'sms_failed_count' => $smsResult['failed'],
+                    'sms_error'        => !empty($smsResult['errors']) ? implode('; ', array_slice($smsResult['errors'], 0, 3)) : null,
+                ]);
+                if ($smsResult['sent'] > 0) {
+                    $successMsg = "SMS sent to {$smsResult['sent']} student(s). ";
+                } else {
+                    $warningMsg = "SMS failed: " . implode(', ', array_slice($smsResult['errors'], 0, 2)) . '. ';
+                }
+            }
+
+            $inAppMsg = $channel === 'sms' ? '' : "In-app notification sent to {$count} student(s) with personalised content. ";
+            if ($warningMsg) {
+                return back()->with('success', $inAppMsg)->with('warning', $warningMsg);
+            }
+            return back()->with('success', $inAppMsg . $successMsg . "Done.");
+        }
+
+        // ── Default path: single broadcast record (no placeholders, or lecturers) ──
         $notification = StudentNotification::create([
             'sent_by'        => auth()->id(),
             'recipient_type' => $recipientType,
