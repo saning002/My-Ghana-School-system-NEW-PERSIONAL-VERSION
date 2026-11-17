@@ -325,6 +325,7 @@ class AdminSettingsController extends Controller
             Setting::set('report_card_template', $request->report_card_template);
         }
 
+        $this->bustSettingsCache();
         return back()->with('success', 'Grading settings saved successfully.');
     }
 
