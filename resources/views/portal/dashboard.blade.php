@@ -958,13 +958,6 @@ $modeLabel = $modeLabels[$portalMode] ?? 'Student Portal';
   </div>
   </div>
 
-  @endif {{-- end if portalMode !== 'university' --}}
-
-  <script>
-
-
-  @endif {{-- end if portalMode !== 'university' --}}
-
   <script>
     // ── Sidebar ──────────────────────────────────────────────────
     const hamburgerBtn = document.getElementById('hamburgerBtn');
