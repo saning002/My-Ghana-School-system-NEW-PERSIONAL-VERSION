@@ -534,7 +534,7 @@
                     ['basic','Basic / Primary School','Simplified primary school format — grade key, conduct checkboxes, attendance. Best for Basic 1–6'],
                     ['jhs','JHS / BECE Style','JHS format — BECE A1–F9 grading, 30% CA + 70% Exam columns, parent signature. Best for JHS 1–3'],
                 ] as [$val,$lbl,$desc])
-                <form method="POST" action="{{ route('admin.settings.update') }}">
+                <form method="POST" action="{{ route('admin.settings.update-grading') }}">
                     @csrf
                     <input type="hidden" name="report_card_template" value="{{ $val }}">
                     <button type="submit" class="w-full flex items-start gap-2.5 p-3 rounded-xl border-2 text-left transition-all"

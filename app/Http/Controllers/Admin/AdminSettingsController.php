@@ -304,8 +304,9 @@ class AdminSettingsController extends Controller
     public function updateGrading(Request $request)
     {
         $request->validate([
-            'grading_preset'     => 'nullable|in:ghana_standard,custom',
-            'grading_scale_json' => 'nullable|string',
+            'grading_preset'       => 'nullable|in:ghana_standard,custom',
+            'grading_scale_json'   => 'nullable|string',
+            'report_card_template' => 'nullable|in:standard,basic,jhs',
         ]);
 
         $preset = $request->grading_preset ?: 'ghana_standard';
@@ -320,7 +321,11 @@ class AdminSettingsController extends Controller
             } catch (\Throwable $e) {}
         }
 
-        return back()->with('success', 'Grading scale saved successfully.');
+        if ($request->filled('report_card_template')) {
+            Setting::set('report_card_template', $request->report_card_template);
+        }
+
+        return back()->with('success', 'Grading settings saved successfully.');
     }
 
     /**
