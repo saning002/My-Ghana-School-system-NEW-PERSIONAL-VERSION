@@ -143,28 +143,28 @@ $modeLabel = $modeLabels[$portalMode] ?? 'Student Portal';
 
     /* HEADER */
     .header {
-      background: var(--header-bg); padding: 16px 16px;
-      display: flex; justify-content: space-between; align-items: center; gap: 12px;
+      background: var(--header-bg); padding: 12px 16px;
+      display: flex; justify-content: space-between; align-items: center; gap: 8px;
       box-shadow: 0 4px 16px rgba(0,0,0,0.15); position: sticky; top: 0; z-index: 50;
+      flex-wrap: nowrap; overflow: hidden;
     }
-    .header-left { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
-    .student-avatar { width: 48px; height: 48px; border-radius: 12px; background: var(--accent-dark); display: grid; place-items: center; overflow: hidden; flex-shrink: 0; border: 2px solid rgba(255,255,255,0.4); }
+    .header-left { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; overflow: hidden; }
+    .student-avatar { width: 42px; height: 42px; border-radius: 10px; background: var(--accent-dark); display: grid; place-items: center; overflow: hidden; flex-shrink: 0; border: 2px solid rgba(255,255,255,0.4); }
     .student-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .student-avatar .avatar-icon { font-size: 22px; color: #fff; font-weight: 900; line-height: 1; }
-    .student-info { flex: 1; min-width: 0; }
-    .student-info .name { font-size: 13px; font-weight: 800; color: var(--accent-text); line-height: 1.2; }
+    .student-avatar .avatar-icon { font-size: 20px; color: #fff; font-weight: 900; line-height: 1; }
+    .student-info { flex: 1; min-width: 0; overflow: hidden; }
+    .student-info .name { font-size: 13px; font-weight: 800; color: var(--accent-text); line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .student-info .id { font-size: 11px; color: rgba(255,255,255,0.75); font-weight: 600; }
-    .header-right { display: flex; align-items: center; gap: 8px; }
+    .header-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
     .hamburger {
-      background: rgba(255,255,255,0.2); border: none; border-radius: 8px; padding: 8px 10px;
-      color: var(--accent-text); cursor: pointer; font-size: 16px; transition: all 0.2s;
+      background: rgba(255,255,255,0.2); border: none; border-radius: 8px; padding: 7px 9px;
+      color: var(--accent-text); cursor: pointer; font-size: 15px; transition: all 0.2s; flex-shrink: 0;
     }
     .hamburger:active { transform: scale(0.95); }
-    /* Theme toggle button */
     .theme-toggle {
-      background: rgba(255,255,255,0.2); border: none; border-radius: 8px; padding: 7px 10px;
-      color: var(--accent-text); cursor: pointer; font-size: 15px; transition: all 0.2s;
-      display: flex; align-items: center; gap: 5px; font-weight: 700; font-size: 11px;
+      background: rgba(255,255,255,0.2); border: none; border-radius: 8px; padding: 7px 9px;
+      color: var(--accent-text); cursor: pointer; font-size: 14px; transition: all 0.2s;
+      display: flex; align-items: center; gap: 4px; font-weight: 700; font-size: 11px; flex-shrink: 0;
     }
     .theme-toggle:active { transform: scale(0.95); }
 
@@ -249,7 +249,7 @@ $modeLabel = $modeLabels[$portalMode] ?? 'Student Portal';
         overflow-y: auto; overflow-x: hidden;
       }
       .sidebar-overlay { display: none !important; }
-      .hamburger { display: none; }
+      .hamburger { display: none !important; }
       .main-content {
         flex: 1; padding: 24px;
         max-width: calc(100% - 260px);
@@ -259,17 +259,19 @@ $modeLabel = $modeLabels[$portalMode] ?? 'Student Portal';
       }
       .header { position: sticky; top: 0; z-index: 100; }
       .analytics-grid { grid-template-columns: repeat(4, 1fr); }
+      .header-left { max-width: 50%; }
     }
 
     @media (max-width: 480px) {
-      .header { padding: 12px; }
-      .student-avatar { width: 40px; height: 40px; font-size: 18px; border-radius: 10px; }
+      .header { padding: 10px 12px; gap: 6px; }
+      .student-avatar { width: 36px; height: 36px; border-radius: 9px; }
+      .student-avatar .avatar-icon { font-size: 16px; }
       .student-info .name { font-size: 12px; }
       .student-info .id { font-size: 10px; }
-      .main-content { padding: 16px; }
-      .page-title { font-size: 16px; }
-      .card { padding: 14px; margin-bottom: 12px; }
-      .analytics-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      .main-content { padding: 14px; }
+      .page-title { font-size: 15px; }
+      .card { padding: 12px; margin-bottom: 10px; }
+      .analytics-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
     }
   </style>
   {{-- Apply saved theme before paint to avoid flash --}}
@@ -345,9 +347,9 @@ $modeLabel = $modeLabels[$portalMode] ?? 'Student Portal';
         </button>
         {{-- Academic Session Selector --}}
         @if(isset($allSessions) && $allSessions->count() > 0)
-        <form method="GET" style="margin-left:8px;display:inline-flex;align-items:center;">
+        <form method="GET" style="margin-left:4px;display:inline-flex;align-items:center;flex-shrink:0;">
           <select name="session_id" onchange="this.form.submit()"
-            style="padding:6px 10px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.1);color:#fff;font-size:11px;font-weight:700;cursor:pointer;max-width:140px;">
+            style="padding:5px 8px;border-radius:8px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.1);color:#fff;font-size:11px;font-weight:700;cursor:pointer;max-width:120px;">
             <option value="" style="color:#000;">All Sessions</option>
             @foreach($allSessions as $sess)
             <option value="{{ $sess->id }}" style="color:#000;"
@@ -358,7 +360,6 @@ $modeLabel = $modeLabels[$portalMode] ?? 'Student Portal';
           </select>
         </form>
         @endif
-        <a href="{{ route('portal.change-password') }}" class="button button-secondary" style="margin-left:8px; padding:8px 10px; font-size:12px; display:inline-flex; align-items:center; gap:8px;"><i class="fas fa-key"></i> Change Password</a>
       </div>
 
       @php
@@ -760,16 +761,30 @@ $modeLabel = $modeLabels[$portalMode] ?? 'Student Portal';
         </div>
       </div>
 
+      </div>
+
+    </div>
+  </div>
+
+  @endif {{-- end if portalMode !== 'university' --}}
+
+  {{-- ═══════════════════════════════════════════════════════════════════
+       PROFILE, NOTIFICATIONS & GUIDE — always rendered for ALL portal modes
+       These panels must be outside the university/basic split so the JS
+       page switcher can always find them by id.
+       ═══════════════════════════════════════════════════════════════════ --}}
+  <div class="app-shell" style="display:contents;">
+  <div class="main-content" style="display:contents;">
+
       <!-- PROFILE PAGE -->
-      <div id="page-profile" class="page-content">
+      <div id="page-profile" class="page-content" style="display:none;">
         <div class="page-header">
           <h1 class="page-title">Profile</h1>
           <p class="page-subtitle">Your information</p>
         </div>
 
-        {{-- Profile photo card --}}
         <div class="card" style="text-align:center; padding: 24px 18px;">
-          <div style="width:90px;height:90px;border-radius:50%;overflow:hidden;margin:0 auto 12px;border:3px solid #fbbf24;box-shadow:0 4px 16px rgba(212,160,23,0.25);background:#D4A017;display:flex;align-items:center;justify-content:center;">
+          <div style="width:90px;height:90px;border-radius:50%;overflow:hidden;margin:0 auto 12px;border:3px solid var(--accent);box-shadow:0 4px 16px rgba(0,0,0,0.15);background:var(--accent);display:flex;align-items:center;justify-content:center;">
             @if($portalPhotoSrc ?? null)
               <img src="{{ e($portalPhotoSrc) }}" alt="{{ $student->user->full_name }}"
                    style="width:100%;height:100%;object-fit:cover;display:block;"
@@ -779,42 +794,51 @@ $modeLabel = $modeLabels[$portalMode] ?? 'Student Portal';
               <span style="font-size:36px;font-weight:900;color:#fff;">{{ strtoupper(substr($student->user->full_name, 0, 1)) }}</span>
             @endif
           </div>
-          <div style="font-size:16px;font-weight:900;color:#111827;">{{ $student->user->full_name }}</div>
-          <div style="font-size:12px;color:#6b7280;margin-top:4px;">{{ $student->student_id }}</div>
+          <div style="font-size:16px;font-weight:900;color:var(--text);">{{ $student->user->full_name }}</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">{{ $student->student_id }}</div>
         </div>
 
         <div class="card">
-          <h2><i class="fas fa-user" style="color:#fbbf24;margin-right:6px;"></i>Personal</h2>
-          <div class="info-row"><span class="label">Name</span><span class="value">{{ $student->user->full_name }}</span></div>
-          <div class="info-row"><span class="label">ID</span><span class="value">{{ $student->student_id }}</span></div>
+          <h2><i class="fas fa-user" style="color:var(--accent);margin-right:6px;"></i>Personal</h2>
+          <div class="info-row"><span class="label">Full Name</span><span class="value">{{ $student->user->full_name }}</span></div>
+          <div class="info-row"><span class="label">Student ID</span><span class="value">{{ $student->student_id }}</span></div>
           <div class="info-row"><span class="label">Email</span><span class="value" style="font-size:11px;">{{ $student->user->email }}</span></div>
           <div class="info-row"><span class="label">Phone</span><span class="value">{{ $student->user->phone ?? '—' }}</span></div>
+          @if($student->guardian_name ?? null)
+          <div class="info-row"><span class="label">Guardian</span><span class="value">{{ $student->guardian_name }}</span></div>
+          @endif
+          @if($student->guardian_phone ?? null)
+          <div class="info-row"><span class="label">Guardian Phone</span><span class="value">{{ $student->guardian_phone }}</span></div>
+          @endif
         </div>
 
         <div class="card">
-          <h2><i class="fas fa-graduation-cap" style="color:#fbbf24;margin-right:6px;"></i>Academic</h2>
-          <div class="info-row"><span class="label">Program</span><span class="value">{{ $student->program->name ?? '—' }}</span></div>
+          <h2><i class="fas fa-graduation-cap" style="color:var(--accent);margin-right:6px;"></i>Academic</h2>
+          <div class="info-row"><span class="label">Programme</span><span class="value">{{ $student->program->name ?? '—' }}</span></div>
+          @if($student->churchBranch ?? null)
           <div class="info-row"><span class="label">Branch</span><span class="value">{{ $student->churchBranch->name ?? '—' }}</span></div>
+          @endif
           <div class="info-row"><span class="label">Status</span><span class="value"><span class="badge success">{{ ucfirst($student->status) }}</span></span></div>
           <div class="info-row"><span class="label">Admitted</span><span class="value">{{ optional($student->admission_date)->format('M d, Y') ?? '—' }}</span></div>
+        </div>
+
+        <div class="card">
+          <h2><i class="fas fa-key" style="color:var(--accent);margin-right:6px;"></i>Account</h2>
+          <p style="margin:0 0 12px;font-size:12px;color:var(--text-muted);">Keep your password secure. You can change it at any time.</p>
+          <a href="{{ route('portal.change-password') }}"
+             style="display:inline-flex;align-items:center;gap:8px;padding:10px 18px;background:var(--accent);color:#fff;border-radius:12px;font-size:12px;font-weight:700;text-decoration:none;">
+            <i class="fas fa-lock"></i> Change Password
+          </a>
         </div>
       </div>
 
       <!-- NOTIFICATIONS PAGE -->
-      <div id="page-notifications" class="page-content">
+      <div id="page-notifications" class="page-content" style="display:none;">
         <div class="page-header">
           <h1 class="page-title">Notifications</h1>
-          <p class="page-subtitle">Updates from college</p>
+          <p class="page-subtitle">Updates from school</p>
         </div>
-
-        @if($notifications->isEmpty())
-          <div class="card" style="text-align:center;">
-            <div class="empty-state">
-              <i class="fas fa-bell-slash"></i>
-              <p>No notifications</p>
-            </div>
-          </div>
-        @else
+        @if(isset($notifications) && $notifications->isNotEmpty())
           @foreach($notifications->take(10) as $notif)
             @php $isNew = !$notif->is_read; @endphp
             <div class="card" style="{{ $isNew ? 'border-left: 3px solid var(--accent);' : '' }}">
@@ -831,194 +855,113 @@ $modeLabel = $modeLabels[$portalMode] ?? 'Student Portal';
               </div>
             </div>
           @endforeach
+        @else
+          <div class="card" style="text-align:center;">
+            <div class="empty-state">
+              <i class="fas fa-bell-slash"></i>
+              <p>No notifications yet</p>
+            </div>
+          </div>
         @endif
       </div>
 
       <!-- GUIDE PAGE -->
-      <div id="page-guide" class="page-content">
+      <div id="page-guide" class="page-content" style="display:none;">
         <div class="page-header">
           <h1 class="page-title">Portal Guide</h1>
-          <p class="page-subtitle">Learn how to navigate your portal and understand the GPA system</p>
+          <p class="page-subtitle">How to use your student portal</p>
         </div>
 
-        <div class="card" style="background: var(--accent); color: var(--accent-text); border: none; padding: 24px;">
-          <h2 style="color: var(--accent-text); font-size: 18px; margin-bottom: 8px;">
-            Welcome to Your {{ $modeLabel }}!
-          </h2>
-          <p style="color: var(--accent-text); opacity:.8; font-size: 13px; line-height: 1.5; font-weight: 500; max-width: 600px;">
-            @if($portalMode === 'basic')
-              This portal lets you see your lessons, attendance record, teacher remarks and school fees.
-            @elseif($portalMode === 'jhs')
-              Check your class scores, exam scores and grades in BECE format. View your position in class and download your report card.
-            @elseif($portalMode === 'shs')
+        <div class="card" style="background:var(--accent);border:none;padding:20px;">
+          <h2 style="color:#fff;font-size:16px;margin-bottom:8px;">Welcome to {{ $modeLabel }}!</h2>
+          <p style="color:rgba(255,255,255,.85);font-size:12px;line-height:1.5;margin:0;">
+            @if(($portalMode ?? 'university') === 'basic')
+              This portal lets you view your attendance, teacher remarks, school fees and results.
+            @elseif(($portalMode ?? 'university') === 'jhs')
+              Check your class scores, exam scores and BECE-format grades. View your class position and download your report card.
+            @elseif(($portalMode ?? 'university') === 'shs')
               View your elective and core subject scores, WASSCE aggregate, class position and download your official report card.
             @else
-              Your personal academic assistant. Monitor your GPA, course scores, attendance, and financial statements with complete clarity.
+              Monitor your GPA, course scores, attendance, and financial statements in one place.
             @endif
           </p>
         </div>
 
         <div class="card">
-          <h2><i class="fas fa-compass" style="color:#fbbf24;margin-right:6px;"></i>Portal Sections Tour</h2>
-          <div style="display: grid; grid-template-columns: 1fr; gap: 14px; margin-top: 10px;">
-            <div style="background: var(--surface2); padding: 14px; border-radius: 10px; border: 1px solid var(--border);">
-              <h3 style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 800; color: var(--text); margin-bottom: 6px;">
-                <i class="fas fa-chart-pie" style="color: var(--accent);"></i> Dashboard
-              </h3>
-              <p style="margin: 0; color: var(--text-muted); font-size: 12px; line-height: 1.4;">
-                Your landing page provides a quick overview. It features an **Overall Performance** card showing your most recent semester's SGPA (with an interactive circular indicator), overall counts of courses and active programs, recent alerts/notifications, and a quick summary of your billing status.
-              </p>
+          <h2 style="margin-bottom:14px;"><i class="fas fa-compass" style="color:var(--accent);margin-right:6px;"></i>Portal Sections</h2>
+          @foreach([
+            ['fa-chart-pie',      'Dashboard',      'Your home page — attendance rate, GPA, fee balance and recent notifications at a glance.'],
+            ['fa-file-alt',       'Results',        'View and download your report cards by semester or term.'],
+            ['fa-calendar-check', 'Attendance',     'See your present/absent record for every course. Green = good (≥75%), amber = caution, red = critical.'],
+            ['fa-receipt',        'Fees',           'Your fee statement showing tuition billed, amount paid, and outstanding balance. Pay online if enabled.'],
+            ['fa-user',           'Profile',        'Your personal and academic details. Change your password from here.'],
+            ['fa-bell',           'Notifications',  'Messages sent to you by the admin or teachers.'],
+          ] as [$icon, $title, $desc])
+          <div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);">
+            <div style="width:36px;height:36px;border-radius:10px;background:var(--border);display:grid;place-items:center;flex-shrink:0;">
+              <i class="fas {{ $icon }}" style="color:var(--accent);font-size:13px;"></i>
             </div>
-            
-            <div style="background: var(--surface2); padding: 14px; border-radius: 10px; border: 1px solid var(--border);">
-              <h3 style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 800; color: var(--text); margin-bottom: 6px;">
-                <i class="fas fa-file-alt" style="color: var(--accent);"></i> Results (Report Cards)
-              </h3>
-              <p style="margin: 0; color: var(--text-muted); font-size: 12px; line-height: 1.4;">
-                This tab lets you view your academic achievements by semester. You will see a detailed grid with your courses, final exam scores, grades, and your **personal class position/ranking**. You can also download official PDF report cards to your device.
-              </p>
-            </div>
-
-            <div style="background: var(--surface2); padding: 14px; border-radius: 10px; border: 1px solid var(--border);">
-              <h3 style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 800; color: var(--text); margin-bottom: 6px;">
-                <i class="fas fa-calendar-check" style="color: var(--accent);"></i> Attendance
-              </h3>
-              <p style="margin: 0; color: var(--text-muted); font-size: 12px; line-height: 1.4;">
-                Shows your presence rate across all courses in real time. We use color-coded badges to indicate safety: **Green** for optimal attendance (75% or higher), **Orange** for caution (50%-74%), and **Red** for critical levels (below 50%) that require immediate attention.
-              </p>
-            </div>
-
-            <div style="background: var(--surface2); padding: 14px; border-radius: 10px; border: 1px solid var(--border);">
-              <h3 style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 800; color: var(--text); margin-bottom: 6px;">
-                <i class="fas fa-receipt" style="color: var(--accent);"></i> Fees Statement
-              </h3>
-              <p style="margin: 0; color: var(--text-muted); font-size: 12px; line-height: 1.4;">
-                Allows you to keep tabs on your finances. View your exact program tuition, exams fees, cumulative payments made, and any outstanding balance. Keeping your balance clear ensures that your grades and transcripts remain unlocked.
-              </p>
+            <div>
+              <p style="margin:0 0 3px;font-size:13px;font-weight:800;color:var(--text);">{{ $title }}</p>
+              <p style="margin:0;font-size:11px;color:var(--text-muted);line-height:1.4;">{{ $desc }}</p>
             </div>
           </div>
+          @endforeach
         </div>
 
+        @if(($portalMode ?? 'university') === 'university')
         <div class="card">
-          <h2><i class="fas fa-graduation-cap" style="color:#fbbf24;margin-right:6px;"></i>Understanding the GPA & SGPA System</h2>
-          <p style="margin-bottom: 12px; line-height: 1.4; color: var(--text-muted); font-size: 12px;">
-            Academic performance is evaluated using the **GPA (Grade Point Average)** system. It measures the quality of your academic work on a scale of **0.00 to 4.00**. There are two main concepts you will see:
-          </p>
-          <ul style="margin: 0 0 16px 20px; font-size: 12px; color: var(--text-muted); line-height: 1.5;">
-            <li style="margin-bottom: 6px;"><strong style="color: var(--text);">SGPA (Semester Grade Point Average):</strong> Your average for a <em>single</em> specific semester/program based on the courses completed in that block.</li>
-            <li><strong style="color: var(--text);">CGPA (Cumulative Grade Point Average):</strong> Your overall average computed across <em>all</em> semesters/programs since your admission.</li>
-          </ul>
-
-          <h3 style="margin-bottom: 8px; font-size: 13px; font-weight: 800;">Official College Grading Scale</h3>
-          <p style="margin-bottom: 10px; color: var(--text-muted); font-size: 11px;">Each course score from 0 to 100 corresponds to a letter grade and specific Grade Points:</p>
-          
-          <div class="table-wrap" style="margin-bottom: 20px;">
-            <table style="border: 1px solid var(--border); min-width: 320px;">
-              <thead>
-                <tr>
-                  <th style="font-size: 10px; padding: 8px;">Score Range</th>
-                  <th style="font-size: 10px; padding: 8px;">Grade</th>
-                  <th style="font-size: 10px; padding: 8px;">Points</th>
-                  <th style="font-size: 10px; padding: 8px;">Classification</th>
-                </tr>
-              </thead>
+          <h2 style="margin-bottom:12px;"><i class="fas fa-graduation-cap" style="color:var(--accent);margin-right:6px;"></i>Understanding GPA</h2>
+          <p style="font-size:12px;color:var(--text-muted);line-height:1.5;margin-bottom:10px;">GPA is measured on a 0.0–4.0 scale. Your SGPA is for one semester; your CGPA is the cumulative average across all semesters.</p>
+          <div style="overflow-x:auto;">
+            <table style="width:100%;border-collapse:collapse;font-size:11px;">
+              <thead><tr style="background:var(--th-bg);">
+                <th style="padding:8px;text-align:left;">Score</th>
+                <th style="padding:8px;">Grade</th>
+                <th style="padding:8px;">Points</th>
+                <th style="padding:8px;">Class</th>
+              </tr></thead>
               <tbody>
-                <tr>
-                  <td style="padding: 8px; font-weight: 700;">80 - 100</td>
-                  <td style="padding: 8px;"><span class="badge success" style="padding: 3px 8px; font-size: 9px;">A1</span></td>
-                  <td style="padding: 8px; font-weight: 800; color: var(--accent-dark);">4.0</td>
-                  <td style="padding: 8px; color: var(--text-muted);">Distinction</td>
+                @foreach([['80–100','A1','4.0','Distinction'],['70–79','A2','3.7','Upper Div.'],['60–69','A3','3.3','Lower Div.'],['50–59','B1','3.0','Credit'],['40–49','B2','2.0','Pass'],['0–39','F','0.0','Fail']] as $r)
+                <tr style="border-bottom:1px solid var(--border);">
+                  <td style="padding:8px;font-weight:700;">{{ $r[0] }}</td>
+                  <td style="padding:8px;text-align:center;font-weight:800;color:var(--accent);">{{ $r[1] }}</td>
+                  <td style="padding:8px;text-align:center;">{{ $r[2] }}</td>
+                  <td style="padding:8px;color:var(--text-muted);">{{ $r[3] }}</td>
                 </tr>
-                <tr>
-                  <td style="padding: 8px; font-weight: 700;">70 - 79</td>
-                  <td style="padding: 8px;"><span class="badge success" style="padding: 3px 8px; font-size: 9px; background: rgba(5,150,105,0.15); color: #059669;">A2</span></td>
-                  <td style="padding: 8px; font-weight: 800; color: var(--accent-dark);">3.7</td>
-                  <td style="padding: 8px; color: var(--text-muted);">Upper Division</td>
-                </tr>
-                <tr>
-                  <td style="padding: 8px; font-weight: 700;">60 - 69</td>
-                  <td style="padding: 8px;"><span class="badge success" style="padding: 3px 8px; font-size: 9px; background: rgba(5,150,105,0.15); color: #059669;">A3</span></td>
-                  <td style="padding: 8px; font-weight: 800; color: var(--accent-dark);">3.3</td>
-                  <td style="padding: 8px; color: var(--text-muted);">Lower Division</td>
-                </tr>
-                <tr>
-                  <td style="padding: 8px; font-weight: 700;">50 - 59</td>
-                  <td style="padding: 8px;"><span class="badge warning" style="padding: 3px 8px; font-size: 9px;">B1</span></td>
-                  <td style="padding: 8px; font-weight: 800; color: var(--accent-dark);">3.0</td>
-                  <td style="padding: 8px; color: var(--text-muted);">Credit</td>
-                </tr>
-                <tr>
-                  <td style="padding: 8px; font-weight: 700;">40 - 49</td>
-                  <td style="padding: 8px;"><span class="badge warning" style="padding: 3px 8px; font-size: 9px; background: rgba(245,158,11,0.15); color: #d97706;">B2</span></td>
-                  <td style="padding: 8px; font-weight: 800; color: var(--accent-dark);">2.0</td>
-                  <td style="padding: 8px; color: var(--text-muted);">Pass</td>
-                </tr>
-                <tr>
-                  <td style="padding: 8px; font-weight: 700;">Below 40</td>
-                  <td style="padding: 8px;"><span class="badge danger" style="padding: 3px 8px; font-size: 9px;">F</span></td>
-                  <td style="padding: 8px; font-weight: 800; color: #dc2626;">0.0</td>
-                  <td style="padding: 8px; color: var(--text-muted);">Fail</td>
-                </tr>
+                @endforeach
               </tbody>
             </table>
           </div>
-
-          <h3 style="margin-bottom: 8px; font-size: 13px; font-weight: 800;">How is SGPA Calculated? (Example)</h3>
-          <p style="margin-bottom: 12px; color: var(--text-muted); font-size: 12px; line-height: 1.4;">
-            Every course has a certain number of **Credits** (weight) associated with it. To find your SGPA:
-            <br>
-            1. Multiply each course's credit weight by the **Grade Points** you earned in it. This gives your **Credit Points**.
-            <br>
-            2. Add all your earned Credit Points together.
-            <br>
-            3. Divide that sum by the **Total Credits taken** during that semester.
-          </p>
-
-          <div style="background: var(--surface2); padding: 14px; border-radius: 10px; border: 1px dashed var(--border); font-size: 12px; color: var(--text-muted); line-height: 1.5;">
-            <strong style="color: var(--text); display: block; margin-bottom: 6px;">💡 Step-by-Step Calculation:</strong>
-            Let's say you took 3 courses in a semester, each worth 3 credits:
-            <ul style="margin: 6px 0 10px 18px; padding: 0;">
-              <li><strong>Course 1:</strong> Score of 82% = Grade A1 (4.0 Points). Credit Points = 3 cr × 4.0 = <strong>12.0</strong></li>
-              <li><strong>Course 2:</strong> Score of 74% = Grade A2 (3.7 Points). Credit Points = 3 cr × 3.7 = <strong>11.1</strong></li>
-              <li><strong>Course 3:</strong> Score of 55% = Grade B1 (3.0 Points). Credit Points = 3 cr × 3.0 = <strong>9.0</strong></li>
-            </ul>
-            <strong>Total Credits Taken:</strong> 3 + 3 + 3 = <strong>9 Credits</strong>
-            <br>
-            <strong>Total Credit Points Earned:</strong> 12.0 + 11.1 + 9.0 = <strong>32.1 Points</strong>
-            <br>
-            <strong>Your Semester SGPA:</strong> 32.1 / 9 = <strong style="color: var(--accent-dark); font-size: 13px;">3.57 out of 4.00</strong>
-          </div>
         </div>
+        @endif
 
         <div class="card">
-          <h2><i class="fas fa-shield-alt" style="color:#fbbf24;margin-right:6px;"></i>Confidentiality & Ranks</h2>
-          <p style="margin: 0; line-height: 1.4; color: var(--text-muted); font-size: 12px;">
-            🛡️ **Your class ranking is strictly personal and secure.** 
-            To maintain privacy and foster a constructive learning environment, your relative class position is exclusively visible to you in the live portal. Official printed report cards, academic spreadsheets, and downloaded PDF files **will never** contain your class rank.
-          </p>
-        </div>
-
-        <div class="card">
-          <h2><i class="fas fa-question-circle" style="color:#fbbf24;margin-right:6px;"></i>Frequently Asked Questions</h2>
-          <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 8px;">
+          <h2 style="margin-bottom:10px;"><i class="fas fa-question-circle" style="color:var(--accent);margin-right:6px;"></i>FAQs</h2>
+          <div style="display:flex;flex-direction:column;gap:10px;">
             <div>
-              <strong style="font-size: 12px; color: var(--text); display: block; margin-bottom: 4px;">❓ Why are my results showing as "Locked"?</strong>
-              <p style="margin: 0; color: var(--text-muted); font-size: 12px; line-height: 1.4;">
-                If your results are locked, it is because there is a pending balance on your program tuition or examination fees. Head over to the **Fees** tab to view your statement. Settle your outstanding balance at the admin office to instantly unlock all report cards and PDF downloads!
-              </p>
+              <p style="font-size:12px;font-weight:700;color:var(--text);margin:0 0 4px;">Why are my results locked?</p>
+              <p style="font-size:11px;color:var(--text-muted);margin:0;line-height:1.4;">There is an outstanding fee balance. Go to the Fees section and settle the balance, or visit the accounts office.</p>
             </div>
-            <div style="border-top: 1px solid var(--border); padding-top: 12px;">
-              <strong style="font-size: 12px; color: var(--text); display: block; margin-bottom: 4px;">❓ What should I do if a course score is missing?</strong>
-              <p style="margin: 0; color: var(--text-muted); font-size: 12px; line-height: 1.4;">
-                Some examination records can take time to be uploaded by the administration. If your report card shows a pending status or missing course, please verify with your course teacher or check in with the administration office.
-              </p>
+            <div style="border-top:1px solid var(--border);padding-top:10px;">
+              <p style="font-size:12px;font-weight:700;color:var(--text);margin:0 0 4px;">A course score is missing from my results?</p>
+              <p style="font-size:11px;color:var(--text-muted);margin:0;line-height:1.4;">Scores are uploaded by teachers and admin. Contact your teacher or the admin office if a score is missing after results have been released.</p>
+            </div>
+            <div style="border-top:1px solid var(--border);padding-top:10px;">
+              <p style="font-size:12px;font-weight:700;color:var(--text);margin:0 0 4px;">How do I change my password?</p>
+              <p style="font-size:11px;color:var(--text-muted);margin:0;line-height:1.4;">Go to Profile → Change Password, or click the Change Password link in the sidebar menu.</p>
             </div>
           </div>
         </div>
       </div>
 
-    </div>
   </div>
+  </div>
+
+  @endif {{-- end if portalMode !== 'university' --}}
+
+  <script>
+
 
   @endif {{-- end if portalMode !== 'university' --}}
 
@@ -1040,8 +983,16 @@ $modeLabel = $modeLabels[$portalMode] ?? 'Student Portal';
 
     document.querySelectorAll('.sidebar-link').forEach(link => {
       link.addEventListener('click', e => {
-        e.preventDefault();
         const page = link.getAttribute('data-page');
+
+        // Links without data-page (e.g. change-password href) navigate normally
+        if (!page) return;
+
+        e.preventDefault();
+
+        const target = document.getElementById(`page-${page}`);
+        // If the panel doesn't exist in this portal mode, do nothing
+        if (!target) return;
 
         // Update active link
         document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
@@ -1049,9 +1000,15 @@ $modeLabel = $modeLabels[$portalMode] ?? 'Student Portal';
 
         // Hide all pages
         document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
+        // Also handle panels that use display:none directly
+        document.querySelectorAll('[id^="page-"]').forEach(p => {
+          p.classList.remove('active');
+          if (p.style.display === 'block') p.style.display = 'none';
+        });
 
         // Show selected page
-        document.getElementById(`page-${page}`).classList.add('active');
+        target.classList.add('active');
+        target.style.removeProperty('display');
 
         // Close sidebar on mobile
         if (window.innerWidth < 769) {
@@ -1061,15 +1018,16 @@ $modeLabel = $modeLabels[$portalMode] ?? 'Student Portal';
 
         // Update page title
         const titles = {
-          'dashboard': 'Dashboard',
-          'results': 'Report Cards',
-          'attendance': 'Attendance',
-          'fees': 'Fee Statement',
-          'profile': 'Profile',
+          'dashboard':     'Dashboard',
+          'results':       'Report Cards',
+          'attendance':    'Attendance',
+          'fees':          'Fee Statement',
+          'profile':       'Profile',
           'notifications': 'Notifications',
-          'guide': 'Portal Guide'
+          'guide':         'Portal Guide'
         };
-        document.querySelector('.page-title').textContent = titles[page] || 'Portal';
+        const titleEl = document.querySelector('.page-title');
+        if (titleEl) titleEl.textContent = titles[page] || 'Portal';
       });
     });
 

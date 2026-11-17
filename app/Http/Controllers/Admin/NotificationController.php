@@ -23,18 +23,13 @@ class NotificationController extends Controller
         $students  = Student::with('user')->orderBy('id')->get();
         $lecturers = User::where('role', 'lecturer')->orderBy('full_name')->get();
 
-        // Templates for the "Use a Template" picker
-        // Wrapped in try-catch — table may not exist until migration runs
         $templates = collect();
         try {
             $templates = NotificationTemplate::active()
                 ->orderBy('category')->orderBy('name')
                 ->get(['id', 'name', 'category', 'title', 'body']);
-        } catch (\Throwable $e) {
-            // Table doesn't exist yet — migration pending
-        }
+        } catch (\Throwable $e) {}
 
-        // Get SMS credit balance for this tenant
         $smsCredits   = 0;
         $smsAvailable = false;
         $tenantId     = session('tenant_id');
@@ -55,10 +50,10 @@ class NotificationController extends Controller
     public function store(Request $request)
     {
         $recipientType = $request->input('recipient_type', 'student');
-        $channel       = $request->input('channel', 'in_app'); // in_app | sms | both
+        $channel       = $request->input('channel', 'in_app');
 
         $rules = [
-            'recipient_type' => 'required|in:student,lecturer',
+            'recipient_type' => 'required|in:student,lecturer,parents',
             'channel'        => 'required|in:in_app,sms,both',
             'title'          => 'required|string|max:255',
             'message'        => 'required|string|max:3000',
@@ -68,13 +63,70 @@ class NotificationController extends Controller
 
         if ($recipientType === 'student') {
             $rules['student_id'] = 'required_if:audience,individual|nullable|exists:students,id';
-        } else {
+        } elseif ($recipientType === 'lecturer') {
             $rules['lecturer_id'] = 'required_if:audience,individual|nullable|exists:users,id';
         }
 
         $request->validate($rules);
 
-        // ── Create in-app notification record ─────────────────────────────────
+        // ── Resolve placeholders in message text ──────────────────────────────
+        // For individual student messages, replace {student_name}, {fee_balance} etc
+        $rawMessage = $request->message;
+        $rawTitle   = $request->title;
+        $resolvedMessage = $rawMessage;
+        $resolvedTitle   = $rawTitle;
+
+        if ($recipientType === 'student' && $request->audience === 'individual' && $request->filled('student_id')) {
+            try {
+                $targetStudent = Student::with(['user', 'program', 'payments', 'attendances'])->find($request->student_id);
+                if ($targetStudent) {
+                    $resolvedMessage = NotificationTemplate::resolvePlaceholders($rawMessage, $targetStudent);
+                    // Also resolve title if it has placeholders
+                    if (str_contains($rawTitle, '{')) {
+                        $resolvedTitle = NotificationTemplate::resolvePlaceholders($rawTitle, $targetStudent);
+                    }
+                }
+            } catch (\Throwable $e) {
+                // Placeholder resolution failed — use raw text, never block the send
+            }
+        }
+
+        // ── Parents recipient: SMS-only (no portal account) ───────────────────
+        if ($recipientType === 'parents') {
+            // Force SMS channel for parents — they have no portal account
+            $channel = in_array($channel, ['sms', 'both']) ? 'sms' : 'sms';
+
+            $notification = StudentNotification::create([
+                'sent_by'        => auth()->id(),
+                'recipient_type' => 'parents',
+                'student_id'     => null,
+                'lecturer_id'    => null,
+                'audience'       => 'all',
+                'type'           => $request->type,
+                'title'          => $resolvedTitle,
+                'message'        => $rawMessage, // store raw for log
+                'channel'        => 'sms',
+                'is_read'        => false,
+            ]);
+
+            $smsResult = $this->sendParentsSms($notification, $rawMessage, $request->student_id ?? null);
+
+            $notification->update([
+                'sms_status'       => $smsResult['sent'] > 0 ? 'sent' : 'failed',
+                'sms_sent_count'   => $smsResult['sent'],
+                'sms_failed_count' => $smsResult['failed'],
+                'sms_error'        => !empty($smsResult['errors'])
+                    ? implode('; ', array_slice($smsResult['errors'], 0, 3))
+                    : null,
+            ]);
+
+            if ($smsResult['sent'] > 0) {
+                return back()->with('success', "SMS sent to {$smsResult['sent']} parent(s). " . ($smsResult['failed'] > 0 ? "{$smsResult['failed']} failed." : "Done."));
+            }
+            return back()->with('warning', 'SMS to parents failed: ' . implode(', ', array_slice($smsResult['errors'] ?? [], 0, 2)));
+        }
+
+        // ── Standard student / lecturer notification ──────────────────────────
         $notification = StudentNotification::create([
             'sent_by'        => auth()->id(),
             'recipient_type' => $recipientType,
@@ -84,20 +136,24 @@ class NotificationController extends Controller
                                     ? $request->lecturer_id : null,
             'audience'       => $request->audience,
             'type'           => $request->type,
-            'title'          => $request->title,
-            'message'        => $request->message,
+            'title'          => $resolvedTitle,
+            'message'        => $resolvedMessage,
             'channel'        => $channel,
             'is_read'        => false,
         ]);
 
-        $successMsg  = '';
-        $warningMsg  = '';
+        $successMsg = '';
+        $warningMsg = '';
 
-        // ── Send SMS if channel is 'sms' or 'both' ────────────────────────────
         if (in_array($channel, ['sms', 'both'])) {
+            // For individual student SMS, send resolved message; for bulk send raw (can't personalize per-recipient)
+            $smsMessage = ($recipientType === 'student' && $request->audience === 'individual')
+                ? $resolvedMessage
+                : $rawMessage;
+
             $smsResult = $this->sendSmsNotification(
                 $notification,
-                $request->message,
+                $smsMessage,
                 $recipientType,
                 $request->audience,
                 $request->student_id ?? null,
@@ -122,7 +178,7 @@ class NotificationController extends Controller
             }
         }
 
-        $target = $recipientType === 'lecturer' ? 'teacher(s)' : 'student(s)';
+        $target   = $recipientType === 'lecturer' ? 'teacher(s)' : 'student(s)';
         $inAppMsg = $channel === 'sms' ? '' : "In-app notification sent to {$target}. ";
 
         if ($warningMsg) {
@@ -156,8 +212,7 @@ class NotificationController extends Controller
 
         switch ($target) {
             case 'all_parents':
-                Student::with('user')
-                    ->whereNotIn('status', ['withdrawn', 'suspended'])
+                Student::whereNotIn('status', ['withdrawn', 'suspended'])
                     ->chunk(200, function ($students) use (&$phones) {
                         foreach ($students as $s) {
                             $phone = $s->guardian_phone ?? $s->mother_phone ?? $s->father_phone ?? null;
@@ -208,20 +263,19 @@ class NotificationController extends Controller
 
         $result = $this->sms->sendBulk($phones, $message, $tenantId);
 
-        // Log as a notification record for audit trail
         StudentNotification::create([
-            'sent_by'        => auth()->id(),
-            'recipient_type' => in_array($target, ['all_teachers']) ? 'lecturer' : 'student',
-            'audience'       => 'all',
-            'type'           => 'general',
-            'title'          => 'SMS Broadcast',
-            'message'        => $message,
-            'channel'        => 'sms',
-            'is_read'        => false,
-            'sms_status'     => $result['sent'] > 0 ? 'sent' : 'failed',
-            'sms_sent_count' => $result['sent'],
+            'sent_by'          => auth()->id(),
+            'recipient_type'   => in_array($target, ['all_teachers']) ? 'lecturer' : 'student',
+            'audience'         => 'all',
+            'type'             => 'general',
+            'title'            => 'SMS Broadcast',
+            'message'          => $message,
+            'channel'          => 'sms',
+            'is_read'          => false,
+            'sms_status'       => $result['sent'] > 0 ? 'sent' : 'failed',
+            'sms_sent_count'   => $result['sent'],
             'sms_failed_count' => $result['failed'],
-            'sms_error'      => !empty($result['errors'])
+            'sms_error'        => !empty($result['errors'])
                 ? implode('; ', array_slice($result['errors'], 0, 3))
                 : null,
         ]);
@@ -236,8 +290,69 @@ class NotificationController extends Controller
         return back()->with('error', "Broadcast failed for all {$result['failed']} recipient(s). First errors: {$errSample}");
     }
 
-    // ── SMS dispatch ──────────────────────────────────────────────────────────
+    // ── Private helpers ───────────────────────────────────────────────────────
 
+    /**
+     * Send SMS to all parents/guardians of active students.
+     * Personalises per-student if the message contains placeholders.
+     */
+    private function sendParentsSms(StudentNotification $notification, string $message, ?int $singleStudentId): array
+    {
+        $tenantId     = session('tenant_id');
+        $hasPlaceholders = str_contains($message, '{');
+        $sent = $failed = 0;
+        $errors = [];
+
+        $credits = null;
+        if ($tenantId) {
+            try { $credits = MessagingCredit::forTenant((int) $tenantId); } catch (\Throwable $e) {}
+        }
+
+        $query = Student::with(['user', 'program', 'payments', 'attendances'])
+            ->whereNotIn('status', ['withdrawn', 'suspended']);
+
+        $query->chunk(100, function ($students) use (
+            $message, $hasPlaceholders, $credits, $notification, &$sent, &$failed, &$errors, $tenantId
+        ) {
+            foreach ($students as $student) {
+                $phone = $student->guardian_phone
+                    ?? $student->mother_phone
+                    ?? $student->father_phone
+                    ?? null;
+
+                if (!$phone) {
+                    $failed++;
+                    continue;
+                }
+
+                // Personalise per student if placeholders used
+                $smsText = $hasPlaceholders
+                    ? NotificationTemplate::resolvePlaceholders($notification->title . ': ' . $message, $student)
+                    : ($notification->title . ': ' . $message);
+
+                if ($credits && !$credits->hasSmsCredits()) {
+                    $failed++;
+                    $errors[] = 'Insufficient SMS credits';
+                    break;
+                }
+
+                $result = $this->sms->send($phone, $smsText);
+                if ($result['status'] === 'sent') {
+                    $sent++;
+                    $credits?->deductSms();
+                } else {
+                    $failed++;
+                    $errors[] = $phone . ': ' . ($result['error'] ?? 'failed');
+                }
+            }
+        });
+
+        return compact('sent', 'failed', 'errors');
+    }
+
+    /**
+     * Send SMS to students or lecturers.
+     */
     private function sendSmsNotification(
         StudentNotification $notification,
         string $message,
@@ -249,7 +364,6 @@ class NotificationController extends Controller
         $tenantId = session('tenant_id');
         $phones   = [];
 
-        // Compose SMS message (title + body, keep under 160 chars if possible)
         $smsText = $notification->title . ': ' . $message;
         if (strlen($smsText) > 320) {
             $smsText = substr($smsText, 0, 317) . '...';
@@ -264,7 +378,6 @@ class NotificationController extends Controller
                         ?? null;
                 if ($phone) $phones[] = $phone;
             } else {
-                // All students — get phone numbers from their user records or guardian
                 Student::with('user')
                     ->whereNotIn('status', ['suspended', 'withdrawn'])
                     ->chunk(100, function ($students) use (&$phones) {
@@ -275,7 +388,6 @@ class NotificationController extends Controller
                     });
             }
         } else {
-            // Teachers
             if ($audience === 'individual' && $lecturerId) {
                 $lecturer = User::find($lecturerId);
                 if ($lecturer?->phone) $phones[] = $lecturer->phone;
@@ -291,9 +403,7 @@ class NotificationController extends Controller
             return ['sent' => 0, 'failed' => 0, 'errors' => ['No phone numbers found for recipients.']];
         }
 
-        // Remove duplicates and empty values
         $phones = array_unique(array_filter($phones));
-
         return $this->sms->sendBulk($phones, $smsText, $tenantId ? (int) $tenantId : null);
     }
 }

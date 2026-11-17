@@ -119,8 +119,12 @@
                 {{-- Who to notify --}}
                 <div>
                     <label class="form-label">Notify <span class="text-red-400">*</span></label>
-                    <div class="grid grid-cols-2 gap-2">
-                        @foreach([['student','fa-user-graduate','Students','Student portal'],['lecturer','fa-chalkboard-user','Teachers','Teacher portal']] as [$val,$icon,$lbl,$sub])
+                    <div class="grid grid-cols-3 gap-2">
+                        @foreach([
+                            ['student', 'fa-user-graduate',  'Students',  'Portal alert'],
+                            ['lecturer','fa-chalkboard-user','Teachers',  'Teacher portal'],
+                            ['parents', 'fa-users',          'Parents',   'SMS to guardians'],
+                        ] as [$val,$icon,$lbl,$sub])
                         <label class="cursor-pointer">
                             <input type="radio" name="recipient_type" value="{{ $val }}"
                                    x-model="recipientType" class="sr-only peer"
@@ -136,10 +140,16 @@
                         </label>
                         @endforeach
                     </div>
+                    {{-- Parents note --}}
+                    <p class="text-[10px] text-blue-600 mt-1.5 flex items-center gap-1"
+                       x-show="recipientType==='parents'" x-cloak>
+                        <i class="fas fa-info-circle"></i>
+                        SMS only — sent to guardian/parent phone numbers saved on each student's profile. Placeholders like {student_name} are personalised per parent.
+                    </p>
                 </div>
 
                 {{-- Audience --}}
-                <div>
+                <div x-show="recipientType !== 'parents'" x-cloak>
                     <label class="form-label">Send To <span class="text-red-400">*</span></label>
                     <div class="grid grid-cols-2 gap-2">
                         @foreach([['all','fa-users','All'],['individual','fa-user','Individual']] as [$val,$icon,$lbl])
@@ -178,6 +188,8 @@
                         </select>
                     </div>
                 </div>
+                {{-- Hidden all audience for parents --}}
+                <input type="hidden" name="audience" x-bind:value="recipientType==='parents' ? 'all' : audience">
 
                 {{-- Channel --}}
                 <div>
@@ -258,7 +270,7 @@
                               placeholder="Write your message here...">{{ old('message','') }}</textarea>
                     <p class="text-[10px] text-slate-400 mt-1">
                         <i class="fas fa-info-circle mr-0.5"></i>
-                        To use smart placeholders like {student_name}, save a template first.
+                        Placeholders like <strong>{student_name}</strong>, <strong>{fee_balance}</strong>, <strong>{class}</strong> are automatically replaced with real student data when sending to an individual student or to parents.
                     </p>
                 </div>
 
@@ -313,6 +325,7 @@
                 ][$notif->type] ?? ['fa-bell','#6b7280','#f3f4f6','Notice'];
                 [$tIcon,$tColor,$tBg,$tLabel] = $tc;
                 $isTeacher = ($notif->recipient_type ?? 'student') === 'lecturer';
+                $isParents = ($notif->recipient_type ?? 'student') === 'parents';
             @endphp
             <div class="sc p-4">
                 <div class="flex items-start gap-3">
@@ -329,6 +342,10 @@
                                 <span class="badge badge-purple">
                                     <i class="fas fa-chalkboard-user"></i>
                                     {{ $notif->audience === 'all' ? 'All Teachers' : ($notif->lecturer->full_name ?? 'Teacher') }}
+                                </span>
+                            @elseif($isParents)
+                                <span class="badge" style="background:#fef3c7;color:#92400e;">
+                                    <i class="fas fa-users"></i> All Parents (SMS)
                                 </span>
                             @else
                                 <span class="badge badge-blue">
