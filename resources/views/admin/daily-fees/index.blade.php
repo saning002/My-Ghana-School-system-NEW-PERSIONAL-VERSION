@@ -239,7 +239,7 @@
                     <h3 class="text-sm font-extrabold text-slate-800">
                         {{ \Carbon\Carbon::parse($today)->format('l, F j Y') }}
                     </h3>
-                    <p class="text-xs text-slate-500">Daily Rate: <strong class="text-indigo-700">GH₵ {{ number_format($dailyRate,2) }}</strong> per student</p>
+                    <p class="text-xs text-slate-500">Daily Rate: <strong class="text-indigo-700">GH₵ {{ number_format($globalRate,2) }}</strong> per student</p>
                 </div>
             </div>
             <button type="submit"
@@ -255,7 +255,7 @@
                 $exemption    = $student->feeExemption;
                 $isExempted   = $exemption?->isActive();
                 $isFull       = $isExempted && $exemption->isFull();
-                $effectiveRate = $isExempted && !$isFull ? (float)$exemption->daily_override : $dailyRate;
+                $effectiveRate = $isExempted && !$isFull ? (float)$exemption->daily_override : ($studentRates[$student->id] ?? $globalRate);
             @endphp
             <div class="flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors {{ $isFull ? 'opacity-55' : '' }}">
 
