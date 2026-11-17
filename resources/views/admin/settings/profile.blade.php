@@ -70,6 +70,8 @@
             ['portal',       'fa-graduation-cap',   'Student Portal'],
             ['alerts',       'fa-bell',             'Attendance Alerts'],
             ['id-card',      'fa-id-card',          'ID Card Settings'],
+            ['payments',     'fa-credit-card',      'Online Payments'],
+            ['sms',          'fa-sms',              'SMS &amp; Messaging'],
         ] as [$id, $icon, $label])
         <button type="button"
                 onclick="showTab('{{ $id }}')"
@@ -235,60 +237,6 @@
 </form>
 </div>
 
-{{-- ── ONLINE FEE PAYMENT SETTINGS ─────────────────────────────────────── --}}
-<div class="card overflow-hidden mb-6">
-    <div class="px-5 py-4 border-b bg-green-50 flex items-center gap-2">
-        <div class="w-8 h-8 rounded-xl bg-green-500 flex items-center justify-center">
-            <i class="fas fa-credit-card text-white text-sm"></i>
-        </div>
-        <div>
-            <h3 class="text-sm font-bold text-green-900">Online Fee Payment (Paystack)</h3>
-            <p class="text-xs text-green-600 mt-0.5">Allow parents/students to pay fees online directly to your school's Paystack account</p>
-        </div>
-    </div>
-    <form method="POST" action="{{ route('admin.settings.update') }}" class="px-5 py-5">
-        @csrf
-        <div class="rounded-xl bg-blue-50 border border-blue-100 p-3 mb-4 text-xs text-blue-700">
-            <i class="fas fa-info-circle mr-1"></i>
-            <strong>How it works:</strong> Payments go directly to your school's Paystack account — not the platform.
-            Get your keys from <a href="https://dashboard.paystack.com/#/settings/developers" target="_blank" class="underline font-bold">Paystack Dashboard → Settings → API Keys</a>.
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <div>
-                <label class="block text-xs font-bold uppercase tracking-wide text-gray-600 mb-1">Public Key</label>
-                <input type="text" name="school_paystack_public_key"
-                    value="{{ old('school_paystack_public_key', \App\Models\Setting::get('school_paystack_public_key','')) }}"
-                    placeholder="pk_live_xxxx or pk_test_xxxx"
-                    class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-green-400">
-                <p class="text-[10px] text-gray-400 mt-1">Safe to put in frontend code</p>
-            </div>
-            <div>
-                <label class="block text-xs font-bold uppercase tracking-wide text-gray-600 mb-1">Secret Key</label>
-                <input type="password" name="school_paystack_secret_key"
-                    value="{{ old('school_paystack_secret_key', \App\Models\Setting::get('school_paystack_secret_key','')) }}"
-                    placeholder="sk_live_xxxx or sk_test_xxxx"
-                    class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-green-400">
-                <p class="text-[10px] text-red-400 mt-1">Keep secret — never share this</p>
-            </div>
-        </div>
-        @if(\App\Models\Setting::get('school_paystack_secret_key','') !== '')
-        <div class="rounded-xl bg-green-50 border border-green-200 p-2.5 mb-4 text-xs text-green-700 flex items-center gap-2">
-            <i class="fas fa-check-circle text-green-500"></i>
-            Online fee payment is <strong>active</strong> — students see a "Pay Now" button in their portal.
-        </div>
-        @else
-        <div class="rounded-xl bg-gray-50 border border-gray-200 p-2.5 mb-4 text-xs text-gray-500 flex items-center gap-2">
-            <i class="fas fa-info-circle"></i>
-            Add your Paystack keys above to enable online payments. Leave blank to disable.
-        </div>
-        @endif
-        <button type="submit"
-            class="px-6 py-3 rounded-xl text-sm font-bold text-white shadow-sm"
-            style="background:linear-gradient(135deg,#16a34a,#15803d)">
-            <i class="fas fa-save mr-1.5"></i> Save Payment Settings
-        </button>
-    </form>
-</div>
 
 
 {{-- ═══════════════════════════════════════════════════════════════
@@ -1512,7 +1460,7 @@
 
 <script>
 /* ── Tab switching ───────────────────────────────────────────────── */
-var TABS = ['branding','theme','grading','sba','expectations','permissions','login-bg','portal','alerts','id-card'];
+var TABS = ['branding','theme','grading','sba','expectations','permissions','login-bg','portal','alerts','id-card','payments','sms'];
 function showTab(id) {
     TABS.forEach(function(t) {
         var panel = document.getElementById('panel-' + t);
@@ -1682,6 +1630,444 @@ function insertAtCursor(fieldId, tag) {
     var counterId = fieldId === 'present-msg' ? 'present-counter' : 'absent-counter';
     var counter = document.getElementById(counterId);
     if (counter) counter.textContent = ta.value.length + ' / 320';
+}
+</script>
+
+
+{{-- ═══════════════════════════════════════════════════════════════
+     TAB: ONLINE PAYMENTS (Paystack)
+═══════════════════════════════════════════════════════════════ --}}
+<div id="panel-payments" class="settings-panel hidden">
+@php
+    $psPublic = \App\Models\Setting::get('school_paystack_public_key','');
+    $psSecret = \App\Models\Setting::get('school_paystack_secret_key','');
+    $paymentsActive = !empty($psSecret);
+@endphp
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-5">
+    <div class="xl:col-span-2 space-y-5">
+
+        {{-- Status banner --}}
+        @if($paymentsActive)
+        <div class="flex items-center gap-4 px-5 py-4 rounded-2xl bg-green-50 border border-green-200">
+            <div class="w-10 h-10 rounded-xl bg-green-500 flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-check-circle text-white"></i>
+            </div>
+            <div>
+                <p class="text-sm font-bold text-green-800">Online payments are active</p>
+                <p class="text-xs text-green-600 mt-0.5">Students see a "Pay Now" button in their portal. Funds go directly to your Paystack account.</p>
+            </div>
+        </div>
+        @else
+        <div class="flex items-center gap-4 px-5 py-4 rounded-2xl bg-amber-50 border border-amber-200">
+            <div class="w-10 h-10 rounded-xl bg-amber-400 flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-exclamation-triangle text-white"></i>
+            </div>
+            <div>
+                <p class="text-sm font-bold text-amber-800">Online payments not configured</p>
+                <p class="text-xs text-amber-700 mt-0.5">Add your Paystack keys below to allow students to pay fees online. The fees section is always visible in the student portal regardless.</p>
+            </div>
+        </div>
+        @endif
+
+        {{-- Keys form --}}
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+            <div class="flex items-center gap-3 px-6 py-4 border-b border-gray-100" style="background:linear-gradient(135deg,#f0fdf4,#f7fee7)">
+                <div class="w-8 h-8 rounded-xl bg-green-600 flex items-center justify-center">
+                    <i class="fas fa-credit-card text-white text-sm"></i>
+                </div>
+                <div>
+                    <h3 class="text-sm font-bold text-green-900">Paystack API Keys</h3>
+                    <p class="text-xs text-green-700">Payments go directly to your school's Paystack account — not the platform.</p>
+                </div>
+            </div>
+            <form method="POST" action="{{ route('admin.settings.update') }}" class="p-6 space-y-4">
+                @csrf
+                <div class="p-3 rounded-xl bg-blue-50 border border-blue-100 text-xs text-blue-700">
+                    <i class="fas fa-info-circle mr-1"></i>
+                    Get your keys from
+                    <a href="https://dashboard.paystack.com/#/settings/developers" target="_blank" class="underline font-bold">Paystack Dashboard → Settings → API Keys</a>.
+                    Use <strong>Live keys</strong> for real payments, <strong>Test keys</strong> during testing.
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-2">
+                            Public Key <span class="text-gray-400 font-normal normal-case">(safe for frontend)</span>
+                        </label>
+                        <input type="text" name="school_paystack_public_key"
+                            value="{{ old('school_paystack_public_key', $psPublic) }}"
+                            placeholder="pk_live_xxxx  or  pk_test_xxxx"
+                            class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-green-400">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-2">
+                            Secret Key <span class="text-red-400 font-normal normal-case">(keep secret)</span>
+                        </label>
+                        <div class="relative">
+                            <input type="password" name="school_paystack_secret_key" id="psSecretInput"
+                                value="{{ old('school_paystack_secret_key', $psSecret) }}"
+                                placeholder="sk_live_xxxx  or  sk_test_xxxx"
+                                class="w-full px-4 py-3 pr-12 bg-gray-50 border border-gray-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-green-400">
+                            <button type="button" onclick="toggleSecret()"
+                                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 transition-colors">
+                                <i class="fas fa-eye text-sm" id="psEyeIcon"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 pt-2">
+                    <button type="submit"
+                        class="flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold text-white shadow-sm transition-all hover:-translate-y-0.5"
+                        style="background:linear-gradient(135deg,#16a34a,#15803d)">
+                        <i class="fas fa-save"></i> Save Payment Settings
+                    </button>
+                    @if($paymentsActive)
+                    <span class="text-xs text-green-600 font-semibold flex items-center gap-1.5">
+                        <i class="fas fa-check-circle text-green-500"></i> Keys saved &amp; active
+                    </span>
+                    @endif
+                </div>
+            </form>
+        </div>
+
+        {{-- How it works --}}
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+            <h4 class="text-sm font-bold text-gray-700 mb-4"><i class="fas fa-route text-green-500 mr-1.5"></i> How student online payments work</h4>
+            <ol class="space-y-3">
+                @foreach([
+                    ['1','Student logs into portal, opens the Fees section','text-green-500'],
+                    ['2','Clicks "Pay Online" and enters the amount','text-blue-500'],
+                    ['3','Redirected to Paystack — pays by card or mobile money','text-purple-500'],
+                    ['4','Paystack confirms payment and redirects back to portal','text-amber-500'],
+                    ['5','Payment is recorded automatically in the fees ledger','text-green-600'],
+                ] as [$num,$text,$color])
+                <li class="flex items-start gap-3">
+                    <div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-white text-xs font-bold {{ $color === 'text-green-500' ? 'bg-green-500' : ($color === 'text-blue-500' ? 'bg-blue-500' : ($color === 'text-purple-500' ? 'bg-purple-500' : ($color === 'text-amber-500' ? 'bg-amber-400' : 'bg-green-600'))) }}">{{ $num }}</div>
+                    <p class="text-sm text-gray-600">{{ $text }}</p>
+                </li>
+                @endforeach
+            </ol>
+        </div>
+    </div>
+
+    {{-- Right info --}}
+    <div class="self-start space-y-4">
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
+            <h4 class="text-sm font-bold text-gray-700 mb-3"><i class="fas fa-shield-alt text-green-500 mr-1"></i> Security notes</h4>
+            <ul class="space-y-2.5 text-xs text-gray-500">
+                <li class="flex items-start gap-2"><i class="fas fa-check text-green-500 mt-0.5 flex-shrink-0"></i> The secret key is stored encrypted in your school's private database — never the platform database</li>
+                <li class="flex items-start gap-2"><i class="fas fa-check text-green-500 mt-0.5 flex-shrink-0"></i> Never share your secret key with anyone or put it in public code</li>
+                <li class="flex items-start gap-2"><i class="fas fa-check text-green-500 mt-0.5 flex-shrink-0"></i> Funds go directly to your Paystack account — the platform has zero access</li>
+                <li class="flex items-start gap-2"><i class="fas fa-check text-green-500 mt-0.5 flex-shrink-0"></i> Every payment is verified with Paystack before being recorded</li>
+            </ul>
+        </div>
+        <div class="bg-blue-50 rounded-2xl border border-blue-100 p-5">
+            <h4 class="text-sm font-bold text-blue-800 mb-2"><i class="fas fa-lightbulb text-blue-500 mr-1"></i> No Paystack account?</h4>
+            <p class="text-xs text-blue-700 mb-3">Create a free account at paystack.com. Approval usually takes 1–2 business days for Ghanaian businesses.</p>
+            <a href="https://paystack.com/gh/signup" target="_blank"
+               class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-blue-500 hover:bg-blue-600 transition-colors">
+                <i class="fas fa-external-link-alt"></i> Sign up on Paystack
+            </a>
+        </div>
+    </div>
+</div>
+</div>
+
+{{-- ═══════════════════════════════════════════════════════════════
+     TAB: SMS & MESSAGING
+═══════════════════════════════════════════════════════════════ --}}
+<div id="panel-sms" class="settings-panel hidden">
+@php
+    $arkeselKey    = env('ARKESEL_API_KEY', '');
+    $arkeselSender = env('ARKESEL_SENDER_ID', 'SchoolAlert');
+    $smsConfigured = !empty($arkeselKey);
+    $smsBalance    = null;
+    $smsBalanceErr = null;
+    if ($smsConfigured) {
+        try {
+            $balRes = \Illuminate\Support\Facades\Http::timeout(6)
+                ->withHeaders(['api-key' => $arkeselKey])
+                ->get('https://sms.arkesel.com/api/v2/clients/balance-details');
+            if ($balRes->successful()) {
+                $bd = $balRes->json();
+                $smsBalance = [
+                    'sms'      => $bd['data']['sms_balance'] ?? $bd['data']['balance'] ?? null,
+                    'currency' => $bd['data']['currency'] ?? 'GHS',
+                ];
+            } else {
+                $smsBalanceErr = 'Could not fetch balance (HTTP ' . $balRes->status() . ')';
+            }
+        } catch (\Throwable $e) {
+            $smsBalanceErr = $e->getMessage();
+        }
+    }
+    $tenantId   = session('tenant_id');
+    $smsCredits = 0;
+    if ($tenantId) {
+        try { $smsCredits = \App\Models\MessagingCredit::forTenant((int)$tenantId)->sms_credits; } catch (\Throwable $e) {}
+    }
+    // Load students + lecturers for broadcast target selection
+    $allStudents  = \App\Models\Student::with('user')->whereNotIn('status',['withdrawn','suspended'])->orderBy('id')->get();
+    $allPrograms  = \App\Models\Program::orderBy('sequence')->get();
+    $allLecturers = \App\Models\User::where('role','lecturer')->orderBy('full_name')->get();
+@endphp
+
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-5">
+    <div class="xl:col-span-2 space-y-5">
+
+        {{-- Provider status card --}}
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+            <div class="flex items-center gap-3 px-6 py-4 border-b border-gray-100"
+                 style="background:linear-gradient(135deg,#eff6ff,#dbeafe)">
+                <div class="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center">
+                    <i class="fas fa-satellite-dish text-white text-sm"></i>
+                </div>
+                <div class="flex-1">
+                    <h3 class="text-sm font-bold text-blue-900">SMS Provider — Arkesel</h3>
+                    <p class="text-xs text-blue-600">Platform-level SMS provider. Configured by the system owner via environment variables.</p>
+                </div>
+                @if($smsConfigured)
+                <span class="px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700">
+                    <i class="fas fa-check-circle mr-1"></i> Configured
+                </span>
+                @else
+                <span class="px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-700">
+                    <i class="fas fa-times-circle mr-1"></i> Not set
+                </span>
+                @endif
+            </div>
+            <div class="p-6">
+                @if(!$smsConfigured)
+                <div class="flex items-start gap-3 p-4 bg-amber-50 rounded-xl border border-amber-200">
+                    <i class="fas fa-exclamation-triangle text-amber-500 mt-0.5 flex-shrink-0"></i>
+                    <div class="text-xs text-amber-800">
+                        <strong>ARKESEL_API_KEY</strong> is not set in the server environment.
+                        Contact the system owner to configure the SMS provider.
+                        SMS alerts and broadcasts will not work until this is set.
+                    </div>
+                </div>
+                @else
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    {{-- Arkesel platform balance --}}
+                    <div class="p-4 rounded-2xl border-2 text-center {{ isset($smsBalance['sms']) && (float)$smsBalance['sms'] > 100 ? 'border-green-200 bg-green-50' : (isset($smsBalance['sms']) ? 'border-red-200 bg-red-50' : 'border-gray-200 bg-gray-50') }}">
+                        <div class="text-xs font-bold uppercase tracking-wide text-gray-500 mb-2">Arkesel Balance</div>
+                        @if(isset($smsBalance['sms']))
+                        <div class="text-2xl font-black {{ (float)$smsBalance['sms'] > 100 ? 'text-green-700' : 'text-red-600' }}">
+                            {{ number_format((float)$smsBalance['sms'], 0) }}
+                        </div>
+                        <div class="text-xs text-gray-500 mt-1">SMS units remaining</div>
+                        @elseif($smsBalanceErr)
+                        <div class="text-sm font-bold text-gray-400">Unavailable</div>
+                        <div class="text-[10px] text-gray-400 mt-1">{{ Str::limit($smsBalanceErr, 60) }}</div>
+                        @else
+                        <div class="text-sm font-bold text-gray-400">—</div>
+                        @endif
+                    </div>
+                    {{-- School credits --}}
+                    <div class="p-4 rounded-2xl border-2 text-center {{ $smsCredits > 0 ? 'border-indigo-200 bg-indigo-50' : 'border-gray-200 bg-gray-50' }}">
+                        <div class="text-xs font-bold uppercase tracking-wide text-gray-500 mb-2">Your SMS Credits</div>
+                        <div class="text-2xl font-black {{ $smsCredits > 0 ? 'text-indigo-700' : 'text-gray-400' }}">
+                            {{ number_format($smsCredits) }}
+                        </div>
+                        <div class="text-xs text-gray-500 mt-1">allocated to this school</div>
+                    </div>
+                    {{-- Sender ID --}}
+                    <div class="p-4 rounded-2xl border-2 border-purple-200 bg-purple-50 text-center">
+                        <div class="text-xs font-bold uppercase tracking-wide text-gray-500 mb-2">Sender ID</div>
+                        <div class="text-base font-black text-purple-700 break-all">{{ $arkeselSender }}</div>
+                        <div class="text-xs text-gray-500 mt-1">shown to recipients</div>
+                    </div>
+                </div>
+                @if($smsCredits === 0)
+                <div class="mt-4 flex items-start gap-3 p-4 bg-amber-50 rounded-xl border border-amber-200">
+                    <i class="fas fa-coins text-amber-500 mt-0.5 flex-shrink-0"></i>
+                    <div class="text-xs text-amber-800">
+                        <strong>No SMS credits allocated to this school.</strong>
+                        Purchase credits from the owner panel or contact the system administrator.
+                        Without credits, no SMS alerts or broadcasts will be sent.
+                    </div>
+                </div>
+                @endif
+                @endif
+            </div>
+        </div>
+
+        {{-- Bulk SMS Broadcast --}}
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+            <div class="flex items-center gap-3 px-6 py-4 border-b border-gray-100"
+                 style="background:linear-gradient(135deg,#fdf4ff,#f5f3ff)">
+                <div class="w-8 h-8 rounded-xl bg-purple-600 flex items-center justify-center">
+                    <i class="fas fa-broadcast-tower text-white text-sm"></i>
+                </div>
+                <div>
+                    <h3 class="text-sm font-bold text-purple-900">Bulk SMS Broadcast</h3>
+                    <p class="text-xs text-purple-600">Send a one-time SMS to parents, students, or teachers in bulk</p>
+                </div>
+                @if($smsCredits > 0)
+                <span class="ml-auto px-3 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-700 flex-shrink-0">
+                    {{ number_format($smsCredits) }} credits
+                </span>
+                @endif
+            </div>
+            <form method="POST" action="{{ route('admin.sms.broadcast') }}" id="broadcastForm" class="p-6 space-y-4"
+                  onsubmit="return confirmBroadcast()">
+                @csrf
+                {{-- Recipient target --}}
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-2">
+                        Send to <span class="text-red-400">*</span>
+                    </label>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                        @foreach([
+                            ['all_parents',   'fa-users',          'All Parents',    'Guardian phones of all active students'],
+                            ['all_students',  'fa-user-graduate',  'All Students',   'Phone numbers of all active students'],
+                            ['by_program',    'fa-book-open',      'By Programme',   'All parents in a specific programme'],
+                            ['all_teachers',  'fa-chalkboard-user','All Teachers',   'Phone numbers of all lecturers'],
+                        ] as [$val, $icon, $lbl, $hint])
+                        <label class="cursor-pointer">
+                            <input type="radio" name="broadcast_target" value="{{ $val }}"
+                                   class="sr-only peer" {{ $val === 'all_parents' ? 'checked' : '' }}
+                                   onchange="toggleProgramPicker(this.value)">
+                            <div class="p-3 rounded-xl border-2 border-gray-200 peer-checked:border-purple-500 peer-checked:bg-purple-50 transition-all text-center">
+                                <i class="fas {{ $icon }} text-gray-400 peer-checked:text-purple-500 text-lg mb-1 block"></i>
+                                <p class="text-xs font-bold text-gray-700">{{ $lbl }}</p>
+                                <p class="text-[10px] text-gray-400 mt-0.5">{{ $hint }}</p>
+                            </div>
+                        </label>
+                        @endforeach
+                    </div>
+                </div>
+
+                {{-- Programme picker (shown when by_program selected) --}}
+                <div id="programPickerWrap" class="hidden">
+                    <label class="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-2">Select Programme</label>
+                    <select name="broadcast_program_id" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-400">
+                        <option value="">— choose programme —</option>
+                        @foreach($allPrograms as $prog)
+                        <option value="{{ $prog->id }}">{{ $prog->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                {{-- Message --}}
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <label class="block text-xs font-bold text-gray-600 uppercase tracking-wide">
+                            Message <span class="text-red-400">*</span>
+                        </label>
+                        <span class="text-[10px] text-gray-400 font-semibold" id="broadcastCounter">0 / 320</span>
+                    </div>
+                    <textarea name="broadcast_message" id="broadcastMsg" rows="4" required
+                              maxlength="320"
+                              oninput="document.getElementById('broadcastCounter').textContent=this.value.length+' / 320'"
+                              class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm resize-none focus:outline-none focus:ring-2 focus:ring-purple-400"
+                              placeholder="Type your message here...&#10;&#10;e.g. Dear Parent, the school re-opens on Monday 18th November. Please ensure your ward is on time. Thank you."></textarea>
+                    <div class="flex items-center gap-4 mt-2">
+                        <p class="text-xs text-gray-400">
+                            <i class="fas fa-info-circle text-purple-400 mr-1"></i>
+                            160 chars = 1 SMS credit. 161–320 chars = 2 credits per recipient.
+                        </p>
+                        <span id="creditEstimate" class="text-xs font-bold text-purple-700 ml-auto"></span>
+                    </div>
+                </div>
+
+                {{-- Preview recipient count --}}
+                <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
+                    <i class="fas fa-users text-gray-400"></i>
+                    <div class="text-xs text-gray-600">
+                        Estimated recipients:
+                        <strong id="recipientCount" class="text-gray-800">{{ $allStudents->count() }} (all parents)</strong>
+                    </div>
+                    <div class="ml-auto text-xs font-bold text-purple-700" id="totalCreditEstimate"></div>
+                </div>
+
+                <button type="submit"
+                        class="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl text-sm font-bold text-white shadow-lg transition-all hover:shadow-xl hover:-translate-y-0.5 {{ $smsCredits === 0 ? 'opacity-50 cursor-not-allowed' : '' }}"
+                        style="background:linear-gradient(135deg,#9333ea,#7c3aed)"
+                        {{ $smsCredits === 0 ? 'disabled' : '' }}>
+                    <i class="fas fa-paper-plane"></i> Send Broadcast SMS
+                </button>
+                @if($smsCredits === 0)
+                <p class="text-center text-xs text-red-500">Purchase SMS credits first before broadcasting.</p>
+                @endif
+            </form>
+        </div>
+    </div>
+
+    {{-- Right: tips + credit history --}}
+    <div class="self-start space-y-4">
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
+            <h4 class="text-sm font-bold text-gray-700 mb-3"><i class="fas fa-lightbulb text-yellow-500 mr-1"></i> Broadcast tips</h4>
+            <ul class="space-y-2.5 text-xs text-gray-500">
+                <li class="flex items-start gap-2"><i class="fas fa-check text-green-500 mt-0.5 flex-shrink-0"></i> Keep messages under 160 characters to use 1 credit per person</li>
+                <li class="flex items-start gap-2"><i class="fas fa-check text-green-500 mt-0.5 flex-shrink-0"></i> Always identify your school at the start of the message</li>
+                <li class="flex items-start gap-2"><i class="fas fa-check text-green-500 mt-0.5 flex-shrink-0"></i> Students/parents without saved phone numbers will be skipped</li>
+                <li class="flex items-start gap-2"><i class="fas fa-check text-green-500 mt-0.5 flex-shrink-0"></i> Credits are deducted only for messages that are actually sent</li>
+                <li class="flex items-start gap-2"><i class="fas fa-exclamation-circle text-amber-500 mt-0.5 flex-shrink-0"></i> Broadcasts are irreversible — review carefully before sending</li>
+            </ul>
+        </div>
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
+            <h4 class="text-sm font-bold text-gray-700 mb-2">Need more credits?</h4>
+            <p class="text-xs text-gray-500 mb-3">SMS credits are purchased through the owner panel. Contact the system administrator to top up.</p>
+            <a href="{{ route('admin.notifications.index') }}"
+               class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-indigo-500 hover:bg-indigo-600 transition-colors">
+                <i class="fas fa-bell"></i> Go to Notifications
+            </a>
+        </div>
+    </div>
+</div>
+</div>
+
+<script>
+function toggleSecret() {
+    var i = document.getElementById('psSecretInput');
+    var e = document.getElementById('psEyeIcon');
+    if (!i) return;
+    if (i.type === 'password') { i.type = 'text'; e.classList.replace('fa-eye','fa-eye-slash'); }
+    else { i.type = 'password'; e.classList.replace('fa-eye-slash','fa-eye'); }
+}
+function toggleProgramPicker(val) {
+    var wrap = document.getElementById('programPickerWrap');
+    if (wrap) wrap.classList.toggle('hidden', val !== 'by_program');
+    updateRecipientCount(val);
+}
+var recipientCounts = {
+    all_parents:  {{ $allStudents->count() }},
+    all_students: {{ $allStudents->count() }},
+    by_program:   0,
+    all_teachers: {{ $allLecturers->count() }},
+};
+function updateRecipientCount(val) {
+    var el  = document.getElementById('recipientCount');
+    var labels = {
+        all_parents:  '{{ $allStudents->count() }} (guardian phones)',
+        all_students: '{{ $allStudents->count() }} (student phones)',
+        by_program:   'varies by programme',
+        all_teachers: '{{ $allLecturers->count() }} teachers',
+    };
+    if (el) el.innerHTML = '<strong class="text-gray-800">' + (labels[val] || '—') + '</strong>';
+    updateCreditEstimate();
+}
+document.getElementById('broadcastMsg')?.addEventListener('input', updateCreditEstimate);
+function updateCreditEstimate() {
+    var msg = document.getElementById('broadcastMsg')?.value || '';
+    var len = msg.length;
+    var credits = len <= 0 ? 0 : (len <= 160 ? 1 : 2);
+    var el = document.getElementById('creditEstimate');
+    var tel = document.getElementById('totalCreditEstimate');
+    var target = document.querySelector('input[name="broadcast_target"]:checked')?.value || 'all_parents';
+    var count = recipientCounts[target] || 0;
+    var total = credits * count;
+    if (el) el.textContent = len > 0 ? credits + ' credit(s) per person' : '';
+    if (tel) tel.textContent = total > 0 ? '≈ ' + total.toLocaleString() + ' total credits' : '';
+}
+function confirmBroadcast() {
+    var msg = document.getElementById('broadcastMsg')?.value || '';
+    var target = document.querySelector('input[name="broadcast_target"]:checked')?.value || 'all_parents';
+    var count = recipientCounts[target] || 0;
+    var credits = msg.length <= 160 ? 1 : 2;
+    var total = credits * count;
+    if (!msg.trim()) { alert('Please type a message.'); return false; }
+    return confirm('Send this SMS to approximately ' + count + ' recipient(s)?\n\nEstimated credits used: ' + total + '\n\nThis cannot be undone.');
 }
 </script>
 

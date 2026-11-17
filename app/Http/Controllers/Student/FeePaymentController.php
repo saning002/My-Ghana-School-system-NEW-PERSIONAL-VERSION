@@ -8,6 +8,7 @@ use App\Models\Setting;
 use App\Models\Student;
 use App\Services\TermFeeService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -171,13 +172,51 @@ class FeePaymentController extends Controller
                 'updated_at'      => now(),
             ]);
 
-            return redirect()->route('portal.dashboard')
-                ->with('success', "Payment of GHS " . number_format($payment->amount_paid, 2) . " confirmed! Receipt: {$receiptNumber}");
+            // Redirect to dedicated confirmation page
+            return redirect()->route('portal.payment-confirmed', [
+                'receipt'    => $receiptNumber,
+                'amount'     => number_format($payment->amount_paid, 2),
+                'channel'    => $txData['channel'] ?? 'Paystack',
+                'reference'  => $reference,
+            ]);
 
         } catch (\Throwable $e) {
             Log::error('Student fee payment callback failed: ' . $e->getMessage());
             return redirect()->route('portal.dashboard')->with('error', 'Verification error. Contact the school with reference: ' . $reference);
         }
+    }
+
+    /**
+     * Show the payment confirmation/success page.
+     */
+    public function confirmed(Request $request)
+    {
+        $student = $this->getPortalStudent();
+        if (!$student) {
+            return redirect()->route('portal.login');
+        }
+
+        // If arrived here without params (direct URL), redirect to dashboard
+        if (!$request->filled('receipt') && !$request->filled('reference')) {
+            return redirect()->route('portal.dashboard');
+        }
+
+        $receipt   = $request->query('receipt');
+        $amount    = $request->query('amount');
+        $channel   = $request->query('channel', 'Paystack');
+        $reference = $request->query('reference');
+
+        // Load school branding for the page
+        $schoolName    = \App\Models\Setting::get('school_name', config('app.name'));
+        $schoolSubtitle= \App\Models\Setting::get('school_subtitle', '');
+        $siteLogoUrl   = \App\Models\Setting::get('site_logo_url', '');
+        $logoSrc       = $siteLogoUrl ? Storage::disk('public')->url($siteLogoUrl) : null;
+        $portalTheme   = \App\Models\Setting::get('portal_theme', 'gold');
+
+        return view('portal.payment-confirmed', compact(
+            'student', 'receipt', 'amount', 'channel', 'reference',
+            'schoolName', 'schoolSubtitle', 'logoSrc', 'portalTheme'
+        ));
     }
 
     private function getPortalStudent(): ?Student

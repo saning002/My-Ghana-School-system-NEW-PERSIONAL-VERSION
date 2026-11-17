@@ -560,7 +560,15 @@ class ReportController extends Controller
         );
         $qrUrl = $this->safeQr($doc);
 
-        $pdf = Pdf::loadView('pdf.student_academic_report', array_merge(compact('data', 'student', 'program', 'doc', 'qrUrl', 'attempt'), $this->schoolMeta()))
+        // Respect the report card template setting
+        $templateSetting = \App\Models\Setting::get('report_card_template', 'standard');
+        $adminTemplateMap = [
+            'basic' => 'pdf.report_card_basic',
+            'jhs'   => 'pdf.report_card_jhs',
+        ];
+        $pdfView = $adminTemplateMap[$templateSetting] ?? 'pdf.student_academic_report';
+
+        $pdf = Pdf::loadView($pdfView, array_merge(compact('data', 'student', 'program', 'doc', 'qrUrl', 'attempt'), $this->schoolMeta()))
             ->setPaper('a4');
         return $pdf->download("report_card_{$student->student_id}_" . now()->format('Ymd') . '.pdf');
     }

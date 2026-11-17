@@ -668,7 +668,13 @@ $modeLabel = $modeLabels[$portalMode] ?? 'Student Portal';
         </div>
 
         {{-- Pay Now section --}}
-        @if($balance > 0 && $onlinePayEnabled && $currentSessionId)
+        @if($balance <= 0)
+        <div class="card" style="background:#f0fdf4;border:1px solid #bbf7d0;margin-bottom:16px;text-align:center;padding:20px;">
+            <i class="fas fa-check-circle" style="font-size:2rem;color:#16a34a;display:block;margin-bottom:8px;"></i>
+            <div style="font-size:13px;font-weight:800;color:#166534;">All Fees Cleared</div>
+            <div style="font-size:11px;color:#15803d;margin-top:4px;">Your account is fully paid up.</div>
+        </div>
+        @elseif($balance > 0 && $onlinePayEnabled && $currentSessionId)
         <div class="card" style="background:linear-gradient(135deg,#1e3a5f,#0f2544);border:none;margin-bottom:16px;">
             <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
                 <div style="width:40px;height:40px;background:rgba(251,191,36,.15);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
@@ -708,11 +714,22 @@ $modeLabel = $modeLabels[$portalMode] ?? 'Student Portal';
                 </p>
             </form>
         </div>
-        @elseif($balance <= 0)
-        <div class="card" style="background:#f0fdf4;border:1px solid #bbf7d0;margin-bottom:16px;text-align:center;padding:20px;">
-            <i class="fas fa-check-circle" style="font-size:2rem;color:#16a34a;display:block;margin-bottom:8px;"></i>
-            <div style="font-size:13px;font-weight:800;color:#166534;">All Fees Cleared</div>
-            <div style="font-size:11px;color:#15803d;margin-top:4px;">Your account is fully paid up.</div>
+        @else
+        {{-- Balance outstanding but online payments not configured — show pay-at-office card --}}
+        <div class="card" style="background:linear-gradient(135deg,#fef3c7,#fffbeb);border:1px solid #fde68a;margin-bottom:16px;">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+                <div style="width:40px;height:40px;background:#fbbf24;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <i class="fas fa-exclamation-triangle" style="color:#fff;font-size:1rem;"></i>
+                </div>
+                <div>
+                    <div style="font-size:13px;font-weight:800;color:#92400e;">Outstanding Balance: GH₵{{ number_format($balance, 2) }}</div>
+                    <div style="font-size:11px;color:#b45309;">Please settle this at the accounts office</div>
+                </div>
+            </div>
+            <div style="background:rgba(255,255,255,0.6);border-radius:10px;padding:12px;font-size:12px;color:#78350f;line-height:1.5;">
+                <i class="fas fa-info-circle" style="margin-right:5px;color:#d97706;"></i>
+                Online payment is not currently available. Please visit the school's accounts office with your student ID to make payment. Keep your receipt after payment.
+            </div>
         </div>
         @endif
 

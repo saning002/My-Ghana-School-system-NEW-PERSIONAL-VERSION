@@ -448,6 +448,7 @@ Route::middleware(['tenant', 'role:admin'])->prefix('admin')->name('admin.')->gr
     Route::post('/settings/academic-expectations', [\App\Http\Controllers\Admin\AdminSettingsController::class, 'updateAcademicExpectations'])->name('settings.update-academic-expectations');
     Route::post('/settings/portal',            [\App\Http\Controllers\Admin\AdminSettingsController::class, 'updatePortal'])->name('settings.update-portal');
     Route::post('/settings/id-card',           [\App\Http\Controllers\Admin\AdminSettingsController::class, 'updateIdCard'])->name('settings.update-id-card');
+    Route::post('/sms/broadcast',              [NotificationController::class, 'broadcastSms'])->name('sms.broadcast');
 
     // Theme
     Route::post('/theme',       [\App\Http\Controllers\Admin\ThemeController::class, 'save'])->name('theme.save');
@@ -1142,6 +1143,7 @@ Route::prefix('portal')->name('portal.')->group(function () {
         Route::post('/notifications/read-all', [PortalController::class, 'markAllRead'])->name('notifications.read-all');
         Route::get('/change-password',         [PortalController::class, 'changePasswordForm'])->name('change-password');
         Route::post('/change-password',        [PortalController::class, 'updatePassword'])->name('change-password.update');
+        Route::get('/payment-confirmed',       [\App\Http\Controllers\Student\FeePaymentController::class, 'confirmed'])->name('payment-confirmed');
     });
 });
 

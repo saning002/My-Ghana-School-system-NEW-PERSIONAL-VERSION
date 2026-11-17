@@ -138,6 +138,104 @@ class NotificationController extends Controller
         return back()->with('success', 'Notification deleted.');
     }
 
+    /**
+     * Bulk SMS broadcast from the Settings → SMS tab.
+     */
+    public function broadcastSms(Request $request)
+    {
+        $request->validate([
+            'broadcast_target'     => 'required|in:all_parents,all_students,by_program,all_teachers',
+            'broadcast_message'    => 'required|string|max:320',
+            'broadcast_program_id' => 'nullable|exists:programs,id',
+        ]);
+
+        $target   = $request->broadcast_target;
+        $message  = trim($request->broadcast_message);
+        $tenantId = session('tenant_id') ? (int) session('tenant_id') : null;
+        $phones   = [];
+
+        switch ($target) {
+            case 'all_parents':
+                Student::with('user')
+                    ->whereNotIn('status', ['withdrawn', 'suspended'])
+                    ->chunk(200, function ($students) use (&$phones) {
+                        foreach ($students as $s) {
+                            $phone = $s->guardian_phone ?? $s->mother_phone ?? $s->father_phone ?? null;
+                            if ($phone) $phones[] = $phone;
+                        }
+                    });
+                break;
+
+            case 'all_students':
+                Student::with('user')
+                    ->whereNotIn('status', ['withdrawn', 'suspended'])
+                    ->chunk(200, function ($students) use (&$phones) {
+                        foreach ($students as $s) {
+                            $phone = $s->user?->phone ?? $s->phone ?? null;
+                            if ($phone) $phones[] = $phone;
+                        }
+                    });
+                break;
+
+            case 'by_program':
+                if (!$request->filled('broadcast_program_id')) {
+                    return back()->with('error', 'Please select a programme.')->withInput();
+                }
+                Student::with('user')
+                    ->where('program_id', $request->broadcast_program_id)
+                    ->whereNotIn('status', ['withdrawn', 'suspended'])
+                    ->chunk(200, function ($students) use (&$phones) {
+                        foreach ($students as $s) {
+                            $phone = $s->guardian_phone ?? $s->user?->phone ?? $s->phone ?? null;
+                            if ($phone) $phones[] = $phone;
+                        }
+                    });
+                break;
+
+            case 'all_teachers':
+                User::where('role', 'lecturer')
+                    ->whereNotNull('phone')
+                    ->pluck('phone')
+                    ->each(fn($p) => $phones[] = $p);
+                break;
+        }
+
+        $phones = array_unique(array_filter($phones));
+
+        if (empty($phones)) {
+            return back()->with('error', 'No phone numbers found for the selected recipients. Make sure phone numbers are saved on student/teacher profiles.')->withInput();
+        }
+
+        $result = $this->sms->sendBulk($phones, $message, $tenantId);
+
+        // Log as a notification record for audit trail
+        StudentNotification::create([
+            'sent_by'        => auth()->id(),
+            'recipient_type' => in_array($target, ['all_teachers']) ? 'lecturer' : 'student',
+            'audience'       => 'all',
+            'type'           => 'general',
+            'title'          => 'SMS Broadcast',
+            'message'        => $message,
+            'channel'        => 'sms',
+            'is_read'        => false,
+            'sms_status'     => $result['sent'] > 0 ? 'sent' : 'failed',
+            'sms_sent_count' => $result['sent'],
+            'sms_failed_count' => $result['failed'],
+            'sms_error'      => !empty($result['errors'])
+                ? implode('; ', array_slice($result['errors'], 0, 3))
+                : null,
+        ]);
+
+        if ($result['sent'] > 0 && $result['failed'] === 0) {
+            return back()->with('success', "Broadcast sent to {$result['sent']} recipient(s) successfully.");
+        } elseif ($result['sent'] > 0) {
+            return back()->with('success', "Broadcast sent to {$result['sent']} recipient(s). {$result['failed']} failed.");
+        }
+
+        $errSample = implode(', ', array_slice($result['errors'], 0, 2));
+        return back()->with('error', "Broadcast failed for all {$result['failed']} recipient(s). First errors: {$errSample}");
+    }
+
     // ── SMS dispatch ──────────────────────────────────────────────────────────
 
     private function sendSmsNotification(

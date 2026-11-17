@@ -454,7 +454,15 @@ class PortalController extends Controller
             @ini_set('memory_limit', '256M');
             @set_time_limit(120);
 
-            $html = view('pdf.report_card', $data)->render();
+            // Choose template based on school setting
+            $templateSetting = \App\Models\Setting::get('report_card_template', 'standard');
+            $templateMap = [
+                'basic' => 'pdf.report_card_basic',
+                'jhs'   => 'pdf.report_card_jhs',
+            ];
+            $templateView = $templateMap[$templateSetting] ?? 'pdf.report_card';
+
+            $html = view($templateView, $data)->render();
 
             $fontDir = sys_get_temp_dir() . '/dompdf_fonts';
             if (! is_dir($fontDir)) {
