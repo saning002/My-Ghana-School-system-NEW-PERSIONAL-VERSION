@@ -303,7 +303,7 @@ class BackupController extends Controller
             $env     = 'PGPASSWORD=' . escapeshellarg($password);
             $sslMode = (str_contains($host, 'neon.tech') || str_contains($host, 'render.com')
                         || str_contains($host, 'supabase.co'))
-                       ? ' sslmode=require' : '';
+                       ? ' sslmode=require' : ' sslmode=disable';
 
             $command = sprintf(
                 '%s psql --host=%s --port=%s --username=%s --dbname=%s --file=%s 2>&1',

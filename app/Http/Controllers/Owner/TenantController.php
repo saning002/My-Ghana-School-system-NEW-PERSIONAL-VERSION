@@ -55,11 +55,11 @@ class TenantController extends Controller
             'status'        => 'required|in:active,suspended,trial,expired',
             'trial_ends_at' => 'nullable|date',
             'subscription_ends_at' => 'nullable|date',
-            'db_host'       => 'required|string|max:255',
-            'db_port'       => 'required|string|max:10',
-            'db_name'       => 'required|string|max:255',
-            'db_username'   => 'required|string|max:255',
-            'db_password'   => 'required|string|max:500',
+            'db_host'       => env('VPS_POSTGRES_HOST') ? 'nullable|string|max:255' : 'required|string|max:255',
+            'db_port'       => env('VPS_POSTGRES_HOST') ? 'nullable|string|max:10'  : 'required|string|max:10',
+            'db_name'       => env('VPS_POSTGRES_HOST') ? 'nullable|string|max:255' : 'required|string|max:255',
+            'db_username'   => env('VPS_POSTGRES_HOST') ? 'nullable|string|max:255' : 'required|string|max:255',
+            'db_password'   => env('VPS_POSTGRES_HOST') ? 'nullable|string|max:500' : 'required|string|max:500',
             'backup_frequency' => 'required|in:daily,weekly,monthly,off',
             'notes'         => 'nullable|string',
             // Storage credentials
@@ -85,6 +85,22 @@ class TenantController extends Controller
         $validated['per_student_rate']         = $validated['per_student_rate'] ?? 0;
         $validated['billing_terms_per_year']   = $validated['billing_terms_per_year'] ?? 3;
         $validated['billing_includes_sms']     = ($validated['billing_model'] === 'per_student') ? ($request->boolean('billing_includes_sms')) : false;
+
+        // ── Auto-provision local database if VPS Postgres is configured ─────
+        // When VPS_POSTGRES_HOST is set, create the DB automatically instead of
+        // requiring the owner to manually fill in db credentials.
+        if (env('VPS_POSTGRES_HOST') && empty($validated['db_host'] ?? '')) {
+            try {
+                $dbResult = $this->provisionLocalDatabase($validated['subdomain']);
+                $validated['db_host']     = $dbResult['host'];
+                $validated['db_port']     = $dbResult['port'];
+                $validated['db_name']     = $dbResult['db_name'];
+                $validated['db_username'] = $dbResult['username'];
+                $validated['db_password'] = $dbResult['password'];
+            } catch (\Throwable $e) {
+                return back()->withInput()->with('error', 'Failed to create school database: ' . $e->getMessage());
+            }
+        }
 
         $tenant = Tenant::create($validated);
 
@@ -385,5 +401,58 @@ class TenantController extends Controller
             $sync[$id] = ['enabled' => $planFeatureIds->contains($id)];
         }
         $tenant->features()->sync($sync);
+    }
+
+    /**
+     * Auto-provision a new PostgreSQL database on the local VPS Postgres instance.
+     * Called when VPS_POSTGRES_HOST env var is set.
+     * Creates a dedicated DB + user for the school, returns connection details.
+     */
+    private function provisionLocalDatabase(string $subdomain): array
+    {
+        $host     = env('VPS_POSTGRES_HOST', 'postgres');
+        $port     = env('VPS_POSTGRES_PORT', '5432');
+        $superUser = env('VPS_POSTGRES_SUPERUSER', 'postgres');
+        $superPass = env('VPS_POSTGRES_SUPERUSER_PASSWORD', '');
+
+        // Sanitise subdomain to safe DB name: lowercase, letters/numbers/underscores only
+        $safeName = 'school_' . preg_replace('/[^a-z0-9_]/', '_', strtolower($subdomain));
+
+        // Generate a strong random password for this school's DB user
+        $dbPassword = \Illuminate\Support\Str::random(24);
+
+        // Connect as superuser to the postgres maintenance DB
+        $pdo = new \PDO(
+            "pgsql:host={$host};port={$port};dbname=postgres",
+            $superUser,
+            $superPass,
+            [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION]
+        );
+
+        // Create the user (role) if it doesn't already exist
+        $userExists = $pdo->query("SELECT 1 FROM pg_roles WHERE rolname = '{$safeName}'")->fetchColumn();
+        if (!$userExists) {
+            $pdo->exec("CREATE USER \"{$safeName}\" WITH PASSWORD " . $pdo->quote($dbPassword));
+        } else {
+            // User exists (maybe a retry) — reset the password
+            $pdo->exec("ALTER USER \"{$safeName}\" WITH PASSWORD " . $pdo->quote($dbPassword));
+        }
+
+        // Create the database if it doesn't already exist
+        $dbExists = $pdo->query("SELECT 1 FROM pg_database WHERE datname = '{$safeName}'")->fetchColumn();
+        if (!$dbExists) {
+            $pdo->exec("CREATE DATABASE \"{$safeName}\" OWNER \"{$safeName}\"");
+        }
+
+        // Grant all privileges
+        $pdo->exec("GRANT ALL PRIVILEGES ON DATABASE \"{$safeName}\" TO \"{$safeName}\"");
+
+        return [
+            'host'     => $host,
+            'port'     => $port,
+            'db_name'  => $safeName,
+            'username' => $safeName,
+            'password' => $dbPassword,
+        ];
     }
 }
