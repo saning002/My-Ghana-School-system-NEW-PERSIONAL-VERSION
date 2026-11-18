@@ -883,5 +883,78 @@
 </nav>
 
 @stack('scripts')
+
+{{-- ── Generate / PDF loading overlay ─────────────────────────────────────
+     Shows whenever a Generate button or PDF download link is clicked.
+     Covers the whole page so the user knows processing is happening.
+──────────────────────────────────────────────────────────────────────── --}}
+<div id="gen-overlay" style="
+    display:none;position:fixed;inset:0;z-index:99998;
+    background:rgba(11,17,33,0.72);backdrop-filter:blur(4px);
+    flex-direction:column;align-items:center;justify-content:center;gap:20px;">
+    <div style="
+        width:72px;height:72px;border-radius:20px;
+        background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
+        display:flex;align-items:center;justify-content:center;">
+        <svg width="36" height="36" viewBox="0 0 36 36" fill="none" style="animation:gen-spin 1s linear infinite;">
+            <circle cx="18" cy="18" r="15" stroke="rgba(255,255,255,.15)" stroke-width="3"/>
+            <path d="M18 3 A15 15 0 0 1 33 18" stroke="#D4A017" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+    </div>
+    <div style="text-align:center;">
+        <p id="gen-overlay-title" style="color:#fff;font:700 15px/1.3 system-ui,sans-serif;margin:0 0 6px;">Processing…</p>
+        <p id="gen-overlay-sub" style="color:rgba(255,255,255,.55);font:500 12px/1.4 system-ui,sans-serif;margin:0;max-width:260px;">
+            This may take a few seconds. Please wait.
+        </p>
+    </div>
+</div>
+<style>
+@keyframes gen-spin { to { transform: rotate(360deg); } }
+</style>
+<script>
+(function () {
+    var overlay   = document.getElementById('gen-overlay');
+    var titleEl   = document.getElementById('gen-overlay-title');
+    var subEl     = document.getElementById('gen-overlay-sub');
+
+    function show(title, sub) {
+        titleEl.textContent = title || 'Processing…';
+        subEl.textContent   = sub   || 'This may take a few seconds. Please wait.';
+        overlay.style.display = 'flex';
+    }
+
+    // 1. Generate buttons (GET form submits)
+    document.querySelectorAll('button[type="submit"]').forEach(function (btn) {
+        var label = (btn.textContent || '').trim().toLowerCase();
+        if (label.includes('generate') || label.includes('download') || label.includes('pdf') || label.includes('export')) {
+            btn.addEventListener('click', function () {
+                show('Generating report…', 'Calculating scores and building your report. Please wait.');
+            });
+        }
+    });
+
+    // 2. PDF / export anchor links (target="_blank" downloads)
+    document.querySelectorAll('a[href]').forEach(function (a) {
+        var href  = a.getAttribute('href') || '';
+        var label = (a.textContent || '').trim().toLowerCase();
+        var isPdf = href.includes('/pdf') || href.includes('/export') || href.includes('/download')
+                 || href.includes('download-sba') || href.includes('/merit');
+        if (isPdf || label.includes('pdf') || label.includes('download') || label.includes('export')) {
+            a.addEventListener('click', function () {
+                show('Generating PDF…', 'Building your document. It will download automatically when ready.');
+                // Hide after 30s in case the download completes without a page navigation
+                setTimeout(function () { overlay.style.display = 'none'; }, 30000);
+            });
+        }
+    });
+
+    // Hide overlay when page becomes visible again (after a file download)
+    document.addEventListener('visibilitychange', function () {
+        if (!document.hidden) {
+            setTimeout(function () { overlay.style.display = 'none'; }, 500);
+        }
+    });
+})();
+</script>
 </body>
 </html>
