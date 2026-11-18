@@ -181,7 +181,7 @@ class SectionController extends Controller
 
         $pdf = Pdf::loadView('pdf.fee_statement', array_merge(compact('student','fees','doc','qrUrl','schoolName'),$meta))
             ->setPaper('a4');
-        return $pdf->download("fee_statement_{$student->student_id}_".now()->format('Ymd').'.pdf');
+        return $pdf->download("fee_statement_" . str_replace(['/', '\\', ' '], '-', $student->student_id) . "_" . now()->format('Ymd') . '.pdf');
     }
 
     // ── Reports ────────────────────────────────────────────────────────────────

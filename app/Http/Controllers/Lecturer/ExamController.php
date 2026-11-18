@@ -488,7 +488,7 @@ class ExamController extends Controller
         $orientation = 'portrait';
         $pdf->setPaper('a4', $orientation);
 
-        return $pdf->download("report_card_{$student->student_id}_".now()->format('Ymd').'.pdf');
+        return $pdf->download("report_card_" . str_replace(['/', '\\', ' '], '-', $student->student_id) . "_" . now()->format('Ymd') . '.pdf');
     }
 
     /**

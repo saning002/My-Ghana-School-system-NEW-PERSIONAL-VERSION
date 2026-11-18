@@ -283,7 +283,7 @@ class ExamController extends Controller
             @ini_set('memory_limit', '1024M');
             @set_time_limit(300);
 
-            $filename = 'report_card_' . $student->student_id . '_' . \Str::slug($program->name) . '.pdf';
+            $filename = 'report_card_' . str_replace(['/', '\\', ' '], '-', $student->student_id) . '_' . \Str::slug($program->name) . '.pdf';
 
             // Pick template based on school setting
             $templateKey = \App\Models\Setting::get('report_card_template', 'standard');
@@ -324,7 +324,7 @@ class ExamController extends Controller
         }
 
         try {
-            $filename = 'report_card_' . $student->student_id . '_' . \Str::slug($program->name) . '.xlsx';
+            $filename = 'report_card_' . str_replace(['/', '\\', ' '], '-', $student->student_id) . '_' . \Str::slug($program->name) . '.xlsx';
             return Excel::download(new ReportCardExport($data), $filename);
         } catch (\Throwable $e) {
             \Log::error('Admin exam Excel generation failed', ['exception' => $e]);

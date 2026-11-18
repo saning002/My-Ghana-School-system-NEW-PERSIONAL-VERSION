@@ -570,7 +570,7 @@ class ReportController extends Controller
 
         $pdf = Pdf::loadView($pdfView, array_merge(compact('data', 'student', 'program', 'doc', 'qrUrl', 'attempt'), $this->schoolMeta()))
             ->setPaper('a4');
-        return $pdf->download("report_card_{$student->student_id}_" . now()->format('Ymd') . '.pdf');
+        return $pdf->download("report_card_" . str_replace(['/', '\\', ' '], '-', $student->student_id) . "_" . now()->format('Ymd') . '.pdf');
     }
 
     // ── Student Performance Report ────────────────────────────────────────────
@@ -673,7 +673,7 @@ class ReportController extends Controller
 
         $pdf = Pdf::loadView('pdf.student_performance', array_merge(compact('data','student','doc','qrUrl'), $this->schoolMeta()))
             ->setPaper('a4');
-        return $pdf->download("performance_{$student->student_id}_".now()->format('Ymd').'.pdf');
+        return $pdf->download("performance_" . str_replace(['/', '\\', ' '], '-', $student->student_id) . "_" . now()->format('Ymd') . '.pdf');
     }
 
     // ── Transcript ────────────────────────────────────────────────────────────
@@ -709,7 +709,7 @@ class ReportController extends Controller
 
         $pdf = Pdf::loadView('pdf.transcript', array_merge(compact('data', 'student', 'doc', 'qrUrl'), $this->schoolMeta()))
             ->setPaper('a4');
-        return $pdf->download("transcript_{$student->student_id}_" . now()->format('Ymd') . '.pdf');
+        return $pdf->download("transcript_" . str_replace(['/', '\\', ' '], '-', $student->student_id) . "_" . now()->format('Ymd') . '.pdf');
     }
 
     // ── Attendance Summary ─────────────────────────────────────────────────────
@@ -813,10 +813,9 @@ class ReportController extends Controller
 
         $pdf = Pdf::loadView('pdf.fee_statement', array_merge(compact('student','fees','doc','qrUrl','schoolName'), $meta))
             ->setPaper('a4');
-        return $pdf->download("fee_statement_{$student->student_id}_" . now()->format('Ymd') . '.pdf');
+        return $pdf->download("fee_statement_" . str_replace(['/', '\\', ' '], '-', $student->student_id) . "_" . now()->format('Ymd') . '.pdf');
     }
 
-    // ── Bulk PDF: all students in a class (academic reports) ─────────────────
 
     public function bulkAcademicPdf(Request $request)
     {

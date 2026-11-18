@@ -483,7 +483,7 @@ class PortalController extends Controller
             $dompdf->setPaper('a4', 'portrait');
             $dompdf->render();
 
-            $filename = 'report_card_' . $student->student_id . '_' . Str::slug($program->name) . '.pdf';
+            $filename = 'report_card_' . str_replace(['/', '\\', ' '], '-', $student->student_id) . '_' . Str::slug($program->name) . '.pdf';
             $output   = $dompdf->output();
 
             return response($output, 200, [
