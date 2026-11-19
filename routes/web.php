@@ -1942,12 +1942,28 @@ Route::get('/setup/fix-recorded-by', function () {
 
             // 2. scheme_of_learning table (singular — model uses this name)
             try {
-                $tbl = $conn->select("SELECT to_regclass('public.scheme_of_learning') as tbl");
+                $tbl = $conn->select("SELECT to_regcore('public.scheme_of_learning') as tbl");
                 if (empty($tbl[0]->tbl)) {
-                    $conn->statement('CREATE TABLE IF NOT EXISTS "scheme_of_learning" ("id" BIGSERIAL PRIMARY KEY, "course_id" BIGINT NOT NULL, "lecturer_id" BIGINT NOT NULL, "academic_session_id" BIGINT NULL, "academic_year" VARCHAR(255) NULL, "week_number" INTEGER NOT NULL, "topic" VARCHAR(255) NOT NULL, "subtopic" TEXT NULL, "objectives" TEXT NULL, "activities" TEXT NULL, "resources" TEXT NULL, "term" VARCHAR(255) NULL, "created_at" TIMESTAMP NULL, "updated_at" TIMESTAMP NULL)');
+                    $conn->statement('CREATE TABLE IF NOT EXISTS "scheme_of_learning" ("id" BIGSERIAL PRIMARY KEY, "course_id" BIGINT NOT NULL, "lecturer_id" BIGINT NOT NULL, "program_id" BIGINT NULL, "church_branch_id" BIGINT NULL, "academic_session_id" BIGINT NULL, "academic_year" VARCHAR(255) NULL, "week_number" INTEGER NOT NULL, "topic" VARCHAR(255) NOT NULL, "subtopic" TEXT NULL, "objectives" TEXT NULL, "activities" TEXT NULL, "resources" TEXT NULL, "term" VARCHAR(255) NULL, "created_at" TIMESTAMP NULL, "updated_at" TIMESTAMP NULL)');
                     $results[] = "✅ [{$tenant->name}] scheme_of_learning table created";
                 } else {
-                    $results[] = "⏭ [{$tenant->name}] scheme_of_learning already exists";
+                    // Table exists — add missing columns
+                    $cols = collect($conn->select("SELECT column_name FROM information_schema.columns WHERE table_name='scheme_of_learning'"))->pluck('column_name')->toArray();
+                    $missing = [
+                        'program_id'        => 'ALTER TABLE scheme_of_learning ADD COLUMN IF NOT EXISTS program_id BIGINT NULL',
+                        'church_branch_id'  => 'ALTER TABLE scheme_of_learning ADD COLUMN IF NOT EXISTS church_branch_id BIGINT NULL',
+                        'academic_year'     => 'ALTER TABLE scheme_of_learning ADD COLUMN IF NOT EXISTS academic_year VARCHAR(255) NULL',
+                        'term'              => 'ALTER TABLE scheme_of_learning ADD COLUMN IF NOT EXISTS term VARCHAR(255) NULL',
+                    ];
+                    foreach ($missing as $col => $sql) {
+                        if (!in_array($col, $cols)) {
+                            $conn->statement($sql);
+                            $results[] = "✅ [{$tenant->name}] scheme_of_learning.{$col} added";
+                        }
+                    }
+                    if (!in_array('program_id', $cols) && !in_array('church_branch_id', $cols) && !in_array('academic_year', $cols)) {
+                        $results[] = "⏭ [{$tenant->name}] scheme_of_learning already complete";
+                    }
                 }
             } catch (\Throwable $ex) {
                 $results[] = "⚠️ [{$tenant->name}] scheme_of_learning: " . $ex->getMessage();
