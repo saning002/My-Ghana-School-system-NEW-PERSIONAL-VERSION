@@ -2019,6 +2019,85 @@ Route::get('/setup/fix-recorded-by', function () {
                 $results[] = "⚠️ [{$tenant->name}] school_events: " . $ex->getMessage();
             }
 
+            // 7. Fix programs missing columns
+            try {
+                $progCols = collect($conn->select("SELECT column_name FROM information_schema.columns WHERE table_name='programs'"))->pluck('column_name')->toArray();
+                $progMissing = [
+                    'duration'             => "ALTER TABLE programs ADD COLUMN IF NOT EXISTS duration INTEGER NULL",
+                    'requirements'         => "ALTER TABLE programs ADD COLUMN IF NOT EXISTS requirements TEXT NULL",
+                    'expected_classworks'  => "ALTER TABLE programs ADD COLUMN IF NOT EXISTS expected_classworks INTEGER NULL",
+                    'expected_homeworks'   => "ALTER TABLE programs ADD COLUMN IF NOT EXISTS expected_homeworks INTEGER NULL",
+                    'expected_tests'       => "ALTER TABLE programs ADD COLUMN IF NOT EXISTS expected_tests INTEGER NULL",
+                ];
+                foreach ($progMissing as $col => $sql) {
+                    if (!in_array($col, $progCols)) { $conn->statement($sql); $results[] = "✅ [{$tenant->name}] programs.{$col} added"; }
+                }
+            } catch (\Throwable $ex) { $results[] = "⚠️ [{$tenant->name}] programs: " . $ex->getMessage(); }
+
+            // 8. Fix courses missing columns
+            try {
+                $crsCols = collect($conn->select("SELECT column_name FROM information_schema.columns WHERE table_name='courses'"))->pluck('column_name')->toArray();
+                $crsMissing = [
+                    'credit'               => "ALTER TABLE courses ADD COLUMN IF NOT EXISTS credit DECIMAL(5,2) NOT NULL DEFAULT 3",
+                    'expected_classworks'  => "ALTER TABLE courses ADD COLUMN IF NOT EXISTS expected_classworks INTEGER NULL",
+                    'expected_homeworks'   => "ALTER TABLE courses ADD COLUMN IF NOT EXISTS expected_homeworks INTEGER NULL",
+                    'expected_tests'       => "ALTER TABLE courses ADD COLUMN IF NOT EXISTS expected_tests INTEGER NULL",
+                ];
+                foreach ($crsMissing as $col => $sql) {
+                    if (!in_array($col, $crsCols)) { $conn->statement($sql); $results[] = "✅ [{$tenant->name}] courses.{$col} added"; }
+                }
+            } catch (\Throwable $ex) { $results[] = "⚠️ [{$tenant->name}] courses: " . $ex->getMessage(); }
+
+            // 9. Fix enrollments missing year column
+            try {
+                $col = $conn->select("SELECT column_name FROM information_schema.columns WHERE table_name='enrollments' AND column_name='year'");
+                if (empty($col)) { $conn->statement("ALTER TABLE enrollments ADD COLUMN IF NOT EXISTS year VARCHAR(255) NULL"); $results[] = "✅ [{$tenant->name}] enrollments.year added"; }
+            } catch (\Throwable $ex) { $results[] = "⚠️ [{$tenant->name}] enrollments: " . $ex->getMessage(); }
+
+            // 10. Fix course_assignments missing year column
+            try {
+                $col = $conn->select("SELECT column_name FROM information_schema.columns WHERE table_name='course_assignments' AND column_name='year'");
+                if (empty($col)) { $conn->statement("ALTER TABLE course_assignments ADD COLUMN IF NOT EXISTS year VARCHAR(255) NULL"); $results[] = "✅ [{$tenant->name}] course_assignments.year added"; }
+            } catch (\Throwable $ex) { $results[] = "⚠️ [{$tenant->name}] course_assignments: " . $ex->getMessage(); }
+
+            // 11. Fix student_fee_exemptions missing columns
+            try {
+                $sfeCols = collect($conn->select("SELECT column_name FROM information_schema.columns WHERE table_name='student_fee_exemptions'"))->pluck('column_name')->toArray();
+                $sfeMissing = [
+                    'exemption_type' => "ALTER TABLE student_fee_exemptions ADD COLUMN IF NOT EXISTS exemption_type VARCHAR(50) NOT NULL DEFAULT 'waiver'",
+                    'daily_override' => "ALTER TABLE student_fee_exemptions ADD COLUMN IF NOT EXISTS daily_override DECIMAL(10,2) NULL",
+                    'valid_from'     => "ALTER TABLE student_fee_exemptions ADD COLUMN IF NOT EXISTS valid_from DATE NULL",
+                    'valid_until'    => "ALTER TABLE student_fee_exemptions ADD COLUMN IF NOT EXISTS valid_until DATE NULL",
+                    'granted_by'     => "ALTER TABLE student_fee_exemptions ADD COLUMN IF NOT EXISTS granted_by BIGINT NULL",
+                ];
+                foreach ($sfeMissing as $col => $sql) {
+                    if (!in_array($col, $sfeCols)) { $conn->statement($sql); $results[] = "✅ [{$tenant->name}] student_fee_exemptions.{$col} added"; }
+                }
+            } catch (\Throwable $ex) { $results[] = "⚠️ [{$tenant->name}] student_fee_exemptions: " . $ex->getMessage(); }
+
+            // 12. Fix generated_documents missing columns
+            try {
+                $gdCols = collect($conn->select("SELECT column_name FROM information_schema.columns WHERE table_name='generated_documents'"))->pluck('column_name')->toArray();
+                $gdMissing = [
+                    'uuid'               => "ALTER TABLE generated_documents ADD COLUMN IF NOT EXISTS uuid VARCHAR(255) NULL",
+                    'document_type'      => "ALTER TABLE generated_documents ADD COLUMN IF NOT EXISTS document_type VARCHAR(255) NULL",
+                    'title'              => "ALTER TABLE generated_documents ADD COLUMN IF NOT EXISTS title VARCHAR(255) NULL",
+                    'academic_period_id' => "ALTER TABLE generated_documents ADD COLUMN IF NOT EXISTS academic_period_id BIGINT NULL",
+                    'generated_by_name'  => "ALTER TABLE generated_documents ADD COLUMN IF NOT EXISTS generated_by_name VARCHAR(255) NULL",
+                    'status'             => "ALTER TABLE generated_documents ADD COLUMN IF NOT EXISTS status VARCHAR(50) NOT NULL DEFAULT 'valid'",
+                    'meta'               => "ALTER TABLE generated_documents ADD COLUMN IF NOT EXISTS meta JSON NULL",
+                ];
+                foreach ($gdMissing as $col => $sql) {
+                    if (!in_array($col, $gdCols)) { $conn->statement($sql); $results[] = "✅ [{$tenant->name}] generated_documents.{$col} added"; }
+                }
+            } catch (\Throwable $ex) { $results[] = "⚠️ [{$tenant->name}] generated_documents: " . $ex->getMessage(); }
+
+            // 13. Fix academic_sessions missing mode column
+            try {
+                $col = $conn->select("SELECT column_name FROM information_schema.columns WHERE table_name='academic_sessions' AND column_name='mode'");
+                if (empty($col)) { $conn->statement("ALTER TABLE academic_sessions ADD COLUMN IF NOT EXISTS mode VARCHAR(50) NULL"); $results[] = "✅ [{$tenant->name}] academic_sessions.mode added"; }
+            } catch (\Throwable $ex) { $results[] = "⚠️ [{$tenant->name}] academic_sessions: " . $ex->getMessage(); }
+
             // 6. Fix exam_questions missing columns
             try {
                 $tblEq = $conn->select("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='exam_questions') as exists");
