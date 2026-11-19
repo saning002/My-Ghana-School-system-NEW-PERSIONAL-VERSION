@@ -110,10 +110,28 @@ class AdminSettingsController extends Controller
             'school_paystack_public_key','school_paystack_secret_key',
         ];
 
-        $s = \Illuminate\Support\Facades\DB::connection('tenant')
-            ->table('settings')
-            ->whereIn('key', $neededKeys)
-            ->pluck('value', 'key');
+        $s = [];
+        try {
+            $s = \Illuminate\Support\Facades\DB::connection('tenant')
+                ->table('settings')
+                ->whereIn('key', $neededKeys)
+                ->pluck('value', 'key')
+                ->toArray();
+        } catch (\Throwable $e) {
+            // Connection might have been refused (Neon cold start) — try one reconnect
+            try {
+                \Illuminate\Support\Facades\DB::purge('tenant');
+                \Illuminate\Support\Facades\DB::reconnect('tenant');
+                $s = \Illuminate\Support\Facades\DB::connection('tenant')
+                    ->table('settings')
+                    ->whereIn('key', $neededKeys)
+                    ->pluck('value', 'key')
+                    ->toArray();
+            } catch (\Throwable $e2) {
+                // Still failing — use empty array, defaults will kick in
+                $s = [];
+            }
+        }
 
         $gradingPreset    = $s['grading_preset'] ?? 'ghana_standard';
         $gradingScaleJson = $s['grading_scale_json'] ?? json_encode([
