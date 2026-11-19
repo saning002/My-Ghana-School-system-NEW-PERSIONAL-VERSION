@@ -22,6 +22,33 @@ class CloudinaryService
      */
     private static function cloudinaryUrl(): ?string
     {
+        // 0. Check per-tenant config set by TenantMiddleware (highest priority)
+        // This allows each school to have its own Cloudinary account
+        $tenantUrl = config('cloudinary.cloud_url', '');
+        if (
+            is_string($tenantUrl) &&
+            strlen($tenantUrl) > 20 &&
+            str_starts_with($tenantUrl, 'cloudinary://') &&
+            ! str_contains($tenantUrl, 'null') &&
+            ! str_contains($tenantUrl, 'your_') &&
+            ! str_contains($tenantUrl, 'API_KEY') &&
+            ! str_contains($tenantUrl, 'API_SECRET')
+        ) {
+            return $tenantUrl;
+        }
+
+        // Also check individual config keys set by middleware
+        $cfgName   = config('cloudinary.cloud_name', '');
+        $cfgKey    = config('cloudinary.api_key', '');
+        $cfgSecret = config('cloudinary.api_secret', '');
+        if (
+            is_string($cfgName) && strlen($cfgName) > 2 &&
+            is_string($cfgKey)  && strlen($cfgKey)  > 5 &&
+            is_string($cfgSecret) && strlen($cfgSecret) > 5
+        ) {
+            return "cloudinary://{$cfgKey}:{$cfgSecret}@{$cfgName}";
+        }
+
         // 1. Try CLOUDINARY_URL directly (getenv works on Render + local)
         $url = getenv('CLOUDINARY_URL') ?: env('CLOUDINARY_URL', '');
         if (
