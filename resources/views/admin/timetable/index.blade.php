@@ -33,6 +33,10 @@
             <i class="fas fa-plus"></i> Manage
         </a>
         @endif
+        <button onclick="document.getElementById('addModal').classList.remove('hidden');document.getElementById('addModal').classList.add('flex')"
+            class="btn-primary-action">
+            <i class="fas fa-plus"></i> Add Lesson
+        </button>
     </div>
 </div>
 
@@ -90,10 +94,16 @@
 
     {{-- �"?�"? TODAY'S LESSONS (primary) �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
     <div class="xl:col-span-2 space-y-3">
-        <h2 class="text-sm font-extrabold text-slate-800">
-            <i class="fas fa-calendar-day text-indigo-400 mr-1.5"></i>
-            {{ $date->isToday() ? "Today's Lessons" : $date->format('l') . "'s Lessons" }}
-            @if($dayNum == 7)<span class="ml-2 text-xs font-semibold text-slate-400">(Sunday – Rest Day)</span>@endif
+        <h2 class="text-sm font-extrabold text-slate-800 flex items-center justify-between">
+            <span>
+                <i class="fas fa-calendar-day text-indigo-400 mr-1.5"></i>
+                {{ $date->isToday() ? "Today's Lessons" : $date->format('l') . "'s Lessons" }}
+                @if($dayNum == 7)<span class="ml-2 text-xs font-semibold text-slate-400">(Sunday – Rest Day)</span>@endif
+            </span>
+            <button onclick="document.getElementById('addModal').classList.remove('hidden');document.getElementById('addModal').classList.add('flex')"
+                class="inline-flex items-center gap-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-3 py-1.5 shadow transition-all">
+                <i class="fas fa-plus text-[10px]"></i> Add Lesson
+            </button>
         </h2>
 
         @if($dayNum == 7 || $todayEntries->isEmpty())
@@ -102,12 +112,7 @@
             <p class="text-sm font-semibold text-slate-500">
                 {{ $dayNum == 7 ? 'No school on Sunday.' : 'No lessons scheduled for ' . $date->format('l') . '.' }}
             </p>
-            <button onclick="document.getElementById('addModal').classList.remove('hidden');document.getElementById('addModal').classList.add('flex')"
-                class="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-4 py-2 shadow transition-all">
-                <i class="fas fa-plus text-[10px]"></i> Add a lesson for this day
-            </button>
         </div>
-        @else
         @php
         $palettes=[['from-indigo-500 to-violet-600','bg-indigo-50 text-indigo-900','#5647d6'],['from-emerald-500 to-teal-600','bg-emerald-50 text-emerald-900','#059669'],['from-amber-500 to-orange-500','bg-[var(--primary-pale)] text-amber-900','#d97706'],['from-pink-500 to-rose-600','bg-pink-50 text-pink-900','#db2777'],['from-blue-500 to-cyan-600','bg-blue-50 text-blue-900','#2563eb'],['from-violet-500 to-purple-600','bg-violet-50 text-violet-900','#7c3aed']];
         $now = \Carbon\Carbon::now();
