@@ -1962,6 +1962,8 @@ Route::get('/setup/fix-recorded-by', function () {
                         'remarks'               => 'ALTER TABLE scheme_of_learning ADD COLUMN IF NOT EXISTS remarks TEXT NULL',
                         'pdf_path'              => 'ALTER TABLE scheme_of_learning ADD COLUMN IF NOT EXISTS pdf_path VARCHAR(500) NULL',
                     ];
+                    // Also make lecturer_id nullable (was NOT NULL)
+                    $conn->statement("ALTER TABLE scheme_of_learning ALTER COLUMN lecturer_id DROP NOT NULL");
                     $added = false;
                     foreach ($missing as $col => $sql) {
                         if (!in_array($col, $cols)) {
@@ -1991,6 +1993,33 @@ Route::get('/setup/fix-recorded-by', function () {
                     $results[] = "✅ [{$tenant->name}] notes added to timetable_entries";
                 }
             } catch (\Throwable $ex) {}
+
+            // 5. Fix exam_questions missing columns
+            try {
+                $tblEq = $conn->select("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='exam_questions') as exists");
+                if (!empty($tblEq) && ($tblEq[0]->exists ?? false) === true) {
+                    $eqCols = collect($conn->select("SELECT column_name FROM information_schema.columns WHERE table_name='exam_questions'"))->pluck('column_name')->toArray();
+                    $eqMissing = [
+                        'program_id'        => 'ALTER TABLE exam_questions ADD COLUMN IF NOT EXISTS program_id BIGINT NULL',
+                        'church_branch_id'  => 'ALTER TABLE exam_questions ADD COLUMN IF NOT EXISTS church_branch_id BIGINT NULL',
+                        'academic_year'     => 'ALTER TABLE exam_questions ADD COLUMN IF NOT EXISTS academic_year VARCHAR(255) NULL',
+                        'term'              => 'ALTER TABLE exam_questions ADD COLUMN IF NOT EXISTS term VARCHAR(255) NULL',
+                        'document_type'     => 'ALTER TABLE exam_questions ADD COLUMN IF NOT EXISTS document_type VARCHAR(50) NOT NULL DEFAULT \'pdf\'',
+                        'original_filename' => 'ALTER TABLE exam_questions ADD COLUMN IF NOT EXISTS original_filename VARCHAR(255) NULL',
+                        'file_size'         => 'ALTER TABLE exam_questions ADD COLUMN IF NOT EXISTS file_size BIGINT NULL',
+                        'is_approved'       => 'ALTER TABLE exam_questions ADD COLUMN IF NOT EXISTS is_approved BOOLEAN NOT NULL DEFAULT FALSE',
+                        'notes'             => 'ALTER TABLE exam_questions ADD COLUMN IF NOT EXISTS notes TEXT NULL',
+                    ];
+                    foreach ($eqMissing as $col => $sql) {
+                        if (!in_array($col, $eqCols)) {
+                            $conn->statement($sql);
+                            $results[] = "✅ [{$tenant->name}] exam_questions.{$col} added";
+                        }
+                    }
+                }
+            } catch (\Throwable $ex) {
+                $results[] = "⚠️ [{$tenant->name}] exam_questions: " . $ex->getMessage();
+            }
 
         } catch (\Throwable $e) {
             $results[] = "⚠️ [{$tenant->name}] Error: " . $e->getMessage();
