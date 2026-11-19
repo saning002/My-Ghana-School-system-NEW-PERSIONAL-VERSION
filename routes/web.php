@@ -1951,10 +1951,16 @@ Route::get('/setup/fix-recorded-by', function () {
                     // Table exists — add missing columns
                     $cols = collect($conn->select("SELECT column_name FROM information_schema.columns WHERE table_name='scheme_of_learning'"))->pluck('column_name')->toArray();
                     $missing = [
-                        'program_id'        => 'ALTER TABLE scheme_of_learning ADD COLUMN IF NOT EXISTS program_id BIGINT NULL',
-                        'church_branch_id'  => 'ALTER TABLE scheme_of_learning ADD COLUMN IF NOT EXISTS church_branch_id BIGINT NULL',
-                        'academic_year'     => 'ALTER TABLE scheme_of_learning ADD COLUMN IF NOT EXISTS academic_year VARCHAR(255) NULL',
-                        'term'              => 'ALTER TABLE scheme_of_learning ADD COLUMN IF NOT EXISTS term VARCHAR(255) NULL',
+                        'program_id'           => 'ALTER TABLE scheme_of_learning ADD COLUMN IF NOT EXISTS program_id BIGINT NULL',
+                        'church_branch_id'     => 'ALTER TABLE scheme_of_learning ADD COLUMN IF NOT EXISTS church_branch_id BIGINT NULL',
+                        'academic_year'        => 'ALTER TABLE scheme_of_learning ADD COLUMN IF NOT EXISTS academic_year VARCHAR(255) NULL',
+                        'term'                  => 'ALTER TABLE scheme_of_learning ADD COLUMN IF NOT EXISTS term VARCHAR(255) NULL',
+                        'subtopics'             => 'ALTER TABLE scheme_of_learning ADD COLUMN IF NOT EXISTS subtopics TEXT NULL',
+                        'learning_objectives'   => 'ALTER TABLE scheme_of_learning ADD COLUMN IF NOT EXISTS learning_objectives TEXT NULL',
+                        'teaching_methods'      => 'ALTER TABLE scheme_of_learning ADD COLUMN IF NOT EXISTS teaching_methods TEXT NULL',
+                        'assessment_type'       => 'ALTER TABLE scheme_of_learning ADD COLUMN IF NOT EXISTS assessment_type VARCHAR(255) NULL',
+                        'remarks'               => 'ALTER TABLE scheme_of_learning ADD COLUMN IF NOT EXISTS remarks TEXT NULL',
+                        'pdf_path'              => 'ALTER TABLE scheme_of_learning ADD COLUMN IF NOT EXISTS pdf_path VARCHAR(500) NULL',
                     ];
                     $added = false;
                     foreach ($missing as $col => $sql) {
