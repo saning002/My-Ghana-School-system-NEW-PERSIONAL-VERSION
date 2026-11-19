@@ -89,7 +89,6 @@
         </thead>
         <tbody>
         @php
-            {{-- Collect all unique time slots across the week --}}
             $timeSlots = $entries->map(fn($e) => substr($e->start_time, 0, 5))->unique()->sort()->values();
             $colors = [
                 0 => ['border-l-indigo-500','bg-indigo-50','text-indigo-800'],
