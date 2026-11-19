@@ -1,39 +1,21 @@
 @extends('layouts.app')
 @section('title','Timetable')
-@section('subtitle', $date->isToday() ? "Today's Timetable – " . $date->format('l, F j') : $date->format('l, F j Y') . ' Timetable')
-
-@push('head')
-<style>
-    .slot-card { border-radius:10px; padding:10px 12px; margin-bottom:7px; font-size:12px; position:relative; }
-    .slot-card .course-name { font-weight:800; font-size:13px; line-height:1.3; }
-    .slot-card .meta { font-size:11px; opacity:.65; margin-top:2px; }
-    .day-header { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; }
-</style>
-@endpush
+@section('subtitle','Weekly lesson schedule at a glance')
 
 @section('content')
-<div class="space-y-5">
+@php
+    $dayLabels = \App\Models\TimetableEntry::$dayNames; {{-- [1=>'Monday',...,6=>'Saturday'] --}}
+    $today     = (int)\Carbon\Carbon::today()->format('N');
+@endphp
 
+{{-- ── Hero ─────────────────────────────────────────────────────────────── --}}
 <div class="page-hero-banner">
     <div class="hero-left">
-        <h1><i class="fas fa-table-cells mr-2" style="color:var(--primary);"></i>Timetable</h1>
-        <p>{{ $date->isToday() ? "Today — " . $date->format('l, F j Y') : $date->format('l, F j Y') }}</p>
+        <h1><i class="fas fa-calendar-alt mr-2" style="color:var(--primary)"></i>Timetable</h1>
+        <p>Weekly lesson schedule — all programmes, all teachers</p>
     </div>
     <div class="hero-actions">
-        {{-- Date navigation --}}
-        <a href="{{ route('admin.timetable.index', ['date' => $date->copy()->subDay()->toDateString()]) }}" class="btn-secondary-action">
-            <i class="fas fa-chevron-left"></i>
-        </a>
-        <a href="{{ route('admin.timetable.index') }}" class="btn-secondary-action">Today</a>
-        <a href="{{ route('admin.timetable.index', ['date' => $date->copy()->addDay()->toDateString()]) }}" class="btn-secondary-action">
-            <i class="fas fa-chevron-right"></i>
-        </a>
-        @if(auth()->user()->isSuperAdmin())
-        <a href="{{ route('admin.timetable.index', ['view' => 'manage']) }}" class="btn-primary-action">
-            <i class="fas fa-plus"></i> Manage
-        </a>
-        @endif
-        <button onclick="document.getElementById('addModal').classList.remove('hidden');document.getElementById('addModal').classList.add('flex')"
+        <button onclick="openAdd()"
             class="btn-primary-action">
             <i class="fas fa-plus"></i> Add Lesson
         </button>
@@ -41,248 +23,206 @@
 </div>
 
 {{-- Flash --}}
-@if(session('success'))<div class="rounded-2xl bg-emerald-50 border border-emerald-200 px-5 py-3 text-sm font-semibold text-emerald-800 flex items-center gap-2 mb-4"><i class="fas fa-check-circle text-emerald-500"></i>{{ session('success') }}</div>@endif
-@if($errors->any())<div class="rounded-2xl bg-red-50 border border-red-200 px-5 py-3 text-sm text-red-800 mb-4"><ul class="list-disc list-inside">@foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach</ul></div>@endif
-
-{{-- Filters --}}
-<div class="card p-4 flex flex-wrap gap-3 items-end">
-    <form method="GET" class="flex flex-wrap gap-3 items-end w-full">
-        <input type="hidden" name="date" value="{{ $date->toDateString() }}">
-        <div class="flex-1 min-w-[140px]">
-            <label class="block text-xs font-bold uppercase tracking-wide text-slate-600 mb-1">Program</label>
-            <select name="program_id" onchange="this.form.submit()"
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)]">
-                <option value="">All Programs</option>
-                @foreach($programs as $p)
-                <option value="{{ $p->id }}" {{ $selectedProgram?->id == $p->id ? 'selected' : '' }}>{{ $p->name }}</option>
-                @endforeach
-            </select>
-        </div>
-        <div>
-            <label class="block text-xs font-bold uppercase tracking-wide text-slate-600 mb-1">Teacher</label>
-            <select name="lecturer_id" onchange="this.form.submit()"
-                class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)]">
-                <option value="">All Teachers</option>
-                @foreach($lecturers as $l)<option value="{{ $l->id }}" {{ request('lecturer_id')==$l->id?'selected':'' }}>{{ $l->full_name }}</option>@endforeach
-            </select>
-        </div>
-        <div>
-            <label class="block text-xs font-bold uppercase tracking-wide text-slate-600 mb-1">Date</label>
-            <input type="date" name="date" value="{{ $date->toDateString() }}"
-                class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)]"
-                onchange="this.form.submit()">
-        </div>
-    </form>
+@if(session('success'))
+<div class="flex items-center gap-3 px-5 py-3 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm font-semibold mb-5">
+    <i class="fas fa-check-circle text-emerald-500"></i> {{ session('success') }}
 </div>
-
-{{-- Week strip --}}
-<div class="flex items-center gap-2 mt-5 flex-wrap">
-    @foreach(range(0,5) as $offset)
-    @php $d = \Carbon\Carbon::today()->startOfWeek()->addDays($offset); $sel = $d->toDateString()===$date->toDateString(); @endphp
-    <a href="{{ route('admin.timetable.index', array_filter(['program_id'=>$selectedProgram?->id,'date'=>$d->toDateString()])) }}"
-       class="inline-flex flex-col items-center rounded-xl px-3 py-2 text-[10px] font-bold transition-colors
-              {{ $sel ? 'bg-indigo-100 text-indigo-900' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
-        <span>{{ $d->format('D') }}</span>
-        <span class="text-[9px] mt-0.5 {{ $sel ? 'text-indigo-600' : 'opacity-70' }}">{{ $d->format('j') }}</span>
-        @php $cnt = $entries->where('day_of_week',(int)$d->format('N'))->count(); @endphp
-        @if($cnt > 0)<span class="mt-0.5 inline-block rounded-full w-4 h-4 text-[8px] {{ $sel ? 'bg-indigo-600 text-white' : 'bg-slate-300 text-slate-700' }} flex items-center justify-center">{{ $cnt }}</span>@endif
-    </a>
-    @endforeach
+@endif
+@if($errors->has('time'))
+<div class="flex items-center gap-3 px-5 py-3 rounded-2xl bg-red-50 border border-red-200 text-red-800 text-sm font-semibold mb-5">
+    <i class="fas fa-exclamation-circle text-red-500"></i> {{ $errors->first('time') }}
 </div>
+@endif
 
-<div class="grid grid-cols-1 xl:grid-cols-3 gap-5">
+{{-- ── Filters ──────────────────────────────────────────────────────────── --}}
+<form method="GET" class="flex flex-wrap gap-3 items-end mb-5">
+    <div>
+        <label class="block text-xs font-bold uppercase tracking-wide text-slate-600 mb-1">Programme</label>
+        <select name="program_id" onchange="this.form.submit()"
+            class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)]">
+            <option value="">All Programmes</option>
+            @foreach($programs as $p)
+            <option value="{{ $p->id }}" {{ $selectedProgram?->id == $p->id ? 'selected' : '' }}>{{ $p->name }}</option>
+            @endforeach
+        </select>
+    </div>
+    <div>
+        <label class="block text-xs font-bold uppercase tracking-wide text-slate-600 mb-1">Teacher</label>
+        <select name="lecturer_id" onchange="this.form.submit()"
+            class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)]">
+            <option value="">All Teachers</option>
+            @foreach($lecturers as $l)
+            <option value="{{ $l->id }}" {{ request('lecturer_id') == $l->id ? 'selected' : '' }}>{{ $l->full_name }}</option>
+            @endforeach
+        </select>
+    </div>
+    @if($selectedProgram)<input type="hidden" name="program_id" value="{{ $selectedProgram->id }}">@endif
+</form>
 
-    {{-- �"?�"? TODAY'S LESSONS (primary) �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
-    <div class="xl:col-span-2 space-y-3">
-        <h2 class="text-sm font-extrabold text-slate-800 flex items-center justify-between">
-            <span>
-                <i class="fas fa-calendar-day text-indigo-400 mr-1.5"></i>
-                {{ $date->isToday() ? "Today's Lessons" : $date->format('l') . "'s Lessons" }}
-                @if($dayNum == 7)<span class="ml-2 text-xs font-semibold text-slate-400">(Sunday – Rest Day)</span>@endif
-            </span>
-            <button onclick="document.getElementById('addModal').classList.remove('hidden');document.getElementById('addModal').classList.add('flex')"
-                class="inline-flex items-center gap-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-3 py-1.5 shadow transition-all">
-                <i class="fas fa-plus text-[10px]"></i> Add Lesson
-            </button>
-        </h2>
-
-        @if($dayNum == 7 || $todayEntries->isEmpty())
-        <div class="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-14 text-center">
-            <i class="fas fa-calendar-check text-4xl text-slate-200 block mb-3"></i>
-            <p class="text-sm font-semibold text-slate-500">
-                {{ $dayNum == 7 ? 'No school on Sunday.' : 'No lessons scheduled for ' . $date->format('l') . '.' }}
-            </p>
-        </div>
-        @php
-        $palettes=[['from-indigo-500 to-violet-600','bg-indigo-50 text-indigo-900','#5647d6'],['from-emerald-500 to-teal-600','bg-emerald-50 text-emerald-900','#059669'],['from-amber-500 to-orange-500','bg-[var(--primary-pale)] text-amber-900','#d97706'],['from-pink-500 to-rose-600','bg-pink-50 text-pink-900','#db2777'],['from-blue-500 to-cyan-600','bg-blue-50 text-blue-900','#2563eb'],['from-violet-500 to-purple-600','bg-violet-50 text-violet-900','#7c3aed']];
-        $now = \Carbon\Carbon::now();
-        @endphp
-        @foreach($todayEntries as $i => $entry)
-        @php
-            [$grad,$lightBg,$hex] = $palettes[$i % count($palettes)];
-            $start = \Carbon\Carbon::parse($date->toDateString().' '.$entry->start_time);
-            $end   = \Carbon\Carbon::parse($date->toDateString().' '.$entry->end_time);
-            $isNow = $date->isToday() && $now->between($start,$end);
-            $isPast= $date->isToday() && $now->gt($end);
-            $mins  = $start->diffInMinutes($end);
-        @endphp
-        <div class="rounded-2xl border-2 bg-white overflow-hidden transition-all hover:shadow-md
-                    {{ $isNow ? 'border-emerald-400 shadow-lg shadow-emerald-100' : ($isPast ? 'border-slate-200 opacity-65' : 'border-slate-200') }}">
-            <div class="h-1 bg-gradient-to-r {{ $grad }}"></div>
-            <div class="p-5 flex flex-col sm:flex-row sm:items-center gap-4">
-                {{-- Time block --}}
-                <div class="shrink-0 text-center w-24">
-                    <div class="inline-flex flex-col items-center justify-center rounded-2xl p-3 {{ $lightBg }} w-20">
-                        <span class="text-base font-extrabold leading-none">{{ substr($entry->start_time,0,5) }}</span>
-                        <span class="text-[10px] font-bold mt-1 opacity-60">{{ substr($entry->end_time,0,5) }}</span>
-                        <span class="text-[9px] mt-1 font-semibold opacity-50">{{ $mins }}min</span>
-                    </div>
-                    @if($isNow)
-                    <div class="mt-1.5 inline-flex items-center gap-1 rounded-full bg-emerald-500 text-white text-[9px] font-extrabold px-2 py-0.5 uppercase">
-                        <span class="h-1.5 w-1.5 rounded-full bg-white animate-pulse"></span> Now
-                    </div>
-                    @elseif($isPast)
-                    <p class="mt-1 text-[9px] text-slate-400 font-semibold uppercase tracking-wide">Done</p>
+{{-- ── Weekly grid ─────────────────────────────────────────────────────── --}}
+@if($entries->isEmpty())
+<div class="rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50 p-16 text-center">
+    <i class="fas fa-calendar-alt text-5xl text-slate-200 block mb-4"></i>
+    <p class="text-sm font-bold text-slate-500 mb-2">No lessons scheduled yet</p>
+    <p class="text-xs text-slate-400 mb-5">{{ $selectedProgram ? 'No entries for ' . $selectedProgram->name : 'Select a programme or add the first lesson.' }}</p>
+    <button onclick="openAdd()"
+        class="inline-flex items-center gap-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold px-5 py-2.5 shadow transition-all">
+        <i class="fas fa-plus text-xs"></i> Add First Lesson
+    </button>
+</div>
+@else
+<div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-x-auto">
+    <table class="w-full text-sm border-collapse" style="min-width:700px">
+        <thead>
+            <tr class="border-b border-slate-200">
+                <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wide text-slate-500 bg-slate-50 w-28">Time</th>
+                @foreach($dayLabels as $dayN => $dayName)
+                <th class="px-3 py-3 text-center text-xs font-bold uppercase tracking-wide border-l border-slate-100
+                    {{ $dayN == $today ? 'bg-indigo-50 text-indigo-700' : 'bg-slate-50 text-slate-500' }}">
+                    {{ substr($dayName, 0, 3) }}
+                    @if($dayN == $today)
+                    <span class="block text-[9px] font-semibold text-indigo-400 uppercase">Today</span>
                     @endif
-                </div>
-
-                {{-- Class info --}}
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-start justify-between gap-2 flex-wrap">
-                        <div>
-                            <h3 class="text-base font-extrabold text-slate-900 leading-tight">{{ $entry->course->name }}</h3>
-                            <p class="text-sm text-slate-500 font-semibold mt-0.5">{{ $entry->program->name }}</p>
-                        </div>
-                        <span class="rounded-full {{ $lightBg }} text-[11px] font-extrabold px-3 py-1 shrink-0">
-                            {{ $entry->course->code ?? '' }}
-                        </span>
-                    </div>
-                    <div class="flex flex-wrap gap-3 mt-2.5 text-xs text-slate-500 font-semibold">
-                        <span class="flex items-center gap-1.5">
-                            <i class="fas fa-chalkboard-teacher text-slate-400"></i>{{ $entry->lecturer?->full_name ?? '–' }}
-                        </span>
-                        @if($entry->room)
-                        <span class="flex items-center gap-1.5">
-                            <i class="fas fa-door-open text-slate-400"></i>{{ $entry->room }}
-                        </span>
-                        @endif
-                        @if($entry->notes)
-                        <span class="flex items-center gap-1.5">
-                            <i class="fas fa-note-sticky text-slate-400"></i>{{ $entry->notes }}
-                        </span>
-                        @endif
-                    </div>
-                </div>
-
-                {{-- Delete --}}
-                <form method="POST" action="{{ route('admin.timetable.destroy', $entry) }}" class="shrink-0"
-                      onsubmit="return confirm('Remove this lesson from the timetable?')">
-                    @csrf @method('DELETE')
-                    <button type="submit" class="flex h-8 w-8 items-center justify-center rounded-xl bg-red-50 hover:bg-red-100 text-red-400 hover:text-red-600 transition-colors">
-                        <i class="fas fa-trash text-xs"></i>
-                    </button>
-                </form>
-            </div>
-        </div>
-        @endforeach
-        @endif
-    </div>
-
-    {{-- �"?�"? WEEKLY OVERVIEW (sidebar) �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
-    <div class="space-y-4">
-        <h2 class="text-sm font-extrabold text-slate-800">
-            <i class="fas fa-calendar-week text-indigo-400 mr-1.5"></i>This Week's Overview
-        </h2>
-
-        @foreach(\App\Models\TimetableEntry::$dayNames as $dayN => $dayName)
-        @php
-            $dayEntries = $grid[$dayN] ?? collect();
-            $d = \Carbon\Carbon::today()->startOfWeek()->addDays($dayN - 1);
-            $isSelected = $dayN == $dayNum;
-        @endphp
-        <div class="rounded-2xl border {{ $isSelected ? 'border-indigo-300 bg-indigo-50' : 'border-slate-200 bg-white' }} overflow-hidden">
-            <a href="{{ route('admin.timetable.index', array_filter(['program_id'=>$selectedProgram?->id,'date'=>$d->toDateString()])) }}"
-               class="flex items-center justify-between px-4 py-3 {{ $isSelected ? 'bg-indigo-600' : 'bg-slate-50 hover:bg-slate-100' }} transition-colors">
-                <span class="text-sm font-extrabold {{ $isSelected ? 'text-white' : 'text-slate-700' }}">{{ $dayName }}</span>
-                <span class="rounded-full text-[10px] font-extrabold px-2 py-0.5
-                             {{ $isSelected ? 'bg-white text-indigo-700' : 'bg-indigo-100 text-indigo-700' }}">
-                    {{ $dayEntries->count() }} lesson{{ $dayEntries->count() !== 1 ? 's' : '' }}
-                </span>
-            </a>
-            @if($dayEntries->isNotEmpty())
-            <div class="px-4 py-2 space-y-1.5">
-                @foreach($dayEntries as $e)
-                <div class="flex items-center gap-2 text-xs">
-                    <span class="text-slate-400 font-mono shrink-0">{{ substr($e->start_time,0,5) }}</span>
-                    <span class="flex-1 font-bold text-slate-700 truncate">{{ $e->course->name }}</span>
-                    <span class="text-slate-400 shrink-0 truncate max-w-[80px]">{{ $e->lecturer?->full_name ? explode(' ',$e->lecturer->full_name)[0] : '–' }}</span>
-                </div>
+                </th>
                 @endforeach
-            </div>
-            @endif
-        </div>
-        @endforeach
-    </div>
+            </tr>
+        </thead>
+        <tbody>
+        @php
+            {{-- Collect all unique time slots across the week --}}
+            $timeSlots = $entries->map(fn($e) => substr($e->start_time, 0, 5))->unique()->sort()->values();
+            $colors = [
+                0 => ['border-l-indigo-500','bg-indigo-50','text-indigo-800'],
+                1 => ['border-l-emerald-500','bg-emerald-50','text-emerald-800'],
+                2 => ['border-l-amber-500','bg-amber-50','text-amber-800'],
+                3 => ['border-l-rose-500','bg-rose-50','text-rose-800'],
+                4 => ['border-l-blue-500','bg-blue-50','text-blue-800'],
+                5 => ['border-l-violet-500','bg-violet-50','text-violet-800'],
+            ];
+            $courseColorMap = [];
+            $colorIdx = 0;
+            foreach ($entries as $e) {
+                if (!isset($courseColorMap[$e->course_id])) {
+                    $courseColorMap[$e->course_id] = $colors[$colorIdx % count($colors)];
+                    $colorIdx++;
+                }
+            }
+        @endphp
+        @forelse($timeSlots as $slot)
+        @php
+            $slotEntries = $entries->filter(fn($e) => substr($e->start_time, 0, 5) === $slot);
+        @endphp
+        <tr class="border-b border-slate-100 hover:bg-slate-50/50 transition-colors">
+            <td class="px-4 py-3 font-mono font-bold text-slate-700 text-xs whitespace-nowrap align-top">
+                {{ $slot }}
+            </td>
+            @foreach($dayLabels as $dayN => $dayName)
+            @php $daySlotEntries = $slotEntries->where('day_of_week', $dayN)->values(); @endphp
+            <td class="px-2 py-2 border-l border-slate-100 align-top {{ $dayN == $today ? 'bg-indigo-50/30' : '' }}" style="min-width:120px">
+                @forelse($daySlotEntries as $entry)
+                @php [$borderColor, $bgColor, $textColor] = $courseColorMap[$entry->course_id] ?? $colors[0]; @endphp
+                <div class="rounded-xl border-l-4 {{ $borderColor }} {{ $bgColor }} px-2.5 py-2 mb-1.5 relative group">
+                    <p class="font-extrabold text-xs {{ $textColor }} leading-tight truncate">{{ $entry->course->name }}</p>
+                    <p class="text-[10px] text-slate-500 font-semibold mt-0.5 truncate">
+                        <i class="fas fa-chalkboard-user text-slate-400 mr-0.5"></i>{{ explode(' ', $entry->lecturer?->full_name ?? '—')[0] }}
+                    </p>
+                    <p class="text-[10px] text-slate-400 mt-0.5">
+                        {{ substr($entry->start_time,0,5) }}–{{ substr($entry->end_time,0,5) }}
+                        @if($entry->room) · <i class="fas fa-door-open"></i> {{ $entry->room }}@endif
+                    </p>
+                    {{-- Delete button on hover --}}
+                    <form method="POST" action="{{ route('admin.timetable.destroy', $entry) }}"
+                          onsubmit="return confirm('Remove this lesson?')"
+                          class="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        @csrf @method('DELETE')
+                        <button type="submit"
+                            class="w-5 h-5 rounded-md bg-red-100 hover:bg-red-500 text-red-500 hover:text-white flex items-center justify-center transition-colors">
+                            <i class="fas fa-times text-[9px]"></i>
+                        </button>
+                    </form>
+                </div>
+                @empty
+                <span class="text-slate-200 text-xs">—</span>
+                @endforelse
+            </td>
+            @endforeach
+        </tr>
+        @empty
+        <tr><td colspan="7" class="text-center py-8 text-slate-400 text-sm">No entries match your filters.</td></tr>
+        @endforelse
+        </tbody>
+    </table>
 </div>
 
+{{-- ── Summary strip ────────────────────────────────────────────────────── --}}
+<div class="mt-4 flex flex-wrap gap-3 text-xs text-slate-500">
+    <span><strong class="text-slate-700">{{ $entries->count() }}</strong> total lessons</span>
+    <span>·</span>
+    <span><strong class="text-slate-700">{{ $entries->pluck('lecturer_id')->unique()->count() }}</strong> teacher{{ $entries->pluck('lecturer_id')->unique()->count() !== 1 ? 's' : '' }}</span>
+    <span>·</span>
+    <span><strong class="text-slate-700">{{ $entries->pluck('course_id')->unique()->count() }}</strong> course{{ $entries->pluck('course_id')->unique()->count() !== 1 ? 's' : '' }}</span>
 </div>
+@endif
 
-{{-- �.��.� ADD LESSON MODAL �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� --}}
+{{-- ── Add Lesson Modal ─────────────────────────────────────────────────── --}}
 <div id="addModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/40 p-4">
     <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg p-7 max-h-[90vh] overflow-y-auto">
         <div class="flex items-center justify-between mb-5">
             <h3 class="text-base font-extrabold text-slate-900">
                 <i class="fas fa-plus text-indigo-500 mr-2"></i>Add Timetable Entry
             </h3>
-            <button onclick="closeModal()" class="text-slate-400 hover:text-slate-700"><i class="fas fa-xmark text-lg"></i></button>
+            <button onclick="closeAdd()" class="text-slate-400 hover:text-slate-700">
+                <i class="fas fa-xmark text-lg"></i>
+            </button>
         </div>
         <form method="POST" action="{{ route('admin.timetable.store') }}" class="space-y-3">
             @csrf
+
+            {{-- Programme --}}
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wide text-slate-600 mb-1">Programme <span class="text-red-400">*</span></label>
+                <select name="program_id" id="modalProgram" required
+                    class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                    onchange="loadCourses(this.value)">
+                    <option value="">— Select programme —</option>
+                    @foreach($programs as $p)
+                    <option value="{{ $p->id }}" {{ $selectedProgram?->id == $p->id ? 'selected' : '' }}>{{ $p->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            {{-- Course --}}
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wide text-slate-600 mb-1">Subject / Course <span class="text-red-400">*</span></label>
+                <select name="course_id" id="modalCourse" required
+                    class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                    <option value="">— Select programme first —</option>
+                    @foreach($courses as $c)
+                    <option value="{{ $c->id }}">{{ $c->name }}{{ $c->code ? ' ('.$c->code.')' : '' }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            {{-- Teacher --}}
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wide text-slate-600 mb-1">Teacher <span class="text-red-400">*</span></label>
+                <select name="lecturer_id" required
+                    class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                    <option value="">— Select teacher —</option>
+                    @foreach($lecturers as $l)
+                    <option value="{{ $l->id }}">{{ $l->full_name }}</option>
+                    @endforeach
+                </select>
+            </div>
+
             <div class="grid grid-cols-2 gap-3">
-
-                {{-- Program --}}
-                <div class="col-span-2">
-                    <label class="block text-xs font-bold uppercase tracking-wide text-slate-600 mb-1">Program *</label>
-                    <select name="program_id" id="modalProgram" required
-                        class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                        onchange="loadCourses(this.value)">
-                        <option value="">– Select program –</option>
-                        @foreach($programs as $p)
-                        <option value="{{ $p->id }}" {{ $selectedProgram?->id==$p->id?'selected':'' }}>{{ $p->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                {{-- Course (loaded via AJAX) --}}
-                <div class="col-span-2">
-                    <label class="block text-xs font-bold uppercase tracking-wide text-slate-600 mb-1">Course / Subject *</label>
-                    <select name="course_id" id="modalCourse" required
-                        class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
-                        <option value="">– Select program first –</option>
-                        @foreach($courses as $c)
-                        <option value="{{ $c->id }}">{{ $c->name }}{{ $c->code ? ' ('.$c->code.')' : '' }}</option>
-                        @endforeach
-                    </select>
-                    <p id="courseLoadingMsg" class="text-[11px] text-indigo-500 mt-1 hidden"><i class="fas fa-spinner fa-spin mr-1"></i>Loading courses–�</p>
-                </div>
-
-                {{-- Teacher --}}
-                <div class="col-span-2">
-                    <label class="block text-xs font-bold uppercase tracking-wide text-slate-600 mb-1">Teacher *</label>
-                    <select name="lecturer_id" required
-                        class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
-                        <option value="">– Select teacher –</option>
-                        @foreach($lecturers as $l)<option value="{{ $l->id }}">{{ $l->full_name }}</option>@endforeach
-                    </select>
-                </div>
-
                 {{-- Day --}}
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wide text-slate-600 mb-1">Day *</label>
+                    <label class="block text-xs font-bold uppercase tracking-wide text-slate-600 mb-1">Day <span class="text-red-400">*</span></label>
                     <select name="day_of_week" required
                         class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
-                        @foreach(\App\Models\TimetableEntry::$dayNames as $d => $n)
-                        <option value="{{ $d }}" {{ $dayNum==$d ? 'selected' : '' }}>{{ $n }}</option>
+                        @foreach($dayLabels as $d => $n)
+                        <option value="{{ $d }}" {{ $today == $d ? 'selected' : '' }}>{{ $n }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -294,26 +234,26 @@
                         class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
                 </div>
 
-                {{-- Start time --}}
+                {{-- Start --}}
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wide text-slate-600 mb-1">Start Time *</label>
+                    <label class="block text-xs font-bold uppercase tracking-wide text-slate-600 mb-1">Start Time <span class="text-red-400">*</span></label>
                     <input type="time" name="start_time" required
                         class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
                 </div>
 
-                {{-- End time --}}
+                {{-- End --}}
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wide text-slate-600 mb-1">End Time *</label>
+                    <label class="block text-xs font-bold uppercase tracking-wide text-slate-600 mb-1">End Time <span class="text-red-400">*</span></label>
                     <input type="time" name="end_time" required
                         class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
                 </div>
+            </div>
 
-                {{-- Notes --}}
-                <div class="col-span-2">
-                    <label class="block text-xs font-bold uppercase tracking-wide text-slate-600 mb-1">Notes</label>
-                    <input type="text" name="notes" maxlength="255" placeholder="Optional"
-                        class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
-                </div>
+            {{-- Notes --}}
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wide text-slate-600 mb-1">Notes</label>
+                <input type="text" name="notes" maxlength="255" placeholder="Optional"
+                    class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
             </div>
 
             <div class="flex gap-3 pt-2">
@@ -321,7 +261,7 @@
                     class="flex-1 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white text-sm font-bold py-3 shadow transition-all active:scale-95">
                     <i class="fas fa-plus mr-1"></i> Add Entry
                 </button>
-                <button type="button" onclick="closeModal()"
+                <button type="button" onclick="closeAdd()"
                     class="px-5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-bold">
                     Cancel
                 </button>
@@ -329,45 +269,44 @@
         </form>
     </div>
 </div>
+
 @endsection
 
 @push('scripts')
 <script>
-function closeModal() {
-    document.getElementById('addModal').classList.add('hidden');
-    document.getElementById('addModal').classList.remove('flex');
-}
+function openAdd()  { var m=document.getElementById('addModal'); m.classList.remove('hidden'); m.classList.add('flex'); }
+function closeAdd() { var m=document.getElementById('addModal'); m.classList.add('hidden'); m.classList.remove('flex'); }
+
 document.getElementById('addModal').addEventListener('click', function(e) {
-    if (e.target === this) closeModal();
+    if (e.target === this) closeAdd();
 });
 
 function loadCourses(programId) {
-    const sel = document.getElementById('modalCourse');
-    const msg = document.getElementById('courseLoadingMsg');
-    sel.innerHTML = '<option value="">Loading–�</option>';
-    if (!programId) { sel.innerHTML = '<option value="">– Select program first –</option>'; return; }
-    msg.classList.remove('hidden');
+    var sel = document.getElementById('modalCourse');
+    sel.innerHTML = '<option value="">Loading…</option>';
+    if (!programId) { sel.innerHTML = '<option value="">— Select programme first —</option>'; return; }
     fetch('{{ route('admin.timetable.courses') }}?program_id=' + programId)
         .then(r => r.json())
         .then(courses => {
-            msg.classList.add('hidden');
             if (courses.length === 0) {
-                sel.innerHTML = '<option value="">No courses for this program</option>';
+                sel.innerHTML = '<option value="">No courses for this programme</option>';
                 return;
             }
-            sel.innerHTML = '<option value="">– Select course –</option>' +
+            sel.innerHTML = '<option value="">— Select course —</option>' +
                 courses.map(c => `<option value="${c.id}">${c.name}${c.code ? ' ('+c.code+')' : ''}</option>`).join('');
         })
-        .catch(() => {
-            msg.classList.add('hidden');
-            sel.innerHTML = '<option value="">Error loading courses</option>';
-        });
+        .catch(() => { sel.innerHTML = '<option value="">Error loading courses</option>'; });
 }
 
-// Auto-load courses if a program is already selected
+// Auto-load courses if programme already selected
 document.addEventListener('DOMContentLoaded', function() {
-    const pId = document.getElementById('modalProgram')?.value;
+    var pId = document.getElementById('modalProgram')?.value;
     if (pId) loadCourses(pId);
+
+    // Open modal automatically if there were validation errors
+    @if($errors->any())
+    openAdd();
+    @endif
 });
 </script>
 @endpush
