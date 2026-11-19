@@ -1942,8 +1942,9 @@ Route::get('/setup/fix-recorded-by', function () {
 
             // 2. scheme_of_learning table (singular — model uses this name)
             try {
-                $tbl = $conn->select("SELECT to_regcore('public.scheme_of_learning') as tbl");
-                if (empty($tbl[0]->tbl)) {
+                $tbl = $conn->select("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='scheme_of_learning') as exists");
+                $tableExists = !empty($tbl) && ($tbl[0]->exists ?? false) === true;
+                if (!$tableExists) {
                     $conn->statement('CREATE TABLE IF NOT EXISTS "scheme_of_learning" ("id" BIGSERIAL PRIMARY KEY, "course_id" BIGINT NOT NULL, "lecturer_id" BIGINT NOT NULL, "program_id" BIGINT NULL, "church_branch_id" BIGINT NULL, "academic_session_id" BIGINT NULL, "academic_year" VARCHAR(255) NULL, "week_number" INTEGER NOT NULL, "topic" VARCHAR(255) NOT NULL, "subtopic" TEXT NULL, "objectives" TEXT NULL, "activities" TEXT NULL, "resources" TEXT NULL, "term" VARCHAR(255) NULL, "created_at" TIMESTAMP NULL, "updated_at" TIMESTAMP NULL)');
                     $results[] = "✅ [{$tenant->name}] scheme_of_learning table created";
                 } else {
@@ -1955,13 +1956,15 @@ Route::get('/setup/fix-recorded-by', function () {
                         'academic_year'     => 'ALTER TABLE scheme_of_learning ADD COLUMN IF NOT EXISTS academic_year VARCHAR(255) NULL',
                         'term'              => 'ALTER TABLE scheme_of_learning ADD COLUMN IF NOT EXISTS term VARCHAR(255) NULL',
                     ];
+                    $added = false;
                     foreach ($missing as $col => $sql) {
                         if (!in_array($col, $cols)) {
                             $conn->statement($sql);
                             $results[] = "✅ [{$tenant->name}] scheme_of_learning.{$col} added";
+                            $added = true;
                         }
                     }
-                    if (!in_array('program_id', $cols) && !in_array('church_branch_id', $cols) && !in_array('academic_year', $cols)) {
+                    if (!$added) {
                         $results[] = "⏭ [{$tenant->name}] scheme_of_learning already complete";
                     }
                 }
