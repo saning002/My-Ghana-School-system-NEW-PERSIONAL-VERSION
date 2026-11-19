@@ -43,6 +43,7 @@
 {{-- Filters --}}
 <div class="card p-4 flex flex-wrap gap-3 items-end">
     <form method="GET" class="flex flex-wrap gap-3 items-end w-full">
+        <input type="hidden" name="date" value="{{ $date->toDateString() }}">
         <div class="flex-1 min-w-[140px]">
             <label class="block text-xs font-bold uppercase tracking-wide text-slate-600 mb-1">Program</label>
             <select name="program_id" onchange="this.form.submit()"
@@ -54,51 +55,35 @@
             </select>
         </div>
         <div>
+            <label class="block text-xs font-bold uppercase tracking-wide text-slate-600 mb-1">Teacher</label>
+            <select name="lecturer_id" onchange="this.form.submit()"
+                class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)]">
+                <option value="">All Teachers</option>
+                @foreach($lecturers as $l)<option value="{{ $l->id }}" {{ request('lecturer_id')==$l->id?'selected':'' }}>{{ $l->full_name }}</option>@endforeach
+            </select>
+        </div>
+        <div>
             <label class="block text-xs font-bold uppercase tracking-wide text-slate-600 mb-1">Date</label>
             <input type="date" name="date" value="{{ $date->toDateString() }}"
                 class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)]"
                 onchange="this.form.submit()">
         </div>
-        @if($selectedProgram)<input type="hidden" name="program_id" value="{{ $selectedProgram->id }}">@endif
     </form>
 </div>
-    </div>
 
-    {{-- Week strip --}}
-    <div class="relative z-10 flex items-center gap-2 mt-5 flex-wrap">
-        @foreach(range(0,5) as $offset)
-        @php $d = \Carbon\Carbon::today()->startOfWeek()->addDays($offset); $sel = $d->toDateString()===$date->toDateString(); @endphp
-        <a href="{{ route('admin.timetable.index', array_filter(['program_id'=>$selectedProgram?->id,'date'=>$d->toDateString()])) }}"
-           class="inline-flex flex-col items-center rounded-xl px-3 py-2 text-[10px] font-bold transition-colors
-                  {{ $sel ? 'bg-white text-indigo-900' : ($d->isToday() ? 'bg-white/20 text-white' : 'text-white/60 hover:text-white hover:bg-white/10') }}">
-            <span>{{ $d->format('D') }}</span>
-            <span class="text-[9px] mt-0.5 {{ $sel ? 'text-indigo-600' : 'opacity-70' }}">{{ $d->format('j') }}</span>
-            @php $cnt = $entries->where('day_of_week',(int)$d->format('N'))->count(); @endphp
-            @if($cnt > 0)<span class="mt-0.5 inline-block rounded-full w-4 h-4 text-[8px] {{ $sel ? 'bg-indigo-600 text-white' : 'bg-white/25 text-white' }} flex items-center justify-center">{{ $cnt }}</span>@endif
-        </a>
-        @endforeach
-    </div>
-</div>
-
-{{-- Filters --}}
-<div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-    <form method="GET" class="flex flex-wrap gap-3 items-end">
-        <input type="hidden" name="date" value="{{ $date->toDateString() }}">
-        <div>
-            <label class="block text-xs font-bold uppercase tracking-wide text-slate-600 mb-1">Program</label>
-            <select name="program_id" class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400" onchange="this.form.submit()">
-                <option value="">All Programs</option>
-                @foreach($programs as $p)<option value="{{ $p->id }}" {{ $selectedProgram?->id==$p->id?'selected':'' }}>{{ $p->name }}</option>@endforeach
-            </select>
-        </div>
-        <div>
-            <label class="block text-xs font-bold uppercase tracking-wide text-slate-600 mb-1">Teacher</label>
-            <select name="lecturer_id" class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400" onchange="this.form.submit()">
-                <option value="">All Teachers</option>
-                @foreach($lecturers as $l)<option value="{{ $l->id }}" {{ request('lecturer_id')==$l->id?'selected':'' }}>{{ $l->full_name }}</option>@endforeach
-            </select>
-        </div>
-    </form>
+{{-- Week strip --}}
+<div class="flex items-center gap-2 mt-5 flex-wrap">
+    @foreach(range(0,5) as $offset)
+    @php $d = \Carbon\Carbon::today()->startOfWeek()->addDays($offset); $sel = $d->toDateString()===$date->toDateString(); @endphp
+    <a href="{{ route('admin.timetable.index', array_filter(['program_id'=>$selectedProgram?->id,'date'=>$d->toDateString()])) }}"
+       class="inline-flex flex-col items-center rounded-xl px-3 py-2 text-[10px] font-bold transition-colors
+              {{ $sel ? 'bg-indigo-100 text-indigo-900' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
+        <span>{{ $d->format('D') }}</span>
+        <span class="text-[9px] mt-0.5 {{ $sel ? 'text-indigo-600' : 'opacity-70' }}">{{ $d->format('j') }}</span>
+        @php $cnt = $entries->where('day_of_week',(int)$d->format('N'))->count(); @endphp
+        @if($cnt > 0)<span class="mt-0.5 inline-block rounded-full w-4 h-4 text-[8px] {{ $sel ? 'bg-indigo-600 text-white' : 'bg-slate-300 text-slate-700' }} flex items-center justify-center">{{ $cnt }}</span>@endif
+    </a>
+    @endforeach
 </div>
 
 <div class="grid grid-cols-1 xl:grid-cols-3 gap-5">
