@@ -1902,7 +1902,7 @@ Route::get('/setup/migrate-billing-model', function () {
     );
 });
 
-// ── Fix: add recorded_by column to daily_fee_records on ALL tenant DBs ────
+// ── Fix: add recorded_by + scheme_of_learning + missing tables on ALL tenant DBs ──
 // Hit: /setup/fix-recorded-by
 Route::get('/setup/fix-recorded-by', function () {
     $results = [];
@@ -1925,27 +1925,47 @@ Route::get('/setup/fix-recorded-by', function () {
             \Illuminate\Support\Facades\DB::purge('tenant');
             \Illuminate\Support\Facades\DB::reconnect('tenant');
 
-            // Check table exists
-            $tableExists = \Illuminate\Support\Facades\DB::connection('tenant')
-                ->select("SELECT to_regclass('public.daily_fee_records') as tbl");
-            if (empty($tableExists[0]->tbl)) {
-                $results[] = "⏭ [{$tenant->name}] daily_fee_records table does not exist — skipped";
-                continue;
+            $conn = \Illuminate\Support\Facades\DB::connection('tenant');
+
+            // 1. recorded_by on daily_fee_records
+            try {
+                $col = $conn->select("SELECT column_name FROM information_schema.columns WHERE table_name='daily_fee_records' AND column_name='recorded_by'");
+                if (empty($col)) {
+                    $conn->statement("ALTER TABLE daily_fee_records ADD COLUMN IF NOT EXISTS recorded_by bigint NULL");
+                    $results[] = "✅ [{$tenant->name}] recorded_by added to daily_fee_records";
+                } else {
+                    $results[] = "⏭ [{$tenant->name}] recorded_by already exists";
+                }
+            } catch (\Throwable $ex) {
+                $results[] = "⚠️ [{$tenant->name}] recorded_by: " . $ex->getMessage();
             }
 
-            // Check column already exists
-            $col = \Illuminate\Support\Facades\DB::connection('tenant')
-                ->select("SELECT column_name FROM information_schema.columns WHERE table_name='daily_fee_records' AND column_name='recorded_by'");
-
-            if (!empty($col)) {
-                $results[] = "⏭ [{$tenant->name}] recorded_by — already exists, skipped";
-                continue;
+            // 2. scheme_of_learning table (singular — model uses this name)
+            try {
+                $tbl = $conn->select("SELECT to_regclass('public.scheme_of_learning') as tbl");
+                if (empty($tbl[0]->tbl)) {
+                    $conn->statement('CREATE TABLE IF NOT EXISTS "scheme_of_learning" ("id" BIGSERIAL PRIMARY KEY, "course_id" BIGINT NOT NULL, "lecturer_id" BIGINT NOT NULL, "academic_session_id" BIGINT NULL, "academic_year" VARCHAR(255) NULL, "week_number" INTEGER NOT NULL, "topic" VARCHAR(255) NOT NULL, "subtopic" TEXT NULL, "objectives" TEXT NULL, "activities" TEXT NULL, "resources" TEXT NULL, "term" VARCHAR(255) NULL, "created_at" TIMESTAMP NULL, "updated_at" TIMESTAMP NULL)');
+                    $results[] = "✅ [{$tenant->name}] scheme_of_learning table created";
+                } else {
+                    $results[] = "⏭ [{$tenant->name}] scheme_of_learning already exists";
+                }
+            } catch (\Throwable $ex) {
+                $results[] = "⚠️ [{$tenant->name}] scheme_of_learning: " . $ex->getMessage();
             }
 
-            \Illuminate\Support\Facades\DB::connection('tenant')
-                ->statement("ALTER TABLE daily_fee_records ADD COLUMN IF NOT EXISTS recorded_by bigint NULL");
+            // 3. Drop old plural table if it exists (was created by mistake)
+            try {
+                $conn->statement("DROP TABLE IF EXISTS scheme_of_learnings CASCADE");
+            } catch (\Throwable $ex) {}
 
-            $results[] = "✅ [{$tenant->name}] recorded_by column added to daily_fee_records";
+            // 4. Add notes column to timetable_entries if missing
+            try {
+                $col = $conn->select("SELECT column_name FROM information_schema.columns WHERE table_name='timetable_entries' AND column_name='notes'");
+                if (empty($col)) {
+                    $conn->statement("ALTER TABLE timetable_entries ADD COLUMN IF NOT EXISTS notes varchar(255) NULL");
+                    $results[] = "✅ [{$tenant->name}] notes added to timetable_entries";
+                }
+            } catch (\Throwable $ex) {}
 
         } catch (\Throwable $e) {
             $results[] = "⚠️ [{$tenant->name}] Error: " . $e->getMessage();
