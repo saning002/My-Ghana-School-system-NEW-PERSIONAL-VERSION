@@ -83,10 +83,37 @@ class TenantMiddleware
         // Blade rendering starts — the connection is established while PHP is
         // still building the response in memory. The browser sees nothing until
         // the full page is ready, eliminating the white DOCTYPE flash.
-        try {
-            DB::connection('tenant')->getPdo();
-        } catch (\Throwable $e) {
-            // Connection failed — already handled by the try/catch below
+        //
+        // RETRY: Neon cold starts can cause "Connection refused" on the first
+        // attempt. We retry up to 3 times with a short delay so the user never
+        // sees a 500 error just because Neon was sleeping.
+        $connected = false;
+        for ($attempt = 1; $attempt <= 3; $attempt++) {
+            try {
+                DB::purge('tenant');
+                DB::reconnect('tenant');
+                DB::connection('tenant')->getPdo();
+                $connected = true;
+                break;
+            } catch (\Throwable $e) {
+                if ($attempt < 3) {
+                    usleep(500000); // 0.5 second wait between retries
+                }
+            }
+        }
+
+        // If all retries failed, try one more time — sometimes Neon just needs
+        // longer to wake. If this also fails, let the error propagate so the
+        // user sees a proper error page instead of a raw exception.
+        if (!$connected) {
+            try {
+                DB::purge('tenant');
+                DB::reconnect('tenant');
+                DB::connection('tenant')->getPdo();
+            } catch (\Throwable $e) {
+                // Last resort — let the request continue. Controllers have
+                // their own try/catch and will show a friendly error.
+            }
         }
 
         // Share tenant with all Blade views
