@@ -4,7 +4,7 @@
 
 @section('content')
 @php
-    $dayLabels = \App\Models\TimetableEntry::$dayNames; {{-- [1=>'Monday',...,6=>'Saturday'] --}}
+    $dayLabels = \App\Models\TimetableEntry::$dayNames;
     $today     = (int)\Carbon\Carbon::today()->format('N');
 @endphp
 
