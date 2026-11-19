@@ -1902,6 +1902,65 @@ Route::get('/setup/migrate-billing-model', function () {
     );
 });
 
+// ── Fix: add recorded_by column to daily_fee_records on ALL tenant DBs ────
+// Hit: /setup/fix-recorded-by
+Route::get('/setup/fix-recorded-by', function () {
+    $results = [];
+    $tenants = \App\Models\Tenant::whereNotNull('db_name')->get();
+
+    foreach ($tenants as $tenant) {
+        try {
+            config(['database.connections.tenant' => [
+                'driver'   => 'pgsql',
+                'host'     => $tenant->db_host,
+                'port'     => $tenant->db_port ?? 5432,
+                'database' => $tenant->db_name,
+                'username' => $tenant->db_username,
+                'password' => $tenant->db_password,
+                'charset'  => 'utf8',
+                'prefix'   => '',
+                'schema'   => 'public',
+                'sslmode'  => 'require',
+            ]]);
+            \Illuminate\Support\Facades\DB::purge('tenant');
+            \Illuminate\Support\Facades\DB::reconnect('tenant');
+
+            // Check table exists
+            $tableExists = \Illuminate\Support\Facades\DB::connection('tenant')
+                ->select("SELECT to_regclass('public.daily_fee_records') as tbl");
+            if (empty($tableExists[0]->tbl)) {
+                $results[] = "⏭ [{$tenant->name}] daily_fee_records table does not exist — skipped";
+                continue;
+            }
+
+            // Check column already exists
+            $col = \Illuminate\Support\Facades\DB::connection('tenant')
+                ->select("SELECT column_name FROM information_schema.columns WHERE table_name='daily_fee_records' AND column_name='recorded_by'");
+
+            if (!empty($col)) {
+                $results[] = "⏭ [{$tenant->name}] recorded_by — already exists, skipped";
+                continue;
+            }
+
+            \Illuminate\Support\Facades\DB::connection('tenant')
+                ->statement("ALTER TABLE daily_fee_records ADD COLUMN IF NOT EXISTS recorded_by bigint NULL");
+
+            $results[] = "✅ [{$tenant->name}] recorded_by column added to daily_fee_records";
+
+        } catch (\Throwable $e) {
+            $results[] = "⚠️ [{$tenant->name}] Error: " . $e->getMessage();
+        }
+    }
+
+    return response(
+        '<html><body style="font-family:monospace;padding:20px;background:#0f172a;color:#e2e8f0;">'
+        . '<h2 style="color:#34d399">Fix: recorded_by column</h2>'
+        . '<pre>' . implode("\n", $results) . '</pre>'
+        . '<br><a href="/setup/clear-cache" style="color:#60a5fa">→ Clear cache</a>'
+        . '</body></html>'
+    );
+});
+
 // ── Clear all caches (view, config, route, opcache) ───────────────────────
 Route::get('/setup/clear-cache', function () {
     $results = [];
