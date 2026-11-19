@@ -11,7 +11,7 @@
         <p>Manage academic years, term periods and the active period</p>
     </div>
     <div class="hero-actions">
-        <a href="{{ route('admin.academic-sessions.create') }}" class="btn-primary-action">
+        <a href="#create-session-form" class="btn-primary-action">
             <i class="fas fa-plus"></i> New Session
         </a>
     </div>
@@ -64,7 +64,7 @@
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
     {{-- �"?�"? Create Form �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"? --}}
-    <div class="glass-card p-6 self-start rounded-2xl border border-slate-200 bg-white shadow-sm">
+    <div id="create-session-form" class="glass-card p-6 self-start rounded-2xl border border-slate-200 bg-white shadow-sm">
         <h3 class="text-base font-extrabold text-slate-900 mb-0.5">Create New Session</h3>
         <p class="text-xs text-slate-500 mb-5">Periods are auto-generated based on the mode you choose.</p>
 
