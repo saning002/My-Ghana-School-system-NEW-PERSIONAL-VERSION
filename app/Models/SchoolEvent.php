@@ -12,6 +12,15 @@ class SchoolEvent extends Model
     use HasFactory;
     use TenantAwareConnection;
 
+    public static array $typeColors = [
+        'academic'  => '#6366f1',
+        'sports'    => '#10b981',
+        'cultural'  => '#f59e0b',
+        'holiday'   => '#ef4444',
+        'meeting'   => '#3b82f6',
+        'other'     => '#64748b',
+    ];
+
     protected $fillable = [
         'title', 'description', 'start_date', 'end_date',
         'start_time', 'end_time', 'all_day',
