@@ -1994,7 +1994,32 @@ Route::get('/setup/fix-recorded-by', function () {
                 }
             } catch (\Throwable $ex) {}
 
-            // 5. Fix exam_questions missing columns
+            // 5. Fix school_events missing columns
+            try {
+                $evCols = collect($conn->select("SELECT column_name FROM information_schema.columns WHERE table_name='school_events'"))->pluck('column_name')->toArray();
+                $evMissing = [
+                    'start_time'      => "ALTER TABLE school_events ADD COLUMN IF NOT EXISTS start_time VARCHAR(255) NULL",
+                    'end_time'        => "ALTER TABLE school_events ADD COLUMN IF NOT EXISTS end_time VARCHAR(255) NULL",
+                    'all_day'         => "ALTER TABLE school_events ADD COLUMN IF NOT EXISTS all_day BOOLEAN NOT NULL DEFAULT TRUE",
+                    'event_type'      => "ALTER TABLE school_events ADD COLUMN IF NOT EXISTS event_type VARCHAR(100) NULL",
+                    'location'        => "ALTER TABLE school_events ADD COLUMN IF NOT EXISTS location VARCHAR(255) NULL",
+                    'image_path'      => "ALTER TABLE school_events ADD COLUMN IF NOT EXISTS image_path VARCHAR(255) NULL",
+                    'is_published'    => "ALTER TABLE school_events ADD COLUMN IF NOT EXISTS is_published BOOLEAN NOT NULL DEFAULT FALSE",
+                    'show_on_website' => "ALTER TABLE school_events ADD COLUMN IF NOT EXISTS show_on_website BOOLEAN NOT NULL DEFAULT FALSE",
+                    'created_by'      => "ALTER TABLE school_events ADD COLUMN IF NOT EXISTS created_by BIGINT NULL",
+                    'color'           => "ALTER TABLE school_events ADD COLUMN IF NOT EXISTS color VARCHAR(20) NULL",
+                ];
+                foreach ($evMissing as $col => $sql) {
+                    if (!in_array($col, $evCols)) {
+                        $conn->statement($sql);
+                        $results[] = "✅ [{$tenant->name}] school_events.{$col} added";
+                    }
+                }
+            } catch (\Throwable $ex) {
+                $results[] = "⚠️ [{$tenant->name}] school_events: " . $ex->getMessage();
+            }
+
+            // 6. Fix exam_questions missing columns
             try {
                 $tblEq = $conn->select("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='exam_questions') as exists");
                 if (!empty($tblEq) && ($tblEq[0]->exists ?? false) === true) {
