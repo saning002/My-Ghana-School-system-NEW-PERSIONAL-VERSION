@@ -15,28 +15,74 @@ class EnsureUserHasRole
      * If a staff portal user has the permission, they can access that route group.
      */
     private const STAFF_PERMISSION_MAP = [
-        'admin.dashboard'           => 'dashboard',
-        'admin.students'            => 'students',
-        'admin.lecturers'           => 'lecturers',
-        'admin.class-teachers'      => 'class_teachers',
-        'admin.work-monitoring'     => 'work_logs',        'admin.student-reports'     => 'student_reports',
-        'admin.programs'            => 'programs',
-        'admin.courses'             => 'courses',
-        'admin.attendance'          => 'attendance',
-        'admin.academic-sessions'   => 'academic_sessions',
-        'admin.timetable'           => 'timetable',
-        'admin.scheme-of-learning'  => 'scheme_of_learning',
-        'admin.calendar'            => 'calendar',
-        'admin.exams'               => 'exams',
-        'admin.exam-questions'      => 'exam_questions',
-        'admin.fees'                => 'fees',
-        'admin.daily-fees'          => 'daily_fees',
-        'admin.reports'             => 'reports',
-        'admin.notifications'       => 'notifications',
-        'admin.promotions'          => 'promotions',
-        'admin.branches'            => 'branches',
-        'admin.settings'            => 'settings',
-        'admin.profile'             => '__always__',
+        // ── Core ──────────────────────────────────────────────────────────────
+        'admin.dashboard'                   => 'dashboard',
+        'admin.profile'                     => '__always__',
+
+        // ── Students ──────────────────────────────────────────────────────────
+        'admin.students'                    => 'students',
+        'admin.id-cards'                    => 'students_id_card',
+
+        // ── Staff & Teachers ──────────────────────────────────────────────────
+        'admin.lecturers'                   => 'lecturers',
+        'admin.class-teachers'              => 'class_teachers',
+        'admin.admins'                      => 'admins',
+        'admin.staff-portal'                => 'admins',
+
+        // ── Attendance ────────────────────────────────────────────────────────
+        'admin.attendance'                  => 'attendance',
+
+        // ── Exams & Reports ───────────────────────────────────────────────────
+        'admin.exams'                       => 'exams',
+        'admin.exam-questions'              => 'exam_questions',
+        'admin.reports'                     => 'reports',
+
+        // ── Fees & Payments ───────────────────────────────────────────────────
+        'admin.fees'                        => 'fees',
+        'admin.daily-fees'                  => 'daily_fees',
+        'admin.fee-reminders'               => 'fee_reminders',
+
+        // ── Academic Structure ────────────────────────────────────────────────
+        'admin.programs'                    => 'programs',
+        'admin.courses'                     => 'courses',
+        'admin.academic-sessions'           => 'academic_sessions',
+
+        // ── Scheme, Timetable, Calendar ───────────────────────────────────────
+        'admin.scheme-of-learning'          => 'scheme_of_learning',
+        'admin.timetable'                   => 'timetable',
+        'admin.calendar'                    => 'calendar',
+
+        // ── Notifications & Messaging ─────────────────────────────────────────
+        'admin.notifications.templates'     => 'message_templates',
+        'admin.notifications'               => 'notifications',
+        'admin.sms'                         => 'notifications_sms',
+
+        // ── Work Logs & Student Reports ───────────────────────────────────────
+        'admin.work-monitoring'             => 'work_logs',
+        'admin.student-reports'             => 'student_reports',
+
+        // ── Promotions & Branches ─────────────────────────────────────────────
+        'admin.promotions'                  => 'promotions',
+        'admin.branches'                    => 'branches',
+
+        // ── Website CMS ───────────────────────────────────────────────────────
+        'admin.website'                     => 'website',
+        'admin.website-settings'            => 'website_settings',
+        'admin.admissions'                  => 'website_applications',
+
+        // ── Settings ──────────────────────────────────────────────────────────
+        'admin.settings'                    => 'settings',
+        'admin.portal-settings'             => 'portal_settings',
+
+        // ── Subscription ──────────────────────────────────────────────────────
+        'admin.subscription'                => 'subscription',
+
+        // ── Reports hub ───────────────────────────────────────────────────────
+        'admin.reports.hub'                 => 'reports',
+        'admin.reports.fee-statement'       => 'fees_reports',
+        'admin.reports.student-academic'    => 'reports_academic',
+        'admin.reports.attendance-summary'  => 'reports_attendance',
+        'admin.reports.financial'           => 'reports_financial',
     ];
 
     public function handle(Request $request, Closure $next, string $role): Response

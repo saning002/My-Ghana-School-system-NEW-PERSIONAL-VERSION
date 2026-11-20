@@ -111,11 +111,20 @@ $defaults = \App\Models\StaffPortalUser::$defaultPermissions;
             <div>
                 <div class="flex items-center justify-between mb-2">
                     <label class="text-xs font-bold uppercase tracking-wide text-slate-600">Permissions</label>
-                    <div class="flex gap-2">
+                    <div class="flex gap-2 flex-wrap">
+                        <select id="rolePresetSelect" onchange="applyRolePreset(this.value)"
+                            class="text-[10px] font-bold text-violet-600 bg-violet-50 border border-violet-200 rounded-lg px-2 py-1 focus:outline-none cursor-pointer">
+                            <option value="">⚡ Apply Role Preset</option>
+                            <option value="accountant">Accountant</option>
+                            <option value="headmaster">Headmaster</option>
+                            <option value="headteacher">Headteacher</option>
+                            <option value="deputy">Deputy Head</option>
+                            <option value="secretary">Secretary</option>
+                        </select>
                         <button type="button" onclick="setAllNew(true)"
-                            class="text-[10px] font-bold text-violet-600 hover:text-violet-800 px-2 py-1 bg-violet-50 rounded-lg">�o" All ON</button>
+                            class="text-[10px] font-bold text-violet-600 hover:text-violet-800 px-2 py-1 bg-violet-50 rounded-lg">✓ All ON</button>
                         <button type="button" onclick="setAllNew(false)"
-                            class="text-[10px] font-bold text-slate-500 hover:text-slate-700 px-2 py-1 bg-slate-100 rounded-lg">�o- All OFF</button>
+                            class="text-[10px] font-bold text-slate-500 hover:text-slate-700 px-2 py-1 bg-slate-100 rounded-lg">✗ All OFF</button>
                     </div>
                 </div>
                 <div class="space-y-2 max-h-[400px] overflow-y-auto pr-1" id="new-perm-container">
@@ -317,6 +326,35 @@ function setAllNew(checked) {
 
 function setAllEdit(containerId, checked) {
     document.querySelectorAll('#' + containerId + ' input[type=checkbox]').forEach(cb => cb.checked = checked);
+}
+
+// Role preset data from PHP
+var rolePresets = @json(\App\Models\StaffPortalUser::$rolePresets);
+
+function applyRolePreset(role) {
+    if (!role) return;
+    var preset = rolePresets[role];
+    if (!preset) return;
+
+    // Turn all OFF first
+    document.querySelectorAll('#new-perm-container input[type=checkbox]').forEach(cb => cb.checked = false);
+
+    // Turn ON only the preset permissions
+    preset.forEach(function(perm) {
+        var cb = document.querySelector('#new-perm-container input[value="' + perm + '"]');
+        if (cb) cb.checked = true;
+    });
+
+    // Reset the select back to placeholder
+    document.getElementById('rolePresetSelect').value = '';
+
+    // Show a quick confirmation
+    var label = {accountant:'Accountant',headmaster:'Headmaster',headteacher:'Headteacher',deputy:'Deputy Head',secretary:'Secretary'}[role] || role;
+    var flash = document.createElement('div');
+    flash.textContent = '✓ ' + label + ' preset applied — ' + preset.length + ' permissions enabled';
+    flash.style.cssText = 'position:fixed;top:20px;right:20px;z-index:9999;background:#7c3aed;color:#fff;padding:10px 18px;border-radius:12px;font-size:12px;font-weight:700;box-shadow:0 4px 20px rgba(0,0,0,.2);transition:opacity .4s';
+    document.body.appendChild(flash);
+    setTimeout(function(){ flash.style.opacity='0'; setTimeout(function(){ flash.remove(); }, 400); }, 2500);
 }
 </script>
 @endpush
