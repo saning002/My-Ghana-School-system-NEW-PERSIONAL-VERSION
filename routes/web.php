@@ -2103,9 +2103,18 @@ Route::get('/setup/fix-recorded-by', function () {
                 // gallery_categories — slug
                 $col = $conn->select("SELECT column_name FROM information_schema.columns WHERE table_name='website_gallery_categories' AND column_name='slug'");
                 if (empty($col)) { $conn->statement("ALTER TABLE website_gallery_categories ADD COLUMN IF NOT EXISTS slug VARCHAR(255) NULL"); $results[] = "✅ [{$tenant->name}] website_gallery_categories.slug added"; }
-                // gallery_images — sort_order
-                $col = $conn->select("SELECT column_name FROM information_schema.columns WHERE table_name='website_gallery_images' AND column_name='sort_order'");
-                if (empty($col)) { $conn->statement("ALTER TABLE website_gallery_images ADD COLUMN IF NOT EXISTS sort_order INTEGER NOT NULL DEFAULT 0"); }
+                // gallery_images — sort_order + image_path + title + caption + category_id
+                $giCols = collect($conn->select("SELECT column_name FROM information_schema.columns WHERE table_name='website_gallery_images'"))->pluck('column_name')->toArray();
+                $giMissing = [
+                    'image_path'  => "ALTER TABLE website_gallery_images ADD COLUMN IF NOT EXISTS image_path VARCHAR(500) NULL",
+                    'title'       => "ALTER TABLE website_gallery_images ADD COLUMN IF NOT EXISTS title VARCHAR(255) NULL",
+                    'caption'     => "ALTER TABLE website_gallery_images ADD COLUMN IF NOT EXISTS caption VARCHAR(255) NULL",
+                    'category_id' => "ALTER TABLE website_gallery_images ADD COLUMN IF NOT EXISTS category_id BIGINT NULL",
+                    'sort_order'  => "ALTER TABLE website_gallery_images ADD COLUMN IF NOT EXISTS sort_order INTEGER NOT NULL DEFAULT 0",
+                ];
+                foreach ($giMissing as $col => $sql) {
+                    if (!in_array($col, $giCols)) { $conn->statement($sql); $results[] = "✅ [{$tenant->name}] website_gallery_images.{$col} added"; }
+                }
                 // staff_members — position, order
                 $col = $conn->select("SELECT column_name FROM information_schema.columns WHERE table_name='website_staff_members' AND column_name='position'");
                 if (empty($col)) { $conn->statement("ALTER TABLE website_staff_members ADD COLUMN IF NOT EXISTS position VARCHAR(255) NULL"); $results[] = "✅ [{$tenant->name}] website_staff_members.position added"; }
