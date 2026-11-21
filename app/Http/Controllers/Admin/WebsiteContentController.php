@@ -272,9 +272,23 @@ class WebsiteContentController extends Controller
             $data['website_theme'] = json_encode($merged);
         }
 
-        // IMPORTANT: Remove uploaded-file keys — they are UploadedFile objects,
-        // not strings. Keeping them in $data causes a DB column type error.
-        unset($data['logo'], $data['hero_bg_image']);
+        // IMPORTANT: Remove uploaded-file keys if they are still UploadedFile
+        // objects (not yet replaced with a path/URL string by the upload logic above).
+        if (isset($data['logo']) && is_object($data['logo'])) {
+            unset($data['logo']);
+        }
+        if (isset($data['hero_bg_image']) && is_object($data['hero_bg_image'])) {
+            unset($data['hero_bg_image']);
+        }
+
+        // Handle hero_bg_image URL clearing — if the user emptied the URL field,
+        // set hero_bg_image to null so the old value is removed from the DB.
+        if (!$request->filled('hero_bg_image_url') && !$request->hasFile('hero_bg_image') && $request->has('hero_bg_type')) {
+            // Only clear if hero_bg_type is not 'image' (user switched away from image mode)
+            if ($request->input('hero_bg_type') !== 'image') {
+                $data['hero_bg_image'] = null;
+            }
+        }
 
         // Save directly to the tenant DB using DB::table() to bypass Eloquent's
         // dirty-check which silently skips JSON/array columns it thinks are unchanged.
