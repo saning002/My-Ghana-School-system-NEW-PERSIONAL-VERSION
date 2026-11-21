@@ -2098,6 +2098,38 @@ Route::get('/setup/fix-recorded-by', function () {
                 if (empty($col)) { $conn->statement("ALTER TABLE academic_sessions ADD COLUMN IF NOT EXISTS mode VARCHAR(50) NULL"); $results[] = "✅ [{$tenant->name}] academic_sessions.mode added"; }
             } catch (\Throwable $ex) { $results[] = "⚠️ [{$tenant->name}] academic_sessions: " . $ex->getMessage(); }
 
+            // 14. Fix website tables missing columns
+            try {
+                // gallery_categories — slug
+                $col = $conn->select("SELECT column_name FROM information_schema.columns WHERE table_name='website_gallery_categories' AND column_name='slug'");
+                if (empty($col)) { $conn->statement("ALTER TABLE website_gallery_categories ADD COLUMN IF NOT EXISTS slug VARCHAR(255) NULL"); $results[] = "✅ [{$tenant->name}] website_gallery_categories.slug added"; }
+                // gallery_images — sort_order
+                $col = $conn->select("SELECT column_name FROM information_schema.columns WHERE table_name='website_gallery_images' AND column_name='sort_order'");
+                if (empty($col)) { $conn->statement("ALTER TABLE website_gallery_images ADD COLUMN IF NOT EXISTS sort_order INTEGER NOT NULL DEFAULT 0"); }
+                // staff_members — position, order
+                $col = $conn->select("SELECT column_name FROM information_schema.columns WHERE table_name='website_staff_members' AND column_name='position'");
+                if (empty($col)) { $conn->statement("ALTER TABLE website_staff_members ADD COLUMN IF NOT EXISTS position VARCHAR(255) NULL"); $results[] = "✅ [{$tenant->name}] website_staff_members.position added"; }
+                $col = $conn->select("SELECT column_name FROM information_schema.columns WHERE table_name='website_staff_members' AND column_name='order'");
+                if (empty($col)) { $conn->statement("ALTER TABLE website_staff_members ADD COLUMN IF NOT EXISTS \"order\" INTEGER NOT NULL DEFAULT 0"); }
+                // testimonials — parent_name, child_name, message, rating
+                $tblT = $conn->select("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='website_testimonials') as exists");
+                if (!empty($tblT) && ($tblT[0]->exists ?? false) === true) {
+                    $tCols = collect($conn->select("SELECT column_name FROM information_schema.columns WHERE table_name='website_testimonials'"))->pluck('column_name')->toArray();
+                    $tMissing = [
+                        'parent_name' => "ALTER TABLE website_testimonials ADD COLUMN IF NOT EXISTS parent_name VARCHAR(255) NULL",
+                        'child_name'  => "ALTER TABLE website_testimonials ADD COLUMN IF NOT EXISTS child_name VARCHAR(255) NULL",
+                        'message'     => "ALTER TABLE website_testimonials ADD COLUMN IF NOT EXISTS message TEXT NULL",
+                        'rating'      => "ALTER TABLE website_testimonials ADD COLUMN IF NOT EXISTS rating INTEGER NULL",
+                    ];
+                    foreach ($tMissing as $col => $sql) {
+                        if (!in_array($col, $tCols)) { $conn->statement($sql); $results[] = "✅ [{$tenant->name}] website_testimonials.{$col} added"; }
+                    }
+                } else {
+                    $conn->statement('CREATE TABLE IF NOT EXISTS "website_testimonials" ("id" BIGSERIAL PRIMARY KEY, "parent_name" VARCHAR(255) NULL, "child_name" VARCHAR(255) NULL, "name" VARCHAR(255) NULL, "role" VARCHAR(255) NULL, "message" TEXT NULL, "content" TEXT NULL, "rating" INTEGER NULL, "photo_path" VARCHAR(255) NULL, "is_active" BOOLEAN NOT NULL DEFAULT TRUE, "created_at" TIMESTAMP NULL, "updated_at" TIMESTAMP NULL)');
+                    $results[] = "✅ [{$tenant->name}] website_testimonials table created";
+                }
+            } catch (\Throwable $ex) { $results[] = "⚠️ [{$tenant->name}] website tables: " . $ex->getMessage(); }
+
             // 6. Fix exam_questions missing columns
             try {
                 $tblEq = $conn->select("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='exam_questions') as exists");
