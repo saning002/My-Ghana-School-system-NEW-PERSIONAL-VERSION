@@ -102,9 +102,8 @@ class SchoolAccessController extends Controller
         // so the website knows which school's content to show
         session(['tenant_slug' => $tenant->slug, 'tenant_id' => $tenant->id]);
 
-        // Redirect to the school's public website portal page
-        // which has links to admin, teacher and student login
-        return redirect()->route('website.portal');
+        // Redirect to the school's public website home page
+        return redirect()->route('website.home');
     }
 
     public function login(Request $request, string $slug)
