@@ -46,15 +46,54 @@
   50%      { transform: scale(1.15); opacity: 1; }
 }
 
-/* Floating particles */
+/* Floating particles — Design 1: circles */
 .ph-particle {
   position: absolute; border-radius: 50%; pointer-events: none; z-index: 2;
   animation: float-up linear infinite;
 }
+
+/* Floating shapes — Design 2: squares/diamonds/rings */
+.ph-shape {
+  position: absolute; pointer-events: none; z-index: 2;
+  animation: float-shape linear infinite;
+}
+.ph-shape.square  { border-radius: 4px; }
+.ph-shape.diamond { border-radius: 2px; }
+.ph-shape.ring    { border-radius: 50%; background: transparent !important; border-style: solid; }
+
 @keyframes float-up {
   0%   { transform: translateY(0) rotate(0); opacity: .5; }
   50%  { opacity: .3; }
   100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+}
+@keyframes float-shape {
+  0%   { transform: translateY(0) rotate(0deg) scale(1); opacity: .4; }
+  50%  { transform: translateY(-50vh) rotate(180deg) scale(1.1); opacity: .25; }
+  100% { transform: translateY(-100vh) rotate(360deg) scale(.8); opacity: 0; }
+}
+
+/* Wave sweep — horizontal shimmer */
+.ph-wave {
+  position: absolute; left: -100%; top: 0; width: 60%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.025), transparent);
+  z-index: 1; pointer-events: none;
+  animation: wave-sweep 8s ease-in-out infinite;
+}
+.ph-wave:nth-child(2) { animation-delay: 4s; width: 40%; }
+@keyframes wave-sweep {
+  0%   { left: -60%; }
+  100% { left: 110%; }
+}
+
+/* Rotating ring accent */
+.ph-ring {
+  position: absolute; border-radius: 50%; pointer-events: none; z-index: 1;
+  border: 1px solid rgba(233,164,34,.12);
+  animation: ring-spin linear infinite;
+}
+@keyframes ring-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
 }
 
 /* ── Layout ───────────────────────────────────────────────── */
@@ -264,7 +303,16 @@
   <div class="ph-orb ph-orb-gold"></div>
   <div class="ph-orb ph-orb-blue"></div>
 
-  {{-- Particles (safe colours, no color-mix) --}}
+  {{-- Wave sweeps --}}
+  <div class="ph-wave"></div>
+  <div class="ph-wave"></div>
+
+  {{-- Rotating rings --}}
+  <div class="ph-ring" style="width:300px;height:300px;top:10%;right:5%;animation-duration:25s;"></div>
+  <div class="ph-ring" style="width:180px;height:180px;top:15%;right:9%;animation-duration:18s;animation-direction:reverse;border-color:rgba(8,145,178,.14);"></div>
+  <div class="ph-ring" style="width:500px;height:500px;bottom:-10%;left:-5%;animation-duration:40s;border-color:rgba(233,164,34,.07);"></div>
+
+  {{-- Design 1: Floating circles --}}
   @for($i=0;$i<16;$i++)
   @php $pc = ['rgba(233,164,34,.7)','rgba(255,255,255,.45)','rgba(8,145,178,.65)','rgba(233,164,34,.4)'][$i%4]; @endphp
   <div class="ph-particle" style="
@@ -273,6 +321,27 @@
     left:{{ rand(3,97) }}%; bottom:{{ rand(0,30) }}%;
     animation-duration:{{ rand(8,16) }}s;
     animation-delay:-{{ rand(0,16) }}s;
+  "></div>
+  @endfor
+
+  {{-- Design 2: Floating squares, diamonds, rings --}}
+  @php
+    $shapes = ['square','diamond','ring'];
+    $shapeColors = ['rgba(233,164,34,.5)','rgba(255,255,255,.3)','rgba(8,145,178,.5)'];
+  @endphp
+  @for($i=0;$i<14;$i++)
+  @php
+    $shape = $shapes[$i%3];
+    $col   = $shapeColors[$i%3];
+    $sz    = rand(6,14);
+  @endphp
+  <div class="ph-shape {{ $shape }}" style="
+    width:{{ $sz }}px; height:{{ $sz }}px;
+    {{ $shape === 'ring' ? 'border:2px solid '.$col.';' : 'background:'.$col.';' }}
+    left:{{ rand(5,95) }}%; bottom:{{ rand(0,40) }}%;
+    animation-duration:{{ rand(10,20) }}s;
+    animation-delay:-{{ rand(0,18) }}s;
+    transform-origin: center;
   "></div>
   @endfor
 
