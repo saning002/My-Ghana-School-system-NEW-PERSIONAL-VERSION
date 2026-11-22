@@ -27,6 +27,7 @@
     ['about','fa-info-circle','About'],
     ['academics','fa-graduation-cap','Academics'],
     ['admissions','fa-file-alt','Admissions'],
+    ['portal','fa-shield-halved','Portal Page'],
     ['contact','fa-envelope','Contact'],
     ['footer','fa-layer-group','Footer']
 ] as [$id,$icon,$label])
@@ -63,7 +64,41 @@
             </div>
         </div>
     </div>
-    
+
+    {{-- Navigation Labels collapsible --}}
+    <div class="ws-collapse" id="ws-id-navlabels">
+        <div class="ws-collapse-hd" onclick="wsToggle('ws-id-navlabels')">
+            <i class="fas fa-bars text-slate-500"></i>
+            <div>
+                <p class="text-sm font-bold text-slate-800">Navigation Menu Labels</p>
+                <p class="text-[11px] text-slate-400">Rename the menu links in the navbar and mobile menu</p>
+            </div>
+            <i class="fas fa-chevron-down ws-ch"></i>
+        </div>
+        <div class="ws-collapse-bd">
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                @foreach([
+                    ['nav_home_text','Home','Home'],
+                    ['nav_about_text','About','About'],
+                    ['nav_academics_text','Academics','Academics'],
+                    ['nav_admissions_text','Admissions','Admissions'],
+                    ['nav_gallery_text','Gallery','Gallery'],
+                    ['nav_events_text','Events','Events'],
+                    ['nav_blog_text','Blog','Blog'],
+                    ['nav_staff_text','Staff','Staff'],
+                    ['nav_contact_text','Contact','Contact'],
+                    ['nav_portal_text','Portals Button','Portals'],
+                    ['nav_enroll_text','Enroll Button','Enroll Now'],
+                ] as [$name,$label,$default])
+                <div>
+                    <label class="ws-label">{{ $label }}</label>
+                    <input type="text" name="{{ $name }}" value="{{ old($name, $s->{$name} ?? $default) }}" class="ws-input" placeholder="{{ $default }}">
+                </div>
+                @endforeach
+            </div>
+        </div>
+    </div>
+
     <div class="card overflow-hidden">
         <div class="px-5 py-4 border-b bg-green-50">
             <h3 class="text-sm font-bold text-green-900"><i class="fas fa-image text-green-500 mr-1.5"></i>School Logo</h3>
@@ -600,6 +635,31 @@
 
 {{-- ABOUT TAB --}}
 <div id="ws-about" class="ws-panel hidden space-y-4">
+
+    {{-- Page hero --}}
+    <div class="ws-collapse" id="ws-about-hero">
+        <div class="ws-collapse-hd" onclick="wsToggle('ws-about-hero')">
+            <i class="fas fa-heading text-blue-500"></i>
+            <div>
+                <p class="text-sm font-bold text-slate-800">About Page Hero</p>
+                <p class="text-[11px] text-slate-400">The banner title and subtitle at the top of the About page</p>
+            </div>
+            <i class="fas fa-chevron-down ws-ch"></i>
+        </div>
+        <div class="ws-collapse-bd">
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="ws-label">Hero Title</label>
+                    <input type="text" name="about_hero_title" value="{{ old('about_hero_title', $s->about_hero_title ?? 'About Our School') }}" class="ws-input" placeholder="About Our School">
+                </div>
+                <div>
+                    <label class="ws-label">Hero Subtitle</label>
+                    <input type="text" name="about_hero_subtitle" value="{{ old('about_hero_subtitle', $s->about_hero_subtitle ?? 'Learn more about our history, mission and values') }}" class="ws-input">
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="ws-collapse" id="ws-about-mv">
         <div class="ws-collapse-hd" onclick="wsToggle('ws-about-mv')">
             <i class="fas fa-bullseye text-blue-500"></i>
@@ -811,6 +871,41 @@
 
 {{-- ADMISSIONS TAB --}}
 <div id="ws-admissions" class="ws-panel hidden space-y-4">
+
+    {{-- Page hero --}}
+    <div class="ws-collapse" id="ws-adm-hero">
+        <div class="ws-collapse-hd" onclick="wsToggle('ws-adm-hero')">
+            <i class="fas fa-heading text-orange-500"></i>
+            <div>
+                <p class="text-sm font-bold text-slate-800">Admissions Page Hero</p>
+                <p class="text-[11px] text-slate-400">The banner title and subtitle at the top of the Admissions page</p>
+            </div>
+            <i class="fas fa-chevron-down ws-ch"></i>
+        </div>
+        <div class="ws-collapse-bd">
+            <div class="grid grid-cols-2 gap-3 mb-3">
+                <div>
+                    <label class="ws-label">Hero Title</label>
+                    <input type="text" name="admissions_hero_title" value="{{ old('admissions_hero_title', $s->admissions_hero_title ?? 'Admissions') }}" class="ws-input" placeholder="Admissions">
+                </div>
+                <div>
+                    <label class="ws-label">Hero Subtitle</label>
+                    <input type="text" name="admissions_hero_subtitle" value="{{ old('admissions_hero_subtitle', $s->admissions_hero_subtitle ?? 'Begin your journey with us') }}" class="ws-input">
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="ws-label">Requirements Section Title</label>
+                    <input type="text" name="admissions_req_title" value="{{ old('admissions_req_title', $s->admissions_req_title ?? 'Documents Needed') }}" class="ws-input" placeholder="Documents Needed">
+                </div>
+                <div>
+                    <label class="ws-label">Requirements Section Subtitle</label>
+                    <input type="text" name="admissions_req_subtitle" value="{{ old('admissions_req_subtitle', $s->admissions_req_subtitle ?? 'Please prepare the following documents') }}" class="ws-input">
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="ws-collapse" id="ws-adm-header">
         <div class="ws-collapse-hd" onclick="wsToggle('ws-adm-header')">
             <i class="fas fa-file-alt text-slate-500"></i>
@@ -902,6 +997,83 @@
             </div>
         </div>
     </div>
+</div>
+
+{{-- PORTAL PAGE TAB --}}
+<div id="ws-portal" class="ws-panel hidden space-y-4">
+
+    <div class="rounded-xl bg-indigo-50 border border-indigo-100 px-4 py-3 text-xs text-indigo-700 mb-2">
+        <i class="fas fa-info-circle mr-1"></i>
+        These settings control the text on the <strong>Portals</strong> page — the page visitors see when they want to log in.
+    </div>
+
+    {{-- Left side intro --}}
+    <div class="ws-collapse open" id="ws-portal-intro">
+        <div class="ws-collapse-hd" onclick="wsToggle('ws-portal-intro')">
+            <i class="fas fa-heading text-indigo-500"></i>
+            <div>
+                <p class="text-sm font-bold text-slate-800">Intro / Left Panel Text</p>
+                <p class="text-[11px] text-slate-400">The large headline and subtitle on the left side of the portal page</p>
+            </div>
+            <i class="fas fa-chevron-down ws-ch"></i>
+        </div>
+        <div class="ws-collapse-bd">
+            <div class="space-y-3">
+                <div>
+                    <label class="ws-label">Main Headline</label>
+                    <input type="text" name="portal_intro_title" value="{{ old('portal_intro_title', $s->portal_intro_title ?? 'Access Your Portals') }}" class="ws-input" placeholder="Access Your Portals">
+                </div>
+                <div>
+                    <label class="ws-label">Subtitle</label>
+                    <input type="text" name="portal_intro_subtitle" value="{{ old('portal_intro_subtitle', $s->portal_intro_subtitle ?? 'Choose your portal below to log in') }}" class="ws-input" placeholder="Choose your portal below to log in">
+                </div>
+                <div>
+                    <label class="ws-label">Help / Info Note</label>
+                    <input type="text" name="portal_help_text" value="{{ old('portal_help_text', $s->portal_help_text ?? 'Need help? Contact your school administrator.') }}" class="ws-input" placeholder="Need help? Contact your school administrator.">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Portal card buttons --}}
+    <div class="ws-collapse" id="ws-portal-btns">
+        <div class="ws-collapse-hd" onclick="wsToggle('ws-portal-btns')">
+            <i class="fas fa-door-open text-indigo-500"></i>
+            <div>
+                <p class="text-sm font-bold text-slate-800">Portal Button Labels</p>
+                <p class="text-[11px] text-slate-400">The titles and descriptions shown on each portal access button</p>
+            </div>
+            <i class="fas fa-chevron-down ws-ch"></i>
+        </div>
+        <div class="ws-collapse-bd">
+            <div class="space-y-4">
+                @foreach([
+                    ['teacher','fa-chalkboard-user','text-purple-600','Teacher Portal',  'Mark attendance and enter scores'],
+                    ['student','fa-user-graduate',  'text-blue-600',  'Student Portal',  'Check results, attendance and fees'],
+                    ['staff',  'fa-user-shield',    'text-green-600', 'Staff Portal',    'For accountants, secretaries and heads'],
+                    ['parent', 'fa-users',          'text-amber-600', 'Parent Portal',   'Monitor your child\'s progress'],
+                ] as [$key,$icon,$color,$defaultTitle,$defaultDesc])
+                <div class="rounded-xl border border-slate-200 p-4">
+                    <div class="flex items-center gap-2 mb-3">
+                        <i class="fas {{ $icon }} {{ $color }}"></i>
+                        <span class="text-xs font-bold text-slate-700 uppercase tracking-wide">{{ ucfirst($key) }} Portal</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="ws-label">Button Title</label>
+                            <input type="text" name="portal_{{ $key }}_title" value="{{ old('portal_'.$key.'_title', $s->{'portal_'.$key.'_title'} ?? $defaultTitle) }}" class="ws-input" placeholder="{{ $defaultTitle }}">
+                        </div>
+                        <div>
+                            <label class="ws-label">Button Description</label>
+                            <input type="text" name="portal_{{ $key }}_desc" value="{{ old('portal_'.$key.'_desc', $s->{'portal_'.$key.'_desc'} ?? $defaultDesc) }}" class="ws-input" placeholder="{{ $defaultDesc }}">
+                        </div>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </div>
+    </div>
+
 </div>
 
 {{-- CONTACT TAB --}}
@@ -1116,7 +1288,7 @@ function wsToggle(id) {
     var el = document.getElementById(id);
     if (el) el.classList.toggle('open');
 }
-var WS_TABS = ['identity','hero','home','about','academics','admissions','contact','footer'];
+var WS_TABS = ['identity','hero','home','about','academics','admissions','portal','contact','footer'];
 function wsTab(id) {
     WS_TABS.forEach(t => {
         document.getElementById('ws-'+t)?.classList.toggle('hidden', t !== id);

@@ -231,10 +231,17 @@ iframe.hero-video{width:100vw;height:56.25vw;min-height:100vh;min-width:177.78vh
             @endif
 
             @if($showStats ?? true)
+            @php
+                $heroStats = $site->stats ?? [
+                    ['val'=>'200+','label'=>'Students'],
+                    ['val'=>'15+','label'=>'Teachers'],
+                    ['val'=>'10+','label'=>'Years'],
+                ];
+            @endphp
             <div class="hero-stats">
-                <div class="hero-stat"><strong>200+</strong><span>Students</span></div>
-                <div class="hero-stat"><strong>15+</strong><span>Teachers</span></div>
-                <div class="hero-stat"><strong>10+</strong><span>Years</span></div>
+                @foreach($heroStats as $stat)
+                <div class="hero-stat"><strong>{{ $stat['val'] }}</strong><span>{{ $stat['label'] }}</span></div>
+                @endforeach
             </div>
             @endif
         </div>
@@ -246,10 +253,17 @@ iframe.hero-video{width:100vw;height:56.25vw;min-height:100vh;min-width:177.78vh
                 <div class="hero-card-value">{{ $site->hero_panel_subtitle ?? 'Holistic development for every child' }}</div>
             </div>
             <div class="hero-grid-2">
-                <div class="hero-mini"><div class="hero-mini-val">98%</div><div class="hero-mini-label">Satisfaction</div></div>
-                <div class="hero-mini"><div class="hero-mini-val">5:1</div><div class="hero-mini-label">Teacher Ratio</div></div>
-                <div class="hero-mini"><div class="hero-mini-val">24/7</div><div class="hero-mini-label">Support</div></div>
-                <div class="hero-mini"><div class="hero-mini-val">Safe</div><div class="hero-mini-label">Environment</div></div>
+                @php
+                    $heroMinis = $site->hero_minis ?? [
+                        ['val'=>'98%','label'=>'Satisfaction'],
+                        ['val'=>'5:1','label'=>'Teacher Ratio'],
+                        ['val'=>'24/7','label'=>'Support'],
+                        ['val'=>'Safe','label'=>'Environment'],
+                    ];
+                @endphp
+                @foreach($heroMinis as $mini)
+                <div class="hero-mini"><div class="hero-mini-val">{{ $mini['val'] }}</div><div class="hero-mini-label">{{ $mini['label'] }}</div></div>
+                @endforeach
             </div>
         </div>
     </div>
@@ -362,7 +376,7 @@ $whyFeatures = $site->why_features ?? [
       <div class="blog-card reveal">
         <div class="blog-thumb" style="background:linear-gradient(135deg,#0a1f44,#1e4db7);">
           @if($event->image_path)
-            <img src="{{ img_url() }}" alt="{{ $event->title }}">
+            <img src="{{ img_url($event->image_path) }}" alt="{{ $event->title }}">
           @else
             Y".
           @endif
@@ -387,10 +401,10 @@ $whyFeatures = $site->why_features ?? [
     <p>{{ $site->cta_subtitle ?? 'Applications are open. Spots are limited – secure your child\'s place today.' }}</p>
     <div class="cta-banner-btns">
       <a href="{{ wu('apply') }}" class="btn btn-navy btn-lg">
-        <i class="fas fa-file-alt"></i> Apply Now
+        <i class="fas fa-file-alt"></i> {{ $site->cta_primary_text ?? 'Apply Now' }}
       </a>
       <a href="{{ wu('contact') }}" class="btn btn-outline-navy btn-lg">
-        <i class="fas fa-envelope"></i> Contact Us
+        <i class="fas fa-envelope"></i> {{ $site->cta_secondary_text ?? 'Contact Us' }}
       </a>
     </div>
   </div>

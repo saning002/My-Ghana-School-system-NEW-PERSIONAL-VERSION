@@ -60,6 +60,26 @@ class SiteSetting extends Model
         'academics_cta_text','academics_cta_btn1_text','academics_cta_btn2_text','academics_cta_btn3_text',
         // Report card
         'report_card_orientation',
+        // Portal page
+        'portal_intro_title','portal_intro_subtitle',
+        'portal_student_title','portal_student_desc',
+        'portal_teacher_title','portal_teacher_desc',
+        'portal_staff_title','portal_staff_desc',
+        'portal_parent_title','portal_parent_desc',
+        'portal_help_text',
+        // About page hero & core values
+        'about_hero_title','about_hero_subtitle','about_mv_subtitle',
+        'core_values_title','core_values_subtitle',
+        // Admissions page hero & requirements
+        'admissions_hero_title','admissions_hero_subtitle',
+        'admissions_req_title','admissions_req_subtitle',
+        // Navigation labels
+        'nav_home_text','nav_about_text','nav_academics_text',
+        'nav_admissions_text','nav_blog_text','nav_events_text',
+        'nav_gallery_text','nav_staff_text','nav_contact_text',
+        // Navigation labels
+        'nav_home_text','nav_about_text','nav_academics_text','nav_admissions_text',
+        'nav_blog_text','nav_events_text','nav_gallery_text','nav_staff_text','nav_contact_text',
     ];
 
     protected $casts = [
@@ -188,6 +208,39 @@ class SiteSetting extends Model
             'footer_privacy_text'        => 'Privacy Policy',
             'footer_terms_text'          => 'Terms of Use',
             'footer_support_text'        => 'Support',
+            // Portal page
+            'portal_intro_title'         => 'Access Your Portals',
+            'portal_intro_subtitle'      => 'Choose your portal below to log in',
+            'portal_student_title'       => 'Student Portal',
+            'portal_student_desc'        => 'Check results, attendance and fees',
+            'portal_teacher_title'       => 'Teacher Portal',
+            'portal_teacher_desc'        => 'Mark attendance and enter scores',
+            'portal_staff_title'         => 'Staff Portal',
+            'portal_staff_desc'          => 'For accountants, secretaries and heads',
+            'portal_parent_title'        => 'Parent Portal',
+            'portal_parent_desc'         => 'Monitor your child\'s progress',
+            'portal_help_text'           => 'Need help? Contact your school administrator.',
+            // About page hero & core values
+            'about_hero_title'           => 'About Our School',
+            'about_hero_subtitle'        => 'Learn more about our history, mission and values',
+            'about_mv_subtitle'          => 'Our guiding principles',
+            'core_values_title'          => 'Our Core Values',
+            'core_values_subtitle'       => 'The principles that guide everything we do',
+            // Admissions page hero & requirements
+            'admissions_hero_title'      => 'Admissions',
+            'admissions_hero_subtitle'   => 'Begin your journey with us',
+            'admissions_req_title'        => 'Documents Needed',
+            'admissions_req_subtitle'     => 'Please prepare the following documents',
+            // Navigation labels
+            'nav_home_text'              => 'Home',
+            'nav_about_text'             => 'About',
+            'nav_academics_text'         => 'Academics',
+            'nav_admissions_text'        => 'Admissions',
+            'nav_blog_text'              => 'Blog',
+            'nav_events_text'            => 'Events',
+            'nav_gallery_text'           => 'Gallery',
+            'nav_staff_text'             => 'Staff',
+            'nav_contact_text'           => 'Contact',
         ];
 
         return $fallbacks[$key] ?? parent::getAttribute($key);

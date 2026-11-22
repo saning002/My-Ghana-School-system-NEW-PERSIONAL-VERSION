@@ -71,8 +71,8 @@
   <div class="portal-inner">
     <div class="portal-brand reveal">
       <div class="portal-eyebrow"><i class="fas fa-shield-halved"></i> Official School Portals</div>
-      <h1>Welcome to the<br><em>{{ $site->site_name ?? 'School' }}</em><br>Portal Hub</h1>
-      <p>Your centralised gateway to school management. Select your portal below to securely access records, results, attendance, fees, and more.</p>
+      <h1>{!! $site->portal_intro_title ?? 'Access Your Portals' !!}</h1>
+      <p>{{ $site->portal_intro_subtitle ?? 'Choose your portal below to log in' }}</p>
       <div class="portal-feats">
         <div class="pf"><div class="pf-icon"><i class="fas fa-users-gear"></i></div><div><strong>Student &amp; Parent Management</strong><span>Track enrollment, profiles and guardian records</span></div></div>
         <div class="pf"><div class="pf-icon"><i class="fas fa-graduation-cap"></i></div><div><strong>Academic Records &amp; Results</strong><span>Grades, report cards, rankings and transcripts</span></div></div>
@@ -95,17 +95,53 @@
       <div class="portal-card-body">
         <div class="access-list">
           @php $tenantSlug = session('tenant_slug'); @endphp
-          <a href="{{ $tenantSlug ? route('school.admin.login', $tenantSlug) : route('admin.login') }}" class="access-btn ab-admin">
-            <div class="ab-icon"><i class="fas fa-crown"></i></div>
-            <div><span class="ab-strong">Admin Portal</span><span class="ab-sub">School administrators &amp; branch managers</span></div>
-          </a>
+
+          {{-- Admin / Staff Portal — expandable role picker --}}
+          <div>
+            <button type="button" onclick="toggleAdminPicker()" id="adminPickerBtn"
+                class="access-btn ab-admin w-full text-left" style="border:none;cursor:pointer;width:100%;justify-content:space-between;">
+                <div style="display:flex;align-items:center;gap:14px;">
+                    <div class="ab-icon"><i class="fas fa-crown"></i></div>
+                    <div><span class="ab-strong">Admin / Staff Portal</span><span class="ab-sub">School administrators &amp; staff</span></div>
+                </div>
+                <i class="fas fa-chevron-down" id="adminPickerChev" style="font-size:.75rem;opacity:.6;transition:transform .2s;"></i>
+            </button>
+            <div id="adminPickerMenu" style="display:none;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;margin-top:6px;">
+                @php
+                $adminRoles = [
+                    ['label'=>'Super Admin / School Owner', 'sub'=>'Full system access',  'icon'=>'fa-shield-halved',  'color'=>'#0a1f44'],
+                    ['label'=>'Branch Admin',               'sub'=>'Branch management',   'icon'=>'fa-building',       'color'=>'#1e40af'],
+                    ['label'=>'Headmaster / Head',          'sub'=>'Academic leadership', 'icon'=>'fa-user-tie',       'color'=>'#166534'],
+                    ['label'=>'Headteacher',                'sub'=>'School management',   'icon'=>'fa-user-check',     'color'=>'#0f766e'],
+                    ['label'=>'Accountant',                 'sub'=>'Fees &amp; finance',  'icon'=>'fa-calculator',     'color'=>'#92400e'],
+                    ['label'=>'Secretary',                  'sub'=>'Administration',      'icon'=>'fa-clipboard-user', 'color'=>'#6b21a8'],
+                ];
+                $adminLoginUrl = $tenantSlug ? route('school.admin.login', $tenantSlug) : route('admin.login');
+                @endphp
+                @foreach($adminRoles as $role)
+                <a href="{{ $adminLoginUrl }}"
+                   style="display:flex;align-items:center;gap:11px;padding:11px 15px;text-decoration:none;background:#fff;{{ !$loop->last ? 'border-bottom:1px solid #f1f5f9;' : '' }}transition:background .15s;"
+                   onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#fff'">
+                    <div style="width:32px;height:32px;border-radius:9px;background:{{ $role['color'] }};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <i class="fas {{ $role['icon'] }}" style="font-size:.8rem;color:#fff;"></i>
+                    </div>
+                    <div>
+                        <div style="font-size:.82rem;font-weight:700;color:#1e293b;">{!! $role['label'] !!}</div>
+                        <div style="font-size:.7rem;color:#94a3b8;">{!! $role['sub'] !!}</div>
+                    </div>
+                    <i class="fas fa-arrow-right" style="margin-left:auto;font-size:.65rem;color:#cbd5e1;"></i>
+                </a>
+                @endforeach
+            </div>
+          </div>
+
           <a href="{{ $tenantSlug ? route('school.lecturer.login', $tenantSlug) : route('teachers-portal.login') }}" class="access-btn ab-teacher">
             <div class="ab-icon"><i class="fas fa-chalkboard-user"></i></div>
-            <div><span class="ab-strong">Teacher Portal</span><span class="ab-sub">Attendance, exam scores &amp; reports</span></div>
+            <div><span class="ab-strong">{{ $site->portal_teacher_title ?? 'Teacher Portal' }}</span><span class="ab-sub">{{ $site->portal_teacher_desc ?? 'Mark attendance and enter scores' }}</span></div>
           </a>
           <a href="{{ route('student-portal.login') }}" class="access-btn ab-student">
             <div class="ab-icon"><i class="fas fa-user-graduate"></i></div>
-            <div><span class="ab-strong">Student Portal</span><span class="ab-sub">Results, report cards &amp; notifications</span></div>
+            <div><span class="ab-strong">{{ $site->portal_student_title ?? 'Student Portal' }}</span><span class="ab-sub">{{ $site->portal_student_desc ?? 'Check results, attendance and fees' }}</span></div>
           </a>
         </div>
 
@@ -113,7 +149,7 @@
 
         <div class="portal-note">
           <i class="fas fa-info-circle"></i>
-          <span>Each portal has its own login page. Use the credentials provided by your school administrator. If you have trouble logging in, contact the school office.</span>
+          <span>{{ $site->portal_help_text ?? 'Need help? Contact your school administrator.' }}</span>
         </div>
 
         @if(isset($site) && $site->contact_phone)
@@ -125,5 +161,25 @@
       </div>
     </div>
   </div>
-</section>
+@endsection
+
+@section('extra_js')
+<script>
+function toggleAdminPicker() {
+    var menu = document.getElementById('adminPickerMenu');
+    var chev = document.getElementById('adminPickerChev');
+    var open = menu.style.display === 'block';
+    menu.style.display = open ? 'none' : 'block';
+    if (chev) chev.style.transform = open ? '' : 'rotate(180deg)';
+}
+document.addEventListener('click', function(e) {
+    var btn = document.getElementById('adminPickerBtn');
+    var menu = document.getElementById('adminPickerMenu');
+    if (btn && menu && !btn.contains(e.target) && !menu.contains(e.target)) {
+        menu.style.display = 'none';
+        var chev = document.getElementById('adminPickerChev');
+        if (chev) chev.style.transform = '';
+    }
+});
+</script>
 @endsection
