@@ -540,45 +540,59 @@
 {{-- HOME TAB --}}
 <div id="ws-home" class="ws-panel hidden space-y-4">
     @foreach([
-        ['programs','Programs','Our Programs','Programs Designed for Every Stage'],
-        ['testimonials','Testimonials','Parent Reviews','What Parents Say'],
-        ['blog','Blog','Latest News','From Our Blog'],
-        ['events','Events','School Calendar','Upcoming Events']
-    ] as [$key,$label,$defaultEyebrow,$defaultTitle])
-    <div class="card overflow-hidden">
-        <div class="px-5 py-3.5 border-b bg-slate-50">
-            <h3 class="text-sm font-bold text-slate-800">{{ $label }} Section</h3>
+        ['programs','fa-graduation-cap','Programs','Our Programs','Programs Designed for Every Stage'],
+        ['testimonials','fa-quote-right','Testimonials','Parent Reviews','What Parents Say'],
+        ['blog','fa-newspaper','Blog','Latest News','From Our Blog'],
+        ['events','fa-calendar-alt','Events','School Calendar','Upcoming Events']
+    ] as [$key,$icon,$label,$defaultEyebrow,$defaultTitle])
+    <div class="ws-collapse" id="ws-home-{{ $key }}">
+        <div class="ws-collapse-hd" onclick="wsToggle('ws-home-{{ $key }}')">
+            <i class="fas {{ $icon }} text-slate-500"></i>
+            <div>
+                <p class="text-sm font-bold text-slate-800">{{ $label }} Section</p>
+                <p class="text-[11px] text-slate-400">Eyebrow, title and subtitle</p>
+            </div>
+            <i class="fas fa-chevron-down ws-ch"></i>
         </div>
-        <div class="px-5 py-4 grid grid-cols-3 gap-3">
-            <div>
-                <label class="ws-label">Eyebrow</label>
-                <input type="text" name="{{ $key }}_eyebrow" value="{{ old($key.'_eyebrow',$s->{$key.'_eyebrow'} ?? $defaultEyebrow) }}" class="ws-input">
-            </div>
-            <div>
-                <label class="ws-label">Title</label>
-                <input type="text" name="{{ $key }}_title" value="{{ old($key.'_title',$s->{$key.'_title'} ?? $defaultTitle) }}" class="ws-input">
-            </div>
-            <div>
-                <label class="ws-label">Subtitle</label>
-                <input type="text" name="{{ $key }}_subtitle" value="{{ old($key.'_subtitle',$s->{$key.'_subtitle'} ?? '') }}" class="ws-input">
+        <div class="ws-collapse-bd">
+            <div class="grid grid-cols-3 gap-3">
+                <div>
+                    <label class="ws-label">Eyebrow</label>
+                    <input type="text" name="{{ $key }}_eyebrow" value="{{ old($key.'_eyebrow',$s->{$key.'_eyebrow'} ?? $defaultEyebrow) }}" class="ws-input">
+                </div>
+                <div>
+                    <label class="ws-label">Title</label>
+                    <input type="text" name="{{ $key }}_title" value="{{ old($key.'_title',$s->{$key.'_title'} ?? $defaultTitle) }}" class="ws-input">
+                </div>
+                <div>
+                    <label class="ws-label">Subtitle</label>
+                    <input type="text" name="{{ $key }}_subtitle" value="{{ old($key.'_subtitle',$s->{$key.'_subtitle'} ?? '') }}" class="ws-input">
+                </div>
             </div>
         </div>
     </div>
     @endforeach
 
     {{-- CTA Banner --}}
-    <div class="card overflow-hidden">
-        <div class="px-5 py-4 border-b bg-[var(--primary-pale)]">
-            <h3 class="text-sm font-bold text-[var(--primary-text)]">Call-to-Action Banner</h3>
-        </div>
-        <div class="px-5 py-5 space-y-3">
+    <div class="ws-collapse" id="ws-home-cta">
+        <div class="ws-collapse-hd" onclick="wsToggle('ws-home-cta')">
+            <i class="fas fa-bullhorn text-amber-500"></i>
             <div>
-                <label class="ws-label">CTA Title</label>
-                <input type="text" name="cta_title" value="{{ old('cta_title',$s->cta_title ?? 'Ready to Join Our Family?') }}" class="ws-input">
+                <p class="text-sm font-bold text-slate-800">Call-to-Action Banner</p>
+                <p class="text-[11px] text-slate-400">CTA title and subtitle shown on homepage</p>
             </div>
-            <div>
-                <label class="ws-label">CTA Subtitle</label>
-                <input type="text" name="cta_subtitle" value="{{ old('cta_subtitle',$s->cta_subtitle ?? 'Applications are open. Spots are limited.') }}" class="ws-input">
+            <i class="fas fa-chevron-down ws-ch"></i>
+        </div>
+        <div class="ws-collapse-bd">
+            <div class="space-y-3">
+                <div>
+                    <label class="ws-label">CTA Title</label>
+                    <input type="text" name="cta_title" value="{{ old('cta_title',$s->cta_title ?? 'Ready to Join Our Family?') }}" class="ws-input">
+                </div>
+                <div>
+                    <label class="ws-label">CTA Subtitle</label>
+                    <input type="text" name="cta_subtitle" value="{{ old('cta_subtitle',$s->cta_subtitle ?? 'Applications are open. Spots are limited.') }}" class="ws-input">
+                </div>
             </div>
         </div>
     </div>
@@ -586,11 +600,16 @@
 
 {{-- ABOUT TAB --}}
 <div id="ws-about" class="ws-panel hidden space-y-4">
-    <div class="card overflow-hidden">
-        <div class="px-5 py-4 border-b bg-blue-50">
-            <h3 class="text-sm font-bold text-blue-900">About Page Content</h3>
+    <div class="ws-collapse" id="ws-about-mv">
+        <div class="ws-collapse-hd" onclick="wsToggle('ws-about-mv')">
+            <i class="fas fa-bullseye text-blue-500"></i>
+            <div>
+                <p class="text-sm font-bold text-slate-800">Mission &amp; Vision</p>
+                <p class="text-[11px] text-slate-400">The school's mission and vision statements</p>
+            </div>
+            <i class="fas fa-chevron-down ws-ch"></i>
         </div>
-        <div class="px-5 py-5 space-y-4">
+        <div class="ws-collapse-bd">
             <div class="grid grid-cols-2 gap-3">
                 <div>
                     <label class="ws-label">Mission</label>
@@ -601,10 +620,36 @@
                     <textarea name="vision" rows="3" class="ws-input">{{ old('vision',$s->vision) }}</textarea>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div class="ws-collapse" id="ws-about-story">
+        <div class="ws-collapse-hd" onclick="wsToggle('ws-about-story')">
+            <i class="fas fa-book-open text-blue-500"></i>
+            <div>
+                <p class="text-sm font-bold text-slate-800">Our Story / History</p>
+                <p class="text-[11px] text-slate-400">Background and history of the school</p>
+            </div>
+            <i class="fas fa-chevron-down ws-ch"></i>
+        </div>
+        <div class="ws-collapse-bd">
             <div>
                 <label class="ws-label">Our Story / History</label>
                 <textarea name="about_story_text" rows="4" class="ws-input">{{ old('about_story_text',$s->about_story_text ?? $s->history) }}</textarea>
             </div>
+        </div>
+    </div>
+
+    <div class="ws-collapse" id="ws-about-staff">
+        <div class="ws-collapse-hd" onclick="wsToggle('ws-about-staff')">
+            <i class="fas fa-users text-blue-500"></i>
+            <div>
+                <p class="text-sm font-bold text-slate-800">Staff Section</p>
+                <p class="text-[11px] text-slate-400">Heading for the staff / team showcase</p>
+            </div>
+            <i class="fas fa-chevron-down ws-ch"></i>
+        </div>
+        <div class="ws-collapse-bd">
             <div class="grid grid-cols-3 gap-3">
                 <div>
                     <label class="ws-label">Staff Eyebrow</label>
@@ -625,12 +670,16 @@
 
 {{-- ACADEMICS TAB --}}
 <div id="ws-academics" class="ws-panel hidden space-y-4">
-    <div class="card overflow-hidden">
-        <div class="px-5 py-4 border-b bg-teal-50">
-            <h3 class="text-sm font-bold text-teal-900"><i class="fas fa-graduation-cap text-teal-500 mr-1.5"></i>Academics Page Content</h3>
+    <div class="ws-collapse" id="ws-acad-hero">
+        <div class="ws-collapse-hd" onclick="wsToggle('ws-acad-hero')">
+            <i class="fas fa-heading text-teal-500"></i>
+            <div>
+                <p class="text-sm font-bold text-slate-800">Academics Page Hero</p>
+                <p class="text-[11px] text-slate-400">Top banner title and subtitle</p>
+            </div>
+            <i class="fas fa-chevron-down ws-ch"></i>
         </div>
-        <div class="px-5 py-5 space-y-4">
-            {{-- Page hero --}}
+        <div class="ws-collapse-bd">
             <div class="grid grid-cols-2 gap-3">
                 <div>
                     <label class="ws-label">Page Hero Title (supports &lt;em&gt;)</label>
@@ -641,8 +690,19 @@
                     <input type="text" name="academics_hero_subtitle" value="{{ old('academics_hero_subtitle',$s->academics_hero_subtitle ?? 'Carefully designed programs rooted in academic excellence and Kingdom values.') }}" class="ws-input">
                 </div>
             </div>
+        </div>
+    </div>
 
-            {{-- Programs section heading --}}
+    <div class="ws-collapse" id="ws-acad-section">
+        <div class="ws-collapse-hd" onclick="wsToggle('ws-acad-section')">
+            <i class="fas fa-list-ul text-teal-500"></i>
+            <div>
+                <p class="text-sm font-bold text-slate-800">Programs Section Heading</p>
+                <p class="text-[11px] text-slate-400">Eyebrow, title and subtitle for the programs section</p>
+            </div>
+            <i class="fas fa-chevron-down ws-ch"></i>
+        </div>
+        <div class="ws-collapse-bd">
             <div class="grid grid-cols-3 gap-3">
                 <div>
                     <label class="ws-label">Section Eyebrow</label>
@@ -657,8 +717,19 @@
                     <input type="text" name="academics_section_subtitle" value="{{ old('academics_section_subtitle',$s->academics_section_subtitle ?? 'Every program is thoughtfully designed to develop knowledge, character, and skills.') }}" class="ws-input">
                 </div>
             </div>
+        </div>
+    </div>
 
-            {{-- Program card labels --}}
+    <div class="ws-collapse" id="ws-acad-labels">
+        <div class="ws-collapse-hd" onclick="wsToggle('ws-acad-labels')">
+            <i class="fas fa-tags text-teal-500"></i>
+            <div>
+                <p class="text-sm font-bold text-slate-800">Program Card Labels</p>
+                <p class="text-[11px] text-slate-400">Labels for curriculum, highlights and schedule</p>
+            </div>
+            <i class="fas fa-chevron-down ws-ch"></i>
+        </div>
+        <div class="ws-collapse-bd">
             <div class="grid grid-cols-3 gap-3">
                 <div>
                     <label class="ws-label">Curriculum Section Label</label>
@@ -673,8 +744,19 @@
                     <input type="text" name="academics_schedule_label" value="{{ old('academics_schedule_label',$s->academics_schedule_label ?? 'Schedule') }}" class="ws-input">
                 </div>
             </div>
+        </div>
+    </div>
 
-            {{-- Empty state & button texts --}}
+    <div class="ws-collapse" id="ws-acad-empty">
+        <div class="ws-collapse-hd" onclick="wsToggle('ws-acad-empty')">
+            <i class="fas fa-info-circle text-teal-500"></i>
+            <div>
+                <p class="text-sm font-bold text-slate-800">Empty State &amp; Button Texts</p>
+                <p class="text-[11px] text-slate-400">Message and button labels when no programs exist</p>
+            </div>
+            <i class="fas fa-chevron-down ws-ch"></i>
+        </div>
+        <div class="ws-collapse-bd">
             <div class="grid grid-cols-3 gap-3">
                 <div>
                     <label class="ws-label">No Programs Message</label>
@@ -689,8 +771,19 @@
                     <input type="text" name="academics_contact_btn" value="{{ old('academics_contact_btn',$s->academics_contact_btn ?? 'Contact Us') }}" class="ws-input">
                 </div>
             </div>
+        </div>
+    </div>
 
-            {{-- Bottom CTA strip on Academics page --}}
+    <div class="ws-collapse" id="ws-acad-cta">
+        <div class="ws-collapse-hd" onclick="wsToggle('ws-acad-cta')">
+            <i class="fas fa-bullhorn text-teal-500"></i>
+            <div>
+                <p class="text-sm font-bold text-slate-800">CTA Section</p>
+                <p class="text-[11px] text-slate-400">Bottom enrollment banner and buttons</p>
+            </div>
+            <i class="fas fa-chevron-down ws-ch"></i>
+        </div>
+        <div class="ws-collapse-bd">
             <div class="rounded-xl border border-teal-200 bg-teal-50/50 p-4 space-y-3">
                 <h4 class="text-xs font-bold uppercase tracking-wider text-teal-900">Bottom Enrollment Banner</h4>
                 <div>
@@ -718,11 +811,16 @@
 
 {{-- ADMISSIONS TAB --}}
 <div id="ws-admissions" class="ws-panel hidden space-y-4">
-    <div class="card overflow-hidden">
-        <div class="px-5 py-4 border-b bg-slate-50">
-            <h3 class="text-sm font-bold text-slate-800">Admissions Page</h3>
+    <div class="ws-collapse" id="ws-adm-header">
+        <div class="ws-collapse-hd" onclick="wsToggle('ws-adm-header')">
+            <i class="fas fa-file-alt text-slate-500"></i>
+            <div>
+                <p class="text-sm font-bold text-slate-800">Admissions Header</p>
+                <p class="text-[11px] text-slate-400">Eyebrow, process title and subtitle</p>
+            </div>
+            <i class="fas fa-chevron-down ws-ch"></i>
         </div>
-        <div class="px-5 py-5 space-y-4">
+        <div class="ws-collapse-bd">
             <div class="grid grid-cols-3 gap-3">
                 <div>
                     <label class="ws-label">Eyebrow</label>
@@ -737,8 +835,19 @@
                     <input type="text" name="admissions_subtitle" value="{{ old('admissions_subtitle',$s->admissions_subtitle ?? 'Enrolling your child is quick and easy.') }}" class="ws-input">
                 </div>
             </div>
+        </div>
+    </div>
 
-            {{-- Steps editor --}}
+    <div class="ws-collapse" id="ws-adm-steps">
+        <div class="ws-collapse-hd" onclick="wsToggle('ws-adm-steps')">
+            <i class="fas fa-list-ol text-slate-500"></i>
+            <div>
+                <p class="text-sm font-bold text-slate-800">Application Steps</p>
+                <p class="text-[11px] text-slate-400">Number, title and description for each step</p>
+            </div>
+            <i class="fas fa-chevron-down ws-ch"></i>
+        </div>
+        <div class="ws-collapse-bd">
             <div>
                 <label class="ws-label">Application Steps</label>
                 <div class="space-y-3 mt-2" id="stepsContainer">
@@ -768,14 +877,28 @@
                     @endforeach
                 </div>
             </div>
+        </div>
+    </div>
 
+    <div class="ws-collapse" id="ws-adm-req">
+        <div class="ws-collapse-hd" onclick="wsToggle('ws-adm-req')">
+            <i class="fas fa-clipboard-check text-slate-500"></i>
             <div>
-                <label class="ws-label">Requirements List (one per line)</label>
-                <textarea name="admissions_requirements" rows="6" class="ws-input">{{ old('admissions_requirements', is_array($s->admissions_requirements) ? implode("\n",$s->admissions_requirements) : "Birth certificate\nImmunisation records\n2 passport photos\nParent / guardian ID\nPrevious school records (if any)\nCompleted application form") }}</textarea>
+                <p class="text-sm font-bold text-slate-800">Requirements &amp; Info</p>
+                <p class="text-[11px] text-slate-400">Required documents list and additional info box</p>
             </div>
-            <div>
-                <label class="ws-label">Additional Information Box</label>
-                <textarea name="admissions_info" rows="4" class="ws-input" placeholder="Office hours, contact info, or any extra notes shown in the info box...">{{ old('admissions_info',$s->admissions_info) }}</textarea>
+            <i class="fas fa-chevron-down ws-ch"></i>
+        </div>
+        <div class="ws-collapse-bd">
+            <div class="space-y-4">
+                <div>
+                    <label class="ws-label">Requirements List (one per line)</label>
+                    <textarea name="admissions_requirements" rows="6" class="ws-input">{{ old('admissions_requirements', is_array($s->admissions_requirements) ? implode("\n",$s->admissions_requirements) : "Birth certificate\nImmunisation records\n2 passport photos\nParent / guardian ID\nPrevious school records (if any)\nCompleted application form") }}</textarea>
+                </div>
+                <div>
+                    <label class="ws-label">Additional Information Box</label>
+                    <textarea name="admissions_info" rows="4" class="ws-input" placeholder="Office hours, contact info, or any extra notes shown in the info box...">{{ old('admissions_info',$s->admissions_info) }}</textarea>
+                </div>
             </div>
         </div>
     </div>
@@ -979,9 +1102,20 @@
     box-shadow:0 1px 4px rgba(0,0,0,.1); 
     border-radius:.75rem; 
 }
+.ws-collapse { border:1px solid #e2e8f0; border-radius:14px; overflow:hidden; margin-bottom:12px; }
+.ws-collapse-hd { display:flex; align-items:center; gap:10px; padding:14px 18px; cursor:pointer; background:#f8fafc; transition:background .15s; }
+.ws-collapse-hd:hover { background:#f1f5f9; }
+.ws-collapse-hd .ws-ch { margin-left:auto; transition:transform .2s; font-size:11px; color:#94a3b8; }
+.ws-collapse.open .ws-ch { transform:rotate(180deg); }
+.ws-collapse-bd { display:none; padding:16px 18px; }
+.ws-collapse.open .ws-collapse-bd { display:block; }
 </style>
 
 <script>
+function wsToggle(id) {
+    var el = document.getElementById(id);
+    if (el) el.classList.toggle('open');
+}
 var WS_TABS = ['identity','hero','home','about','academics','admissions','contact','footer'];
 function wsTab(id) {
     WS_TABS.forEach(t => {
