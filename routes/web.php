@@ -2115,6 +2115,11 @@ Route::get('/setup/fix-recorded-by', function () {
                 foreach ($giMissing as $col => $sql) {
                     if (!in_array($col, $giCols)) { $conn->statement($sql); $results[] = "✅ [{$tenant->name}] website_gallery_images.{$col} added"; }
                 }
+                // Make image_url nullable if it exists (original migration had it as NOT NULL)
+                if (in_array('image_url', $giCols)) {
+                    $conn->statement("ALTER TABLE website_gallery_images ALTER COLUMN image_url DROP NOT NULL");
+                    $results[] = "✅ [{$tenant->name}] website_gallery_images.image_url set to nullable";
+                }
                 // staff_members — position, order
                 $col = $conn->select("SELECT column_name FROM information_schema.columns WHERE table_name='website_staff_members' AND column_name='position'");
                 if (empty($col)) { $conn->statement("ALTER TABLE website_staff_members ADD COLUMN IF NOT EXISTS position VARCHAR(255) NULL"); $results[] = "✅ [{$tenant->name}] website_staff_members.position added"; }
