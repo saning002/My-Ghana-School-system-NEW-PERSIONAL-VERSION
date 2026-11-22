@@ -2120,6 +2120,13 @@ Route::get('/setup/fix-recorded-by', function () {
                     $conn->statement("ALTER TABLE website_gallery_images ALTER COLUMN image_url DROP NOT NULL");
                     $results[] = "✅ [{$tenant->name}] website_gallery_images.image_url set to nullable";
                 }
+
+                // website_events — make start_date nullable (original migration had it NOT NULL, model uses 'date')
+                $weCols = collect($conn->select("SELECT column_name FROM information_schema.columns WHERE table_name='website_events'"))->pluck('column_name')->toArray();
+                if (in_array('start_date', $weCols)) {
+                    $conn->statement("ALTER TABLE website_events ALTER COLUMN start_date DROP NOT NULL");
+                    $results[] = "✅ [{$tenant->name}] website_events.start_date set to nullable";
+                }
                 // staff_members — position, order
                 $col = $conn->select("SELECT column_name FROM information_schema.columns WHERE table_name='website_staff_members' AND column_name='position'");
                 if (empty($col)) { $conn->statement("ALTER TABLE website_staff_members ADD COLUMN IF NOT EXISTS position VARCHAR(255) NULL"); $results[] = "✅ [{$tenant->name}] website_staff_members.position added"; }
