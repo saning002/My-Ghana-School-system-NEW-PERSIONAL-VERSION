@@ -12,7 +12,7 @@
   position: relative; overflow: hidden;
 }
 
-/* Animated grid mesh */
+/* ── Animated grid mesh */
 .ph-grid {
   position: absolute; inset: 0; z-index: 0; pointer-events: none;
   background-image:
@@ -28,34 +28,33 @@
 
 /* Glowing orbs — use safe rgba */
 .ph-orb {
-  position: absolute; border-radius: 50%; pointer-events: none; z-index: 0;
+  position: absolute; border-radius: 50%; pointer-events: none; z-index: 1;
   animation: orb-pulse 7s ease-in-out infinite;
 }
 .ph-orb-gold {
-  width: 600px; height: 600px;
-  background: radial-gradient(circle, rgba(233,164,34,.12) 0%, transparent 65%);
-  top: -200px; right: -130px; animation-delay: 0s;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(233,164,34,.18) 0%, transparent 65%);
+  top: -150px; right: -100px; animation-delay: 0s;
 }
 .ph-orb-blue {
-  width: 450px; height: 450px;
-  background: radial-gradient(circle, rgba(8,145,178,.1) 0%, transparent 65%);
-  bottom: -130px; left: -80px; animation-delay: 3.5s;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(8,145,178,.15) 0%, transparent 65%);
+  bottom: -100px; left: -60px; animation-delay: 3.5s;
 }
 @keyframes orb-pulse {
-  0%,100% { transform: scale(1);   opacity: .7; }
-  50%      { transform: scale(1.1); opacity: 1; }
+  0%,100% { transform: scale(1);    opacity: .8; }
+  50%      { transform: scale(1.15); opacity: 1; }
 }
 
 /* Floating particles */
 .ph-particle {
-  position: absolute; border-radius: 50%; pointer-events: none; z-index: 0;
+  position: absolute; border-radius: 50%; pointer-events: none; z-index: 2;
   animation: float-up linear infinite;
 }
 @keyframes float-up {
-  0%   { transform: translateY(0) rotate(0); opacity: 0; }
-  10%  { opacity: .22; }
-  90%  { opacity: .14; }
-  100% { transform: translateY(-110vh) rotate(540deg); opacity: 0; }
+  0%   { transform: translateY(0) rotate(0); opacity: .5; }
+  50%  { opacity: .3; }
+  100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
 }
 
 /* ── Layout ───────────────────────────────────────────────── */
@@ -266,14 +265,14 @@
   <div class="ph-orb ph-orb-blue"></div>
 
   {{-- Particles (safe colours, no color-mix) --}}
-  @for($i=0;$i<14;$i++)
-  @php $pc = ['rgba(233,164,34,.8)','rgba(255,255,255,.5)','rgba(8,145,178,.7)','rgba(233,164,34,.5)'][$i%4]; @endphp
+  @for($i=0;$i<16;$i++)
+  @php $pc = ['rgba(233,164,34,.7)','rgba(255,255,255,.45)','rgba(8,145,178,.65)','rgba(233,164,34,.4)'][$i%4]; @endphp
   <div class="ph-particle" style="
-    width:{{ rand(4,8) }}px; height:{{ rand(4,8) }}px;
+    width:{{ rand(5,10) }}px; height:{{ rand(5,10) }}px;
     background:{{ $pc }};
-    left:{{ rand(3,97) }}%; bottom:-10px;
-    animation-duration:{{ rand(14,24) }}s;
-    animation-delay:-{{ rand(0,20) }}s;
+    left:{{ rand(3,97) }}%; bottom:{{ rand(0,30) }}%;
+    animation-duration:{{ rand(8,16) }}s;
+    animation-delay:-{{ rand(0,16) }}s;
   "></div>
   @endfor
 
