@@ -7,7 +7,7 @@
 /* ── Hero ─────────────────────────────────────────────────── */
 .ph {
   min-height: 100vh;
-  background: var(--nav-bg, #0a1f44);
+  background: var(--navy, #0a1f44);
   display: flex; align-items: center; padding-top: 76px;
   position: relative; overflow: hidden;
 }
@@ -149,7 +149,7 @@
 }
 
 .pc-head {
-  background: var(--nav-bg, #0a1f44);
+  background: var(--navy, #0a1f44);
   padding: 24px 26px 20px; text-align: center;
 }
 .pc-shield {
@@ -260,7 +260,7 @@
 @section('content')
 @php $tenantSlug = session('tenant_slug'); @endphp
 
-<section class="ph">
+<section class="ph" style="background:{{ $theme['secondary'] ?? '#0a1f44' }}">
   <div class="ph-grid"></div>
   <div class="ph-orb ph-orb-gold"></div>
   <div class="ph-orb ph-orb-blue"></div>
@@ -315,7 +315,7 @@
 
     {{-- ── RIGHT ACCESS CARD ──────────────────────── --}}
     <div class="pc">
-      <div class="pc-head">
+      <div class="pc-head" style="background:{{ $theme['secondary'] ?? '#0a1f44' }}">
         <div class="pc-shield"><i class="fas fa-school"></i></div>
         <p class="pc-welcome">Welcome back</p>
         <h2>{{ $site->site_name ?? 'School' }}</h2>

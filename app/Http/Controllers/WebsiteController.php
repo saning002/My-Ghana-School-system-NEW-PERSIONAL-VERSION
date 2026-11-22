@@ -219,7 +219,8 @@ class WebsiteController extends Controller
     // ── PORTAL ────────────────────────────────────────────────────────────
     public function portal()
     {
-        $site = $this->site();
-        return view('website.portal', compact('site'));
+        $site  = $this->site();
+        $theme = $site->websiteTheme ?? \App\Models\Website\SiteSetting::defaultTheme();
+        return view('website.portal', compact('site', 'theme'));
     }
 }
