@@ -1,184 +1,368 @@
 @extends('website.layout')
-@section('page_title','School Portals')
+@section('page_title', ($site->site_name ?? 'School') . ' — Portals')
 @section('meta_description','Access the '.($site->site_name ?? 'School').' admin, teacher and student portals.')
 
 @section('extra_css')
-.portal-hero{min-height:100vh;background:linear-gradient(150deg,var(--nav-bg) 0%,var(--navy) 50%,var(--navy-mid) 100%);display:flex;align-items:center;position:relative;overflow:hidden;padding-top:72px;}
-.portal-noise{position:absolute;inset:0;opacity:.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
-.portal-glow-a{position:absolute;width:600px;height:600px;background:radial-gradient(circle,rgba(233,164,34,.09),transparent 70%);top:-120px;right:-100px;pointer-events:none;}
-.portal-glow-b{position:absolute;width:500px;height:500px;background:radial-gradient(circle,rgba(30,77,183,.1),transparent 70%);bottom:-100px;left:-80px;pointer-events:none;}
-.portal-inner{position:relative;z-index:2;max-width:1180px;margin:0 auto;padding:80px 28px;display:grid;grid-template-columns:1fr 460px;gap:80px;align-items:center;}
-/* Left */
-.portal-brand{color:var(--white);}
-.portal-eyebrow{display:inline-flex;align-items:center;gap:7px;background:rgba(233,164,34,.12);border:1px solid rgba(233,164,34,.22);color:var(--gold);padding:5px 15px;border-radius:100px;font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:22px;}
-.portal-brand h1{font-size:clamp(2.2rem,4.5vw,3.4rem);font-weight:800;color:var(--white);line-height:1.1;margin-bottom:18px;letter-spacing:-.02em;}
-.portal-brand h1 em{font-style:normal;color:var(--gold);}
-.portal-brand p{font-size:1.02rem;color:rgba(255,255,255,.62);line-height:1.82;max-width:420px;margin-bottom:36px;}
-.portal-feats{display:flex;flex-direction:column;gap:11px;}
-.pf{display:flex;align-items:center;gap:13px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:13px 16px;transition:var(--trans);}
-.pf:hover{background:rgba(255,255,255,.07);}
-.pf-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--gold),var(--gold-dark));display:flex;align-items:center;justify-content:center;color:var(--navy);flex-shrink:0;font-size:.9rem;}
-.pf strong{display:block;color:var(--white);font-size:.88rem;font-weight:700;}
-.pf span{font-size:.77rem;color:rgba(255,255,255,.42);}
-.portal-stats{display:flex;gap:28px;margin-top:40px;padding-top:28px;border-top:1px solid rgba(255,255,255,.07);}
-.ps-item strong{display:block;font-size:1.6rem;font-weight:800;color:var(--gold);line-height:1;}
-.ps-item span{font-size:.7rem;color:rgba(255,255,255,.38);text-transform:uppercase;letter-spacing:.08em;margin-top:3px;display:block;}
-/* Card */
-.portal-card{background:rgba(255,255,255,.97);border-radius:24px;overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,.4);}
-.portal-card-head{background:linear-gradient(150deg,var(--navy),var(--navy-mid));padding:30px 32px 26px;text-align:center;}
-.portal-shield{width:60px;height:60px;border-radius:18px;background:linear-gradient(135deg,var(--gold),var(--gold-dark));margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;color:var(--navy);box-shadow:0 8px 24px rgba(0,0,0,.25);}
-.portal-card-head h2{font-size:1.25rem;font-weight:800;color:var(--white);margin-bottom:4px;}
-.portal-card-head p{font-size:.82rem;color:rgba(255,255,255,.5);}
-.portal-card-body{padding:28px 30px;}
-.access-list{display:flex;flex-direction:column;gap:11px;}
-.access-btn{display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:14px;text-decoration:none;transition:var(--trans);position:relative;overflow:hidden;}
-.access-btn::after{content:'\f054';font-family:'Font Awesome 6 Free';font-weight:900;position:absolute;right:18px;top:50%;transform:translateY(-50%);font-size:.72rem;opacity:.45;transition:var(--trans);}
-.access-btn:hover{transform:translateY(-2px);}
-.access-btn:hover::after{right:14px;opacity:.85;}
-.ab-admin  {background:linear-gradient(135deg,var(--navy),var(--navy-mid));color:var(--white);box-shadow:0 4px 18px rgba(0,0,0,.28);}
-.ab-teacher{background:linear-gradient(135deg,#6d28d9,#4c1d95);color:var(--white);box-shadow:0 4px 18px rgba(109,40,217,.28);}
-.ab-student{background:linear-gradient(135deg,#0369a1,#0c4a6e);color:var(--white);box-shadow:0 4px 18px rgba(3,105,161,.28);}
-.ab-icon{width:40px;height:40px;border-radius:11px;background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}
-.ab-strong{display:block;font-weight:700;font-size:.9rem;margin-bottom:2px;}
-.ab-sub{font-size:.74rem;opacity:.7;}
-.portal-divider{display:flex;align-items:center;gap:10px;margin:16px 0;}
-.portal-divider::before,.portal-divider::after{content:'';flex:1;height:1px;background:var(--gray-200);}
-.portal-divider span{font-size:.68rem;color:var(--gray-400);font-weight:700;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;}
-.portal-note{background:var(--off-white);border-radius:11px;padding:13px 15px;font-size:.8rem;color:var(--gray-500);line-height:1.62;display:flex;gap:9px;align-items:flex-start;}
-.portal-note i{color:var(--gold-dark);flex-shrink:0;margin-top:2px;}
-.portal-note-gold{background:rgba(233,164,34,.07);border:1px solid rgba(233,164,34,.18);}
-.portal-note-gold i{color:var(--gold-dark);}
-@media(max-width:1024px){.portal-inner{grid-template-columns:1fr;gap:44px;max-width:500px;}.portal-brand{text-align:center;}.portal-brand p{margin:0 auto 32px;}.portal-feats{max-width:400px;margin:0 auto;}.portal-stats{justify-content:center;}}
-@media(max-width:600px){
-  .portal-inner{padding:60px 18px;max-width:100%;}
-  .portal-brand h1{font-size:1.8rem;}
-  .portal-feats{max-width:100%;}
-  .portal-stats{gap:20px;}
-  .portal-card{border-radius:18px;}
+<style>
+/* ── Variables ─────────────────────────────────────────────────── */
+:root {
+  --portal-navy: #0a1120;
+  --portal-navy2: #111827;
+  --portal-gold: #f59e0b;
+  --portal-gold2: #d97706;
+  --portal-blue: #2563eb;
 }
-@media(max-width:500px){.portal-card-body{padding:20px 16px;}.portal-card-head{padding:22px 18px;}
-  .access-btn{padding:13px 14px;gap:10px;}
-  .ab-icon{width:34px;height:34px;font-size:.95rem;}
+
+/* ── Hero ──────────────────────────────────────────────────────── */
+.ph-wrap {
+  min-height: 100vh;
+  background: radial-gradient(ellipse 120% 80% at 60% -10%, rgba(37,99,235,.18) 0%, transparent 60%),
+              radial-gradient(ellipse 80% 60% at -10% 80%, rgba(245,158,11,.12) 0%, transparent 55%),
+              linear-gradient(160deg, #0a1120 0%, #0f172a 50%, #0c1a3a 100%);
+  display: flex; align-items: center; padding-top: 76px; position: relative; overflow: hidden;
 }
+.ph-mesh {
+  position: absolute; inset: 0; z-index: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+.ph-orb-1 { position:absolute; width:700px; height:700px; border-radius:50%; background:radial-gradient(circle, rgba(245,158,11,.07) 0%, transparent 65%); top:-200px; right:-150px; pointer-events:none; }
+.ph-orb-2 { position:absolute; width:500px; height:500px; border-radius:50%; background:radial-gradient(circle, rgba(37,99,235,.1) 0%, transparent 65%); bottom:-150px; left:-100px; pointer-events:none; }
+
+.ph-inner {
+  position: relative; z-index: 2;
+  max-width: 1200px; margin: 0 auto; padding: 80px 28px;
+  display: grid; grid-template-columns: 1fr 480px; gap: 80px; align-items: center;
+}
+
+/* ── Left branding ─────────────────────────────────────────────── */
+.pb-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(245,158,11,.1); border: 1px solid rgba(245,158,11,.25);
+  color: var(--portal-gold); padding: 6px 16px; border-radius: 100px;
+  font-size: .68rem; font-weight: 800; letter-spacing: .15em; text-transform: uppercase;
+  margin-bottom: 24px;
+}
+.pb-eyebrow span { width:6px; height:6px; border-radius:50%; background:var(--portal-gold); animation: pulse-dot 1.8s infinite; }
+@keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.8)} }
+
+.pb-title {
+  font-size: clamp(2.4rem, 5vw, 3.8rem); font-weight: 900; color: #fff;
+  line-height: 1.08; letter-spacing: -.03em; margin-bottom: 20px;
+}
+.pb-title em { font-style:normal; color: var(--portal-gold); }
+
+.pb-sub { font-size: 1.05rem; color: rgba(255,255,255,.55); line-height: 1.8; max-width: 440px; margin-bottom: 40px; }
+
+/* Feature pills */
+.pb-feats { display:flex; flex-direction:column; gap:10px; margin-bottom:36px; }
+.pb-feat {
+  display:flex; align-items:center; gap:12px;
+  background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.07);
+  border-radius: 12px; padding: 12px 16px;
+  transition: background .2s, border-color .2s;
+}
+.pb-feat:hover { background: rgba(255,255,255,.07); border-color: rgba(245,158,11,.2); }
+.pb-feat-icon {
+  width: 34px; height: 34px; border-radius: 9px;
+  background: linear-gradient(135deg, var(--portal-gold), var(--portal-gold2));
+  display: flex; align-items: center; justify-content: center;
+  color: #0a1120; font-size: .85rem; flex-shrink: 0;
+}
+.pb-feat strong { display:block; color:#fff; font-size:.86rem; font-weight:700; }
+.pb-feat span { font-size:.74rem; color:rgba(255,255,255,.38); }
+
+/* Stats row */
+.pb-stats { display:flex; gap:32px; padding-top:28px; border-top:1px solid rgba(255,255,255,.07); }
+.pb-stat strong { display:block; font-size:1.7rem; font-weight:900; color:var(--portal-gold); line-height:1; }
+.pb-stat span { font-size:.65rem; text-transform:uppercase; letter-spacing:.1em; color:rgba(255,255,255,.3); margin-top:4px; display:block; }
+
+/* ── Portal card ───────────────────────────────────────────────── */
+.pc-card {
+  background: rgba(255,255,255,.97);
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 0 40px 100px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.08);
+}
+.pc-head {
+  background: linear-gradient(150deg, #0a1f44 0%, #1a3a7a 100%);
+  padding: 28px 30px 24px; text-align: center;
+}
+.pc-shield {
+  width: 64px; height: 64px; border-radius: 20px;
+  background: linear-gradient(135deg, var(--portal-gold), var(--portal-gold2));
+  margin: 0 auto 14px; display: flex; align-items: center; justify-content: center;
+  font-size: 1.7rem; color: #0a1f44;
+  box-shadow: 0 8px 28px rgba(245,158,11,.35);
+}
+.pc-head h2 { font-size: 1.2rem; font-weight: 800; color: #fff; margin-bottom: 4px; }
+.pc-head p  { font-size: .8rem; color: rgba(255,255,255,.45); }
+
+.pc-body { padding: 24px 26px; }
+
+/* Access buttons */
+.pa-list { display:flex; flex-direction:column; gap:9px; }
+
+.pa-btn {
+  display: flex; align-items: center; gap: 13px; padding: 14px 16px;
+  border-radius: 14px; text-decoration: none; cursor: pointer;
+  transition: transform .18s, box-shadow .18s, filter .18s;
+  position: relative; overflow: hidden; border: none;
+  width: 100%; text-align: left;
+}
+.pa-btn:hover { transform: translateY(-2px); }
+.pa-btn::after {
+  content: '\f054'; font-family:'Font Awesome 6 Free'; font-weight:900;
+  position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
+  font-size: .68rem; opacity: .4; transition: right .18s, opacity .18s;
+}
+.pa-btn:hover::after { right: 12px; opacity: .8; }
+
+.pa-admin   { background: linear-gradient(135deg, #0a1f44, #1a3a7a); color:#fff; box-shadow: 0 4px 20px rgba(10,31,68,.4); }
+.pa-teacher { background: linear-gradient(135deg, #5b21b6, #7c3aed); color:#fff; box-shadow: 0 4px 20px rgba(91,33,182,.35); }
+.pa-student { background: linear-gradient(135deg, #0369a1, #0284c7); color:#fff; box-shadow: 0 4px 20px rgba(3,105,161,.35); }
+
+.pa-icon {
+  width: 38px; height: 38px; border-radius: 11px;
+  background: rgba(255,255,255,.15);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem; flex-shrink: 0;
+}
+.pa-strong { display:block; font-weight:700; font-size:.88rem; margin-bottom:2px; }
+.pa-sub    { font-size:.72rem; opacity:.65; }
+
+/* ── Admin role picker dropdown ────────────────────────────────── */
+.pa-admin-wrap { position: relative; }
+.pa-picker {
+  display: none; position: absolute; left:0; right:0; top: calc(100% + 6px); z-index: 50;
+  background: #fff; border-radius: 16px; overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,.2), 0 0 0 1px #e2e8f0;
+}
+.pa-picker-role {
+  display: flex; align-items: center; gap: 11px; padding: 12px 16px;
+  text-decoration: none; background: #fff; transition: background .15s;
+  border-bottom: 1px solid #f1f5f9;
+}
+.pa-picker-role:last-child { border-bottom: none; }
+.pa-picker-role:hover { background: #f8fafc; }
+.pa-picker-dot {
+  width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size:.75rem; color:#fff;
+}
+.pa-picker-role-name { font-size:.82rem; font-weight:700; color:#1e293b; display:block; }
+.pa-picker-role-sub  { font-size:.7rem; color:#94a3b8; display:block; }
+.pa-picker-arr { margin-left:auto; font-size:.62rem; color:#cbd5e1; }
+
+.pa-chev { margin-left:auto; font-size:.72rem; opacity:.5; transition:transform .2s; }
+.admin-open .pa-chev { transform: rotate(180deg); }
+
+/* Divider */
+.pa-divider {
+  display:flex; align-items:center; gap:10px; margin:14px 0;
+}
+.pa-divider::before,.pa-divider::after { content:''; flex:1; height:1px; background:#e2e8f0; }
+.pa-divider span { font-size:.64rem; color:#94a3b8; font-weight:700; letter-spacing:.1em; text-transform:uppercase; white-space:nowrap; }
+
+/* Info note */
+.pa-note {
+  background: #f8fafc; border-radius: 11px; padding: 12px 14px;
+  font-size: .78rem; color: #64748b; line-height: 1.6;
+  display: flex; gap: 9px; align-items: flex-start;
+}
+.pa-note i { color: var(--portal-gold2); flex-shrink: 0; margin-top: 2px; }
+.pa-note-gold { background: rgba(245,158,11,.06); border: 1px solid rgba(245,158,11,.18); }
+
+/* ── Animated particles ────────────────────────────────────────── */
+.ph-particle { position: absolute; border-radius: 50%; pointer-events: none; z-index: 0; opacity: .15; animation: float-p linear infinite; }
+@keyframes float-p { 0%{transform:translateY(0) rotate(0deg)} 100%{transform:translateY(-100vh) rotate(720deg)} }
+
+/* ── Responsive ────────────────────────────────────────────────── */
+@media(max-width:1024px) {
+  .ph-inner { grid-template-columns:1fr; gap:50px; max-width:520px; }
+  .pb-title { font-size:2.4rem; }
+  .pb-sub,.pb-feats { max-width:100%; }
+  .pb-stats { justify-content:flex-start; }
+}
+@media(max-width:600px) {
+  .ph-inner { padding:60px 18px; }
+  .pb-title { font-size:2rem; }
+  .pc-body { padding:18px 16px; }
+  .pc-head { padding:22px 18px 18px; }
+  .pa-btn { padding:12px 14px; gap:10px; }
+  .pa-icon { width:32px; height:32px; font-size:.9rem; }
+  .pb-stats { gap:20px; }
+}
+</style>
 @endsection
 
 @section('content')
-<section class="portal-hero">
-  <div class="portal-noise"></div>
-  <div class="portal-glow-a"></div>
-  <div class="portal-glow-b"></div>
+@php $tenantSlug = session('tenant_slug'); @endphp
 
-  <div class="portal-inner">
-    <div class="portal-brand reveal">
-      <div class="portal-eyebrow"><i class="fas fa-shield-halved"></i> Official School Portals</div>
-      <h1>{!! $site->portal_intro_title ?? 'Access Your Portals' !!}</h1>
-      <p>{{ $site->portal_intro_subtitle ?? 'Choose your portal below to log in' }}</p>
-      <div class="portal-feats">
-        <div class="pf"><div class="pf-icon"><i class="fas fa-users-gear"></i></div><div><strong>Student &amp; Parent Management</strong><span>Track enrollment, profiles and guardian records</span></div></div>
-        <div class="pf"><div class="pf-icon"><i class="fas fa-graduation-cap"></i></div><div><strong>Academic Records &amp; Results</strong><span>Grades, report cards, rankings and transcripts</span></div></div>
-        <div class="pf"><div class="pf-icon"><i class="fas fa-chart-bar"></i></div><div><strong>Real-Time Analytics</strong><span>Dashboards and performance insights</span></div></div>
-        <div class="pf"><div class="pf-icon"><i class="fas fa-lock"></i></div><div><strong>Role-Based Secure Access</strong><span>Permission-driven access for every role</span></div></div>
+<section class="ph-wrap">
+  {{-- Background elements --}}
+  <div class="ph-mesh"></div>
+  <div class="ph-orb-1"></div>
+  <div class="ph-orb-2"></div>
+
+  {{-- Animated particles --}}
+  @for($i = 0; $i < 12; $i++)
+  <div class="ph-particle" style="
+    width:{{ rand(4,10) }}px; height:{{ rand(4,10) }}px;
+    background:{{ ['#f59e0b','#2563eb','#ffffff','#7c3aed'][$i % 4] }};
+    left:{{ rand(5,95) }}%; bottom:-20px;
+    animation-duration:{{ rand(12,22) }}s;
+    animation-delay:-{{ rand(0,15) }}s;
+  "></div>
+  @endfor
+
+  <div class="ph-inner">
+
+    {{-- ── LEFT: Branding ── --}}
+    <div class="pb-brand reveal">
+      <div class="pb-eyebrow"><span></span> Official School Portals</div>
+      <h1 class="pb-title">{!! $site->portal_intro_title ?? 'Access Your <em>School</em> Portals' !!}</h1>
+      <p class="pb-sub">{{ $site->portal_intro_subtitle ?? 'Everything you need in one place. Choose your role below and log in securely.' }}</p>
+
+      <div class="pb-feats">
+        @foreach([
+          ['fa-users-gear',    'Student &amp; Parent Management',    'Track enrollment, profiles and guardian records'],
+          ['fa-graduation-cap','Academic Records &amp; Results',      'Grades, report cards, rankings and transcripts'],
+          ['fa-chart-line',    'Real-Time Analytics &amp; Reports',   'Dashboards and performance insights'],
+          ['fa-shield-halved', 'Role-Based Secure Access',            'Permission-driven access for every role'],
+        ] as [$icon,$title,$sub])
+        <div class="pb-feat">
+          <div class="pb-feat-icon"><i class="fas {{ $icon }}"></i></div>
+          <div><strong>{!! $title !!}</strong><span>{{ $sub }}</span></div>
+        </div>
+        @endforeach
       </div>
-      <div class="portal-stats">
-        <div class="ps-item"><strong>3</strong><span>Portals</span></div>
-        <div class="ps-item"><strong>SSL</strong><span>Secured</span></div>
-        <div class="ps-item"><strong>24/7</strong><span>Accessible</span></div>
+
+      <div class="pb-stats">
+        <div class="pb-stat"><strong>4</strong><span>Portals</span></div>
+        <div class="pb-stat"><strong>SSL</strong><span>Secured</span></div>
+        <div class="pb-stat"><strong>24/7</strong><span>Access</span></div>
+        <div class="pb-stat"><strong>Live</strong><span>Updates</span></div>
       </div>
     </div>
 
-    <div class="portal-card reveal reveal-delay-2">
-      <div class="portal-card-head">
-        <div class="portal-shield"><i class="fas fa-school"></i></div>
-        <h2>{{ $site->site_name ?? 'School' }} Portals</h2>
-        <p>Select your role to sign in</p>
+    {{-- ── RIGHT: Access card ── --}}
+    <div class="pc-card reveal reveal-delay-2">
+      <div class="pc-head">
+        <div class="pc-shield"><i class="fas fa-school"></i></div>
+        <h2>{{ $site->site_name ?? 'School' }}</h2>
+        <p>Select your role to sign in securely</p>
       </div>
-      <div class="portal-card-body">
-        <div class="access-list">
-          @php $tenantSlug = session('tenant_slug'); @endphp
 
-          {{-- Admin / Staff Portal — expandable role picker --}}
-          <div>
-            <button type="button" onclick="toggleAdminPicker()" id="adminPickerBtn"
-                class="access-btn ab-admin w-full text-left" style="border:none;cursor:pointer;width:100%;justify-content:space-between;">
-                <div style="display:flex;align-items:center;gap:14px;">
-                    <div class="ab-icon"><i class="fas fa-crown"></i></div>
-                    <div><span class="ab-strong">Admin / Staff Portal</span><span class="ab-sub">School administrators &amp; staff</span></div>
-                </div>
-                <i class="fas fa-chevron-down" id="adminPickerChev" style="font-size:.75rem;opacity:.6;transition:transform .2s;"></i>
+      <div class="pc-body">
+        <div class="pa-list">
+
+          {{-- Admin / Staff — expandable --}}
+          <div class="pa-admin-wrap" id="adminWrap">
+            <button type="button" class="pa-btn pa-admin" onclick="togglePicker()" id="adminBtn">
+              <div class="pa-icon"><i class="fas fa-crown"></i></div>
+              <div>
+                <span class="pa-strong">Admin &amp; Staff Portal</span>
+                <span class="pa-sub">Administrators, heads, accountants, secretaries</span>
+              </div>
+              <i class="fas fa-chevron-down pa-chev" id="adminChev"></i>
             </button>
-            <div id="adminPickerMenu" style="display:none;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;margin-top:6px;">
-                @php
-                $adminRoles = [
-                    ['label'=>'Super Admin / School Owner', 'sub'=>'Full system access',  'icon'=>'fa-shield-halved',  'color'=>'#0a1f44'],
-                    ['label'=>'Branch Admin',               'sub'=>'Branch management',   'icon'=>'fa-building',       'color'=>'#1e40af'],
-                    ['label'=>'Headmaster / Head',          'sub'=>'Academic leadership', 'icon'=>'fa-user-tie',       'color'=>'#166534'],
-                    ['label'=>'Headteacher',                'sub'=>'School management',   'icon'=>'fa-user-check',     'color'=>'#0f766e'],
-                    ['label'=>'Accountant',                 'sub'=>'Fees &amp; finance',  'icon'=>'fa-calculator',     'color'=>'#92400e'],
-                    ['label'=>'Secretary',                  'sub'=>'Administration',      'icon'=>'fa-clipboard-user', 'color'=>'#6b21a8'],
-                ];
-                $adminLoginUrl = $tenantSlug ? route('school.admin.login', $tenantSlug) : route('admin.login');
-                @endphp
-                @foreach($adminRoles as $role)
-                <a href="{{ $adminLoginUrl }}"
-                   style="display:flex;align-items:center;gap:11px;padding:11px 15px;text-decoration:none;background:#fff;{{ !$loop->last ? 'border-bottom:1px solid #f1f5f9;' : '' }}transition:background .15s;"
-                   onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#fff'">
-                    <div style="width:32px;height:32px;border-radius:9px;background:{{ $role['color'] }};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                        <i class="fas {{ $role['icon'] }}" style="font-size:.8rem;color:#fff;"></i>
-                    </div>
-                    <div>
-                        <div style="font-size:.82rem;font-weight:700;color:#1e293b;">{!! $role['label'] !!}</div>
-                        <div style="font-size:.7rem;color:#94a3b8;">{!! $role['sub'] !!}</div>
-                    </div>
-                    <i class="fas fa-arrow-right" style="margin-left:auto;font-size:.65rem;color:#cbd5e1;"></i>
-                </a>
-                @endforeach
+
+            <div class="pa-picker" id="adminPicker">
+              @php
+              $adminLoginUrl = $tenantSlug ? route('school.admin.login', $tenantSlug) : route('admin.login');
+              $adminRoles = [
+                ['Super Admin / School Owner', 'Full system access',     'fa-shield-halved',  '#0a1f44', null],
+                ['Branch Admin',               'Branch management',      'fa-building',       '#1e40af', null],
+                ['Headmaster',                 'Academic leadership',    'fa-user-tie',        '#166534', 'headmaster'],
+                ['Headteacher',                'School management',      'fa-chalkboard',      '#0f766e', 'headteacher'],
+                ['Accountant',                 'Fees &amp; finance',     'fa-calculator',      '#92400e', 'accountant'],
+                ['Secretary',                  'Administration',         'fa-clipboard-user',  '#6b21a8', 'secretary'],
+              ];
+              @endphp
+              @foreach($adminRoles as [$label,$sub,$icon,$color,$staffRole])
+              @php
+                if ($staffRole) {
+                    // Staff portal roles — route to their specific login
+                    try {
+                        $loginUrl = route('staff-portal.login.role', $staffRole) . ($tenantSlug ? '?tenant=' . $tenantSlug : '');
+                    } catch (\Throwable $e) {
+                        $loginUrl = $adminLoginUrl;
+                    }
+                } else {
+                    $loginUrl = $adminLoginUrl;
+                }
+              @endphp
+              <a href="{{ $loginUrl }}" class="pa-picker-role">
+                <div class="pa-picker-dot" style="background:{{ $color }}">
+                  <i class="fas {{ $icon }}"></i>
+                </div>
+                <div>
+                  <span class="pa-picker-role-name">{!! $label !!}</span>
+                  <span class="pa-picker-role-sub">{!! $sub !!}</span>
+                </div>
+                <i class="fas fa-arrow-right pa-picker-arr"></i>
+              </a>
+              @endforeach
             </div>
           </div>
 
-          <a href="{{ $tenantSlug ? route('school.lecturer.login', $tenantSlug) : route('teachers-portal.login') }}" class="access-btn ab-teacher">
-            <div class="ab-icon"><i class="fas fa-chalkboard-user"></i></div>
-            <div><span class="ab-strong">{{ $site->portal_teacher_title ?? 'Teacher Portal' }}</span><span class="ab-sub">{{ $site->portal_teacher_desc ?? 'Mark attendance and enter scores' }}</span></div>
+          {{-- Teacher --}}
+          <a href="{{ $tenantSlug ? route('school.lecturer.login', $tenantSlug) : route('teachers-portal.login') }}" class="pa-btn pa-teacher">
+            <div class="pa-icon"><i class="fas fa-chalkboard-user"></i></div>
+            <div>
+              <span class="pa-strong">{{ $site->portal_teacher_title ?? 'Teacher Portal' }}</span>
+              <span class="pa-sub">{{ $site->portal_teacher_desc ?? 'Mark attendance and enter exam scores' }}</span>
+            </div>
           </a>
-          <a href="{{ route('student-portal.login') }}" class="access-btn ab-student">
-            <div class="ab-icon"><i class="fas fa-user-graduate"></i></div>
-            <div><span class="ab-strong">{{ $site->portal_student_title ?? 'Student Portal' }}</span><span class="ab-sub">{{ $site->portal_student_desc ?? 'Check results, attendance and fees' }}</span></div>
+
+          {{-- Student --}}
+          <a href="{{ route('student-portal.login') }}" class="pa-btn pa-student">
+            <div class="pa-icon"><i class="fas fa-user-graduate"></i></div>
+            <div>
+              <span class="pa-strong">{{ $site->portal_student_title ?? 'Student Portal' }}</span>
+              <span class="pa-sub">{{ $site->portal_student_desc ?? 'Check results, attendance and fees' }}</span>
+            </div>
           </a>
+
         </div>
 
-        <div class="portal-divider"><span>Access Information</span></div>
+        <div class="pa-divider"><span>Help &amp; Info</span></div>
 
-        <div class="portal-note">
+        <div class="pa-note">
           <i class="fas fa-info-circle"></i>
-          <span>{{ $site->portal_help_text ?? 'Need help? Contact your school administrator.' }}</span>
+          <span>{{ $site->portal_help_text ?? 'Not sure which portal to use? Contact your school administrator for your login details.' }}</span>
         </div>
 
         @if(isset($site) && $site->contact_phone)
-        <div class="portal-note portal-note-gold" style="margin-top:10px;">
+        <div class="pa-note pa-note-gold" style="margin-top:8px;">
           <i class="fas fa-phone"></i>
-          <span style="color:var(--gray-700);">Need help? Call us: <strong><a href="tel:{{ $site->contact_phone }}" style="color:var(--navy);">{{ $site->contact_phone }}</a></strong></span>
+          <span style="color:#374151;">Help line: <strong><a href="tel:{{ $site->contact_phone }}" style="color:#0a1f44;">{{ $site->contact_phone }}</a></strong></span>
         </div>
         @endif
       </div>
     </div>
+
   </div>
+</section>
 @endsection
 
 @section('extra_js')
 <script>
-function toggleAdminPicker() {
-    var menu = document.getElementById('adminPickerMenu');
-    var chev = document.getElementById('adminPickerChev');
-    var open = menu.style.display === 'block';
-    menu.style.display = open ? 'none' : 'block';
-    if (chev) chev.style.transform = open ? '' : 'rotate(180deg)';
+function togglePicker() {
+    var wrap  = document.getElementById('adminWrap');
+    var picker= document.getElementById('adminPicker');
+    var open  = picker.style.display === 'block';
+    picker.style.display = open ? 'none' : 'block';
+    wrap.classList.toggle('admin-open', !open);
 }
 document.addEventListener('click', function(e) {
-    var btn = document.getElementById('adminPickerBtn');
-    var menu = document.getElementById('adminPickerMenu');
-    if (btn && menu && !btn.contains(e.target) && !menu.contains(e.target)) {
-        menu.style.display = 'none';
-        var chev = document.getElementById('adminPickerChev');
-        if (chev) chev.style.transform = '';
+    var wrap  = document.getElementById('adminWrap');
+    var picker= document.getElementById('adminPicker');
+    if (wrap && picker && !wrap.contains(e.target)) {
+        picker.style.display = 'none';
+        wrap.classList.remove('admin-open');
     }
 });
 </script>
