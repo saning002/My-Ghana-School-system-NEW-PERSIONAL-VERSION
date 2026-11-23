@@ -239,7 +239,6 @@ class FeesController extends Controller
         $studentCount = count($studentIds);
         return back()->with('success', "Custom fees cleared for {$studentCount} student(s). Will now use program defaults.");
     }
-}
 
     /**
      * Payment Records — filterable list of all payments.
