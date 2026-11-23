@@ -539,9 +539,31 @@
         </div>
         <form method="POST" action="{{ route('admin.fees.store') }}" class="px-4 py-4 space-y-3">
             @csrf
-            <div class="input-field">
-                <label class="block text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wide">Student *</label>
-                <x-student-search name="student_id" placeholder="Search by name or ID..." :required="true" />
+
+            {{-- Programme filter --}}
+            <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-1 uppercase tracking-wide">Filter by Programme</label>
+                <select id="pay_prog_filter" onchange="payFilterStudents(this.value)"
+                    class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                    <option value="">— All Programmes —</option>
+                    @foreach($programs as $p)
+                    <option value="{{ $p->id }}">{{ $p->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            {{-- Student select --}}
+            <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-1 uppercase tracking-wide">Student <span class="text-red-400">*</span></label>
+                <select name="student_id" id="pay_student_select" required
+                    class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                    <option value="">— Select programme first or choose below —</option>
+                    @foreach(\App\Models\Student::with('user','program')->whereNotIn('status',['withdrawn','suspended'])->orderBy('id')->get() as $st)
+                    <option value="{{ $st->id }}" data-prog="{{ $st->program_id }}">
+                        {{ $st->user?->full_name ?? '?' }} — {{ $st->student_id }}{{ $st->program ? ' ('.$st->program->name.')' : '' }}
+                    </option>
+                    @endforeach
+                </select>
             </div>
             <div class="grid grid-cols-2 gap-3">
                 <div class="input-field">
@@ -897,6 +919,20 @@ document.getElementById('bulk-reset-form')?.addEventListener('submit', function(
         }
     }
 });
+// ── Payment form: filter students by programme ──────────────────
+function payFilterStudents(progId) {
+    var sel = document.getElementById('pay_student_select');
+    if (!sel) return;
+    var opts = sel.querySelectorAll('option[data-prog]');
+    sel.value = ''; // reset selection
+    opts.forEach(function(opt) {
+        if (!progId || opt.getAttribute('data-prog') === progId) {
+            opt.style.display = '';
+        } else {
+            opt.style.display = 'none';
+        }
+    });
+}
 </script>
 
 @endsection
