@@ -188,25 +188,44 @@ iframe.hero-video{position:absolute;top:50%;left:50%;width:100vw;height:56.25vw;
             $videoUrl = $site->hero_bg_video_url;
             $isYoutube = str_contains($videoUrl, 'youtube.com') || str_contains($videoUrl, 'youtu.be');
             if ($isYoutube) {
-                // Extract video ID and build embed URL
                 preg_match('/(?:v=|youtu\.be\/|embed\/)([a-zA-Z0-9_-]{11})/', $videoUrl, $m);
                 $ytId = $m[1] ?? '';
-                $embedUrl = 'https://www.youtube.com/embed/' . $ytId . '?autoplay=1&mute=1&loop=1&playlist=' . $ytId . '&controls=0&showinfo=0&rel=0&modestbranding=1';
             }
         @endphp
         @if($isYoutube && !empty($ytId))
-        <div style="position:absolute;inset:0;overflow:hidden;z-index:0;pointer-events:none;">
-            <iframe class="hero-video"
-                    src="{{ $embedUrl }}&enablejsapi=1&origin={{ urlencode(config('app.url')) }}"
-                    frameborder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowfullscreen
-                    style="pointer-events:none;border:0;"></iframe>
+        {{-- YouTube: use IFrame Player API for reliable muted autoplay --}}
+        <div id="yt-hero-wrap" style="position:absolute;inset:0;overflow:hidden;z-index:0;pointer-events:none;">
+            <div id="yt-hero-player"></div>
         </div>
+        <script>
+            window._ytHeroId = '{{ $ytId }}';
+            function onYouTubeIframeAPIReady() {
+                new YT.Player('yt-hero-player', {
+                    videoId: window._ytHeroId,
+                    playerVars: {
+                        autoplay: 1, mute: 1, loop: 1, playlist: window._ytHeroId,
+                        controls: 0, showinfo: 0, rel: 0, modestbranding: 1,
+                        iv_load_policy: 3, disablekb: 1, fs: 0
+                    },
+                    events: {
+                        onReady: function(e) { e.target.mute(); e.target.playVideo(); }
+                    }
+                });
+            }
+            (function(){
+                var tag = document.createElement('script');
+                tag.src = 'https://www.youtube.com/iframe_api';
+                document.head.appendChild(tag);
+            })();
+        </script>
+        <style>
+            #yt-hero-player { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+                width:100vw; height:56.25vw; min-height:100vh; min-width:177.78vh; pointer-events:none; }
+        </style>
         @else
-        {{-- Direct video file (MP4, WebM, etc.) --}}
-        <video class="hero-video" autoplay muted loop playsinline preload="auto"
-               style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);min-width:100%;min-height:100%;width:auto;height:auto;object-fit:cover;z-index:0;">
+        {{-- Direct video URL (MP4, WebM, Cloudinary, etc.) --}}
+        <video autoplay muted loop playsinline preload="auto"
+               style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);min-width:100%;min-height:100%;width:auto;height:auto;object-fit:cover;z-index:0;pointer-events:none;">
             <source src="{{ $videoUrl }}" type="video/mp4">
             <source src="{{ $videoUrl }}" type="video/webm">
         </video>

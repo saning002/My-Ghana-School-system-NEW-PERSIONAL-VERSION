@@ -385,8 +385,8 @@
                                value="{{ old('hero_bg_video_url', $s->hero_bg_video_url) }}"
                                class="ws-input mt-1" placeholder="https://www.youtube.com/watch?v=XXXXXXXXXXX">
                         <p class="text-[10px] text-gray-400 mt-1">
-                            <strong>Recommended:</strong> paste a YouTube link (e.g. <code>https://youtube.com/watch?v=XXXXXXXXXXX</code>).<br>
-                            Direct MP4 links also work but the file must be publicly accessible and not behind a redirect/login (Pixabay download links will <strong>not</strong> work — use YouTube instead).
+                            <strong>YouTube link</strong> (e.g. <code>https://youtube.com/watch?v=XXXXXXXXXXX</code>) — plays silently in background.<br>
+                            <strong>Direct video file</strong> — paste any publicly-accessible MP4/WebM URL (e.g. from Cloudinary, your server, or a CDN). Pixabay/Pexels <em>download</em> links redirect through auth and won't play — upload the file to Cloudinary first if needed.
                         </p>
                     </div>
                     <div>
