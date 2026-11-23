@@ -953,7 +953,7 @@ class StudentController extends Controller
         $q = trim($request->get('q', ''));
         $programId = $request->get('program_id');
 
-        if (!$programId && strlen($q) < 2) {
+        if (!$programId && strlen($q) < 1) {
             return response()->json([]);
         }
 

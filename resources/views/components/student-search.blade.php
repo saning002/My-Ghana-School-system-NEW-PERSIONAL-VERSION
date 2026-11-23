@@ -1,196 +1,233 @@
-@props(['name' => 'student_id', 'placeholder' => 'Search by name or ID...', 'required' => false])
-@php $uid = 'ss_' . uniqid(); @endphp
+@props(['name' => 'student_id', 'placeholder' => 'Type name or student ID...', 'required' => false])
+@php $uid = 'ss' . substr(md5(uniqid()), 0, 8); @endphp
 
-<div x-data="studentSearch('{{ $uid }}')" @program-change.window="setProgram($event.detail)" class="relative space-y-2">
+<div id="{{ $uid }}_wrap" style="position:relative;width:100%;">
 
     {{-- Programme filter --}}
-    <select
-        @change="setProgram($event.target.value)"
-        class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-yellow-400">
-        <option value="">All Programmes</option>
+    <select id="{{ $uid }}_prog"
+        onchange="ssSetProgram('{{ $uid }}')"
+        style="width:100%;padding:9px 12px;border:1px solid #d1d5db;border-radius:10px;font-size:.85rem;background:#fff;margin-bottom:6px;outline:none;cursor:pointer;">
+        <option value="">— All Programmes —</option>
         @foreach(\App\Models\Program::orderBy('sequence')->get() as $prog)
         <option value="{{ $prog->id }}">{{ $prog->name }}</option>
         @endforeach
     </select>
 
     {{-- Search input --}}
-    <div class="relative">
-        <input
-            type="text"
-            x-model="query"
-            @input.debounce.250ms="search()"
-            @focus="if(query.length >= 1 || programId) search(); showDropdown = true;"
-            @keydown.arrow-down.prevent="highlightNext()"
-            @keydown.arrow-up.prevent="highlightPrevious()"
-            @keydown.enter.prevent="selectHighlighted()"
-            @keydown.escape="showDropdown = false"
-            :placeholder="selectedName ? selectedName + ' — click × to change' : '{{ $placeholder }}'"
-            :class="selectedId ? 'border-green-400 bg-green-50 text-green-800 font-semibold' : 'border-gray-200 bg-white'"
-            class="w-full px-4 py-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 pr-10"
+    <div style="position:relative;">
+        <input type="text" id="{{ $uid }}_input"
+            placeholder="{{ $placeholder }}"
+            oninput="ssSearch('{{ $uid }}')"
+            onfocus="ssOpen('{{ $uid }}')"
+            onkeydown="ssKey(event,'{{ $uid }}')"
             autocomplete="off"
-            :readonly="selectedId !== ''"
-        />
-
-        {{-- Clear button --}}
-        <button x-show="selectedId" type="button" @click="clearSelection()"
-            class="absolute right-3 top-1/2 -translate-y-1/2 text-red-400 hover:text-red-600 transition-colors"
-            title="Clear selection">
-            <i class="fas fa-times-circle"></i>
-        </button>
-
-        {{-- Search icon when no selection --}}
-        <span x-show="!selectedId" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-300 pointer-events-none">
-            <i class="fas fa-search text-sm"></i>
+            style="width:100%;padding:9px 36px 9px 12px;border:1px solid #d1d5db;border-radius:10px;font-size:.85rem;background:#fff;outline:none;box-sizing:border-box;transition:border-color .15s;">
+        <span style="position:absolute;right:10px;top:50%;transform:translateY(-50%);color:#9ca3af;pointer-events:none;">
+            <i class="fas fa-search" style="font-size:.78rem;"></i>
         </span>
     </div>
 
-    {{-- The critical hidden input — set by JS not Alpine x-model --}}
-    <input type="hidden"
-           name="{{ $name }}"
-           id="{{ $uid }}_hidden"
-           value=""
-           {{ $required ? 'required' : '' }} />
+    {{-- Hidden input that actually submits — plain HTML, no JS framework --}}
+    <input type="hidden" id="{{ $uid }}_val" name="{{ $name }}" value="" {{ $required ? 'required' : '' }}>
 
-    {{-- Dropdown results --}}
-    <div
-        x-show="showDropdown && (results.length > 0 || (query.length >= 1 && !loading))"
-        @click.away="showDropdown = false"
-        x-cloak
-        class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-xl max-h-64 overflow-y-auto"
-        style="top:100%">
-
-        <template x-if="loading">
-            <div class="px-4 py-3 text-sm text-gray-400 text-center">
-                <i class="fas fa-spinner fa-spin mr-2"></i> Searching…
-            </div>
-        </template>
-
-        <template x-if="!loading && results.length === 0 && query.length >= 1">
-            <div class="px-4 py-3 text-sm text-gray-400 text-center">
-                <i class="fas fa-search mr-2"></i> No students found
-            </div>
-        </template>
-
-        <template x-for="(student, index) in results" :key="student.id">
-            <div
-                @click="selectStudent(student)"
-                :class="highlightedIndex === index ? 'bg-yellow-50 border-l-4 border-yellow-400' : 'hover:bg-gray-50'"
-                class="px-4 py-3 cursor-pointer border-b border-gray-50 last:border-b-0 transition-colors">
-                <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-full overflow-hidden flex-shrink-0 border-2 border-yellow-100 bg-yellow-50 flex items-center justify-center font-bold text-sm text-yellow-700">
-                        <template x-if="student.photo_url">
-                            <img :src="student.photo_url" class="w-full h-full object-cover" :alt="student.full_name">
-                        </template>
-                        <template x-if="!student.photo_url">
-                            <span x-text="student.full_name.charAt(0).toUpperCase()"></span>
-                        </template>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <p class="text-sm font-bold text-gray-900 truncate" x-text="student.full_name"></p>
-                        <p class="text-xs text-gray-400 flex items-center gap-1">
-                            <span class="font-mono bg-gray-100 px-1.5 py-0.5 rounded text-gray-600" x-text="student.student_id"></span>
-                            <span>·</span>
-                            <span x-text="student.program"></span>
-                        </p>
-                    </div>
-                    <i class="fas fa-check-circle text-green-500 text-sm" x-show="selectedId == student.id"></i>
-                </div>
-            </div>
-        </template>
+    {{-- Dropdown list --}}
+    <div id="{{ $uid }}_drop"
+        style="display:none;position:absolute;top:calc(100% + 2px);left:0;right:0;z-index:9999;
+               background:#fff;border:1px solid #e5e7eb;border-radius:12px;
+               box-shadow:0 10px 36px rgba(0,0,0,.13);max-height:260px;overflow-y:auto;">
     </div>
 
-    {{-- Selected confirmation badge --}}
-    <div x-show="selectedName" x-cloak
-         class="flex items-center gap-2 px-3 py-2 bg-green-50 border border-green-200 rounded-xl text-sm">
-        <i class="fas fa-check-circle text-green-600 flex-shrink-0"></i>
-        <span class="font-semibold text-green-800" x-text="selectedName"></span>
-        <span class="text-green-500 text-xs" x-text="selectedStudentId ? '(' + selectedStudentId + ')' : ''"></span>
+    {{-- Selected student badge --}}
+    <div id="{{ $uid }}_badge"
+        style="display:none;margin-top:6px;padding:8px 12px;background:#f0fdf4;
+               border:1px solid #bbf7d0;border-radius:10px;
+               font-size:.82rem;font-weight:600;color:#166534;
+               align-items:center;gap:8px;">
+        <i class="fas fa-check-circle" style="color:#16a34a;flex-shrink:0;"></i>
+        <span id="{{ $uid }}_badge_name" style="flex:1;"></span>
+        <span id="{{ $uid }}_badge_id" style="font-size:.72rem;opacity:.7;"></span>
+        <button type="button" onclick="ssClear('{{ $uid }}')"
+            style="margin-left:4px;background:none;border:none;cursor:pointer;
+                   color:#ef4444;font-size:.75rem;padding:2px 6px;
+                   border-radius:6px;border:1px solid #fca5a5;">
+            <i class="fas fa-times"></i> Change
+        </button>
     </div>
 </div>
 
 <script>
-function studentSearch(uid) {
-    return {
-        query: '',
-        results: [],
-        selectedId: '',
-        selectedName: '',
-        selectedStudentId: '',
-        showDropdown: false,
-        loading: false,
-        highlightedIndex: -1,
+(function(){
+    // Per-instance state keyed by uid
+    if (!window._ss) window._ss = {};
+    window._ss['{{ $uid }}'] = {
         programId: '',
-        hiddenInput: null,
-
-        init() {
-            // Get the hidden input by its unique ID
-            this.hiddenInput = document.getElementById(uid + '_hidden');
-        },
-
-        async search() {
-            if (this.query.length < 1 && !this.programId) {
-                this.results = [];
-                this.showDropdown = false;
-                return;
-            }
-            this.loading = true;
-            try {
-                const url = new URL(`{{ route('admin.students.search') }}`, window.location.origin);
-                if (this.query.length >= 1) url.searchParams.set('q', this.query);
-                if (this.programId)         url.searchParams.set('program_id', this.programId);
-                const r = await fetch(url.href);
-                this.results = await r.json();
-                this.showDropdown = true;
-                this.highlightedIndex = -1;
-            } catch (e) {
-                this.results = [];
-            } finally {
-                this.loading = false;
-            }
-        },
-
-        async setProgram(programId) {
-            this.programId = programId || '';
-            this.clearSelection();
-            await this.search();
-        },
-
-        selectStudent(student) {
-            this.selectedId      = student.id;
-            this.selectedName    = student.full_name;
-            this.selectedStudentId = student.student_id;
-            this.query           = '';
-            this.results         = [];
-            this.showDropdown    = false;
-            this.highlightedIndex = -1;
-            // Set the hidden input value directly — reliable, no Alpine x-model needed
-            if (this.hiddenInput) {
-                this.hiddenInput.value = student.id;
-            }
-        },
-
-        clearSelection() {
-            this.selectedId      = '';
-            this.selectedName    = '';
-            this.selectedStudentId = '';
-            this.query           = '';
-            this.results         = [];
-            this.highlightedIndex = -1;
-            if (this.hiddenInput) this.hiddenInput.value = '';
-        },
-
-        selectHighlighted() {
-            if (this.highlightedIndex >= 0 && this.results[this.highlightedIndex]) {
-                this.selectStudent(this.results[this.highlightedIndex]);
-            }
-        },
-
-        highlightNext() {
-            if (this.highlightedIndex < this.results.length - 1) this.highlightedIndex++;
-        },
-        highlightPrevious() {
-            if (this.highlightedIndex > 0) this.highlightedIndex--;
-        },
+        highlighted: -1,
+        results: [],
+        timer: null,
+        searchUrl: '{{ route('admin.students.search') }}'
     };
+})();
+
+function ssOpen(uid) {
+    var inp = document.getElementById(uid + '_input');
+    if (inp && !document.getElementById(uid + '_val').value) {
+        ssSearch(uid);
+    }
 }
+
+function ssSetProgram(uid) {
+    var sel = document.getElementById(uid + '_prog');
+    window._ss[uid].programId = sel ? sel.value : '';
+    ssClear(uid);
+    if (window._ss[uid].programId) ssSearch(uid);
+}
+
+function ssSearch(uid) {
+    var state = window._ss[uid];
+    var inp   = document.getElementById(uid + '_input');
+    var q     = inp ? inp.value.trim() : '';
+
+    // Don't search if already selected
+    if (document.getElementById(uid + '_val').value) return;
+
+    if (!state.programId && q.length < 1) {
+        ssHideDrop(uid); return;
+    }
+
+    clearTimeout(state.timer);
+    state.timer = setTimeout(function() {
+        var url = state.searchUrl;
+        var params = [];
+        if (q.length >= 1)     params.push('q=' + encodeURIComponent(q));
+        if (state.programId)   params.push('program_id=' + encodeURIComponent(state.programId));
+        if (params.length)     url += '?' + params.join('&');
+
+        fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(function(r){ return r.json(); })
+            .then(function(data) {
+                state.results    = data;
+                state.highlighted = -1;
+                ssRenderDrop(uid, data);
+            })
+            .catch(function(){ ssHideDrop(uid); });
+    }, 200);
+}
+
+function ssRenderDrop(uid, students) {
+    var drop = document.getElementById(uid + '_drop');
+    if (!drop) return;
+
+    if (!students || students.length === 0) {
+        drop.innerHTML = '<div style="padding:12px 16px;text-align:center;font-size:.82rem;color:#94a3b8;"><i class="fas fa-search" style="margin-right:5px;"></i>No students found</div>';
+        drop.style.display = 'block';
+        return;
+    }
+
+    var html = '';
+    students.forEach(function(s, i) {
+        var initial = (s.full_name || '?').charAt(0).toUpperCase();
+        html += '<div onclick="ssSelect(\'' + uid + '\',' + i + ')" ' +
+            'onmouseenter="ssHover(\'' + uid + '\',' + i + ')" ' +
+            'id="' + uid + '_item_' + i + '" ' +
+            'style="display:flex;align-items:center;gap:11px;padding:10px 14px;cursor:pointer;' +
+            'border-bottom:1px solid #f3f4f6;transition:background .1s;">' +
+            '<div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#fbbf24,#f59e0b);' +
+            'display:flex;align-items:center;justify-content:center;font-weight:800;color:#78350f;' +
+            'flex-shrink:0;font-size:.85rem;">' + initial + '</div>' +
+            '<div style="flex:1;min-width:0;">' +
+            '<div style="font-size:.85rem;font-weight:700;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + (s.full_name || '') + '</div>' +
+            '<div style="font-size:.72rem;color:#94a3b8;margin-top:1px;">' +
+            '<span style="background:#f1f5f9;padding:1px 7px;border-radius:6px;font-family:monospace;color:#475569;">' + (s.student_id || '') + '</span>' +
+            ' &middot; ' + (s.program || '') +
+            '</div></div>' +
+            '<i class="fas fa-arrow-right" style="color:#d1d5db;font-size:.65rem;flex-shrink:0;"></i>' +
+            '</div>';
+    });
+
+    drop.innerHTML = html;
+    drop.style.display = 'block';
+}
+
+function ssHover(uid, idx) {
+    window._ss[uid].highlighted = idx;
+    ssHighlight(uid);
+}
+
+function ssHighlight(uid) {
+    var state = window._ss[uid];
+    state.results.forEach(function(_, i) {
+        var el = document.getElementById(uid + '_item_' + i);
+        if (el) el.style.background = (i === state.highlighted) ? '#fef9c3' : '';
+    });
+}
+
+function ssSelect(uid, idx) {
+    var state   = window._ss[uid];
+    var student = state.results[idx];
+    if (!student) return;
+
+    // Set the hidden input VALUE — this is what gets submitted
+    var hidden = document.getElementById(uid + '_val');
+    hidden.value = student.id;
+
+    // Clear search box
+    var inp = document.getElementById(uid + '_input');
+    if (inp) { inp.value = ''; inp.style.display = 'none'; }
+
+    // Show badge
+    var badge = document.getElementById(uid + '_badge');
+    badge.style.display = 'flex';
+    document.getElementById(uid + '_badge_name').textContent = student.full_name;
+    document.getElementById(uid + '_badge_id').textContent   = student.student_id;
+
+    ssHideDrop(uid);
+}
+
+function ssKey(e, uid) {
+    var state = window._ss[uid];
+    if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        state.highlighted = Math.min(state.highlighted + 1, state.results.length - 1);
+        ssHighlight(uid);
+    } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        state.highlighted = Math.max(state.highlighted - 1, 0);
+        ssHighlight(uid);
+    } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (state.highlighted >= 0) ssSelect(uid, state.highlighted);
+    } else if (e.key === 'Escape') {
+        ssHideDrop(uid);
+    }
+}
+
+function ssClear(uid) {
+    // Clear hidden value
+    var hidden = document.getElementById(uid + '_val');
+    if (hidden) hidden.value = '';
+
+    // Show input, hide badge
+    var inp = document.getElementById(uid + '_input');
+    if (inp) { inp.value = ''; inp.style.display = ''; inp.focus(); }
+
+    var badge = document.getElementById(uid + '_badge');
+    if (badge) badge.style.display = 'none';
+
+    ssHideDrop(uid);
+    if (window._ss[uid].programId) ssSearch(uid);
+}
+
+function ssHideDrop(uid) {
+    var drop = document.getElementById(uid + '_drop');
+    if (drop) drop.style.display = 'none';
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(e) {
+    if (!window._ss) return;
+    Object.keys(window._ss).forEach(function(uid) {
+        var wrap = document.getElementById(uid + '_wrap');
+        if (wrap && !wrap.contains(e.target)) ssHideDrop(uid);
+    });
+});
 </script>
