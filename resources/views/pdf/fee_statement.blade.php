@@ -90,25 +90,29 @@
         <thead>
             <tr>
                 <th class="left">Date</th>
-                <th class="left">Description</th>
+                <th class="left">Time</th>
+                <th class="left">Method</th>
+                <th class="left">Receipt #</th>
                 <th class="right">Amount (GH₵)</th>
             </tr>
         </thead>
         <tbody>
             @forelse($student->payments->sortByDesc('created_at') as $pay)
             <tr>
-                <td>{{ \Carbon\Carbon::parse($pay->created_at)->format('d M Y') }}</td>
-                <td>{{ $pay->description ?? 'School Fees Payment' }}</td>
-                <td class="right" style="color:#166534;font-weight:700;">{{ number_format($pay->amount,2) }}</td>
+                <td>{{ \Carbon\Carbon::parse($pay->payment_date ?? $pay->created_at)->format('d M Y') }}</td>
+                <td>{{ \Carbon\Carbon::parse($pay->created_at)->format('h:i A') }}</td>
+                <td>{{ ucwords(str_replace('_',' ', $pay->payment_method ?? 'cash')) }}</td>
+                <td style="font-family:monospace;font-size:7pt;">{{ $pay->receipt_number ?? '—' }}</td>
+                <td class="right" style="color:#166534;font-weight:700;">{{ number_format($pay->amount_paid ?? $pay->amount ?? 0, 2) }}</td>
             </tr>
             @empty
             <tr>
-                <td colspan="3" style="text-align:center;color:#94a3b8;padding:12px;">No payments recorded.</td>
+                <td colspan="5" style="text-align:center;color:#94a3b8;padding:12px;">No payments recorded.</td>
             </tr>
             @endforelse
             @if($student->payments->isNotEmpty())
             <tr class="total-row">
-                <td colspan="2" style="text-align:right;">Total Paid</td>
+                <td colspan="4" style="text-align:right;">Total Paid</td>
                 <td class="right">GH₵ {{ number_format($fees['paid']??0,2) }}</td>
             </tr>
             @endif
