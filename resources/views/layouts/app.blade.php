@@ -633,7 +633,6 @@
                     ['route'=>'admin.exams.sheet',              'icon'=>'fa-table',              'label'=>'Exams Sheet',                'perm'=>'exams',          'module'=>'exams'],
                     ['route'=>'admin.exam-questions.index',     'icon'=>'fa-file-upload',        'label'=>'Exam Questions',              'perm'=>'exam_questions', 'module'=>'exam_questions'],
                     ['route'=>'admin.fees.index',               'icon'=>'fa-coins',              'label'=>$sidebarLabels['fees'],        'perm'=>'fees',           'module'=>'fees'],
-                    ['route'=>'admin.fees.payment-records',     'icon'=>'fa-receipt',            'label'=>'Payment Records',            'perm'=>'fees',           'module'=>'fees'],
                     ['route'=>'admin.fees.term.index',          'icon'=>'fa-file-invoice-dollar', 'label'=>'Term Ledger',                'perm'=>'fees_term_ledger','module'=>'fees'],
                     ['route'=>'admin.fees.reminders.index',     'icon'=>'fa-bell',               'label'=>'Fee Reminders',              'perm'=>'fee_reminders',  'module'=>null],
                     ['route'=>'admin.daily-fees.index',         'icon'=>'fa-calendar-check',     'label'=>'Daily Fees',                 'perm'=>'daily_fees',     'module'=>'daily_fees'],

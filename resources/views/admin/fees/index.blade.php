@@ -10,6 +10,9 @@
         <p>{{ auth()->user()->isBranchAdmin() ? 'Manage student payments for your branch' : 'Manage program fees and student payments' }}</p>
     </div>
     <div class="hero-actions">
+        <a href="{{ route('admin.fees.payment-records') }}" class="btn-primary-action">
+            <i class="fas fa-receipt"></i> Payment Records
+        </a>
         <a href="{{ route('admin.fees.term.index') }}" class="btn-secondary-action">
             <i class="fas fa-file-invoice-dollar"></i> Term Ledger
         </a>
