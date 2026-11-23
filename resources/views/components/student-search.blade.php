@@ -5,14 +5,16 @@
         type="text" 
         x-model="query"
         @input.debounce.300ms="search()"
-        @focus="showDropdown = true"
+        @focus="showDropdown = true; if(query.length >= 1) search();"
         @keydown.arrow-down.prevent="highlightNext()"
         @keydown.arrow-up.prevent="highlightPrevious()"
         @keydown.enter.prevent="selectHighlighted()"
         @keydown.escape="showDropdown = false"
-        placeholder="{{ $placeholder }}"
-        class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
+        :placeholder="selectedName ? 'Student selected — click × to change' : '{{ $placeholder }}'"
+        :class="selectedId ? 'border-green-400 bg-green-50' : 'border-gray-200 bg-white'"
+        class="w-full px-4 py-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400"
         autocomplete="off"
+        :readonly="selectedId !== ''"
     />
     
     <input type="hidden" name="{{ $name }}" x-model="selectedId" {{ $required ? 'required' : '' }} />
@@ -30,7 +32,7 @@
             </div>
         </template>
         
-        <template x-if="!loading && results.length === 0 && query.length >= 2">
+        <template x-if="!loading && results.length === 0 && query.length >= 1">
             <div class="px-4 py-3 text-sm text-gray-400 text-center">
                 <i class="fas fa-search mr-2"></i> No students found
             </div>
@@ -91,16 +93,17 @@ function studentSearch() {
         programId: '',
         
         async search() {
-            if (!this.programId && this.query.length < 2) {
+            if (!this.programId && this.query.length < 1) {
                 this.results = [];
                 this.showDropdown = false;
                 return;
             }
+            if (this.query.length < 1 && !this.programId) return;
 
             this.loading = true;
             try {
                 const url = new URL(`{{ route('admin.students.search') }}`, window.location.origin);
-                if (this.query.length >= 2) {
+                if (this.query.length >= 1) {
                     url.searchParams.set('q', this.query);
                 }
                 if (this.programId) {
