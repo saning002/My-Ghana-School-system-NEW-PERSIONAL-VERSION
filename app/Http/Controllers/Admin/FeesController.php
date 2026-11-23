@@ -240,3 +240,87 @@ class FeesController extends Controller
         return back()->with('success', "Custom fees cleared for {$studentCount} student(s). Will now use program defaults.");
     }
 }
+
+    /**
+     * Payment Records — filterable list of all payments.
+     */
+    public function paymentRecords(Request $request)
+    {
+        $programs = Program::orderBy('sequence')->get();
+
+        $query = Payment::with(['student.user', 'student.program'])
+            ->orderByDesc('payment_date')
+            ->orderByDesc('created_at');
+
+        if ($request->filled('program_id')) {
+            $query->whereHas('student', fn($q) => $q->where('program_id', $request->program_id));
+        }
+        if ($request->filled('student_id')) {
+            $query->where('student_id', $request->student_id);
+        }
+        if ($request->filled('from')) {
+            $query->whereDate('payment_date', '>=', $request->from);
+        }
+        if ($request->filled('to')) {
+            $query->whereDate('payment_date', '<=', $request->to);
+        }
+        if ($request->filled('method')) {
+            $query->where('payment_method', $request->method);
+        }
+
+        $payments = $query->paginate(30)->withQueryString();
+        $total    = $query->sum('amount_paid');
+
+        // Students for filter dropdown
+        $students = Student::with('user')->orderBy('id')->get();
+
+        return view('admin.fees.payment-records', compact(
+            'payments', 'programs', 'students', 'total'
+        ));
+    }
+
+    /**
+     * Print-friendly payment records.
+     */
+    public function paymentRecordsPrint(Request $request)
+    {
+        $programs = Program::orderBy('sequence')->get();
+
+        $query = Payment::with(['student.user', 'student.program'])
+            ->orderByDesc('payment_date');
+
+        if ($request->filled('program_id')) {
+            $query->whereHas('student', fn($q) => $q->where('program_id', $request->program_id));
+        }
+        if ($request->filled('student_id')) {
+            $query->where('student_id', $request->student_id);
+        }
+        if ($request->filled('from')) {
+            $query->whereDate('payment_date', '>=', $request->from);
+        }
+        if ($request->filled('to')) {
+            $query->whereDate('payment_date', '<=', $request->to);
+        }
+        if ($request->filled('method')) {
+            $query->where('payment_method', $request->method);
+        }
+
+        $payments = $query->get();
+        $total    = $payments->sum('amount_paid');
+        $schoolName    = \App\Models\Setting::get('school_name', config('app.name'));
+        $schoolSubtitle= \App\Models\Setting::get('school_subtitle', '');
+
+        $filterLabel = '';
+        if ($request->filled('program_id')) {
+            $prog = $programs->find($request->program_id);
+            $filterLabel = $prog ? 'Programme: ' . $prog->name : '';
+        }
+        if ($request->filled('student_id')) {
+            $st = Student::with('user')->find($request->student_id);
+            $filterLabel = $st ? 'Student: ' . $st->user?->full_name . ' (' . $st->student_id . ')' : '';
+        }
+
+        return view('admin.fees.payment-records-print', compact(
+            'payments', 'total', 'schoolName', 'schoolSubtitle', 'filterLabel'
+        ));
+    }

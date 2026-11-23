@@ -697,6 +697,10 @@ Route::middleware(['tenant', 'role:admin'])->prefix('admin')->name('admin.')->gr
     Route::get('/reports/fee-statement',           [ReportController::class, 'feeStatement'])->name('reports.fee-statement');
     Route::get('/reports/fee-statement/pdf',       [ReportController::class, 'feeStatementPdf'])->name('reports.fee-statement.pdf');
 
+    // Payment records — all payments with filter + print
+    Route::get('/fees/payment-records',            [\App\Http\Controllers\Admin\FeesController::class, 'paymentRecords'])->name('fees.payment-records');
+    Route::get('/fees/payment-records/print',      [\App\Http\Controllers\Admin\FeesController::class, 'paymentRecordsPrint'])->name('fees.payment-records.print');
+
     // Student performance
     Route::get('/reports/student-performance',      [ReportController::class, 'studentPerformance'])->name('reports.student-performance');
     Route::get('/reports/student-performance/pdf',  [ReportController::class, 'studentPerformancePdf'])->name('reports.student-performance.pdf');
