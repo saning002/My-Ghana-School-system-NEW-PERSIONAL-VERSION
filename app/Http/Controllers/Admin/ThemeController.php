@@ -29,7 +29,13 @@ class ThemeController extends Controller
 
     private static function adjustBrightness(string $hex, int $steps): string
     {
-        $hex = ltrim($hex, '#');
+        // Strip # and handle shorthand
+        $hex = ltrim(trim($hex), '#');
+        // Validate — must be exactly 3 or 6 hex chars
+        if (!preg_match('/^[0-9A-Fa-f]{3}$|^[0-9A-Fa-f]{6}$/', $hex)) {
+            // Not a valid hex colour (could be a CSS var or empty) — return safe default
+            return $steps >= 0 ? '#f3af20' : '#b8860e';
+        }
         if (strlen($hex) === 3) {
             $hex = $hex[0].$hex[0].$hex[1].$hex[1].$hex[2].$hex[2];
         }
