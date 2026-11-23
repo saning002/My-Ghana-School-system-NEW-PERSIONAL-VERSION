@@ -68,8 +68,8 @@ if ($heroLayout === 'centered') {
 /* "?"? Hero "?"? */
 .hero{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden;{{ $heroBg }}}
 .hero-video{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);min-width:100%;min-height:100%;width:auto;height:auto;object-fit:cover;z-index:0;}
-/* YouTube iframe needs different sizing */
-iframe.hero-video{width:100vw;height:56.25vw;min-height:100vh;min-width:177.78vh;top:50%;left:50%;transform:translate(-50%,-50%);}
+/* YouTube iframe wrapper already handles positioning; iframe fills it */
+iframe.hero-video{position:absolute;top:50%;left:50%;width:100vw;height:56.25vw;min-height:100vh;min-width:177.78vh;transform:translate(-50%,-50%);border:0;}
 .hero-overlay{position:absolute;inset:0;background:rgba(0,0,0,{{ $overlayOp }});z-index:1;pointer-events:none;}
 .hero-noise{position:absolute;inset:0;opacity:.03;z-index:2;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
 .hero-glow{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none;z-index:2;}
@@ -195,12 +195,18 @@ iframe.hero-video{width:100vw;height:56.25vw;min-height:100vh;min-width:177.78vh
             }
         @endphp
         @if($isYoutube && !empty($ytId))
-        <iframe class="hero-video" src="{{ $embedUrl }}"
-                frameborder="0" allow="autoplay; encrypted-media" allowfullscreen
-                style="pointer-events:none;"></iframe>
+        <div style="position:absolute;inset:0;overflow:hidden;z-index:0;pointer-events:none;">
+            <iframe class="hero-video"
+                    src="{{ $embedUrl }}&enablejsapi=1&origin={{ urlencode(config('app.url')) }}"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                    style="pointer-events:none;border:0;"></iframe>
+        </div>
         @else
-        <video class="hero-video" autoplay muted loop playsinline>
+        <video class="hero-video" autoplay muted loop playsinline preload="auto">
             <source src="{{ $videoUrl }}" type="video/mp4">
+            <source src="{{ $videoUrl }}" type="video/webm">
         </video>
         @endif
     @endif

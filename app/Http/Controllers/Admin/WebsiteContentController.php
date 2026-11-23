@@ -64,7 +64,7 @@ class WebsiteContentController extends Controller
             'logo'                 => 'nullable|image|mimes:jpeg,png,jpg,webp,svg|max:2048',
             // Hero bg options
             'hero_bg_type'         => 'nullable|in:default,image,video,solid,gradient,glassmorphism',
-            'hero_bg_video_url'    => 'nullable|url|max:500',
+            'hero_bg_video_url'    => 'nullable|string|max:500',
             'hero_bg_solid_color'  => 'nullable|string|max:20',
             'hero_gradient_from'   => 'nullable|string|max:20',
             'hero_gradient_to'     => 'nullable|string|max:20',
@@ -165,6 +165,39 @@ class WebsiteContentController extends Controller
             'academics_cta_btn3_text'    => 'nullable|string|max:60',
             // Report card orientation
             'report_card_orientation'    => 'nullable|in:portrait,landscape',
+            // Portal page
+            'portal_intro_title'        => 'nullable|string|max:255',
+            'portal_intro_subtitle'    => 'nullable|string|max:500',
+            'portal_student_title'     => 'nullable|string|max:255',
+            'portal_student_desc'       => 'nullable|string|max:500',
+            'portal_teacher_title'     => 'nullable|string|max:255',
+            'portal_teacher_desc'       => 'nullable|string|max:500',
+            'portal_staff_title'        => 'nullable|string|max:255',
+            'portal_staff_desc'         => 'nullable|string|max:500',
+            'portal_parent_title'      => 'nullable|string|max:255',
+            'portal_parent_desc'        => 'nullable|string|max:500',
+            'portal_help_text'          => 'nullable|string|max:500',
+            // About page hero & core values
+            'about_hero_title'          => 'nullable|string|max:255',
+            'about_hero_subtitle'       => 'nullable|string|max:500',
+            'about_mv_subtitle'         => 'nullable|string|max:500',
+            'core_values_title'         => 'nullable|string|max:255',
+            'core_values_subtitle'      => 'nullable|string|max:500',
+            // Admissions page hero & requirements
+            'admissions_hero_title'     => 'nullable|string|max:255',
+            'admissions_hero_subtitle'  => 'nullable|string|max:500',
+            'admissions_req_title'      => 'nullable|string|max:255',
+            'admissions_req_subtitle'  => 'nullable|string|max:500',
+            // Navigation labels
+            'nav_home_text'             => 'nullable|string|max:60',
+            'nav_about_text'            => 'nullable|string|max:60',
+            'nav_academics_text'        => 'nullable|string|max:60',
+            'nav_admissions_text'       => 'nullable|string|max:60',
+            'nav_blog_text'             => 'nullable|string|max:60',
+            'nav_events_text'           => 'nullable|string|max:60',
+            'nav_gallery_text'          => 'nullable|string|max:60',
+            'nav_staff_text'            => 'nullable|string|max:60',
+            'nav_contact_text'           => 'nullable|string|max:60',
             // Website theme colours (wt_ prefix = website theme)
             'wt_primary'   => 'nullable|regex:/^#[0-9A-Fa-f]{6}$/',
             'wt_secondary' => 'nullable|regex:/^#[0-9A-Fa-f]{6}$/',
@@ -287,6 +320,18 @@ class WebsiteContentController extends Controller
             // Only clear if hero_bg_type is not 'image' (user switched away from image mode)
             if ($request->input('hero_bg_type') !== 'image') {
                 $data['hero_bg_image'] = null;
+            }
+        }
+
+        // hero_bg_video_url — only update if the field was actually submitted with a value.
+        // If it's empty/null in $data, remove it so we don't wipe an existing saved URL.
+        if (array_key_exists('hero_bg_video_url', $data)) {
+            $rawVideo = trim($data['hero_bg_video_url'] ?? '');
+            if ($rawVideo === '') {
+                // Field left blank — keep whatever is already saved
+                unset($data['hero_bg_video_url']);
+            } else {
+                $data['hero_bg_video_url'] = $rawVideo;
             }
         }
 
