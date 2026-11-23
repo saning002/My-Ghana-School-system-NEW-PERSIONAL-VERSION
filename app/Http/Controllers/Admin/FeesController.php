@@ -323,3 +323,4 @@ class FeesController extends Controller
             'payments', 'total', 'schoolName', 'schoolSubtitle', 'filterLabel'
         ));
     }
+}
