@@ -2550,6 +2550,7 @@ Route::get('/debug/site-settings', function (\Illuminate\Http\Request $request) 
             'hero_title'      => $row->hero_title ?? null,
             'hero_bg_type'    => $row->hero_bg_type ?? null,
             'hero_bg_image'   => $row->hero_bg_image ?? null,
+            'hero_bg_video_url' => $row->hero_bg_video_url ?? 'NOT SET',
             'hero_layout'     => $row->hero_layout ?? null,
             'theme_colors'    => $row->theme_colors ?? null,
             'website_theme'   => $row->website_theme ?? null,
@@ -2568,6 +2569,52 @@ Route::get('/debug/site-settings', function (\Illuminate\Http\Request $request) 
 
     return response()->json($result, 200, [], JSON_PRETTY_PRINT);
 })->middleware('web');
+
+// ── Force-set hero video URL directly in DB ───────────────────────────────
+// Hit: /setup/set-hero-video?tenant=saning-academy&url=https://youtube.com/watch?v=XXXX
+Route::get('/setup/set-hero-video', function (\Illuminate\Http\Request $request) {
+    $slug = $request->query('tenant', 'saning-academy');
+    $url  = $request->query('url', '');
+    $tenant = \App\Models\Tenant::on('pgsql')->where('slug', $slug)->first();
+    if (!$tenant) return response()->json(['error' => 'Tenant not found: ' . $slug]);
+    if (!$url) return response()->json(['error' => 'Pass ?url=YOUR_VIDEO_URL']);
+
+    \Illuminate\Support\Facades\DB::purge('tenant');
+    \Illuminate\Support\Facades\Config::set('database.connections.tenant', $tenant->dbConfig());
+    \Illuminate\Support\Facades\DB::setDefaultConnection('tenant');
+
+    try {
+        $row = \Illuminate\Support\Facades\DB::table('site_settings')->first();
+        if (!$row) return response()->json(['error' => 'No site_settings row found']);
+
+        // Ensure the column exists
+        $hasCols = \Illuminate\Support\Facades\Schema::connection('tenant')->hasColumn('site_settings', 'hero_bg_video_url');
+        if (!$hasCols) {
+            \Illuminate\Support\Facades\DB::connection('tenant')->statement(
+                'ALTER TABLE site_settings ADD COLUMN IF NOT EXISTS "hero_bg_video_url" VARCHAR(500) NULL'
+            );
+        }
+
+        \Illuminate\Support\Facades\DB::table('site_settings')
+            ->where('id', $row->id)
+            ->update([
+                'hero_bg_type'      => 'video',
+                'hero_bg_video_url' => $url,
+                'updated_at'        => now(),
+            ]);
+
+        $fresh = \Illuminate\Support\Facades\DB::table('site_settings')->where('id', $row->id)->first();
+        return response()->json([
+            'status'            => 'OK',
+            'hero_bg_type'      => $fresh->hero_bg_type,
+            'hero_bg_video_url' => $fresh->hero_bg_video_url,
+        ], 200, [], JSON_PRETTY_PRINT);
+    } catch (\Throwable $e) {
+        return response()->json(['error' => $e->getMessage()]);
+    } finally {
+        \Illuminate\Support\Facades\DB::setDefaultConnection('pgsql');
+    }
+});
 
 // ── Quick fix: repair staff_portal_users columns on a tenant DB ──────────
 Route::get('/debug/fix-staff-table', function (\Illuminate\Http\Request $request) {
