@@ -17,7 +17,7 @@
 <style>
     /* ── Subscription page local styles ─── */
     .sub-hero{
-        background:linear-gradient(135deg,var(--admin-nav) 0%,color-mix(in srgb,var(--admin-nav) 70%,#1e40af) 100%);
+        background:linear-gradient(135deg,var(--admin-nav) 0%,rgba(30,64,175,.85) 100%);
         border-radius:1.5rem;padding:2rem 2.25rem;
         display:flex;align-items:center;justify-content:space-between;gap:1.5rem;
         flex-wrap:wrap;margin-bottom:1.75rem;position:relative;overflow:hidden;
@@ -91,7 +91,7 @@
         background:#fff;
     }
     .pkg-card:hover{border-color:var(--brand);background:#fafafa;}
-    .pkg-card.selected{border-color:var(--brand);background:color-mix(in srgb,var(--primary-pale) 60%,#fff);}
+    .pkg-card.selected{border-color:var(--brand);background:var(--primary-pale);}
     .pkg-radio{
         width:20px;height:20px;border-radius:50%;
         border:2.5px solid #e2e8f0;flex-shrink:0;
@@ -400,7 +400,7 @@
 {{-- ── SUBSCRIPTION DETAILS ────────────────────────────────────────── --}}
 <div class="sub-section">
     <div class="sub-section-hd">
-        <div class="hd-icon" style="background:color-mix(in srgb,var(--primary-pale) 80%,#fff);color:var(--brand);">
+        <div class="hd-icon" style="background:var(--primary-pale);color:var(--brand);">
             <i class="fas fa-shield-alt"></i>
         </div>
         <div>
@@ -636,7 +636,7 @@
 {{-- ── PAYMENT HISTORY ─────────────────────────────────────────────── --}}
 <div class="sub-section">
     <div class="sub-section-hd">
-        <div class="hd-icon" style="background:color-mix(in srgb,var(--primary-pale) 80%,#fff);color:var(--brand);">
+        <div class="hd-icon" style="background:var(--primary-pale);color:var(--brand);">
             <i class="fas fa-receipt"></i>
         </div>
         <div>

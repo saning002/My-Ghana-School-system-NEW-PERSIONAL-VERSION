@@ -114,7 +114,7 @@
     /* "?"? Navbar "?"?"?"?"?"?"?"?"?"?"?"?"?"?"?"?"?"?"?"?"?"?"?"?"?"?"?"?"?"?"?"?"?"?"?"?"?"?"?"?"?"?"?"?"?"?"?"?"?"?"?"?"?"?"? */
     .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; transition: var(--trans); }
     .nav--top .nav-inner { background: transparent; border-bottom-color: transparent; }
-    .nav--scrolled .nav-inner { background: color-mix(in srgb, var(--nav-bg) 96%, transparent); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); box-shadow: 0 4px 28px rgba(0,0,0,.22); }
+    .nav--scrolled .nav-inner { background: var(--nav-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); box-shadow: 0 4px 28px rgba(0,0,0,.22); }
     .nav-inner { max-width: 1180px; margin: 0 auto; padding: 0 28px; height: 72px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid transparent; transition: var(--trans); }
     .nav-brand { display: flex; align-items: center; gap: 11px; text-decoration: none; }
     .nav-logo { width: 42px; height: 42px; flex-shrink: 0; }
@@ -255,13 +255,13 @@
     </a>
 
     <div class="nav-links">
-      <a href="{{ $wu('home') }}"       @class(['active' => request()->routeIs('website.home','school.website.home')])>Home</a>
-      <a href="{{ $wu('about') }}"      @class(['active' => request()->routeIs('website.about','school.website.about')])>About</a>
-      <a href="{{ $wu('academics') }}"  @class(['active' => request()->routeIs('website.academics','school.website.academics')])>Academics</a>
-      <a href="{{ $wu('admissions') }}" @class(['active' => request()->routeIs('website.admissions','school.website.admissions')])>Admissions</a>
-      <a href="{{ $wu('gallery') }}"    @class(['active' => request()->routeIs('website.gallery','school.website.gallery')])>Gallery</a>
-      <a href="{{ $wu('events') }}"     @class(['active' => request()->routeIs('website.events','school.website.events')])>Events</a>
-      <a href="{{ $wu('contact') }}"    @class(['active' => request()->routeIs('website.contact','school.website.contact')])>Contact</a>
+      <a href="{{ $wu('home') }}"       @class(['active' => request()->routeIs('website.home','school.website.home')])>{{ $site->nav_home_text ?? 'Home' }}</a>
+      <a href="{{ $wu('about') }}"      @class(['active' => request()->routeIs('website.about','school.website.about')])>{{ $site->nav_about_text ?? 'About' }}</a>
+      <a href="{{ $wu('academics') }}"  @class(['active' => request()->routeIs('website.academics','school.website.academics')])>{{ $site->nav_academics_text ?? 'Academics' }}</a>
+      <a href="{{ $wu('admissions') }}" @class(['active' => request()->routeIs('website.admissions','school.website.admissions')])>{{ $site->nav_admissions_text ?? 'Admissions' }}</a>
+      <a href="{{ $wu('gallery') }}"    @class(['active' => request()->routeIs('website.gallery','school.website.gallery')])>{{ $site->nav_gallery_text ?? 'Gallery' }}</a>
+      <a href="{{ $wu('events') }}"     @class(['active' => request()->routeIs('website.events','school.website.events')])>{{ $site->nav_events_text ?? 'Events' }}</a>
+      <a href="{{ $wu('contact') }}"    @class(['active' => request()->routeIs('website.contact','school.website.contact')])>{{ $site->nav_contact_text ?? 'Contact' }}</a>
     </div>
     <div class="nav-actions">
       <a href="{{ $wu('portal') }}" class="nav-cta-ghost"><i class="fas fa-shield-halved"></i> {{ $site->nav_portal_text ?? 'Portals' }}</a>
@@ -275,13 +275,13 @@
 
 {{-- Mobile nav --}}
 <div class="mobile-nav" id="mobileNav" role="dialog" aria-label="Mobile navigation">
-  <a href="{{ $wu('home') }}"><i class="fas fa-home"></i> Home</a>
-  <a href="{{ $wu('about') }}"><i class="fas fa-school"></i> About Us</a>
-  <a href="{{ $wu('academics') }}"><i class="fas fa-graduation-cap"></i> Academics</a>
-  <a href="{{ $wu('admissions') }}"><i class="fas fa-file-alt"></i> Admissions</a>
-  <a href="{{ $wu('gallery') }}"><i class="fas fa-images"></i> Gallery</a>
-  <a href="{{ $wu('events') }}"><i class="fas fa-calendar-alt"></i> Events</a>
-  <a href="{{ $wu('contact') }}"><i class="fas fa-envelope"></i> Contact</a>
+  <a href="{{ $wu('home') }}"><i class="fas fa-home"></i> {{ $site->nav_home_text ?? 'Home' }}</a>
+  <a href="{{ $wu('about') }}"><i class="fas fa-school"></i> {{ $site->nav_about_text ?? 'About' }}</a>
+  <a href="{{ $wu('academics') }}"><i class="fas fa-graduation-cap"></i> {{ $site->nav_academics_text ?? 'Academics' }}</a>
+  <a href="{{ $wu('admissions') }}"><i class="fas fa-file-alt"></i> {{ $site->nav_admissions_text ?? 'Admissions' }}</a>
+  <a href="{{ $wu('gallery') }}"><i class="fas fa-images"></i> {{ $site->nav_gallery_text ?? 'Gallery' }}</a>
+  <a href="{{ $wu('events') }}"><i class="fas fa-calendar-alt"></i> {{ $site->nav_events_text ?? 'Events' }}</a>
+  <a href="{{ $wu('contact') }}"><i class="fas fa-envelope"></i> {{ $site->nav_contact_text ?? 'Contact' }}</a>
   <div class="mobile-nav-divider"></div>
   <div class="mobile-nav-actions">
     <a href="{{ $wu('portal') }}" style="background:rgba(255,255,255,.07);color:rgba(255,255,255,.85);"><i class="fas fa-shield-halved" style="color:var(--gold);"></i> View Portals</a>

@@ -14,8 +14,8 @@
     background: linear-gradient(
         128deg,
         var(--admin-nav) 0%,
-        color-mix(in srgb, var(--admin-nav) 80%, var(--brand)) 55%,
-        color-mix(in srgb, var(--admin-nav) 60%, var(--brand)) 100%
+        var(--admin-nav) 55%,
+        var(--admin-nav) 100%
     );
     border-radius: 1.5rem;
     padding: 1.9rem 2.2rem;
@@ -209,8 +209,8 @@
     background:linear-gradient(
         150deg,
         var(--admin-nav) 0%,
-        color-mix(in srgb, var(--admin-nav) 70%, #1a0050) 50%,
-        color-mix(in srgb, var(--admin-nav) 50%, #3730a3) 100%
+        rgba(26,0,80,.85) 50%,
+        rgba(55,48,163,.7) 100%
     );
     border-radius:1.25rem; overflow:hidden;
     border:1px solid rgba(255,255,255,.07);
@@ -417,7 +417,7 @@ $firstName   = explode(' ', auth()->user()->full_name ?? 'Administrator')[0];
      ══════════════════════════════════════════════════════ --}}
 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
 
-    <div class="fee-card" style="background:linear-gradient(140deg,color-mix(in srgb,var(--admin-nav) 85%,#4f46e5) 0%,color-mix(in srgb,var(--admin-nav) 60%,#7c3aed) 100%)">
+    <div class="fee-card" style="background:linear-gradient(140deg,rgba(79,70,229,.85) 0%,rgba(124,58,237,.7) 100%)">
         <div class="fee-card-icon"><i class="fas fa-file-invoice-dollar"></i></div>
         <div class="fee-card-lbl">Total Fees Expected This Term</div>
         <div class="fee-card-amount">GH₵ {{ number_format($billed, 2) }}</div>

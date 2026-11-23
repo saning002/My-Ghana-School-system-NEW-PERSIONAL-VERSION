@@ -81,9 +81,9 @@ body { font-family:'Inter',Arial,sans-serif; background:#94a3b8; padding:0; }
 .cf-hd::after {
     content:'';
     position:absolute; right:0; top:0; bottom:0; width:28mm;
-    background:color-mix(in srgb, {{ $navColor }} 50%, {{ $primaryColor }});
+    background: {{ $primaryColor }};
     clip-path:ellipse(55% 100% at 100% 50%);
-    opacity:.5; pointer-events:none;
+    opacity:.4; pointer-events:none;
 }
 .cf-hd::before {
     content:'';
@@ -140,7 +140,7 @@ body { font-family:'Inter',Arial,sans-serif; background:#94a3b8; padding:0; }
 .cf-photo img { width:100%; height:100%; object-fit:cover; }
 .cf-photo .ini {
     width:100%; height:100%;
-    background:linear-gradient(140deg, {{ $navColor }} 0%, color-mix(in srgb, {{ $navColor }} 60%, {{ $primaryColor }}) 100%);
+    background:linear-gradient(140deg, {{ $navColor }} 0%, {{ $primaryColor }} 100%);
     display:flex; align-items:center; justify-content:center;
 }
 .cf-photo .ini span { font-size:5.5mm; font-weight:900; color:#fff; letter-spacing:-.3mm; }

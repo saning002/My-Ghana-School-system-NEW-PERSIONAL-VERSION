@@ -120,7 +120,7 @@
         h1,h2,h3,h4,h5,h6{letter-spacing:-0.025em;font-weight:700;}
         .sidebar-link{transition:all .12s cubic-bezier(.4,0,.2,1);border-left:3px solid transparent}
         .sidebar-link:hover{background:rgba(255,255,255,.12);color:#fff;border-left-color:rgba(255,255,255,.35);transform:translateX(4px)}
-        .sidebar-link.active{background:color-mix(in srgb, var(--primary) 16%, transparent);color:var(--primary-text);border-left-color:var(--primary);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+        .sidebar-link.active{background:rgba(255,255,255,.12);color:var(--primary-text);border-left-color:var(--primary);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
         .card{background:#ffffff;border-radius:1.35rem;border:1px solid rgba(148,163,184,.18);box-shadow:0 10px 30px -16px rgba(15,23,42,.16)}
         .card-hover{transition:all .12s cubic-bezier(.4,0,.2,1)}
         .card-hover:active{transform:scale(.98)}
@@ -140,7 +140,7 @@
         .btn-gold:hover{background:var(--primary-dark);box-shadow:0 8px 20px -8px rgba(15,23,42,.24);transform:translateY(-1px)}
         .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
         .input-premium{background:#f8fbff;border:1px solid #dbeafe;border-radius:0.75rem;transition:all .16s;box-shadow:inset 0 2px 4px 0 rgba(15,23,42,.02)}
-        .input-premium:focus{background:#fff;border-color:var(--brand-2);box-shadow:0 0 0 4px color-mix(in srgb, var(--brand-2) 14%, transparent),inset 0 1px 2px 0 rgba(15,23,42,.02)}
+        .input-premium:focus{background:#fff;border-color:var(--brand-2);box-shadow:0 0 0 4px rgba(8,145,178,.14),inset 0 1px 2px 0 rgba(15,23,42,.02)}
         /* ══════════════════════════════════════════════════════════════
            GLOBAL ADMIN UI SYSTEM — real, professional, no AI traces
            All pages inherit these automatically from app.blade.php
@@ -160,8 +160,8 @@
             background: linear-gradient(
                 128deg,
                 var(--admin-nav) 0%,
-                color-mix(in srgb, var(--admin-nav) 78%, var(--brand)) 60%,
-                color-mix(in srgb, var(--admin-nav) 58%, var(--brand)) 100%
+                var(--admin-nav) 60%,
+                var(--admin-nav) 100%
             );
             border-radius: 1.35rem;
             padding: 1.6rem 2rem;
@@ -379,7 +379,7 @@
         .form-input:focus {
             background: #fff;
             border-color: var(--brand);
-            box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 15%, transparent);
+            box-shadow: 0 0 0 3px rgba(233,164,34,.15);
         }
         .form-label {
             display: block;
