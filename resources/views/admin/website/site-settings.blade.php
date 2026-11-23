@@ -380,11 +380,14 @@
             <div id="heroBg-video" class="hero-bg-panel space-y-3 hidden">
                 <div class="rounded-xl border border-orange-200 bg-orange-50/40 p-4 space-y-3">
                     <div>
-                        <label class="ws-label">Video URL <span class="normal-case font-normal text-gray-400">(YouTube link, MP4 URL, or any direct video URL)</span></label>
-                        <input type="url" name="hero_bg_video_url"
+                        <label class="ws-label">Video URL <span class="normal-case font-normal text-gray-400">(YouTube link or a direct, publicly-hosted MP4 URL)</span></label>
+                        <input type="text" name="hero_bg_video_url"
                                value="{{ old('hero_bg_video_url', $s->hero_bg_video_url) }}"
-                               class="ws-input mt-1" placeholder="https://www.youtube.com/watch?v=... or https://example.com/video.mp4">
-                        <p class="text-[10px] text-gray-400 mt-1">Supports YouTube, Vimeo, and direct MP4/WebM/OGG/MOV/AVI links</p>
+                               class="ws-input mt-1" placeholder="https://www.youtube.com/watch?v=XXXXXXXXXXX">
+                        <p class="text-[10px] text-gray-400 mt-1">
+                            <strong>Recommended:</strong> paste a YouTube link (e.g. <code>https://youtube.com/watch?v=XXXXXXXXXXX</code>).<br>
+                            Direct MP4 links also work but the file must be publicly accessible and not behind a redirect/login (Pixabay download links will <strong>not</strong> work — use YouTube instead).
+                        </p>
                     </div>
                     <div>
                         <label class="ws-label">Dark Overlay Opacity: <span id="videoOverlayValue">{{ old('hero_overlay_opacity', $s->hero_overlay_opacity ?? 45) }}%</span></label>

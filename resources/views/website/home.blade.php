@@ -204,7 +204,9 @@ iframe.hero-video{position:absolute;top:50%;left:50%;width:100vw;height:56.25vw;
                     style="pointer-events:none;border:0;"></iframe>
         </div>
         @else
-        <video class="hero-video" autoplay muted loop playsinline preload="auto">
+        {{-- Direct video file (MP4, WebM, etc.) --}}
+        <video class="hero-video" autoplay muted loop playsinline preload="auto"
+               style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);min-width:100%;min-height:100%;width:auto;height:auto;object-fit:cover;z-index:0;">
             <source src="{{ $videoUrl }}" type="video/mp4">
             <source src="{{ $videoUrl }}" type="video/webm">
         </video>
