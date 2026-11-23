@@ -28,7 +28,7 @@
     </div>
 
     {{-- Hidden input that actually submits — plain HTML, no JS framework --}}
-    <input type="hidden" id="{{ $uid }}_val" name="{{ $name }}" value="" {{ $required ? 'required' : '' }}>
+    <input type="hidden" id="{{ $uid }}_val" name="{{ $name }}" value="">
 
     {{-- Dropdown list --}}
     <div id="{{ $uid }}_drop"
@@ -228,6 +228,44 @@ document.addEventListener('click', function(e) {
     Object.keys(window._ss).forEach(function(uid) {
         var wrap = document.getElementById(uid + '_wrap');
         if (wrap && !wrap.contains(e.target)) ssHideDrop(uid);
+    });
+});
+
+// Block form submit if required student not selected
+document.addEventListener('DOMContentLoaded', function() {
+    if (!window._ss) return;
+    Object.keys(window._ss).forEach(function(uid) {
+        var hidden = document.getElementById(uid + '_val');
+        if (!hidden) return;
+        var form = hidden.closest('form');
+        if (!form) return;
+        form.addEventListener('submit', function(e) {
+            if (!hidden.value) {
+                e.preventDefault();
+                e.stopPropagation();
+                var inp = document.getElementById(uid + '_input');
+                if (inp) {
+                    inp.style.borderColor = '#ef4444';
+                    inp.placeholder = 'Please search and select a student first';
+                    inp.focus();
+                    setTimeout(function(){ inp.style.borderColor = ''; }, 3000);
+                }
+                // Show inline error
+                var wrap = document.getElementById(uid + '_wrap');
+                if (wrap) {
+                    var err = wrap.querySelector('._ss_err');
+                    if (!err) {
+                        err = document.createElement('div');
+                        err.className = '_ss_err';
+                        err.style.cssText = 'color:#ef4444;font-size:.75rem;font-weight:600;margin-top:4px;padding:4px 10px;background:#fef2f2;border:1px solid #fca5a5;border-radius:8px;';
+                        err.innerHTML = '<i class="fas fa-exclamation-circle" style="margin-right:5px;"></i>Please select a student from the search results.';
+                        wrap.appendChild(err);
+                    }
+                    err.style.display = 'block';
+                    setTimeout(function(){ err.style.display = 'none'; }, 4000);
+                }
+            }
+        });
     });
 });
 </script>
