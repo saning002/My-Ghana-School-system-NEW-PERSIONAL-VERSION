@@ -2570,6 +2570,41 @@ Route::get('/debug/site-settings', function (\Illuminate\Http\Request $request) 
     return response()->json($result, 200, [], JSON_PRETTY_PRINT);
 })->middleware('web');
 
+// ── Cloudinary diagnostic — check what keys are loaded for a tenant ───────
+// Hit: /debug/cloudinary?tenant=saning1-academy
+Route::get('/debug/cloudinary', function (\Illuminate\Http\Request $request) {
+    $slug   = $request->query('tenant', 'saning1-academy');
+    $tenant = \App\Models\Tenant::on('pgsql')->where('slug', $slug)->orWhere('subdomain', $slug)->first();
+    if (!$tenant) return response()->json(['error' => 'Tenant not found: ' . $slug]);
+
+    // Simulate what TenantMiddleware does
+    $keysSet = $tenant->cloudinary_cloud_name && $tenant->cloudinary_api_key && $tenant->cloudinary_api_secret;
+
+    if ($keysSet) {
+        \Illuminate\Support\Facades\Config::set('cloudinary.cloud_url',
+            "cloudinary://{$tenant->cloudinary_api_key}:{$tenant->cloudinary_api_secret}@{$tenant->cloudinary_cloud_name}"
+        );
+        \Illuminate\Support\Facades\Config::set('cloudinary.cloud_name', $tenant->cloudinary_cloud_name);
+        \Illuminate\Support\Facades\Config::set('cloudinary.api_key',    $tenant->cloudinary_api_key);
+        \Illuminate\Support\Facades\Config::set('cloudinary.api_secret', $tenant->cloudinary_api_secret);
+    }
+
+    $isConfigured = \App\Services\CloudinaryService::isConfigured();
+
+    return response()->json([
+        'tenant'               => $tenant->name,
+        'slug'                 => $tenant->slug,
+        'cloudinary_cloud_name'=> $tenant->cloudinary_cloud_name ?: 'NOT SET',
+        'cloudinary_api_key'   => $tenant->cloudinary_api_key
+            ? substr($tenant->cloudinary_api_key, 0, 6) . '...' : 'NOT SET',
+        'cloudinary_api_secret'=> $tenant->cloudinary_api_secret
+            ? substr($tenant->cloudinary_api_secret, 0, 4) . '...' : 'NOT SET',
+        'keys_in_db'           => $keysSet ? 'YES' : 'NO — owner panel fields are blank',
+        'service_is_configured'=> $isConfigured ? 'YES — uploads will go to Cloudinary' : 'NO — uploads fall back to local disk (will vanish on redeploy)',
+        'system_CLOUDINARY_URL'=> getenv('CLOUDINARY_URL') ? 'SET (system fallback available)' : 'NOT SET',
+    ], 200, [], JSON_PRETTY_PRINT);
+});
+
 // ── Force-set hero video URL directly in DB ───────────────────────────────
 // Hit: /setup/set-hero-video?tenant=saning-academy&url=https://youtube.com/watch?v=XXXX
 Route::get('/setup/set-hero-video', function (\Illuminate\Http\Request $request) {

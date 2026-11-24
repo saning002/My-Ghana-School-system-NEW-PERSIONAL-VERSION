@@ -705,9 +705,12 @@ class StudentController extends Controller
                 if ($url) {
                     return $url;
                 }
+                \Log::warning("storePhotoFile: Cloudinary configured but upload returned null for directory={$directory}");
+            } else {
+                \Log::warning("storePhotoFile: Cloudinary NOT configured for this tenant (directory={$directory}). Check owner panel Cloudinary keys.");
             }
         } catch (\Throwable $e) {
-            \Log::warning("Cloudinary upload failed: " . $e->getMessage());
+            \Log::warning("storePhotoFile: Cloudinary exception: " . $e->getMessage());
         }
 
         try {
