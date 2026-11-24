@@ -4,32 +4,50 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Account Suspended — {{ $tenant->name }}</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        body { background: #1e293b; min-height: 100vh; display: flex; align-items: center; justify-content: center; font-family: 'Segoe UI', sans-serif; }
-        .card { background: #fff; border: none; border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); max-width: 520px; width: 100%; padding: 3rem 2.5rem; text-align: center; }
-        .icon-wrap { width: 80px; height: 80px; background: #fef3f2; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; }
-        .school-name { color: #94a3b8; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.25rem; }
-        h2 { font-weight: 700; color: #1e293b; }
-        p  { color: #64748b; line-height: 1.7; }
-        .badge-suspended { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; padding: 0.35rem 1rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; display: inline-block; margin-bottom: 1.5rem; }
-        .contact-box { background: #f8fafc; border-radius: 10px; padding: 1rem 1.5rem; margin-top: 1.5rem; }
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{font-family:'Segoe UI',system-ui,sans-serif;background:#0f172a;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem;}
+        .card{background:#fff;border-radius:24px;box-shadow:0 24px 80px rgba(0,0,0,.4);max-width:500px;width:100%;overflow:hidden;}
+        .header{background:linear-gradient(135deg,#334155,#1e293b);color:#fff;padding:2.5rem 2rem 2rem;text-align:center;}
+        .header .icon{width:72px;height:72px;background:rgba(255,255,255,.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;font-size:2rem;}
+        .header h1{font-size:1.4rem;font-weight:800;margin-bottom:.4rem;}
+        .header .school{font-size:.85rem;opacity:.7;font-weight:500;}
+        .body{padding:2rem;}
+        .body p{color:#475569;font-size:.88rem;line-height:1.75;margin-bottom:1rem;}
+        .contact-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:1rem 1.25rem;margin:1rem 0;font-size:.85rem;color:#334155;line-height:1.7;}
+        .contact-box a{color:#3b82f6;text-decoration:none;}
+        .btn-login{display:block;background:linear-gradient(135deg,#16a34a,#059669);color:#fff;border:none;padding:1rem 2rem;border-radius:14px;font-weight:700;font-size:.95rem;text-decoration:none;text-align:center;margin-top:1.5rem;transition:filter .15s;}
+        .btn-login:hover{filter:brightness(.9);color:#fff;}
+        .btn-login i{margin-right:.5rem;}
+        .footer{text-align:center;padding:1rem;border-top:1px solid #f1f5f9;font-size:.75rem;color:#94a3b8;}
     </style>
 </head>
 <body>
-    <div class="card">
-        <p class="school-name">{{ $tenant->name }}</p>
-        <div class="icon-wrap">
-            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
-        </div>
-        <span class="badge-suspended">Account Suspended</span>
-        <h2>Service Suspended</h2>
-        <p>Access to <strong>{{ $tenant->name }}</strong>'s system has been temporarily suspended. This may be due to an outstanding payment or a policy issue.</p>
-        <div class="contact-box">
-            <p class="mb-1" style="font-size:0.85rem; color:#64748b;">To restore access, please contact:</p>
-            <strong style="color:#1e293b;">School System Support</strong><br>
-            <a href="mailto:{{ $tenant->admin_email }}" style="color:#3b82f6;">{{ $tenant->admin_email }}</a>
-        </div>
+<div class="card">
+    <div class="header">
+        <div class="icon"><i class="fas fa-ban"></i></div>
+        <h1>Account Suspended</h1>
+        <div class="school">{{ $tenant->name }}</div>
     </div>
+    <div class="body">
+        <p>Access to <strong>{{ $tenant->name }}</strong>'s system has been temporarily suspended. This is usually due to an outstanding payment or a policy issue.</p>
+
+        <div class="contact-box">
+            <strong>To restore access, contact support:</strong><br>
+            <i class="fas fa-envelope" style="color:#94a3b8;margin-right:.4rem;"></i>
+            <a href="mailto:{{ $tenant->admin_email }}">{{ $tenant->admin_email }}</a>
+        </div>
+
+        <p style="font-size:.82rem;color:#64748b;">If you are the school administrator, log in to view the reason and resolve the issue.</p>
+
+        <a href="{{ route('school.admin.login', $tenant->slug) }}" class="btn-login">
+            <i class="fas fa-sign-in-alt"></i> Go to Login
+        </a>
+    </div>
+    <div class="footer">
+        Powered by SaningTech Solutions &middot; {{ $tenant->name }}
+    </div>
+</div>
 </body>
 </html>
