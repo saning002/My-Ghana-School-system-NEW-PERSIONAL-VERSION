@@ -439,6 +439,15 @@
                     <input type="password" name="cloudinary_api_secret" class="form-control form-control-sm"
                         placeholder="{{ $t ? 'Leave blank to keep existing' : 'Enter API Secret' }}"
                         autocomplete="new-password">
+                    @if($t && $t->cloudinary_api_secret)
+                    <div style="font-size:.7rem;color:#16a34a;margin-top:3px;">
+                        <i class="fas fa-check-circle"></i> Secret saved — leave blank to keep it, or type a new one to replace it
+                    </div>
+                    @else
+                    <div style="font-size:.7rem;color:#dc2626;margin-top:3px;">
+                        <i class="fas fa-exclamation-circle"></i> Not set — uploads will fail to reach Cloudinary
+                    </div>
+                    @endif
                 </div>
             </div>
         </div>

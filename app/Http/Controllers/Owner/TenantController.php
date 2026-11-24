@@ -270,6 +270,11 @@ class TenantController extends Controller
             unset($validated['db_password']);
         }
 
+        // Don't overwrite Cloudinary secret if left blank (password field — never pre-filled)
+        if (empty($validated['cloudinary_api_secret'])) {
+            unset($validated['cloudinary_api_secret']);
+        }
+
         // Set billing defaults
         $validated['billing_model']          = $validated['billing_model'] ?? 'flat';
         $validated['per_student_rate']       = $validated['per_student_rate'] ?? 0;
