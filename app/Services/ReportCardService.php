@@ -217,6 +217,11 @@ class ReportCardService
                 $classScore = round($rawSba * $sbaPct / 100, 2);
             }
 
+            // Exam score contribution (scaled to exam_pct — same treatment as class_score)
+            $examScoreWeighted = $examPct > 0 && self::getExamScoreMax() > 0
+                ? round(($examScore / self::getExamScoreMax()) * $examPct, 2)
+                : 0;
+
             $credit     = $course->credit ?? 3;
             $grade      = GradingScale::assign($aggregate);
             $gradePoint = GradingScale::point($grade);
@@ -238,10 +243,12 @@ class ReportCardService
                 'grade'        => $grade,
                 'grade_point'  => $gradePoint,
                 'credit_point' => $credit * $gradePoint,
-                'class_score'  => $classScore,   // renamed from quiz_score
-                'quiz_score'   => $classScore,   // kept for backward compat with PDF
-                'exam_score'   => $examScore,
+                'class_score'  => $classScore,        // SBA weighted (e.g. out of 50)
+                'quiz_score'   => $classScore,         // kept for backward compat with PDF
+                'exam_score'   => $examScoreWeighted,  // Exam weighted (e.g. out of 50)
+                'exam_score_raw' => $examScore,        // raw exam score for reference
                 'aggregate'    => $aggregate,
+                'total_score'  => round($aggregate, 2),
                 'average'      => round($aggregate, 2),
                 'position'     => $position,
             ];
