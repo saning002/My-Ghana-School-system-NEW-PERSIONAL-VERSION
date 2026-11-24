@@ -2599,9 +2599,18 @@ Route::get('/debug/cloudinary', function (\Illuminate\Http\Request $request) {
             ? substr($tenant->cloudinary_api_key, 0, 6) . '...' : 'NOT SET',
         'cloudinary_api_secret'=> $tenant->cloudinary_api_secret
             ? substr($tenant->cloudinary_api_secret, 0, 4) . '...' : 'NOT SET',
-        'keys_in_db'           => $keysSet ? 'YES' : 'NO — owner panel fields are blank',
+        'keys_in_db'           => $keysSet
+            ? 'YES — all 3 fields set'
+            : 'NO — missing: ' . implode(', ', array_filter([
+                !$tenant->cloudinary_cloud_name ? 'cloud_name' : null,
+                !$tenant->cloudinary_api_key    ? 'api_key'    : null,
+                !$tenant->cloudinary_api_secret ? 'api_secret' : null,
+              ])),
         'service_is_configured'=> $isConfigured ? 'YES — uploads will go to Cloudinary' : 'NO — uploads fall back to local disk (will vanish on redeploy)',
         'system_CLOUDINARY_URL'=> getenv('CLOUDINARY_URL') ? 'SET (system fallback available)' : 'NOT SET',
+        'fix'                  => !$keysSet
+            ? 'Go to Owner Panel → Schools → Edit → fill in ALL 3 Cloudinary fields (Cloud Name, API Key, API Secret)'
+            : 'All good — re-upload any lost photos/signature',
     ], 200, [], JSON_PRETTY_PRINT);
 });
 
