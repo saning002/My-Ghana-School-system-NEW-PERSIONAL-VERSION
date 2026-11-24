@@ -10,6 +10,20 @@
 
 @section('content')
 
+{{-- Flash messages --}}
+@if(session('success'))
+<div class="alert alert-success d-flex align-items-center gap-2 mb-3" style="border-radius:12px;font-size:.85rem;">
+    <i class="fas fa-check-circle text-success"></i>
+    <span>{{ session('success') }}</span>
+</div>
+@endif
+@if(session('error'))
+<div class="alert alert-danger d-flex align-items-center gap-2 mb-3" style="border-radius:12px;font-size:.85rem;">
+    <i class="fas fa-exclamation-circle text-danger"></i>
+    <span>{{ session('error') }}</span>
+</div>
+@endif
+
 {{-- ── Stats cards ─────────────────────────────────────────────────────── --}}
 <div class="row g-3 mb-4">
     <div class="col-6 col-xl-3">
@@ -107,6 +121,7 @@
                     <th style="font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8;">Due Date</th>
                     <th style="font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8;">Status</th>
                     <th style="font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8;">Created</th>
+                    <th style="font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8;">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -144,10 +159,32 @@
                         @endif
                     </td>
                     <td style="font-size:.72rem;color:#94a3b8;">{{ $inv->created_at->format('d M Y') }}</td>
+                    <td>
+                        @if($inv->status !== 'paid')
+                        <form method="POST"
+                              action="{{ route('owner.invoices.mark-paid', $inv) }}"
+                              onsubmit="return confirm('Mark invoice {{ $inv->invoice_number }} as paid?\n\nThis will:\n• Set status to Paid\n• Record a manual payment reference\n• Restore site access if suspended due to this invoice')">
+                            @csrf
+                            <button type="submit"
+                                    style="display:inline-flex;align-items:center;gap:5px;background:#16a34a;color:#fff;border:none;padding:5px 12px;border-radius:8px;font-size:.72rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:background .15s;"
+                                    onmouseover="this.style.background='#15803d'" onmouseout="this.style.background='#16a34a'">
+                                <i class="fas fa-check-circle" style="font-size:.65rem;"></i> Mark Paid
+                            </button>
+                        </form>
+                        @else
+                        <span style="font-size:.72rem;color:#94a3b8;">
+                            @if($inv->paid_at)
+                            Paid {{ $inv->paid_at->format('d M Y') }}
+                            @else
+                            —
+                            @endif
+                        </span>
+                        @endif
+                    </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="9" class="text-center py-5">
+                    <td colspan="10" class="text-center py-5">
                         <i class="fas fa-file-invoice text-muted mb-2" style="font-size:2rem;opacity:.3;"></i>
                         <p class="text-muted mb-0">No invoices found.</p>
                         <p class="text-muted" style="font-size:.75rem;">Invoices are generated when schools on per-student billing click "Generate Invoice" on their subscription page, or automatically by the daily cron job.</p>

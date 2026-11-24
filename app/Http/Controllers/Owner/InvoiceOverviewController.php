@@ -10,6 +10,46 @@ use Illuminate\Http\Request;
 class InvoiceOverviewController extends Controller
 {
     /**
+     * Manually mark an invoice as paid (owner override — no Paystack needed).
+     */
+    public function markPaid(Request $request, PerStudentInvoice $invoice)
+    {
+        if ($invoice->status === 'paid') {
+            return back()->with('error', 'Invoice ' . $invoice->invoice_number . ' is already marked as paid.');
+        }
+
+        $invoice->update([
+            'status'  => 'paid',
+            'paid_at' => now(),
+            'paystack_reference' => 'MANUAL-' . strtoupper(substr(md5(uniqid()), 0, 8)),
+        ]);
+
+        // Also make sure the tenant is not in suspended state due to this invoice
+        $tenant = $invoice->tenant;
+        if ($tenant && $tenant->status === 'suspended') {
+            // Check if there are still other overdue invoices before unsuspending
+            $stillOverdue = PerStudentInvoice::where('tenant_id', $tenant->id)
+                ->where('id', '!=', $invoice->id)
+                ->where(function($q) {
+                    $q->where('status', 'overdue')
+                      ->orWhere(function($q2) {
+                          $q2->where('status', 'pending')
+                             ->whereNotNull('due_date')
+                             ->where('due_date', '<', now()->toDateString());
+                      });
+                })->exists();
+
+            if (!$stillOverdue) {
+                $tenant->update(['status' => 'active']);
+            }
+        }
+
+        return back()->with('success',
+            'Invoice ' . $invoice->invoice_number . ' for ' . ($tenant->name ?? 'school') . ' marked as paid. Access restored.'
+        );
+    }
+
+    /**
      * Show all per-student invoices across all schools.
      */
     public function index(Request $request)

@@ -61,12 +61,28 @@ class TenantMiddleware
 
         // ── Check for overdue per-student invoices ───────────────────────────
         // If a school on per-student billing has an invoice past its due date
-        // and unpaid, suspend their access until they pay.
+        // and unpaid, block access — but allow the admin to still log in,
+        // reach the dashboard, view subscription, and log out so they can pay.
         try {
             if ($tenant->isPerStudentBilling() && \App\Models\PerStudentInvoice::hasOverdue($tenant->id)) {
-                // Only block on admin/portal routes, not on payment routes
                 $routeName = $request->route()?->getName() ?? '';
-                if (!str_contains($routeName, 'subscription') && !str_contains($routeName, 'paystack')) {
+                $path      = $request->path();
+
+                $allowed =
+                    // Payment & subscription routes
+                    str_contains($routeName, 'subscription') ||
+                    str_contains($routeName, 'paystack') ||
+                    // Login/logout so admin can authenticate
+                    str_contains($routeName, 'login') ||
+                    str_contains($routeName, 'logout') ||
+                    str_contains($path, '/login') ||
+                    str_contains($path, '/logout') ||
+                    // Dashboard so admin lands somewhere after login
+                    $routeName === 'admin.dashboard' ||
+                    // Profile so they can verify who they are
+                    $routeName === 'admin.profile';
+
+                if (!$allowed) {
                     return response()->view('tenant.overdue', compact('tenant'), 403);
                 }
             }

@@ -2972,6 +2972,7 @@ Route::prefix('owner')->name('owner.')->group(function () {
 
         // Per-Student Invoice Overview
         Route::get('/invoices',  [\App\Http\Controllers\Owner\InvoiceOverviewController::class, 'index'])->name('invoices.index');
+        Route::post('/invoices/{invoice}/mark-paid', [\App\Http\Controllers\Owner\InvoiceOverviewController::class, 'markPaid'])->name('invoices.mark-paid');
 
         // Owner Profile
         Route::get('/profile',  [\App\Http\Controllers\Owner\ProfileController::class, 'edit'])->name('profile.edit');

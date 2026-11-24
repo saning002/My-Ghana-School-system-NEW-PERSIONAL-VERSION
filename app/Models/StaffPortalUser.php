@@ -168,6 +168,30 @@ class StaffPortalUser extends Authenticatable
         // ── Admins Management ─────────────────────────────────────────────────
         'admins'                 => 'View School Administrators',
         'admins_manage'          => 'Create / Edit School Administrators',
+
+        // ── Staff Portal Management ───────────────────────────────────────────
+        'staff_portal_manage'    => 'Create / Edit / Delete Staff Portal Accounts',
+
+        // ── Branches (view only) ──────────────────────────────────────────────
+        'branches'               => 'View Branches',
+
+        // ── Payment Records ───────────────────────────────────────────────────
+        'payment_records'        => 'View & Print All Payment Records',
+
+        // ── Exam Sheet / SBA ──────────────────────────────────────────────────
+        'exams_sheet'            => 'View SBA / Exam Sheet',
+        'exams_sheet_manage'     => 'Enter & Edit SBA Scores',
+        'exams_sheet_export'     => 'Export SBA Sheet (Excel / PDF)',
+
+        // ── Extended Reports ──────────────────────────────────────────────────
+        'reports_hub'                => 'Reports Hub (all reports overview)',
+        'reports_class_performance'  => 'Class Performance Report',
+        'reports_transcript'         => 'Student Transcripts',
+        'reports_fee_statement'      => 'Fee Statement Report',
+        'reports_mark_submission'    => 'Mark Submission Status Report',
+        'reports_student_academic'   => 'Individual Student Academic Report',
+        'reports_student_performance'=> 'Student Performance Report',
+        'reports_bulk_pdf'           => 'Bulk Download Reports (PDF)',
     ];
 
     /**
@@ -211,7 +235,10 @@ class StaffPortalUser extends Authenticatable
             'daily_fees', 'daily_fees_manage',
             'fees_term_ledger', 'fees_term_bills',
             'fee_reminders', 'fee_reminders_send',
+            'payment_records',
             'reports', 'reports_financial', 'reports_export',
+            'reports_hub', 'reports_fee_statement', 'reports_student_performance',
+            'reports_bulk_pdf',
             'subscription',
         ],
         'headmaster' => [
@@ -220,11 +247,16 @@ class StaffPortalUser extends Authenticatable
             'attendance', 'attendance_mark', 'attendance_edit', 'attendance_reports',
             'attendance_alerts', 'attendance_alerts_manage',
             'exams', 'exams_enter', 'exams_report_card', 'exams_bulk_download', 'exams_import',
+            'exams_sheet', 'exams_sheet_manage', 'exams_sheet_export',
             'exam_questions', 'exam_questions_approve', 'exam_questions_download',
             'fees', 'fees_record', 'fees_reports',
             'daily_fees', 'daily_fees_manage',
             'fee_reminders', 'fee_reminders_send',
+            'payment_records',
             'reports', 'reports_academic', 'reports_attendance', 'reports_financial', 'reports_export',
+            'reports_hub', 'reports_class_performance', 'reports_transcript',
+            'reports_fee_statement', 'reports_mark_submission', 'reports_student_academic',
+            'reports_student_performance', 'reports_bulk_pdf',
             'programs', 'programs_manage',
             'courses', 'courses_manage',
             'lecturers', 'lecturers_manage', 'lecturers_assign', 'class_teachers',
@@ -240,6 +272,7 @@ class StaffPortalUser extends Authenticatable
             'settings',
             'portal_settings',
             'admins',
+            'branches',
             'subscription',
         ],
         'headteacher' => [
@@ -247,10 +280,14 @@ class StaffPortalUser extends Authenticatable
             'students', 'students_edit', 'students_approve', 'students_id_card',
             'attendance', 'attendance_mark', 'attendance_edit', 'attendance_reports',
             'exams', 'exams_enter', 'exams_report_card', 'exams_bulk_download',
+            'exams_sheet', 'exams_sheet_manage', 'exams_sheet_export',
             'exam_questions', 'exam_questions_approve', 'exam_questions_download',
             'fees',
             'daily_fees',
             'reports', 'reports_academic', 'reports_attendance', 'reports_export',
+            'reports_hub', 'reports_class_performance', 'reports_transcript',
+            'reports_mark_submission', 'reports_student_academic', 'reports_student_performance',
+            'reports_bulk_pdf',
             'programs',
             'courses',
             'lecturers', 'lecturers_manage', 'lecturers_assign', 'class_teachers',
@@ -268,10 +305,12 @@ class StaffPortalUser extends Authenticatable
             'students', 'students_edit', 'students_approve', 'students_id_card',
             'attendance', 'attendance_mark', 'attendance_edit', 'attendance_reports',
             'exams', 'exams_report_card',
+            'exams_sheet',
             'exam_questions', 'exam_questions_approve',
             'fees',
             'daily_fees',
             'reports', 'reports_academic', 'reports_attendance',
+            'reports_hub', 'reports_class_performance', 'reports_student_academic',
             'programs',
             'courses',
             'lecturers', 'lecturers_assign', 'class_teachers',
@@ -291,7 +330,9 @@ class StaffPortalUser extends Authenticatable
             'exams', 'exams_report_card',
             'fees', 'fees_record',
             'daily_fees', 'daily_fees_manage',
+            'payment_records',
             'reports', 'reports_export',
+            'reports_hub', 'reports_fee_statement',
             'programs',
             'courses',
             'lecturers',
