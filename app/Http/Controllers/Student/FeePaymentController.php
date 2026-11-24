@@ -210,7 +210,9 @@ class FeePaymentController extends Controller
         $schoolName    = \App\Models\Setting::get('school_name', config('app.name'));
         $schoolSubtitle= \App\Models\Setting::get('school_subtitle', '');
         $siteLogoUrl   = \App\Models\Setting::get('site_logo_url', '');
-        $logoSrc       = $siteLogoUrl ? Storage::disk('public')->url($siteLogoUrl) : null;
+        $logoSrc       = $siteLogoUrl
+            ? (filter_var($siteLogoUrl, FILTER_VALIDATE_URL) ? $siteLogoUrl : Storage::disk('public')->url($siteLogoUrl))
+            : null;
         $portalTheme   = \App\Models\Setting::get('portal_theme', 'gold');
 
         return view('portal.payment-confirmed', compact(

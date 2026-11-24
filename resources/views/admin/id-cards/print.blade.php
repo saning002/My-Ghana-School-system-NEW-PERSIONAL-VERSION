@@ -337,8 +337,12 @@ body { font-family:'Inter',Arial,sans-serif; background:#94a3b8; padding:0; }
     $guardianPh = $p['guardianPh'];
     $isStudent  = $p['type'] === 'student';
 
-    $logoUrl  = $siteLogoUrl ? Storage::disk('public')->url($siteLogoUrl) : null;
-    $photoUrl = $photoPath   ? Storage::disk('public')->url($photoPath)   : null;
+    $logoUrl  = $siteLogoUrl
+        ? (filter_var($siteLogoUrl, FILTER_VALIDATE_URL) ? $siteLogoUrl : Storage::disk('public')->url($siteLogoUrl))
+        : null;
+    $photoUrl = $photoPath
+        ? (filter_var($photoPath, FILTER_VALIDATE_URL) ? $photoPath : Storage::disk('public')->url($photoPath))
+        : null;
 
     // Initials — up to 2 letters
     $parts    = array_filter(explode(' ', trim($name)));

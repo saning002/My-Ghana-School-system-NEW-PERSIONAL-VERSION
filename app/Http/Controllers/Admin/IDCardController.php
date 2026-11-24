@@ -102,11 +102,12 @@ class IDCardController extends Controller
         try {
             $sigPath = \App\Models\Setting::get('headmaster_signature', '');
             if ($sigPath) {
-                // Try public disk first, fall back to direct asset URL
-                if (\Illuminate\Support\Facades\Storage::disk('public')->exists($sigPath)) {
+                // If it's already a full URL (Cloudinary or any CDN) use it directly
+                if (filter_var($sigPath, FILTER_VALIDATE_URL)) {
+                    $headmasterSignatureUrl = $sigPath;
+                } elseif (\Illuminate\Support\Facades\Storage::disk('public')->exists($sigPath)) {
                     $headmasterSignatureUrl = \Illuminate\Support\Facades\Storage::disk('public')->url($sigPath);
                 } else {
-                    // Fallback: construct URL from app URL
                     $headmasterSignatureUrl = rtrim(config('app.url'), '/') . '/storage/' . ltrim($sigPath, '/');
                 }
             }

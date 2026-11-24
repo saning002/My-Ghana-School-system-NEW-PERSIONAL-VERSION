@@ -198,8 +198,9 @@
             <div class="p-6">
                 @if($siteLogoUrl)
                 <div class="flex items-center gap-4 mb-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
-                    <img src="{{ Storage::disk('public')->url($siteLogoUrl) }}" alt="Logo"
-                         class="w-16 h-16 object-contain rounded-xl bg-white border border-gray-200 p-1 shadow-sm">
+                    <img src="{{ filter_var($siteLogoUrl, FILTER_VALIDATE_URL) ? $siteLogoUrl : Storage::disk('public')->url($siteLogoUrl) }}" alt="Logo"
+                         class="w-16 h-16 object-contain rounded-xl bg-white border border-gray-200 p-1 shadow-sm"
+                         onerror="this.style.display='none'">
                     <div class="flex-1">
                         <p class="text-sm font-semibold text-gray-700">Current logo</p>
                         <p class="text-xs text-gray-400">Upload below to replace</p>
@@ -1328,7 +1329,10 @@
 <div id="panel-id-card" class="settings-panel hidden">
 @php
     $currentSig = \App\Models\Setting::get('headmaster_signature', '');
-    $sigUrl = $currentSig ? Storage::disk('public')->url($currentSig) : null;
+    // Handle both Cloudinary URLs (full https://) and local storage paths
+    $sigUrl = $currentSig
+        ? (filter_var($currentSig, FILTER_VALIDATE_URL) ? $currentSig : Storage::disk('public')->url($currentSig))
+        : null;
 @endphp
 
 <div class="grid grid-cols-1 xl:grid-cols-3 gap-5">

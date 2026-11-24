@@ -33,7 +33,11 @@ class AdminSettingsController extends Controller
         if ($request->boolean('remove_signature')) {
             $old = \App\Models\Setting::get('headmaster_signature', '');
             if ($old) {
-                try { \Illuminate\Support\Facades\Storage::disk('public')->delete($old); } catch (\Throwable $e) {}
+                if (filter_var($old, FILTER_VALIDATE_URL) && str_contains($old, 'cloudinary.com')) {
+                    try { \App\Services\CloudinaryService::delete($old); } catch (\Throwable $e) {}
+                } else {
+                    try { \Illuminate\Support\Facades\Storage::disk('public')->delete($old); } catch (\Throwable $e) {}
+                }
             }
             \App\Models\Setting::set('headmaster_signature', '');
             return back()->with('success', 'Signature removed.');
@@ -43,11 +47,25 @@ class AdminSettingsController extends Controller
         if ($request->hasFile('headmaster_signature')) {
             $old = \App\Models\Setting::get('headmaster_signature', '');
             if ($old) {
-                try { \Illuminate\Support\Facades\Storage::disk('public')->delete($old); } catch (\Throwable $e) {}
+                // Delete old — handle both Cloudinary URL and local path
+                if (filter_var($old, FILTER_VALIDATE_URL) && str_contains($old, 'cloudinary.com')) {
+                    try { \App\Services\CloudinaryService::delete($old); } catch (\Throwable $e) {}
+                } else {
+                    try { \Illuminate\Support\Facades\Storage::disk('public')->delete($old); } catch (\Throwable $e) {}
+                }
             }
-            $path = $request->file('headmaster_signature')->store('signatures', 'public');
-            \App\Models\Setting::set('headmaster_signature', $path);
-            return back()->with('success', 'Signature and settings saved. It will now appear on all ID cards.');
+
+            // Use storePhotoFile so Cloudinary is used when available (avoids ephemeral disk loss)
+            $path = \App\Http\Controllers\Admin\StudentController::storePhotoFile(
+                $request->file('headmaster_signature'),
+                'signatures'
+            );
+
+            if ($path) {
+                \App\Models\Setting::set('headmaster_signature', $path);
+                return back()->with('success', 'Signature saved. It will now appear on all ID cards.');
+            }
+            return back()->with('error', 'Failed to save signature. Please try again.');
         }
 
         return back()->with('success', 'ID card settings saved.');
