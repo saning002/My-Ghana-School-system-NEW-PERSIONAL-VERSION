@@ -32,7 +32,9 @@ class CloudinaryService
             ! str_contains($tenantUrl, 'null') &&
             ! str_contains($tenantUrl, 'your_') &&
             ! str_contains($tenantUrl, 'API_KEY') &&
-            ! str_contains($tenantUrl, 'API_SECRET')
+            ! str_contains($tenantUrl, 'API_SECRET') &&
+            ! str_contains($tenantUrl, '://:') &&   // empty key
+            ! preg_match('/cloudinary:\/\/\s*:\s*@/', $tenantUrl)  // key:secret both empty
         ) {
             return $tenantUrl;
         }
