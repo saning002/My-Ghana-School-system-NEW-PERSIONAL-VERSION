@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $tenant->name }} — Login</title>
+    <title>{{ $schoolName ?? $tenant->name }} — Login</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -116,10 +116,20 @@
 
         {{-- School logo + name --}}
         <div class="text-center">
+            @if(!empty($siteLogoUrl))
+            <div class="school-logo" id="schoolLogo" style="background:transparent;padding:0;">
+                <img src="{{ $siteLogoUrl }}" alt="{{ $schoolName }}"
+                     style="width:72px;height:72px;object-fit:contain;border-radius:16px;">
+            </div>
+            @else
             <div class="school-logo" id="schoolLogo" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8);">
                 <i class="fas fa-graduation-cap"></i>
             </div>
-            <div class="school-name">{{ $tenant->name }}</div>
+            @endif
+            <div class="school-name">{{ $schoolName ?? $tenant->name }}</div>
+            @if(!empty($schoolSubtitle))
+            <div class="school-sub" style="color:rgba(255,255,255,0.6);font-size:.78rem;margin-top:2px;">{{ $schoolSubtitle }}</div>
+            @endif
             <div class="school-sub" id="roleSubtitle">Select your account type below</div>
         </div>
 

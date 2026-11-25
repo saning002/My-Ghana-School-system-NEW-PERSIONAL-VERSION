@@ -25,6 +25,29 @@ use Illuminate\Validation\ValidationException;
  */
 class SchoolAccessController extends Controller
 {
+    private function loadTenantSchoolName(Tenant $tenant): array
+    {
+        $schoolName     = $tenant->name;
+        $schoolSubtitle = '';
+        $siteLogoUrl    = null;
+
+        try {
+            DB::purge('tenant');
+            Config::set('database.connections.tenant', $tenant->dbConfig());
+            $row = DB::connection('tenant')->table('settings')
+                ->whereIn('key', ['school_name', 'school_subtitle', 'site_logo_url'])
+                ->pluck('value', 'key');
+
+            if (!empty($row['school_name']))     $schoolName     = $row['school_name'];
+            if (!empty($row['school_subtitle'])) $schoolSubtitle = $row['school_subtitle'];
+            if (!empty($row['site_logo_url']))   $siteLogoUrl    = $row['site_logo_url'];
+        } catch (\Throwable $e) {
+            // Fall back to tenant name if DB not reachable
+        }
+
+        return compact('schoolName', 'schoolSubtitle', 'siteLogoUrl');
+    }
+
     public function showAdminLogin(string $slug)
     {
         $tenant = Tenant::where('slug', $slug)->orWhere('subdomain', $slug)->first();
@@ -32,7 +55,10 @@ class SchoolAccessController extends Controller
         if ($tenant->isSuspended()) return view('tenant.suspended', compact('tenant'));
         if ($tenant->isExpired())   return view('tenant.expired',    compact('tenant'));
         session(['tenant_slug' => $tenant->slug, 'tenant_id' => $tenant->id]);
-        return view('owner.school-login', ['tenant' => $tenant, 'role' => 'admin']);
+        return view('owner.school-login', array_merge(
+            ['tenant' => $tenant, 'role' => 'admin'],
+            $this->loadTenantSchoolName($tenant)
+        ));
     }
 
     public function showLecturerLogin(string $slug)
@@ -42,7 +68,10 @@ class SchoolAccessController extends Controller
         if ($tenant->isSuspended()) return view('tenant.suspended', compact('tenant'));
         if ($tenant->isExpired())   return view('tenant.expired',    compact('tenant'));
         session(['tenant_slug' => $tenant->slug, 'tenant_id' => $tenant->id]);
-        return view('owner.school-login', ['tenant' => $tenant, 'role' => 'lecturer']);
+        return view('owner.school-login', array_merge(
+            ['tenant' => $tenant, 'role' => 'lecturer'],
+            $this->loadTenantSchoolName($tenant)
+        ));
     }
 
     /**
