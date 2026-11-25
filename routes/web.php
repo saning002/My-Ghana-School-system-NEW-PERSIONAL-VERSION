@@ -2614,6 +2614,131 @@ Route::get('/debug/cloudinary', function (\Illuminate\Http\Request $request) {
     ], 200, [], JSON_PRETTY_PRINT);
 });
 
+// ── Re-upload all local photos to Cloudinary for a tenant ─────────────────
+// Finds every student/user/setting with a local path and re-uploads to Cloudinary.
+// Safe to run multiple times — skips anything already a full URL.
+// Hit: /setup/reupload-photos?tenant=saning1-academy
+Route::get('/setup/reupload-photos', function (\Illuminate\Http\Request $request) {
+    $slug   = $request->query('tenant', 'saning1-academy');
+    $tenant = \App\Models\Tenant::on('pgsql')->where('slug', $slug)->orWhere('subdomain', $slug)->first();
+    if (!$tenant) return response()->json(['error' => 'Tenant not found: ' . $slug]);
+
+    // Set up Cloudinary config for this tenant
+    if (!($tenant->cloudinary_cloud_name && $tenant->cloudinary_api_key && $tenant->cloudinary_api_secret)) {
+        return response()->json(['error' => 'Cloudinary not fully configured for this tenant. Set all 3 keys in owner panel first.']);
+    }
+
+    \Illuminate\Support\Facades\Config::set('cloudinary.cloud_url',
+        "cloudinary://{$tenant->cloudinary_api_key}:{$tenant->cloudinary_api_secret}@{$tenant->cloudinary_cloud_name}"
+    );
+    \Illuminate\Support\Facades\Config::set('cloudinary.cloud_name', $tenant->cloudinary_cloud_name);
+    \Illuminate\Support\Facades\Config::set('cloudinary.api_key',    $tenant->cloudinary_api_key);
+    \Illuminate\Support\Facades\Config::set('cloudinary.api_secret', $tenant->cloudinary_api_secret);
+
+    // Connect to tenant DB
+    \Illuminate\Support\Facades\DB::purge('tenant');
+    \Illuminate\Support\Facades\Config::set('database.connections.tenant', $tenant->dbConfig());
+    \Illuminate\Support\Facades\DB::setDefaultConnection('tenant');
+
+    $results  = ['uploaded' => [], 'skipped' => [], 'missing' => [], 'errors' => []];
+    $storagePath = storage_path('app/public');
+
+    $tryUpload = function (string $localPath, string $folder, string $table, string $col, $id) use (&$results, $storagePath) {
+        // Already a full URL — skip
+        if (filter_var($localPath, FILTER_VALIDATE_URL)) {
+            $results['skipped'][] = "{$table}#{$id}.{$col} already a URL";
+            return null;
+        }
+
+        // Resolve disk-relative key
+        $diskKey = ltrim(str_replace(['\\', 'storage/', 'public/'], ['/', '', ''], $localPath), '/');
+        $fullPath = $storagePath . '/' . $diskKey;
+
+        if (!file_exists($fullPath)) {
+            $results['missing'][] = "{$table}#{$id}.{$col}: file not found at {$fullPath}";
+            return null;
+        }
+
+        try {
+            // Create a fake UploadedFile from the local file
+            $file = new \Illuminate\Http\UploadedFile(
+                $fullPath,
+                basename($fullPath),
+                mime_content_type($fullPath) ?: 'image/jpeg',
+                null,
+                true
+            );
+            $url = \App\Services\CloudinaryService::upload($file, $folder);
+            if ($url) {
+                $results['uploaded'][] = "{$table}#{$id}.{$col} → {$url}";
+                return $url;
+            }
+            $results['errors'][] = "{$table}#{$id}.{$col}: Cloudinary returned null";
+        } catch (\Throwable $e) {
+            $results['errors'][] = "{$table}#{$id}.{$col}: " . $e->getMessage();
+        }
+        return null;
+    };
+
+    // ── Students ──────────────────────────────────────────────────────────
+    $students = \Illuminate\Support\Facades\DB::table('students')
+        ->whereNotNull('photo')
+        ->where('photo', 'not like', 'http%')
+        ->get(['id', 'photo']);
+
+    foreach ($students as $s) {
+        $url = $tryUpload($s->photo, 'students', 'students', 'photo', $s->id);
+        if ($url) {
+            \Illuminate\Support\Facades\DB::table('students')->where('id', $s->id)->update(['photo' => $url]);
+        }
+    }
+
+    // ── Users (staff/admin photos) ────────────────────────────────────────
+    $users = \Illuminate\Support\Facades\DB::table('users')
+        ->whereNotNull('photo')
+        ->where('photo', 'not like', 'http%')
+        ->get(['id', 'photo']);
+
+    foreach ($users as $u) {
+        $url = $tryUpload($u->photo, 'staff', 'users', 'photo', $u->id);
+        if ($url) {
+            \Illuminate\Support\Facades\DB::table('users')->where('id', $u->id)->update(['photo' => $url]);
+        }
+    }
+
+    // ── School logo (site_logo_url in settings) ───────────────────────────
+    $logoVal = \Illuminate\Support\Facades\DB::table('settings')
+        ->where('key', 'site_logo_url')->value('value');
+    if ($logoVal && !filter_var($logoVal, FILTER_VALIDATE_URL)) {
+        $url = $tryUpload($logoVal, 'settings/logos', 'settings', 'site_logo_url', 0);
+        if ($url) {
+            \Illuminate\Support\Facades\DB::table('settings')->where('key', 'site_logo_url')->update(['value' => $url]);
+        }
+    }
+
+    // ── Headmaster signature ──────────────────────────────────────────────
+    $sigVal = \Illuminate\Support\Facades\DB::table('settings')
+        ->where('key', 'headmaster_signature')->value('value');
+    if ($sigVal && !filter_var($sigVal, FILTER_VALIDATE_URL)) {
+        $url = $tryUpload($sigVal, 'signatures', 'settings', 'headmaster_signature', 0);
+        if ($url) {
+            \Illuminate\Support\Facades\DB::table('settings')->where('key', 'headmaster_signature')->update(['value' => $url]);
+        }
+    }
+
+    \Illuminate\Support\Facades\DB::setDefaultConnection('pgsql');
+
+    return response()->json([
+        'status'   => 'done',
+        'tenant'   => $tenant->name,
+        'uploaded' => count($results['uploaded']),
+        'skipped'  => count($results['skipped']),
+        'missing'  => count($results['missing']),
+        'errors'   => count($results['errors']),
+        'detail'   => $results,
+    ], 200, [], JSON_PRETTY_PRINT);
+});
+
 // ── Force-set hero video URL directly in DB ───────────────────────────────
 // Hit: /setup/set-hero-video?tenant=saning-academy&url=https://youtube.com/watch?v=XXXX
 Route::get('/setup/set-hero-video', function (\Illuminate\Http\Request $request) {
