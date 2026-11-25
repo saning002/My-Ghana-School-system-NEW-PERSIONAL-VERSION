@@ -2570,7 +2570,64 @@ Route::get('/debug/site-settings', function (\Illuminate\Http\Request $request) 
     return response()->json($result, 200, [], JSON_PRETTY_PRINT);
 })->middleware('web');
 
-// ── Cloudinary diagnostic — check what keys are loaded for a tenant ───────
+// ── Cloudinary LIVE upload test for a tenant ─────────────────────────────
+// Creates a tiny test image and tries to upload it to Cloudinary
+// Hit: /debug/cloudinary-test?tenant=saning1-academy
+Route::get('/debug/cloudinary-test', function (\Illuminate\Http\Request $request) {
+    $slug   = $request->query('tenant', 'saning1-academy');
+    $tenant = \App\Models\Tenant::on('pgsql')->where('slug', $slug)->orWhere('subdomain', $slug)->first();
+    if (!$tenant) return response()->json(['error' => 'Tenant not found']);
+
+    $out = [
+        'tenant'        => $tenant->name,
+        'cloud_name'    => $tenant->cloudinary_cloud_name    ?: 'MISSING',
+        'api_key'       => $tenant->cloudinary_api_key       ? substr($tenant->cloudinary_api_key, 0, 6).'...' : 'MISSING',
+        'api_secret'    => $tenant->cloudinary_api_secret    ? substr($tenant->cloudinary_api_secret, 0, 4).'...' : 'MISSING',
+    ];
+
+    if (!$tenant->cloudinary_cloud_name || !$tenant->cloudinary_api_key || !$tenant->cloudinary_api_secret) {
+        $out['result'] = 'FAIL — missing credentials';
+        return response()->json($out, 200, [], JSON_PRETTY_PRINT);
+    }
+
+    // Set config exactly as TenantMiddleware does
+    \Illuminate\Support\Facades\Config::set('cloudinary.cloud_url',
+        "cloudinary://{$tenant->cloudinary_api_key}:{$tenant->cloudinary_api_secret}@{$tenant->cloudinary_cloud_name}"
+    );
+    \Illuminate\Support\Facades\Config::set('cloudinary.cloud_name', $tenant->cloudinary_cloud_name);
+    \Illuminate\Support\Facades\Config::set('cloudinary.api_key',    $tenant->cloudinary_api_key);
+    \Illuminate\Support\Facades\Config::set('cloudinary.api_secret', $tenant->cloudinary_api_secret);
+
+    $out['config_cloud_url_set'] = config('cloudinary.cloud_url');
+    $out['is_configured']        = \App\Services\CloudinaryService::isConfigured() ? 'YES' : 'NO';
+
+    // Create a tiny 1x1 PNG and try to upload it
+    $tmpFile = tempnam(sys_get_temp_dir(), 'cld_test_') . '.png';
+    // Minimal valid 1x1 red PNG (67 bytes)
+    file_put_contents($tmpFile, base64_decode(
+        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwADhQGAWjR9awAAAABJRU5ErkJggg=='
+    ));
+
+    try {
+        $file = new \Illuminate\Http\UploadedFile($tmpFile, 'test.png', 'image/png', null, true);
+        $url  = \App\Services\CloudinaryService::upload($file, 'test-uploads');
+        @unlink($tmpFile);
+
+        if ($url) {
+            $out['result']       = 'SUCCESS';
+            $out['uploaded_url'] = $url;
+        } else {
+            $out['result'] = 'FAIL — upload returned null (check Render logs for CloudinaryService error)';
+        }
+    } catch (\Throwable $e) {
+        @unlink($tmpFile);
+        $out['result']    = 'EXCEPTION';
+        $out['exception'] = $e->getMessage();
+        $out['trace']     = substr($e->getTraceAsString(), 0, 800);
+    }
+
+    return response()->json($out, 200, [], JSON_PRETTY_PRINT);
+});
 // Hit: /debug/cloudinary?tenant=saning1-academy
 Route::get('/debug/cloudinary', function (\Illuminate\Http\Request $request) {
     $slug   = $request->query('tenant', 'saning1-academy');
