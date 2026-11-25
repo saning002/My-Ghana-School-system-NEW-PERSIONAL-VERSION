@@ -105,7 +105,39 @@ class CloudinaryService
         }
 
         try {
-            $cloudinary = new \Cloudinary\Cloudinary($cloudinaryUrl);
+            // Cloudinary PHP SDK v3 — initialise using the CLOUDINARY_URL string
+            // by setting it as an env variable for this process, then constructing
+            // the instance. The v3 SDK reads CLOUDINARY_URL automatically.
+            $cloudName = config('cloudinary.cloud_name')  ?: null;
+            $apiKey    = config('cloudinary.api_key')     ?: null;
+            $apiSecret = config('cloudinary.api_secret')  ?: null;
+
+            // Parse from URL if individual keys not available
+            if (!$cloudName || !$apiKey || !$apiSecret) {
+                // cloudinary://API_KEY:API_SECRET@CLOUD_NAME
+                if (preg_match('|cloudinary://([^:]+):([^@]+)@(.+)|', $cloudinaryUrl, $m)) {
+                    $apiKey    = $m[1];
+                    $apiSecret = $m[2];
+                    $cloudName = $m[3];
+                }
+            }
+
+            if (!$cloudName || !$apiKey || !$apiSecret) {
+                Log::error('CloudinaryService: could not parse credentials from URL');
+                return null;
+            }
+
+            // Build the Cloudinary instance using the v3 Configuration array
+            $cloudinary = new \Cloudinary\Cloudinary([
+                'cloud' => [
+                    'cloud_name' => $cloudName,
+                    'api_key'    => $apiKey,
+                    'api_secret' => $apiSecret,
+                ],
+                'url' => [
+                    'secure' => true,
+                ],
+            ]);
 
             $result = $cloudinary->uploadApi()->upload($file->getRealPath(), [
                 'folder'          => $folder,
@@ -158,7 +190,22 @@ class CloudinaryService
         }
 
         try {
-            $cloudinary = new \Cloudinary\Cloudinary($cloudinaryUrl);
+            $cloudName = config('cloudinary.cloud_name')  ?: null;
+            $apiKey    = config('cloudinary.api_key')     ?: null;
+            $apiSecret = config('cloudinary.api_secret')  ?: null;
+
+            if (!$cloudName || !$apiKey || !$apiSecret) {
+                if (preg_match('|cloudinary://([^:]+):([^@]+)@(.+)|', $cloudinaryUrl, $m)) {
+                    $apiKey = $m[1]; $apiSecret = $m[2]; $cloudName = $m[3];
+                }
+            }
+
+            if (!$cloudName || !$apiKey || !$apiSecret) return;
+
+            $cloudinary = new \Cloudinary\Cloudinary([
+                'cloud' => ['cloud_name' => $cloudName, 'api_key' => $apiKey, 'api_secret' => $apiSecret],
+                'url'   => ['secure' => true],
+            ]);
 
             // Detect resource type
             $resourceType = 'image';
