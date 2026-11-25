@@ -7,10 +7,13 @@
 /* ── Hero ─────────────────────────────────────────────────── */
 .ph {
   min-height: 100vh;
+  max-height: none;
   background: var(--navy, #0a1f44);
   display: flex; align-items: center; padding-top: 76px;
   position: relative; overflow: hidden;
 }
+/* Prevent particles/shapes from causing horizontal scroll on body */
+html, body { overflow-x: hidden; max-width: 100%; }
 
 /* ── Animated grid mesh */
 .ph-grid {
@@ -99,7 +102,7 @@
 /* ── Layout ───────────────────────────────────────────────── */
 .ph-inner {
   position: relative; z-index: 2;
-  max-width: 1160px; margin: 0 auto; padding: 80px 28px;
+  max-width: 1160px; width: 100%; margin: 0 auto; padding: 80px 28px;
   display: grid; grid-template-columns: 1fr 460px; gap: 72px; align-items: center;
 }
 
@@ -285,13 +288,16 @@
   .pl-title { font-size:2.4rem; }
 }
 @media(max-width:600px) {
-  .ph-inner { padding:60px 18px; }
+  .ph { min-height:100svh; }
+  .ph-inner { padding:60px 18px 40px; }
   .pl-title { font-size:2rem; }
   .pc-body  { padding:16px 14px; }
   .pc-head  { padding:20px 16px 16px; }
   .pa-btn   { padding:12px 13px; }
   .pa-icon  { width:32px; height:32px; }
 }
+/* Keep the right card within view on any screen */
+.pc { max-width:100%; width:100%; }
 </style>
 @endsection
 
