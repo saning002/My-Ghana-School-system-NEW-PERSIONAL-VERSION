@@ -9,8 +9,8 @@
     <style>
         * { font-family: 'Poppins', sans-serif; box-sizing: border-box; }
         body {
-            margin: 0; height: 100vh; width: 100vw; max-height: 100vh; max-width: 100vw;
-            padding: 0; overflow: hidden; background: #f3f4f6;
+            margin: 0; min-height: 100dvh; width: 100%; max-width: 100vw;
+            padding: 16px; overflow-x: hidden; overflow-y: auto; background: #f3f4f6;
             display: flex; align-items: center; justify-content: center;
         }
 
@@ -25,8 +25,8 @@
         /* ── Card ────────────────────────────────────────────────────── */
         .portal-card {
             position: relative; z-index: 1000; pointer-events: auto; isolation: isolate;
-            transform: translateZ(0); width: 90%; max-width: 900px; max-height: 90vh;
-            overflow-y: auto; border-radius: 24px; display: flex;
+            transform: translateZ(0); width: 90%; max-width: 900px;
+            border-radius: 24px; display: flex;
             box-shadow: 0 40px 90px rgba(15,23,42,0.16);
             border: 1px solid rgba(255,255,255,0.7); background: #f8fdff;
         }
@@ -102,9 +102,21 @@
         .float-wrap { animation: float 4.5s ease-in-out infinite; text-align: center; position: relative; z-index: 1; }
 
         /* ── Responsive ──────────────────────────────────────────────── */
-        @media (max-width: 900px)  { .portal-card { width: 95%; max-height: 95vh; } .left-panel, .right-panel { padding: 35px 25px; } }
-        @media (max-width: 768px)  { .portal-card { flex-direction: column; } .left-panel { width: 100%; border-right: none; padding: 28px 22px; } .right-panel { display: none; } body { padding: 0; } }
-        @media (max-width: 480px)  { .portal-card { width: 100%; border-radius: 0; max-height: 100vh; } .left-panel { padding: 22px 18px; justify-content: flex-start; overflow-y: auto; } }
+        @media (max-width: 900px)  {
+            .portal-card { width: 95%; }
+            .left-panel, .right-panel { padding: 32px 22px; }
+        }
+        @media (max-width: 768px)  {
+            body { align-items: flex-start; padding: 16px; overflow-y: auto; height: auto; min-height: 100vh; max-height: none; }
+            .portal-card { flex-direction: column; width: 100%; max-width: 440px; max-height: none; margin: auto; border-radius: 20px; }
+            .left-panel { width: 100%; border-right: none; padding: 28px 22px; justify-content: flex-start; }
+            .right-panel { display: none; }
+        }
+        @media (max-width: 480px)  {
+            body { padding: 0; align-items: flex-start; }
+            .portal-card { width: 100%; border-radius: 0; max-height: none; min-height: 100dvh; }
+            .left-panel { padding: 24px 18px; min-height: 100dvh; justify-content: flex-start; overflow-y: auto; }
+        }
     </style>
 </head>
 <body>

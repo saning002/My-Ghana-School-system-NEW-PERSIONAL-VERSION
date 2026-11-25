@@ -286,11 +286,15 @@ html, body { overflow-x: hidden; max-width: 100%; }
 @media(max-width:1024px) {
   .ph-inner { grid-template-columns:1fr; gap:44px; max-width:500px; }
   .pl-title { font-size:2.4rem; }
+  /* On tablet, hide the welcome text panel to save space — just show the card */
+  .pl { display:none; }
+  .ph { align-items: flex-start; padding-top: 90px; padding-bottom: 40px; min-height: 100dvh; }
+  .ph-inner { max-width: 460px; padding: 0 18px 40px; }
 }
 @media(max-width:600px) {
-  .ph { min-height:100svh; }
-  .ph-inner { padding:60px 18px 40px; }
-  .pl-title { font-size:2rem; }
+  .ph { min-height: 100dvh; padding-top: 80px; }
+  .ph-inner { padding: 0 14px 32px; }
+  .pc { border-radius: 20px; }
   .pc-body  { padding:16px 14px; }
   .pc-head  { padding:20px 16px 16px; }
   .pa-btn   { padding:12px 13px; }
