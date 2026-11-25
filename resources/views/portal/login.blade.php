@@ -193,7 +193,7 @@
         </div>
         @endif
 
-        <form method="POST" action="{{ route('portal.login.submit') }}{{ request()->has('tenant') ? '?tenant=' . request()->query('tenant') : '' }}" style="display:flex;flex-direction:column;gap:14px;">
+        <form method="POST" action="{{ route('student-portal.login.submit') }}{{ request()->has('tenant') ? '?tenant=' . request()->query('tenant') : '' }}" style="display:flex;flex-direction:column;gap:14px;">
             @csrf
 
             {{-- Registration Number --}}
@@ -240,7 +240,7 @@
 
         <div style="margin-top:20px;text-align:center;">
             <p style="color:#64748b;font-size:11px;margin:0 0 6px;">Need help? Contact your administrator</p>
-            <a href="{{ route('login') }}" style="color:#0891b2;font-size:12px;font-weight:600;text-decoration:none;transition:opacity .15s;" onmouseover="this.style.opacity='.7'" onmouseout="this.style.opacity='1'">
+            <a href="{{ route('student-portal.login') }}" style="color:#0891b2;font-size:12px;font-weight:600;text-decoration:none;transition:opacity .15s;" onmouseover="this.style.opacity='.7'" onmouseout="this.style.opacity='1'">
                 ← Back to main portals
             </a>
         </div>

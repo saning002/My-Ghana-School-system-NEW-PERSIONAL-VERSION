@@ -40,7 +40,19 @@ class PortalController extends Controller
             return redirect()->route('portal.dashboard');
         }
 
-        return view('portal.login', compact('portalOpen', 'portalMessage'));
+        // Load school branding from settings so the login page shows
+        // the school's own name/logo instead of a generic placeholder
+        $schoolName     = Setting::get('school_name', config('app.name', 'School'));
+        $schoolSubtitle = Setting::get('school_subtitle', '');
+        $rawLogo        = Setting::get('site_logo_url', '');
+        $siteLogoUrl    = $rawLogo
+            ? (filter_var($rawLogo, FILTER_VALIDATE_URL) ? $rawLogo : \Illuminate\Support\Facades\Storage::disk('public')->url($rawLogo))
+            : null;
+
+        return view('portal.login', compact(
+            'portalOpen', 'portalMessage',
+            'schoolName', 'schoolSubtitle', 'siteLogoUrl'
+        ));
     }
 
     /** Authenticate student by registration number + full name + password */
