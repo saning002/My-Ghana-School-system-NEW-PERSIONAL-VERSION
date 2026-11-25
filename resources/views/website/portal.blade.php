@@ -1,21 +1,23 @@
 ﻿@extends('website.layout')
-@section('page_title', ($site->site_name ?? 'School') . ' ΓÇö Portals')
+@section('page_title', ($site->site_name ?? 'School') . ' — Portals')
 @section('meta_description','Access the '.($site->site_name ?? 'School').' portals.')
 
 @section('extra_css')
 <style>
-/* ΓöÇΓöÇ Hero ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
+/* ═══════════════════════════════════════════════════════
+   PORTAL PAGE — fluid, fits every screen, all content
+   visible on mobile (card first, welcome below)
+   ═══════════════════════════════════════════════════════ */
+html, body { overflow-x: hidden; }
+
 .ph {
   min-height: 100dvh;
-  max-height: none;
-  background: var(--navy, #0a1f44);
-  display: flex; align-items: center; padding-top: 76px;
+  display: flex; align-items: center;
+  padding-top: 76px; padding-bottom: 48px;
   position: relative; overflow: hidden;
 }
-/* Prevent overflow from particles */
-html, body { overflow-x: hidden; max-width: 100%; }
 
-/* ΓöÇΓöÇ Animated grid mesh */
+/* ── Animated background ──────────────────────────────── */
 .ph-grid {
   position: absolute; inset: 0; z-index: 0; pointer-events: none;
   background-image:
@@ -29,7 +31,6 @@ html, body { overflow-x: hidden; max-width: 100%; }
   to   { background-position: 56px 56px; }
 }
 
-/* Glowing orbs ΓÇö use safe rgba */
 .ph-orb {
   position: absolute; border-radius: 50%; pointer-events: none; z-index: 1;
   animation: orb-pulse 7s ease-in-out infinite;
@@ -37,7 +38,7 @@ html, body { overflow-x: hidden; max-width: 100%; }
 .ph-orb-gold {
   width: 500px; height: 500px;
   background: radial-gradient(circle, rgba(233,164,34,.18) 0%, transparent 65%);
-  top: -150px; right: -100px; animation-delay: 0s;
+  top: -150px; right: -100px;
 }
 .ph-orb-blue {
   width: 400px; height: 400px;
@@ -49,13 +50,17 @@ html, body { overflow-x: hidden; max-width: 100%; }
   50%      { transform: scale(1.15); opacity: 1; }
 }
 
-/* Floating particles ΓÇö Design 1: circles */
+/* Floating particles */
 .ph-particle {
   position: absolute; border-radius: 50%; pointer-events: none; z-index: 2;
   animation: float-up linear infinite;
 }
+@keyframes float-up {
+  0%   { transform: translateY(0) rotate(0); opacity: .5; }
+  50%  { opacity: .3; }
+  100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+}
 
-/* Floating shapes ΓÇö Design 2: squares/diamonds/rings */
 .ph-shape {
   position: absolute; pointer-events: none; z-index: 2;
   animation: float-shape linear infinite;
@@ -63,50 +68,40 @@ html, body { overflow-x: hidden; max-width: 100%; }
 .ph-shape.square  { border-radius: 4px; }
 .ph-shape.diamond { border-radius: 2px; }
 .ph-shape.ring    { border-radius: 50%; background: transparent !important; border-style: solid; }
-
-@keyframes float-up {
-  0%   { transform: translateY(0) rotate(0); opacity: .5; }
-  50%  { opacity: .3; }
-  100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
-}
 @keyframes float-shape {
   0%   { transform: translateY(0) rotate(0deg) scale(1); opacity: .4; }
   50%  { transform: translateY(-50vh) rotate(180deg) scale(1.1); opacity: .25; }
   100% { transform: translateY(-100vh) rotate(360deg) scale(.8); opacity: 0; }
 }
 
-/* Wave sweep ΓÇö horizontal shimmer */
 .ph-wave {
   position: absolute; left: -100%; top: 0; width: 60%; height: 100%;
   background: linear-gradient(90deg, transparent, rgba(255,255,255,.025), transparent);
   z-index: 1; pointer-events: none;
   animation: wave-sweep 8s ease-in-out infinite;
 }
-.ph-wave:nth-child(2) { animation-delay: 4s; width: 40%; }
-@keyframes wave-sweep {
-  0%   { left: -60%; }
-  100% { left: 110%; }
-}
+.ph-wave:nth-of-type(2) { animation-delay: 4s; width: 40%; }
+@keyframes wave-sweep { 0%{left:-60%} 100%{left:110%} }
 
-/* Rotating ring accent */
 .ph-ring {
   position: absolute; border-radius: 50%; pointer-events: none; z-index: 1;
   border: 1px solid rgba(233,164,34,.12);
   animation: ring-spin linear infinite;
 }
-@keyframes ring-spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
+@keyframes ring-spin { from{transform:rotate(0)} to{transform:rotate(360deg)} }
 
-/* ΓöÇΓöÇ Layout ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
+/* ── Layout ───────────────────────────────────────────── */
 .ph-inner {
   position: relative; z-index: 2;
-  max-width: 1160px; width: 100%; margin: 0 auto; padding: 80px 28px;
-  display: grid; grid-template-columns: 1fr 460px; gap: 72px; align-items: center;
+  width: 100%; max-width: 1160px; margin: 0 auto;
+  padding: 48px 28px;
+  display: grid;
+  grid-template-columns: 1fr 440px;
+  gap: 64px;
+  align-items: center;
 }
 
-/* ΓöÇΓöÇ Welcome / left panel ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
+/* ── Left welcome panel ───────────────────────────────── */
 .pl { animation: slide-left .9s cubic-bezier(.22,1,.36,1) both; }
 @keyframes slide-left {
   from { opacity: 0; transform: translateX(-36px); }
@@ -117,47 +112,36 @@ html, body { overflow-x: hidden; max-width: 100%; }
   display: inline-flex; align-items: center; gap: 10px;
   background: rgba(233,164,34,.12); border: 1px solid rgba(233,164,34,.28);
   color: var(--gold, #e9a422); padding: 7px 18px; border-radius: 100px;
-  font-size: .68rem; font-weight: 800; letter-spacing: .15em; text-transform: uppercase;
-  margin-bottom: 20px;
+  font-size: clamp(.58rem, 1.6vw, .68rem); font-weight: 800;
+  letter-spacing: .15em; text-transform: uppercase; margin-bottom: 18px;
 }
-.pl-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--gold,#e9a422); animation: blink 1.6s ease-in-out infinite; }
+.pl-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--gold,#e9a422); animation: blink 1.6s ease-in-out infinite; flex-shrink:0; }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
 
-/* Big welcoming greeting */
 .pl-greet {
-  font-size: clamp(1rem,2vw,1.15rem); font-weight: 700;
+  font-size: clamp(.92rem, 2.2vw, 1.1rem); font-weight: 700;
   color: rgba(255,255,255,.65); margin-bottom: 10px;
   animation: fade-in .7s ease .15s both;
 }
 @keyframes fade-in { from{opacity:0} to{opacity:1} }
 
 .pl-title {
-  font-size: clamp(2.2rem,4.5vw,3.6rem); font-weight: 900; color: #fff;
-  line-height: 1.08; letter-spacing: -.03em; margin-bottom: 16px;
+  font-size: clamp(1.7rem, 4.5vw, 3.4rem); font-weight: 900; color: #fff;
+  line-height: 1.12; letter-spacing: -.02em; margin-bottom: 16px;
 }
 .pl-title em { font-style: normal; color: var(--gold, #e9a422); }
 
 .pl-sub {
-  font-size: 1.01rem; color: rgba(255,255,255,.52); line-height: 1.82;
-  max-width: 430px; margin-bottom: 36px;
+  font-size: clamp(.88rem, 2vw, 1rem); color: rgba(255,255,255,.52);
+  line-height: 1.75; max-width: 430px; margin-bottom: 32px;
 }
 
-/* Features */
-.pl-feats { display: flex; flex-direction: column; gap: 9px; margin-bottom: 34px; }
+.pl-feats { display: flex; flex-direction: column; gap: 9px; margin-bottom: 32px; }
 .pl-feat {
   display: flex; align-items: center; gap: 13px;
   background: rgba(255,255,255,.045); border: 1px solid rgba(255,255,255,.07);
   border-radius: 13px; padding: 11px 15px;
   transition: background .2s, border-color .2s, transform .2s;
-  animation: feat-slide .6s cubic-bezier(.22,1,.36,1) both;
-}
-.pl-feat:nth-child(1){animation-delay:.18s}
-.pl-feat:nth-child(2){animation-delay:.28s}
-.pl-feat:nth-child(3){animation-delay:.38s}
-.pl-feat:nth-child(4){animation-delay:.48s}
-@keyframes feat-slide {
-  from { opacity: 0; transform: translateX(-18px); }
-  to   { opacity: 1; transform: translateX(0); }
 }
 .pl-feat:hover { background: rgba(255,255,255,.08); border-color: rgba(233,164,34,.22); transform: translateX(4px); }
 .pl-feat-icon {
@@ -169,20 +153,19 @@ html, body { overflow-x: hidden; max-width: 100%; }
 .pl-feat strong { display: block; color: #fff; font-size: .86rem; font-weight: 700; }
 .pl-feat span   { font-size: .73rem; color: rgba(255,255,255,.38); }
 
-/* Stats */
 .pl-stats {
-  display: flex; gap: 28px; padding-top: 24px;
+  display: flex; gap: 28px; padding-top: 22px;
   border-top: 1px solid rgba(255,255,255,.07);
-  animation: fade-in .8s ease .5s both;
 }
-.pl-stat strong { display: block; font-size: 1.6rem; font-weight: 900; color: var(--gold,#e9a422); line-height: 1; }
-.pl-stat span   { font-size: .62rem; text-transform: uppercase; letter-spacing: .1em; color: rgba(255,255,255,.28); margin-top: 3px; display: block; }
+.pl-stat strong { display: block; font-size: 1.5rem; font-weight: 900; color: var(--gold,#e9a422); line-height: 1; }
+.pl-stat span   { font-size: .6rem; text-transform: uppercase; letter-spacing: .1em; color: rgba(255,255,255,.28); margin-top: 3px; display: block; }
 
-/* ΓöÇΓöÇ Right card ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
+/* ── Right access card ────────────────────────────────── */
 .pc {
   background: rgba(255,255,255,.97); border-radius: 26px; overflow: hidden;
   box-shadow: 0 40px 90px rgba(0,0,0,.45), 0 0 0 1px rgba(255,255,255,.1);
   animation: slide-right .9s cubic-bezier(.22,1,.36,1) .08s both;
+  max-width: 100%; width: 100%;
 }
 @keyframes slide-right {
   from { opacity: 0; transform: translateX(36px) scale(.97); }
@@ -224,7 +207,7 @@ html, body { overflow-x: hidden; max-width: 100%; }
 .pa-btn:hover { transform: translateY(-2px); filter: brightness(1.08); }
 .pa-btn-nav   { background: linear-gradient(135deg, var(--navy,#0a1f44), var(--navy-mid,#1a3a7a)); box-shadow: 0 3px 14px rgba(10,31,68,.4); }
 .pa-btn-teach { background: linear-gradient(135deg, #5b21b6, #7c3aed); box-shadow: 0 3px 14px rgba(91,33,182,.35); }
-.pa-btn-stu   { background: linear-gradient(135deg, var(--teal,#0369a1), var(--teal,#0369a1)); box-shadow: 0 3px 14px rgba(3,105,161,.35); }
+.pa-btn-stu   { background: linear-gradient(135deg, var(--teal,#0369a1), #0891b2); box-shadow: 0 3px 14px rgba(3,105,161,.35); }
 
 .pa-icon {
   width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
@@ -232,9 +215,8 @@ html, body { overflow-x: hidden; max-width: 100%; }
   display: flex; align-items: center; justify-content: center; font-size: .95rem;
 }
 .pa-strong { display: block; font-weight: 700; font-size: .86rem; margin-bottom: 1px; }
-.pa-sub    { font-size: .7rem; opacity: .6; }
-.pa-arr    { margin-left: auto; font-size: .6rem; opacity: .4; flex-shrink: 0; transition: margin .18s, opacity .18s; }
-.pa-btn:hover .pa-arr { margin-right: -3px; opacity: .8; }
+.pa-sub    { display: block; font-size: .7rem; opacity: .6; }
+.pa-arr    { margin-left: auto; font-size: .6rem; opacity: .4; flex-shrink: 0; }
 
 /* Dropdown */
 .pa-wrap { position: relative; }
@@ -247,11 +229,7 @@ html, body { overflow-x: hidden; max-width: 100%; }
   border: 1px solid #e8edf2;
   box-shadow: 0 16px 44px rgba(0,0,0,.14);
 }
-.pa-wrap.open .pa-drop { display: block; animation: drop-in .2s ease both; }
-@keyframes drop-in {
-  from { opacity: 0; transform: translateY(-8px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
+.pa-wrap.open .pa-drop { display: block; }
 
 .pa-role {
   display: flex; align-items: center; gap: 11px; padding: 11px 14px;
@@ -282,26 +260,81 @@ html, body { overflow-x: hidden; max-width: 100%; }
 }
 .pa-note i { color: var(--gold-dark,#b8860e); flex-shrink: 0; margin-top: 2px; }
 
-/* ── Responsive ───────────────────────────────────────────── */
-html, body { overflow-x: hidden; }
-@media(max-width:1024px) {
-  .ph-inner { grid-template-columns:1fr; gap:36px; max-width:520px; width:100%; }
-  .pl-title { font-size:2.2rem; }
+/* ═══════════════════════════════════════════════════════
+   RESPONSIVE — all content visible, just re-arranged
+   ═══════════════════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .ph-inner {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    max-width: 540px;
+    padding: 40px 22px;
+  }
+  /* Card first — the most important action */
+  .pc  { order: 1; }
+  .pl  { order: 2; animation: slide-up .7s cubic-bezier(.22,1,.36,1) both; }
+  @keyframes slide-up {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  /* Features become a 2-col grid — still visible, more compact */
+  .pl-feats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .pl-title { font-size: clamp(1.7rem, 5vw, 2.4rem); }
+  .pl-sub   { max-width: 100%; }
 }
-@media(max-width:600px) {
-  .ph { min-height:100dvh; padding-top:76px; }
-  .ph-inner { padding:28px 16px 48px; gap:28px; }
-  .pl-title { font-size:1.8rem; }
-  .pl-sub   { font-size:.9rem; }
-  .pc-body  { padding:16px 14px; }
-  .pc-head  { padding:18px 16px 14px; }
-  .pa-btn   { padding:11px 12px; }
-  .pa-icon  { width:32px; height:32px; }
-  .pl-feats { display:none; }
-  .pl-stats { display:none; }
+
+@media (max-width: 640px) {
+  .ph { padding-top: 70px; padding-bottom: 32px; }
+  .ph-inner { padding: 32px 16px 36px; gap: 32px; }
+
+  /* Welcome copy — compact but fully visible */
+  .pl-welcome { font-size: .58rem; padding: 6px 13px; margin-bottom: 14px; }
+  .pl-greet   { font-size: .9rem; margin-bottom: 8px; }
+  .pl-title   { font-size: clamp(1.45rem, 6.5vw, 1.9rem); margin-bottom: 12px; }
+  .pl-sub     { font-size: .86rem; margin-bottom: 22px; line-height: 1.7; }
+
+  /* Features single column, tighter */
+  .pl-feats { grid-template-columns: 1fr; gap: 7px; margin-bottom: 22px; }
+  .pl-feat  { padding: 9px 12px; gap: 11px; }
+  .pl-feat-icon { width: 32px; height: 32px; font-size: .8rem; }
+  .pl-feat strong { font-size: .8rem; }
+  .pl-feat span   { font-size: .68rem; }
+
+  /* Stats row — full width, still visible */
+  .pl-stats { gap: 18px; padding-top: 16px; }
+  .pl-stat strong { font-size: 1.2rem; }
+  .pl-stat span   { font-size: .55rem; }
+
+  /* Card */
+  .pc    { border-radius: 20px; }
+  .pc-head { padding: 20px 16px 16px; }
+  .pc-shield { width: 52px; height: 52px; font-size: 1.35rem; margin-bottom: 9px; }
+  .pc-head h2 { font-size: 1rem; }
+  .pc-body { padding: 16px 14px; }
+
+  .pa-btn   { padding: 11px 12px; gap: 11px; border-radius: 12px; }
+  .pa-icon  { width: 34px; height: 34px; font-size: .85rem; }
+  .pa-strong{ font-size: .82rem; }
+  .pa-sub   { font-size: .67rem; }
+
+  .pa-role  { padding: 10px 12px; gap: 10px; }
+  .pa-role-dot { width: 30px; height: 30px; font-size: .7rem; }
+  .pa-role-name { font-size: .78rem; }
+  .pa-role-sub  { font-size: .64rem; }
+
+  .pa-note  { font-size: .72rem; padding: 10px 11px; }
+
+  /* Fewer background particles on small screens = faster + cleaner */
+  .ph-particle:nth-child(n+9), .ph-shape:nth-child(n+8), .ph-ring { display: none; }
 }
-/* Keep the right card within view on any screen */
-.pc { max-width:100%; width:100%; }
+
+@media (max-width: 380px) {
+  .pl-title { font-size: 1.35rem; }
+  .pl-greet { font-size: .82rem; }
+  .pl-sub   { font-size: .82rem; }
+  .pa-sub   { font-size: .63rem; }
+  .pc-head h2 { font-size: .95rem; }
+}
 </style>
 @endsection
 
@@ -313,28 +346,29 @@ html, body { overflow-x: hidden; }
   <div class="ph-orb ph-orb-gold"></div>
   <div class="ph-orb ph-orb-blue"></div>
 
-  {{-- Wave sweeps --}}
   <div class="ph-wave"></div>
   <div class="ph-wave"></div>
 
-  {{-- Rotating rings --}}
   <div class="ph-ring" style="width:300px;height:300px;top:10%;right:5%;animation-duration:25s;"></div>
   <div class="ph-ring" style="width:180px;height:180px;top:15%;right:9%;animation-duration:18s;animation-direction:reverse;border-color:rgba(8,145,178,.14);"></div>
   <div class="ph-ring" style="width:500px;height:500px;bottom:-10%;left:-5%;animation-duration:40s;border-color:rgba(233,164,34,.07);"></div>
 
-  {{-- Design 1: Floating circles --}}
+  {{-- Floating circles — deterministic positions (stable across renders) --}}
   @for($i=0;$i<16;$i++)
-  @php $pc = ['rgba(233,164,34,.7)','rgba(255,255,255,.45)','rgba(8,145,178,.65)','rgba(233,164,34,.4)'][$i%4]; @endphp
+  @php
+    $pc = ['rgba(233,164,34,.7)','rgba(255,255,255,.45)','rgba(8,145,178,.65)','rgba(233,164,34,.4)'][$i%4];
+    $sz = 5 + ($i % 6);
+  @endphp
   <div class="ph-particle" style="
-    width:{{ rand(5,10) }}px; height:{{ rand(5,10) }}px;
+    width:{{ $sz }}px; height:{{ $sz }}px;
     background:{{ $pc }};
-    left:{{ rand(3,97) }}%; bottom:{{ rand(0,30) }}%;
-    animation-duration:{{ rand(8,16) }}s;
-    animation-delay:-{{ rand(0,16) }}s;
+    left:{{ ($i * 61) % 95 + 3 }}%; bottom:{{ ($i * 29) % 30 }}%;
+    animation-duration:{{ 8 + ($i * 3) % 9 }}s;
+    animation-delay:-{{ ($i * 7) % 16 }}s;
   "></div>
   @endfor
 
-  {{-- Design 2: Floating squares, diamonds, rings --}}
+  {{-- Floating shapes — deterministic --}}
   @php
     $shapes = ['square','diamond','ring'];
     $shapeColors = ['rgba(233,164,34,.5)','rgba(255,255,255,.3)','rgba(8,145,178,.5)'];
@@ -343,39 +377,38 @@ html, body { overflow-x: hidden; }
   @php
     $shape = $shapes[$i%3];
     $col   = $shapeColors[$i%3];
-    $sz    = rand(6,14);
+    $sz    = 6 + ($i % 9);
   @endphp
   <div class="ph-shape {{ $shape }}" style="
     width:{{ $sz }}px; height:{{ $sz }}px;
     {{ $shape === 'ring' ? 'border:2px solid '.$col.';' : 'background:'.$col.';' }}
-    left:{{ rand(5,95) }}%; bottom:{{ rand(0,40) }}%;
-    animation-duration:{{ rand(10,20) }}s;
-    animation-delay:-{{ rand(0,18) }}s;
+    left:{{ ($i * 67) % 90 + 5 }}%; bottom:{{ ($i * 31) % 40 }}%;
+    animation-duration:{{ 10 + ($i * 5) % 11 }}s;
+    animation-delay:-{{ ($i * 11) % 18 }}s;
     transform-origin: center;
   "></div>
   @endfor
 
   <div class="ph-inner">
 
-    {{-- ΓöÇΓöÇ LEFT WELCOME PANEL ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ --}}
+    {{-- ══ LEFT WELCOME PANEL ══════════════════════════════════ --}}
     <div class="pl">
       <div class="pl-welcome"><span class="pl-dot"></span> Official School Portals</div>
 
-      {{-- Welcoming greeting --}}
       <p class="pl-greet">
-        <i class="fas fa-hand-wave" style="margin-right:7px;"></i>
+        <i class="fas fa-hand-sparkles" style="margin-right:7px;"></i>
         Welcome to <strong style="color:var(--gold,#e9a422)">{{ $site->site_name ?? 'our school' }}</strong>
       </p>
 
       <h1 class="pl-title">{!! $site->portal_intro_title ?? 'Your Gateway to <em>School Life</em>' !!}</h1>
-      <p class="pl-sub">{{ $site->portal_intro_subtitle ?? 'Everything your school community needs ΓÇö results, attendance, fees, and more ΓÇö all in one secure place. Choose your portal below to get started.' }}</p>
+      <p class="pl-sub">{{ $site->portal_intro_subtitle ?? 'Everything your school community needs — results, attendance, fees, and more — all in one secure place. Choose your portal below to get started.' }}</p>
 
       <div class="pl-feats">
         @foreach([
-          ['fa-users-gear',    'Student &amp; Parent Management',   'Profiles, enrollment and guardian records'],
-          ['fa-graduation-cap','Academic Records &amp; Results',     'Report cards, grades and transcripts'],
-          ['fa-chart-line',    'Real-Time Analytics',               'Live dashboards and performance insights'],
-          ['fa-shield-halved', 'Role-Based Secure Access',          'Every user sees only what they need'],
+          ['fa-users-gear',    'Student &amp; Parent Management',  'Profiles, enrollment and guardian records'],
+          ['fa-graduation-cap','Academic Records &amp; Results',   'Report cards, grades and transcripts'],
+          ['fa-chart-line',    'Real-Time Analytics',              'Live dashboards and performance insights'],
+          ['fa-shield-halved', 'Role-Based Secure Access',         'Every user sees only what they need'],
         ] as [$ic,$t,$s])
         <div class="pl-feat">
           <div class="pl-feat-icon"><i class="fas {{ $ic }}"></i></div>
@@ -391,7 +424,7 @@ html, body { overflow-x: hidden; }
       </div>
     </div>
 
-    {{-- ΓöÇΓöÇ RIGHT ACCESS CARD ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ --}}
+    {{-- ══ RIGHT ACCESS CARD ══════════════════════════════════ --}}
     <div class="pc">
       <div class="pc-head" style="background:{{ $theme['secondary'] ?? '#0a1f44' }}">
         <div class="pc-shield"><i class="fas fa-school"></i></div>
@@ -405,15 +438,14 @@ html, body { overflow-x: hidden; }
 
           {{-- Admin & Staff dropdown --}}
           @php
-            $adminUrl = $tenantSlug ? route('school.admin.login', $tenantSlug) : route('admin.login');
+            $adminUrl = $tenantSlug ? route('school.admin.login', $tenantSlug) : url('/login');
             $roles = [
-              ['Super Admin',  'Full system access',  'fa-shield-halved', '#0a1f44', null],
-              ['Branch Admin', 'Branch management',   'fa-building',      '#1e40af', null],
+              ['Super Admin',  'Full system access',  'fa-shield-halved',  '#0a1f44', null],
               ['Headmaster',   'Academic leadership', 'fa-user-tie',       '#166534', 'headmaster'],
               ['Headteacher',  'School management',   'fa-chalkboard',     '#0f766e', 'headteacher'],
-              ['Accountant',   'Fees & finance',      'fa-calculator',     '#92400e', 'accountant'],
-              ['Secretary',    'Administration',      'fa-clipboard-user', '#6b21a8', 'secretary'],
               ['Deputy Head',  'Deputy management',   'fa-user-check',     '#0369a1', 'deputy'],
+              ['Accountant',   'Fees &amp; finance',  'fa-calculator',     '#92400e', 'accountant'],
+              ['Secretary',    'Administration',      'fa-clipboard-user', '#6b21a8', 'secretary'],
             ];
           @endphp
           <div class="pa-wrap" id="adminWrap">
@@ -429,7 +461,7 @@ html, body { overflow-x: hidden; }
               @foreach($roles as [$label,$sub,$icon,$color,$role])
               @php
                 if ($role) {
-                  try { $url = route('staff-portal.login.role',$role).($tenantSlug ? '?tenant='.$tenantSlug : ''); }
+                  try { $url = route('staff-portal.login.role', $role) . ($tenantSlug ? '?tenant=' . $tenantSlug : ''); }
                   catch (\Throwable $e) { $url = $adminUrl; }
                 } else { $url = $adminUrl; }
               @endphp
@@ -448,7 +480,7 @@ html, body { overflow-x: hidden; }
           </div>
 
           {{-- Teacher --}}
-          <a href="{{ $tenantSlug ? route('school.lecturer.login',$tenantSlug) : route('teachers-portal.login') }}" class="pa-btn pa-btn-teach">
+          <a href="{{ $tenantSlug ? route('school.lecturer.login', $tenantSlug) : route('teachers-portal.login') }}" class="pa-btn pa-btn-teach">
             <div class="pa-icon"><i class="fas fa-chalkboard-user"></i></div>
             <div>
               <span class="pa-strong">{{ $site->portal_teacher_title ?? 'Teacher Portal' }}</span>
@@ -457,8 +489,8 @@ html, body { overflow-x: hidden; }
             <i class="fas fa-arrow-right pa-arr"></i>
           </a>
 
-          {{-- Student --}}
-          <a href="{{ route('student-portal.login') }}" class="pa-btn pa-btn-stu">
+          {{-- Student — always carry the tenant param so the login works --}}
+          <a href="{{ route('student-portal.login') . ($tenantSlug ? '?tenant=' . $tenantSlug : '') }}" class="pa-btn pa-btn-stu">
             <div class="pa-icon"><i class="fas fa-user-graduate"></i></div>
             <div>
               <span class="pa-strong">{{ $site->portal_student_title ?? 'Student Portal' }}</span>

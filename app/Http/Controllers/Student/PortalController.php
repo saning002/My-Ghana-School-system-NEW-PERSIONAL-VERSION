@@ -40,14 +40,25 @@ class PortalController extends Controller
             return redirect()->route('portal.dashboard');
         }
 
-        // Load school branding from settings so the login page shows
-        // the school's own name/logo instead of a generic placeholder
-        $schoolName     = Setting::get('school_name', config('app.name', 'School'));
-        $schoolSubtitle = Setting::get('school_subtitle', '');
-        $rawLogo        = Setting::get('site_logo_url', '');
-        $siteLogoUrl    = $rawLogo
-            ? (filter_var($rawLogo, FILTER_VALIDATE_URL) ? $rawLogo : \Illuminate\Support\Facades\Storage::disk('public')->url($rawLogo))
-            : null;
+        // Load school branding — use cache to avoid DB hit on every page load
+        $tenantSlug  = session('tenant_slug', 'default');
+        $cacheKey    = 'portal_branding_' . $tenantSlug;
+        $branding    = \Illuminate\Support\Facades\Cache::remember($cacheKey, 300, function () {
+            $rawLogo = Setting::get('site_logo_url', '');
+            return [
+                'schoolName'     => Setting::get('school_name', config('app.name', 'School')),
+                'schoolSubtitle' => Setting::get('school_subtitle', ''),
+                'siteLogoUrl'    => $rawLogo
+                    ? (filter_var($rawLogo, FILTER_VALIDATE_URL)
+                        ? $rawLogo
+                        : \Illuminate\Support\Facades\Storage::disk('public')->url($rawLogo))
+                    : null,
+            ];
+        });
+
+        $schoolName     = $branding['schoolName'];
+        $schoolSubtitle = $branding['schoolSubtitle'];
+        $siteLogoUrl    = $branding['siteLogoUrl'];
 
         return view('portal.login', compact(
             'portalOpen', 'portalMessage',
