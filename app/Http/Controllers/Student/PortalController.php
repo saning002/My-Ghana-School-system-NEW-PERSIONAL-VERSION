@@ -77,14 +77,14 @@ class PortalController extends Controller
 
     public function login(Request $request)
     {
-        // Ensure tenant DB is active — handles the case where session was not
-        // set before the login POST (e.g. ?tenant= param on GET but lost on POST)
+        // Ensure tenant DB is active
         $this->ensureTenantDb($request);
 
         // Block login if portal is closed
         if (!Setting::portalIsOpen()) {
             return back()->with('portal_closed', true);
         }
+
         $request->validate([
             'student_id' => 'required|string',
             'full_name'  => 'required|string',
@@ -95,147 +95,70 @@ class PortalController extends Controller
             'password.required'   => 'Please enter your password.',
         ]);
 
-        // Normalize input student ID by removing punctuation and whitespace
-        $normalizedInputId = $this->normalizeStudentId($request->student_id);
-        $normalizedStudentIdSql = "REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(LOWER(student_id), '/', ''), '-', ''), '_', ''), ' ', ''), '.', ''), ':', ''), ',', '')";
+        // ── Single fast query — exact + normalised match, user eager-loaded ─
+        $normSql   = "REGEXP_REPLACE(LOWER(TRIM(student_id)), '[^a-z0-9]', '', 'g')";
+        $normInput = preg_replace('/[^a-z0-9]/', '', strtolower(trim($request->student_id)));
 
-        // 1. Try exact trimmed case-insensitive match (fast, uses database indexes)
-        $student = Student::whereRaw('LOWER(TRIM(student_id)) = ?', [strtolower(trim($request->student_id))])->first();
-
-        // 2. Fall back to stripping delimiters from student_id columns to capture typos or alternate formatting
-        if (!$student) {
-            $student = Student::whereRaw($normalizedStudentIdSql . ' = ?', [$normalizedInputId])->first();
-        }
-
-        // 3. Fall back to branch-agnostic matching:
-        // If the student enters an ID with the branch code (e.g. KMC/KA/PC/001) but the database stored it
-        // without the branch code (e.g. KMC/PC/001), we query all branch codes and strip it for matching.
-        if (!$student) {
-            try {
-                $branchCodes = \App\Models\ChurchBranch::pluck('code')
-                    ->filter()
-                    ->map(fn($code) => strtolower(trim($code)))
-                    ->toArray(); // e.g. ['ka', 'ho']
-
-                // If input starts with 'kmc' + one of the branch codes, strip that branch code
-                $branchStrippedInputId = $normalizedInputId;
-                foreach ($branchCodes as $code) {
-                    if (str_starts_with($normalizedInputId, 'kmc' . $code)) {
-                        // Strip the branch code (e.g. 'kmckapc001' -> 'kmcpc001')
-                        $branchStrippedInputId = 'kmc' . substr($normalizedInputId, 3 + strlen($code));
-                        break;
-                    }
-                }
-
-                if ($branchStrippedInputId !== $normalizedInputId) {
-                    $student = Student::whereRaw($normalizedStudentIdSql . ' = ?', [$branchStrippedInputId])->first();
-                }
-
-                // 4. If the database has the branch code (e.g. KMC/KA/PC/001) but the student entered it without
-                // the branch code (e.g. KMC/PC/001), let's construct a pattern matching that inserts the branch code
-                if (!$student) {
-                    foreach ($branchCodes as $code) {
-                        if (str_starts_with($normalizedInputId, 'kmc') && !str_starts_with($normalizedInputId, 'kmc' . $code)) {
-                            $branchInsertedId = 'kmc' . $code . substr($normalizedInputId, 3);
-                            $student = Student::whereRaw($normalizedStudentIdSql . ' = ?', [$branchInsertedId])->first();
-                            if ($student) {
-                                break;
-                            }
-                        }
-                    }
-                }
-            } catch (\Throwable $e) {
-                \Log::error('Branch-agnostic matching failed: ' . $e->getMessage());
-            }
-        }
-
-        if (!$student) {
-            // Final permissive fallback: try flexible lookup by normalized contains
-            try {
-                $student = $this->findStudentByFlexibleId($request->student_id);
-            } catch (\Throwable $e) {
-                \Log::warning('Flexible student lookup failed: ' . $e->getMessage());
-            }
-        }
+        $student = Student::with('user')
+            ->where(function ($q) use ($request, $normSql, $normInput) {
+                $q->whereRaw('LOWER(TRIM(student_id)) = ?', [strtolower(trim($request->student_id))])
+                  ->orWhereRaw($normSql . ' = ?', [$normInput]);
+            })
+            ->first();
 
         if (!$student) {
             return $this->backToLogin($request, [
-                'credentials' => 'Invalid registration number. Please check and try again.',
+                'credentials' => 'Registration number not found. Please check and try again.',
             ], ['student_id' => $request->student_id, 'full_name' => $request->full_name]);
         }
 
-
-        // Load the related user after finding the student
-        $student->load('user');
-        
         if (!$student->user) {
-            Log::error('Student found but no associated user', ['student_id' => $student->id]);
             return $this->backToLogin($request, [
-                'credentials' => 'System error: Student profile incomplete. Please contact administrator.',
+                'credentials' => 'Student profile incomplete. Please contact your administrator.',
             ], ['student_id' => $request->student_id]);
         }
 
-        // Robust name matching:
-        // Convert to lowercase and trim
-        $registeredName = strtolower(trim($student->user->full_name));
-        $inputName = strtolower(trim($request->full_name));
+        // ── Name match ──────────────────────────────────────────────────────
+        $registeredWords = array_filter(preg_split('/[\s,.\-_]+/', strtolower(trim($student->user->full_name))));
+        $inputWords      = array_filter(preg_split('/[\s,.\-_]+/', strtolower(trim($request->full_name))));
 
-        // Get array of individual words (filtering empty items) by splitting by whitespace or punctuation
-        $registeredWords = array_filter(preg_split('/[\s,\.\-_]+/', $registeredName));
-        $inputWords = array_filter(preg_split('/[\s,\.\-_]+/', $inputName));
-
-        // We check if all input words are contained within the registered words.
-        // This handles:
-        // - Different name order (e.g., "Doris Assin Abakah" vs "Abakah Assin Doris")
-        // - Omission of middle names (e.g., "Doris Abakah")
-        // - Punctuation difference (e.g., "Abakah, Doris")
-        $isMatch = true;
-        if (empty($inputWords)) {
-            $isMatch = false;
-        } else {
-            foreach ($inputWords as $word) {
-                if (!in_array($word, $registeredWords)) {
-                    $isMatch = false;
-                    break;
-                }
-            }
+        $isMatch = !empty($inputWords);
+        foreach ($inputWords as $word) {
+            if (!in_array($word, $registeredWords)) { $isMatch = false; break; }
         }
 
         if (!$isMatch) {
             return $this->backToLogin($request, [
-                'credentials' => 'The name entered does not match the registration number. Please check and try again.',
+                'credentials' => 'The name entered does not match this registration number.',
             ], ['student_id' => $request->student_id, 'full_name' => $request->full_name]);
         }
 
-        // Verify password against student record first, then fall back to linked user record
-        $providedPassword = $request->password;
+        // ── Password check ──────────────────────────────────────────────────
+        $provided     = $request->password;
         $validPassword = false;
 
-        if (!empty($student->password) && $this->passwordMatches($providedPassword, $student->password)) {
+        if (!empty($student->password) && $this->passwordMatches($provided, $student->password)) {
             $validPassword = true;
         }
-
-        if (!$validPassword && $student->user && !empty($student->user->password) && $this->passwordMatches($providedPassword, $student->user->password)) {
+        if (!$validPassword && !empty($student->user->password) && $this->passwordMatches($provided, $student->user->password)) {
             $validPassword = true;
         }
 
         if (!$validPassword) {
             return $this->backToLogin($request, [
-                'credentials' => 'Invalid password. Please check and try again.',
+                'credentials' => 'Incorrect password. Please try again.',
             ], ['student_id' => $request->student_id, 'full_name' => $request->full_name]);
         }
 
-        // Rehash any legacy plain-text password values after successful login
-        if (!empty($student->password) && $this->isLegacyPlainPassword($providedPassword, $student->password)) {
-            $student->password = $providedPassword;
-            $student->save();
+        // ── Rehash legacy plain-text passwords using raw UPDATE (no extra SELECT) ─
+        if (!empty($student->password) && $this->isLegacyPlainPassword($provided, $student->password)) {
+            Student::where('id', $student->id)->update(['password' => bcrypt($provided)]);
         }
-        if ($student->user && !empty($student->user->password) && $this->isLegacyPlainPassword($providedPassword, $student->user->password)) {
-            $student->user->password = $providedPassword;
-            $student->user->save();
+        if (!empty($student->user->password) && $this->isLegacyPlainPassword($provided, $student->user->password)) {
+            \App\Models\User::where('id', $student->user->id)->update(['password' => bcrypt($provided)]);
         }
 
-        Session::put('portal_student_id', $student->id);
+        Session::put('portal_student_id',   $student->id);
         Session::put('portal_student_name', $student->user->full_name);
 
         return redirect()->route('portal.dashboard');
