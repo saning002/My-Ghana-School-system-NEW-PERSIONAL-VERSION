@@ -1,535 +1,510 @@
-@extends('website.layout')
-@section('page_title', ($site->site_name ?? 'School') . ' — Portals')
+﻿@extends('website.layout')
+@section('page_title', ($site->site_name ?? 'School') . ' ΓÇö Portals')
 @section('meta_description','Access the '.($site->site_name ?? 'School').' portals.')
 
 @section('extra_css')
 <style>
-/* ═══════════════════════════════════════════════════════════
-   PORTAL PAGE — full-screen, fits any device
-   ═══════════════════════════════════════════════════════════ */
-html, body { overflow-x: hidden; }
-
-.pp-wrap {
+/* ΓöÇΓöÇ Hero ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
+.ph {
   min-height: 100dvh;
-  padding-top: 76px; /* navbar height */
-  display: flex;
-  align-items: stretch;
-  position: relative;
-  overflow: hidden;
+  max-height: none;
+  background: var(--navy, #0a1f44);
+  display: flex; align-items: center; padding-top: 76px;
+  position: relative; overflow: hidden;
 }
+/* Prevent overflow from particles */
+html, body { overflow-x: hidden; max-width: 100%; }
 
-/* ── Animated background ───────────────────────────────── */
-.pp-bg {
-  position: fixed; inset: 0; z-index: 0; pointer-events: none;
-}
-.pp-bg-grad {
-  position: absolute; inset: 0;
-  background: linear-gradient(145deg,
-    {{ $theme['secondary'] ?? '#0a1f44' }} 0%,
-    {{ $theme['navBg']     ?? '#0d2857' }} 55%,
-    {{ $theme['secondary'] ?? '#0a1f44' }} 100%);
-}
-.pp-grid {
-  position: absolute; inset: 0;
+/* ΓöÇΓöÇ Animated grid mesh */
+.ph-grid {
+  position: absolute; inset: 0; z-index: 0; pointer-events: none;
   background-image:
-    linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
-  background-size: 52px 52px;
-  animation: grid-scroll 30s linear infinite;
+    linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+  background-size: 56px 56px;
+  animation: grid-drift 24s linear infinite;
 }
-@keyframes grid-scroll {
+@keyframes grid-drift {
   from { background-position: 0 0; }
-  to   { background-position: 52px 52px; }
-}
-.pp-orb {
-  position: absolute; border-radius: 50%; pointer-events: none;
-  animation: orb-float 9s ease-in-out infinite;
-  filter: blur(70px);
-}
-.pp-orb-1 {
-  width: 480px; height: 480px;
-  background: radial-gradient(circle, rgba(233,164,34,.14) 0%, transparent 60%);
-  top: -120px; right: -80px;
-}
-.pp-orb-2 {
-  width: 360px; height: 360px;
-  background: radial-gradient(circle, rgba(8,145,178,.12) 0%, transparent 60%);
-  bottom: -80px; left: -60px; animation-delay: 4s;
-}
-@keyframes orb-float {
-  0%,100% { transform: scale(1); opacity: .7; }
-  50%      { transform: scale(1.18); opacity: 1; }
+  to   { background-position: 56px 56px; }
 }
 
-/* Particle dots */
-.pp-dot {
-  position: absolute; border-radius: 50%; pointer-events: none; opacity: .45;
-  animation: dot-rise linear infinite;
+/* Glowing orbs ΓÇö use safe rgba */
+.ph-orb {
+  position: absolute; border-radius: 50%; pointer-events: none; z-index: 1;
+  animation: orb-pulse 7s ease-in-out infinite;
 }
-@keyframes dot-rise {
-  0%   { transform: translateY(0) scale(1);   opacity: .45; }
-  100% { transform: translateY(-110vh) scale(.6); opacity: 0; }
+.ph-orb-gold {
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(233,164,34,.18) 0%, transparent 65%);
+  top: -150px; right: -100px; animation-delay: 0s;
+}
+.ph-orb-blue {
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(8,145,178,.15) 0%, transparent 65%);
+  bottom: -100px; left: -60px; animation-delay: 3.5s;
+}
+@keyframes orb-pulse {
+  0%,100% { transform: scale(1);    opacity: .8; }
+  50%      { transform: scale(1.15); opacity: 1; }
 }
 
-/* ── Inner layout ──────────────────────────────────────── */
-.pp-inner {
+/* Floating particles ΓÇö Design 1: circles */
+.ph-particle {
+  position: absolute; border-radius: 50%; pointer-events: none; z-index: 2;
+  animation: float-up linear infinite;
+}
+
+/* Floating shapes ΓÇö Design 2: squares/diamonds/rings */
+.ph-shape {
+  position: absolute; pointer-events: none; z-index: 2;
+  animation: float-shape linear infinite;
+}
+.ph-shape.square  { border-radius: 4px; }
+.ph-shape.diamond { border-radius: 2px; }
+.ph-shape.ring    { border-radius: 50%; background: transparent !important; border-style: solid; }
+
+@keyframes float-up {
+  0%   { transform: translateY(0) rotate(0); opacity: .5; }
+  50%  { opacity: .3; }
+  100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+}
+@keyframes float-shape {
+  0%   { transform: translateY(0) rotate(0deg) scale(1); opacity: .4; }
+  50%  { transform: translateY(-50vh) rotate(180deg) scale(1.1); opacity: .25; }
+  100% { transform: translateY(-100vh) rotate(360deg) scale(.8); opacity: 0; }
+}
+
+/* Wave sweep ΓÇö horizontal shimmer */
+.ph-wave {
+  position: absolute; left: -100%; top: 0; width: 60%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.025), transparent);
+  z-index: 1; pointer-events: none;
+  animation: wave-sweep 8s ease-in-out infinite;
+}
+.ph-wave:nth-child(2) { animation-delay: 4s; width: 40%; }
+@keyframes wave-sweep {
+  0%   { left: -60%; }
+  100% { left: 110%; }
+}
+
+/* Rotating ring accent */
+.ph-ring {
+  position: absolute; border-radius: 50%; pointer-events: none; z-index: 1;
+  border: 1px solid rgba(233,164,34,.12);
+  animation: ring-spin linear infinite;
+}
+@keyframes ring-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ΓöÇΓöÇ Layout ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
+.ph-inner {
   position: relative; z-index: 2;
-  width: 100%; max-width: 1200px; margin: 0 auto;
-  padding: 60px 28px 60px;
-  display: grid;
-  grid-template-columns: 1fr 480px;
-  gap: 64px;
-  align-items: center;
+  max-width: 1160px; width: 100%; margin: 0 auto; padding: 80px 28px;
+  display: grid; grid-template-columns: 1fr 460px; gap: 72px; align-items: center;
 }
 
-/* ── LEFT — welcome copy ───────────────────────────────── */
-.pp-left {
-  animation: slide-in-left .85s cubic-bezier(.22,1,.36,1) both;
-}
-@keyframes slide-in-left {
-  from { opacity: 0; transform: translateX(-32px); }
+/* ΓöÇΓöÇ Welcome / left panel ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
+.pl { animation: slide-left .9s cubic-bezier(.22,1,.36,1) both; }
+@keyframes slide-left {
+  from { opacity: 0; transform: translateX(-36px); }
   to   { opacity: 1; transform: translateX(0); }
 }
 
-.pp-eyebrow {
-  display: inline-flex; align-items: center; gap: 8px;
+.pl-welcome {
+  display: inline-flex; align-items: center; gap: 10px;
   background: rgba(233,164,34,.12); border: 1px solid rgba(233,164,34,.28);
-  color: #e9a422; padding: 6px 16px; border-radius: 100px;
-  font-size: .68rem; font-weight: 800; letter-spacing: .14em;
-  text-transform: uppercase; margin-bottom: 22px;
+  color: var(--gold, #e9a422); padding: 7px 18px; border-radius: 100px;
+  font-size: .68rem; font-weight: 800; letter-spacing: .15em; text-transform: uppercase;
+  margin-bottom: 20px;
 }
-.pp-pulse {
-  width: 7px; height: 7px; border-radius: 50%; background: #e9a422;
-  animation: pulse 1.6s ease-in-out infinite;
-}
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.15} }
+.pl-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--gold,#e9a422); animation: blink 1.6s ease-in-out infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
 
-.pp-greeting {
-  font-size: 1rem; font-weight: 600;
-  color: rgba(255,255,255,.55); margin-bottom: 10px;
+/* Big welcoming greeting */
+.pl-greet {
+  font-size: clamp(1rem,2vw,1.15rem); font-weight: 700;
+  color: rgba(255,255,255,.65); margin-bottom: 10px;
+  animation: fade-in .7s ease .15s both;
 }
-.pp-title {
-  font-size: clamp(2rem, 4.2vw, 3.4rem);
-  font-weight: 900; color: #fff;
-  line-height: 1.1; letter-spacing: -.03em;
-  margin-bottom: 18px;
-}
-.pp-title em { font-style: normal; color: #e9a422; }
+@keyframes fade-in { from{opacity:0} to{opacity:1} }
 
-.pp-desc {
-  font-size: 1rem; color: rgba(255,255,255,.5);
-  line-height: 1.85; max-width: 420px; margin-bottom: 36px;
+.pl-title {
+  font-size: clamp(2.2rem,4.5vw,3.6rem); font-weight: 900; color: #fff;
+  line-height: 1.08; letter-spacing: -.03em; margin-bottom: 16px;
+}
+.pl-title em { font-style: normal; color: var(--gold, #e9a422); }
+
+.pl-sub {
+  font-size: 1.01rem; color: rgba(255,255,255,.52); line-height: 1.82;
+  max-width: 430px; margin-bottom: 36px;
 }
 
-/* Feature rows */
-.pp-features { display: flex; flex-direction: column; gap: 10px; margin-bottom: 36px; }
-.pp-feat {
-  display: flex; align-items: center; gap: 14px;
-  background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.08);
-  border-radius: 14px; padding: 12px 16px;
-  transition: background .2s, transform .2s;
+/* Features */
+.pl-feats { display: flex; flex-direction: column; gap: 9px; margin-bottom: 34px; }
+.pl-feat {
+  display: flex; align-items: center; gap: 13px;
+  background: rgba(255,255,255,.045); border: 1px solid rgba(255,255,255,.07);
+  border-radius: 13px; padding: 11px 15px;
+  transition: background .2s, border-color .2s, transform .2s;
+  animation: feat-slide .6s cubic-bezier(.22,1,.36,1) both;
 }
-.pp-feat:hover { background: rgba(255,255,255,.09); transform: translateX(4px); }
-.pp-feat-icon {
-  width: 38px; height: 38px; border-radius: 11px; flex-shrink: 0;
-  background: linear-gradient(135deg,#e9a422,#b8860e);
+.pl-feat:nth-child(1){animation-delay:.18s}
+.pl-feat:nth-child(2){animation-delay:.28s}
+.pl-feat:nth-child(3){animation-delay:.38s}
+.pl-feat:nth-child(4){animation-delay:.48s}
+@keyframes feat-slide {
+  from { opacity: 0; transform: translateX(-18px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.pl-feat:hover { background: rgba(255,255,255,.08); border-color: rgba(233,164,34,.22); transform: translateX(4px); }
+.pl-feat-icon {
+  width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--gold,#e9a422), var(--gold-dark,#b8860e));
   display: flex; align-items: center; justify-content: center;
-  color: #0a1f44; font-size: .88rem;
+  color: var(--navy,#0a1f44); font-size: .88rem;
 }
-.pp-feat-title { display: block; color: #fff; font-size: .84rem; font-weight: 700; }
-.pp-feat-sub   { display: block; color: rgba(255,255,255,.35); font-size: .7rem; margin-top:1px; }
+.pl-feat strong { display: block; color: #fff; font-size: .86rem; font-weight: 700; }
+.pl-feat span   { font-size: .73rem; color: rgba(255,255,255,.38); }
 
 /* Stats */
-.pp-stats {
-  display: flex; gap: 28px; padding-top: 22px;
-  border-top: 1px solid rgba(255,255,255,.08);
+.pl-stats {
+  display: flex; gap: 28px; padding-top: 24px;
+  border-top: 1px solid rgba(255,255,255,.07);
+  animation: fade-in .8s ease .5s both;
 }
-.pp-stat strong { display:block; font-size:1.5rem; font-weight:900; color:#e9a422; line-height:1; }
-.pp-stat span   { display:block; font-size:.62rem; color:rgba(255,255,255,.3); text-transform:uppercase; letter-spacing:.1em; margin-top:3px; }
+.pl-stat strong { display: block; font-size: 1.6rem; font-weight: 900; color: var(--gold,#e9a422); line-height: 1; }
+.pl-stat span   { font-size: .62rem; text-transform: uppercase; letter-spacing: .1em; color: rgba(255,255,255,.28); margin-top: 3px; display: block; }
 
-/* ── RIGHT — access card ───────────────────────────────── */
-.pp-card {
-  background: #fff;
-  border-radius: 28px;
-  overflow: hidden;
-  box-shadow: 0 48px 100px rgba(0,0,0,.45), 0 0 0 1px rgba(255,255,255,.08);
-  animation: slide-in-right .85s cubic-bezier(.22,1,.36,1) .08s both;
+/* ΓöÇΓöÇ Right card ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
+.pc {
+  background: rgba(255,255,255,.97); border-radius: 26px; overflow: hidden;
+  box-shadow: 0 40px 90px rgba(0,0,0,.45), 0 0 0 1px rgba(255,255,255,.1);
+  animation: slide-right .9s cubic-bezier(.22,1,.36,1) .08s both;
 }
-@keyframes slide-in-right {
-  from { opacity: 0; transform: translateX(32px) scale(.97); }
+@keyframes slide-right {
+  from { opacity: 0; transform: translateX(36px) scale(.97); }
   to   { opacity: 1; transform: translateX(0) scale(1); }
 }
 
-/* Card header */
-.pp-card-head {
-  padding: 28px 26px 22px; text-align: center;
-  background: {{ $theme['secondary'] ?? '#0a1f44' }};
-  position: relative; overflow: hidden;
+.pc-head {
+  background: var(--navy, #0a1f44);
+  padding: 24px 26px 20px; text-align: center;
 }
-.pp-card-head::after {
-  content:''; position:absolute; inset:0;
-  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E");
-  pointer-events:none;
-}
-.pp-card-logo {
-  width: 64px; height: 64px; border-radius: 18px; margin: 0 auto 14px;
-  background: linear-gradient(135deg,#e9a422,#b8860e);
+.pc-shield {
+  width: 60px; height: 60px; border-radius: 18px; margin: 0 auto 12px;
+  background: linear-gradient(135deg, var(--gold,#e9a422), var(--gold-dark,#b8860e));
   display: flex; align-items: center; justify-content: center;
-  font-size: 1.7rem; color: {{ $theme['secondary'] ?? '#0a1f44' }};
-  box-shadow: 0 10px 28px rgba(233,164,34,.4);
-  position: relative; z-index: 1;
-  animation: logo-pop .9s cubic-bezier(.34,1.56,.64,1) .3s both;
+  font-size: 1.6rem; color: var(--navy,#0a1f44);
+  box-shadow: 0 8px 24px rgba(233,164,34,.38);
+  animation: shield-pop .8s cubic-bezier(.34,1.56,.64,1) .3s both;
 }
-@keyframes logo-pop {
-  from { transform: scale(0) rotate(-20deg); opacity:0; }
-  to   { transform: scale(1) rotate(0);      opacity:1; }
+@keyframes shield-pop {
+  from { transform: scale(0) rotate(-15deg); opacity: 0; }
+  to   { transform: scale(1) rotate(0);      opacity: 1; }
 }
-.pp-card-label { font-size:.7rem; color:rgba(255,255,255,.4); margin-bottom:3px; position:relative;z-index:1; }
-.pp-card-name  { font-size:1.08rem; font-weight:800; color:#fff; margin-bottom:2px; position:relative;z-index:1; }
-.pp-card-sub   { font-size:.75rem; color:rgba(255,255,255,.38); position:relative;z-index:1; }
+.pc-welcome { font-size: .72rem; color: rgba(255,255,255,.45); margin-bottom: 3px; }
+.pc-head h2 { font-size: 1.1rem; font-weight: 800; color: #fff; margin-bottom: 2px; }
+.pc-head p  { font-size: .76rem; color: rgba(255,255,255,.4); }
 
-/* Card body */
-.pp-card-body { padding: 22px 20px 20px; }
+.pc-body { padding: 20px 22px; }
 
-/* Portal buttons */
-.pp-portals { display: flex; flex-direction: column; gap: 9px; }
+/* Buttons */
+.pa-list { display: flex; flex-direction: column; gap: 8px; }
 
-.pp-btn {
-  display: flex; align-items: center; gap: 13px; padding: 13px 14px;
-  border-radius: 14px; border: none; width: 100%; cursor: pointer;
-  font-family: inherit; color: #fff; text-decoration: none;
-  transition: transform .18s, filter .18s, box-shadow .18s;
+.pa-btn {
+  display: flex; align-items: center; gap: 12px; padding: 13px 14px;
+  border-radius: 13px; text-decoration: none; cursor: pointer; border: none;
+  width: 100%; text-align: left; color: #fff; font-family: inherit;
+  transition: transform .18s, filter .18s;
+  position: relative;
 }
-.pp-btn:hover { transform: translateY(-2px); filter: brightness(1.1); color: #fff; }
-.pp-btn:active { transform: translateY(0); filter: brightness(.95); }
+.pa-btn:hover { transform: translateY(-2px); filter: brightness(1.08); }
+.pa-btn-nav   { background: linear-gradient(135deg, var(--navy,#0a1f44), var(--navy-mid,#1a3a7a)); box-shadow: 0 3px 14px rgba(10,31,68,.4); }
+.pa-btn-teach { background: linear-gradient(135deg, #5b21b6, #7c3aed); box-shadow: 0 3px 14px rgba(91,33,182,.35); }
+.pa-btn-stu   { background: linear-gradient(135deg, var(--teal,#0369a1), var(--teal,#0369a1)); box-shadow: 0 3px 14px rgba(3,105,161,.35); }
 
-.pp-btn-admin {
-  background: linear-gradient(135deg, {{ $theme['secondary'] ?? '#0a1f44' }}, {{ $theme['navBg'] ?? '#0d2857' }});
-  box-shadow: 0 4px 16px rgba(10,31,68,.35);
+.pa-icon {
+  width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
+  background: rgba(255,255,255,.16);
+  display: flex; align-items: center; justify-content: center; font-size: .95rem;
 }
-.pp-btn-teacher {
-  background: linear-gradient(135deg, #5b21b6, #7c3aed);
-  box-shadow: 0 4px 16px rgba(91,33,182,.3);
-}
-.pp-btn-student {
-  background: linear-gradient(135deg, #0369a1, #0891b2);
-  box-shadow: 0 4px 16px rgba(3,105,161,.3);
-}
+.pa-strong { display: block; font-weight: 700; font-size: .86rem; margin-bottom: 1px; }
+.pa-sub    { font-size: .7rem; opacity: .6; }
+.pa-arr    { margin-left: auto; font-size: .6rem; opacity: .4; flex-shrink: 0; transition: margin .18s, opacity .18s; }
+.pa-btn:hover .pa-arr { margin-right: -3px; opacity: .8; }
 
-.pp-btn-icon {
-  width: 38px; height: 38px; border-radius: 11px; flex-shrink: 0;
-  background: rgba(255,255,255,.15);
-  display: flex; align-items: center; justify-content: center; font-size: .92rem;
-}
-.pp-btn-title { display:block; font-weight:700; font-size:.86rem; }
-.pp-btn-desc  { display:block; font-size:.7rem; opacity:.6; margin-top:1px; }
-.pp-btn-arr   { margin-left:auto; font-size:.62rem; opacity:.4; flex-shrink:0; transition:margin .18s,opacity .18s; }
-.pp-btn:hover .pp-btn-arr { margin-right:-3px; opacity:.85; }
+/* Dropdown */
+.pa-wrap { position: relative; }
+.pa-chev { margin-left: auto; font-size: .68rem; opacity: .5; transition: transform .22s; flex-shrink: 0; }
+.pa-wrap.open .pa-chev { transform: rotate(180deg); }
 
-/* Admin dropdown */
-.pp-drop-wrap { position:relative; }
-.pp-drop-chev {
-  margin-left: auto; font-size: .68rem; opacity: .5; flex-shrink: 0;
-  transition: transform .22s;
+.pa-drop {
+  display: none; margin-top: 5px;
+  background: #fff; border-radius: 14px; overflow: hidden;
+  border: 1px solid #e8edf2;
+  box-shadow: 0 16px 44px rgba(0,0,0,.14);
 }
-.pp-drop-wrap.open .pp-drop-chev { transform: rotate(180deg); }
-
-.pp-dropdown {
-  display: none; margin-top: 6px;
-  background: #fff; border-radius: 16px; overflow: hidden;
-  border: 1px solid #e8edf4;
-  box-shadow: 0 20px 50px rgba(0,0,0,.12);
-}
-.pp-drop-wrap.open .pp-dropdown {
-  display: block;
-  animation: drop-open .2s ease both;
-}
-@keyframes drop-open {
-  from { opacity:0; transform:translateY(-8px); }
-  to   { opacity:1; transform:translateY(0); }
+.pa-wrap.open .pa-drop { display: block; animation: drop-in .2s ease both; }
+@keyframes drop-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-.pp-role {
-  display: flex; align-items: center; gap: 12px; padding: 11px 14px;
-  text-decoration: none; background: #fff;
-  border-bottom: 1px solid #f0f4f8;
+.pa-role {
+  display: flex; align-items: center; gap: 11px; padding: 11px 14px;
+  text-decoration: none; background: #fff; border-bottom: 1px solid #f3f7fb;
   transition: background .15s, transform .15s;
 }
-.pp-role:last-child { border-bottom: none; }
-.pp-role:hover { background: #f7fafd; transform: translateX(3px); }
-.pp-role-dot {
-  width: 34px; height: 34px; border-radius: 10px; flex-shrink: 0;
+.pa-role:last-child { border-bottom: none; }
+.pa-role:hover { background: #f7fafd; transform: translateX(3px); }
+.pa-role-dot {
+  width: 32px; height: 32px; border-radius: 9px; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
   font-size: .75rem; color: #fff;
 }
-.pp-role-name { display:block; font-size:.82rem; font-weight:700; color:#1e293b; }
-.pp-role-sub  { display:block; font-size:.68rem; color:#94a3b8; margin-top:1px; }
-.pp-role-arr  { margin-left:auto; font-size:.58rem; color:#cbd5e1; }
+.pa-role-name { font-size: .82rem; font-weight: 700; color: #1e293b; display: block; }
+.pa-role-sub  { font-size: .68rem; color: #94a3b8; display: block; }
+.pa-role-arr  { margin-left: auto; font-size: .58rem; color: #d1d5db; }
 
 /* Divider */
-.pp-divider {
-  display:flex; align-items:center; gap:8px; margin:12px 0;
-}
-.pp-divider::before,.pp-divider::after {
-  content:''; flex:1; height:1px; background:#e8edf4;
-}
-.pp-divider span {
-  font-size:.6rem; color:#94a3b8; font-weight:700;
-  letter-spacing:.12em; text-transform:uppercase;
-}
+.pa-div { display:flex; align-items:center; gap:9px; margin:12px 0; }
+.pa-div::before,.pa-div::after { content:''; flex:1; height:1px; background:#e8edf2; }
+.pa-div span { font-size:.62rem; color:#94a3b8; font-weight:700; letter-spacing:.1em; text-transform:uppercase; }
 
 /* Info note */
-.pp-note {
+.pa-note {
+  background: #f8fafc; border-radius: 11px; padding: 11px 13px;
+  font-size: .76rem; color: #64748b; line-height: 1.6;
   display: flex; gap: 9px; align-items: flex-start;
-  background: #f8fafc; border-radius: 12px;
-  padding: 11px 13px; font-size: .75rem;
-  color: #64748b; line-height: 1.6; margin-top: 12px;
 }
-.pp-note i { color: #e9a422; flex-shrink:0; margin-top:2px; }
+.pa-note i { color: var(--gold-dark,#b8860e); flex-shrink: 0; margin-top: 2px; }
 
-/* ── Responsive ────────────────────────────────────────── */
-@media (max-width: 1100px) {
-  .pp-inner { grid-template-columns: 1fr 440px; gap: 48px; }
+/* ── Responsive ───────────────────────────────────────────── */
+html, body { overflow-x: hidden; }
+@media(max-width:1024px) {
+  .ph-inner { grid-template-columns:1fr; gap:36px; max-width:520px; width:100%; }
+  .pl-title { font-size:2.2rem; }
 }
-@media (max-width: 900px) {
-  .pp-inner {
-    grid-template-columns: 1fr;
-    gap: 36px;
-    padding: 40px 20px 48px;
-    max-width: 500px;
-  }
-  .pp-left { order: 2; }
-  .pp-card { order: 1; }
-  .pp-features, .pp-stats { display: none; }
-  .pp-desc { max-width: 100%; }
+@media(max-width:600px) {
+  .ph { min-height:100dvh; padding-top:76px; }
+  .ph-inner { padding:28px 16px 48px; gap:28px; }
+  .pl-title { font-size:1.8rem; }
+  .pl-sub   { font-size:.9rem; }
+  .pc-body  { padding:16px 14px; }
+  .pc-head  { padding:18px 16px 14px; }
+  .pa-btn   { padding:11px 12px; }
+  .pa-icon  { width:32px; height:32px; }
+  .pl-feats { display:none; }
+  .pl-stats { display:none; }
 }
-@media (max-width: 540px) {
-  .pp-wrap { padding-top: 68px; }
-  .pp-inner { padding: 28px 14px 40px; gap: 24px; }
-  .pp-title { font-size: 1.75rem; }
-  .pp-desc  { font-size: .88rem; margin-bottom: 0; }
-  .pp-card  { border-radius: 20px; }
-  .pp-card-head { padding: 20px 18px 16px; }
-  .pp-card-body { padding: 16px 14px; }
-  .pp-btn   { padding: 11px 12px; gap: 11px; }
-  .pp-btn-icon { width: 34px; height: 34px; font-size: .82rem; }
-  .pp-btn-title { font-size: .82rem; }
-  .pp-btn-desc  { font-size: .67rem; }
-}
+/* Keep the right card within view on any screen */
+.pc { max-width:100%; width:100%; }
 </style>
 @endsection
 
 @section('content')
-@php
-  $tenantSlug = session('tenant_slug');
-  $adminUrl   = $tenantSlug ? route('school.admin.login', $tenantSlug) : '#';
-  $teachUrl   = $tenantSlug ? route('school.lecturer.login', $tenantSlug) : route('teachers-portal.login');
-  $stuUrl     = route('student-portal.login') . ($tenantSlug ? '?tenant=' . $tenantSlug : '');
+@php $tenantSlug = session('tenant_slug'); @endphp
 
-  $roles = [
-    ['Super Admin',  'Full system access',   'fa-shield-halved',  '#0a1f44', null],
-    ['Headmaster',   'Academic leadership',  'fa-user-tie',        '#166534', 'headmaster'],
-    ['Headteacher',  'School management',    'fa-chalkboard',      '#0f766e', 'headteacher'],
-    ['Deputy Head',  'Deputy management',    'fa-user-check',      '#0369a1', 'deputy'],
-    ['Accountant',   'Fees &amp; finance',   'fa-calculator',      '#92400e', 'accountant'],
-    ['Secretary',    'Administration',       'fa-clipboard-user',  '#6b21a8', 'secretary'],
-  ];
-@endphp
+<section class="ph" style="background:{{ $theme['secondary'] ?? '#0a1f44' }}">
+  <div class="ph-grid"></div>
+  <div class="ph-orb ph-orb-gold"></div>
+  <div class="ph-orb ph-orb-blue"></div>
 
-{{-- Fixed background (outside main flex) --}}
-<div class="pp-bg">
-  <div class="pp-bg-grad"></div>
-  <div class="pp-grid"></div>
-  <div class="pp-orb pp-orb-1"></div>
-  <div class="pp-orb pp-orb-2"></div>
-  {{-- Subtle floating dots (server-side seeded so they don't shift on every render) --}}
-  @for($i = 0; $i < 18; $i++)
-  @php
-    $colors = ['rgba(233,164,34,.6)','rgba(255,255,255,.4)','rgba(8,145,178,.55)'];
-    $sizes  = [4, 5, 6, 7, 8];
-    $left   = (($i * 53) % 97) + 1;
-    $bot    = (($i * 37) % 45) + 2;
-    $dur    = (($i * 3)  % 10) + 9;
-    $delay  = (($i * 7)  % 18);
-    $color  = $colors[$i % 3];
-    $size   = $sizes[$i % 5];
-  @endphp
-  <div class="pp-dot" style="
-    width:{{ $size }}px; height:{{ $size }}px;
-    background:{{ $color }};
-    left:{{ $left }}%; bottom:{{ $bot }}%;
-    animation-duration:{{ $dur }}s;
-    animation-delay:-{{ $delay }}s;
+  {{-- Wave sweeps --}}
+  <div class="ph-wave"></div>
+  <div class="ph-wave"></div>
+
+  {{-- Rotating rings --}}
+  <div class="ph-ring" style="width:300px;height:300px;top:10%;right:5%;animation-duration:25s;"></div>
+  <div class="ph-ring" style="width:180px;height:180px;top:15%;right:9%;animation-duration:18s;animation-direction:reverse;border-color:rgba(8,145,178,.14);"></div>
+  <div class="ph-ring" style="width:500px;height:500px;bottom:-10%;left:-5%;animation-duration:40s;border-color:rgba(233,164,34,.07);"></div>
+
+  {{-- Design 1: Floating circles --}}
+  @for($i=0;$i<16;$i++)
+  @php $pc = ['rgba(233,164,34,.7)','rgba(255,255,255,.45)','rgba(8,145,178,.65)','rgba(233,164,34,.4)'][$i%4]; @endphp
+  <div class="ph-particle" style="
+    width:{{ rand(5,10) }}px; height:{{ rand(5,10) }}px;
+    background:{{ $pc }};
+    left:{{ rand(3,97) }}%; bottom:{{ rand(0,30) }}%;
+    animation-duration:{{ rand(8,16) }}s;
+    animation-delay:-{{ rand(0,16) }}s;
   "></div>
   @endfor
-</div>
 
-<div class="pp-wrap">
-  <div class="pp-inner">
+  {{-- Design 2: Floating squares, diamonds, rings --}}
+  @php
+    $shapes = ['square','diamond','ring'];
+    $shapeColors = ['rgba(233,164,34,.5)','rgba(255,255,255,.3)','rgba(8,145,178,.5)'];
+  @endphp
+  @for($i=0;$i<14;$i++)
+  @php
+    $shape = $shapes[$i%3];
+    $col   = $shapeColors[$i%3];
+    $sz    = rand(6,14);
+  @endphp
+  <div class="ph-shape {{ $shape }}" style="
+    width:{{ $sz }}px; height:{{ $sz }}px;
+    {{ $shape === 'ring' ? 'border:2px solid '.$col.';' : 'background:'.$col.';' }}
+    left:{{ rand(5,95) }}%; bottom:{{ rand(0,40) }}%;
+    animation-duration:{{ rand(10,20) }}s;
+    animation-delay:-{{ rand(0,18) }}s;
+    transform-origin: center;
+  "></div>
+  @endfor
 
-    {{-- ══ LEFT: Welcome copy ══════════════════════════════════════ --}}
-    <div class="pp-left">
-      <div class="pp-eyebrow">
-        <span class="pp-pulse"></span>
-        Official School Portals
-      </div>
+  <div class="ph-inner">
 
-      <p class="pp-greeting">
-        <i class="fas fa-hand-sparkles" style="margin-right:6px;color:#e9a422;"></i>
-        Welcome to <strong style="color:#e9a422;">{{ $site->site_name ?? 'our school' }}</strong>
+    {{-- ΓöÇΓöÇ LEFT WELCOME PANEL ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ --}}
+    <div class="pl">
+      <div class="pl-welcome"><span class="pl-dot"></span> Official School Portals</div>
+
+      {{-- Welcoming greeting --}}
+      <p class="pl-greet">
+        <i class="fas fa-hand-wave" style="margin-right:7px;"></i>
+        Welcome to <strong style="color:var(--gold,#e9a422)">{{ $site->site_name ?? 'our school' }}</strong>
       </p>
 
-      <h1 class="pp-title">
-        {!! $site->portal_intro_title ?? 'Your Gateway to <em>School Life</em>' !!}
-      </h1>
+      <h1 class="pl-title">{!! $site->portal_intro_title ?? 'Your Gateway to <em>School Life</em>' !!}</h1>
+      <p class="pl-sub">{{ $site->portal_intro_subtitle ?? 'Everything your school community needs ΓÇö results, attendance, fees, and more ΓÇö all in one secure place. Choose your portal below to get started.' }}</p>
 
-      <p class="pp-desc">
-        {{ $site->portal_intro_subtitle ?? 'Everything your school community needs — results, attendance, fees and more — all in one secure place. Choose your portal below to get started.' }}
-      </p>
-
-      <div class="pp-features">
+      <div class="pl-feats">
         @foreach([
-          ['fa-users-gear',    'Student &amp; Parent Management', 'Profiles, enrollment and guardian records'],
-          ['fa-graduation-cap','Academic Records &amp; Results',  'Report cards, grades and transcripts'],
-          ['fa-chart-line',    'Real-Time Analytics',             'Live dashboards and performance insights'],
-          ['fa-shield-halved', 'Role-Based Secure Access',        'Every user sees only what they need'],
-        ] as [$ic, $t, $s])
-        <div class="pp-feat">
-          <div class="pp-feat-icon"><i class="fas {{ $ic }}"></i></div>
-          <div>
-            <span class="pp-feat-title">{!! $t !!}</span>
-            <span class="pp-feat-sub">{{ $s }}</span>
-          </div>
+          ['fa-users-gear',    'Student &amp; Parent Management',   'Profiles, enrollment and guardian records'],
+          ['fa-graduation-cap','Academic Records &amp; Results',     'Report cards, grades and transcripts'],
+          ['fa-chart-line',    'Real-Time Analytics',               'Live dashboards and performance insights'],
+          ['fa-shield-halved', 'Role-Based Secure Access',          'Every user sees only what they need'],
+        ] as [$ic,$t,$s])
+        <div class="pl-feat">
+          <div class="pl-feat-icon"><i class="fas {{ $ic }}"></i></div>
+          <div><strong>{!! $t !!}</strong><span>{{ $s }}</span></div>
         </div>
         @endforeach
       </div>
 
-      <div class="pp-stats">
-        <div class="pp-stat"><strong>5+</strong><span>Portals</span></div>
-        <div class="pp-stat"><strong>SSL</strong><span>Secured</span></div>
-        <div class="pp-stat"><strong>24/7</strong><span>Access</span></div>
+      <div class="pl-stats">
+        <div class="pl-stat"><strong>5+</strong><span>Portals</span></div>
+        <div class="pl-stat"><strong>SSL</strong><span>Secured</span></div>
+        <div class="pl-stat"><strong>24/7</strong><span>Access</span></div>
       </div>
     </div>
 
-    {{-- ══ RIGHT: Access card ═══════════════════════════════════════ --}}
-    <div class="pp-card">
-
-      {{-- Header --}}
-      <div class="pp-card-head">
-        @if(!empty($siteLogoUrl))
-        <div class="pp-card-logo" style="background:transparent;padding:0;">
-          <img src="{{ $siteLogoUrl }}" alt="{{ $site->site_name ?? 'School' }}"
-               style="width:64px;height:64px;object-fit:contain;border-radius:18px;">
-        </div>
-        @else
-        <div class="pp-card-logo"><i class="fas fa-school"></i></div>
-        @endif
-        <p class="pp-card-label">Welcome back</p>
-        <h2 class="pp-card-name">{{ $site->site_name ?? 'School' }}</h2>
-        <p class="pp-card-sub">Select your role and sign in securely</p>
+    {{-- ΓöÇΓöÇ RIGHT ACCESS CARD ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ --}}
+    <div class="pc">
+      <div class="pc-head" style="background:{{ $theme['secondary'] ?? '#0a1f44' }}">
+        <div class="pc-shield"><i class="fas fa-school"></i></div>
+        <p class="pc-welcome">Welcome back</p>
+        <h2>{{ $site->site_name ?? 'School' }}</h2>
+        <p>Select your role and sign in securely</p>
       </div>
 
-      {{-- Body --}}
-      <div class="pp-card-body">
-        <div class="pp-portals">
+      <div class="pc-body">
+        <div class="pa-list">
 
           {{-- Admin & Staff dropdown --}}
-          <div class="pp-drop-wrap" id="ppAdminWrap">
-            <button type="button" class="pp-btn pp-btn-admin" onclick="ppToggleDrop()">
-              <div class="pp-btn-icon"><i class="fas fa-crown"></i></div>
+          @php
+            $adminUrl = $tenantSlug ? route('school.admin.login', $tenantSlug) : route('admin.login');
+            $roles = [
+              ['Super Admin',  'Full system access',  'fa-shield-halved', '#0a1f44', null],
+              ['Branch Admin', 'Branch management',   'fa-building',      '#1e40af', null],
+              ['Headmaster',   'Academic leadership', 'fa-user-tie',       '#166534', 'headmaster'],
+              ['Headteacher',  'School management',   'fa-chalkboard',     '#0f766e', 'headteacher'],
+              ['Accountant',   'Fees & finance',      'fa-calculator',     '#92400e', 'accountant'],
+              ['Secretary',    'Administration',      'fa-clipboard-user', '#6b21a8', 'secretary'],
+              ['Deputy Head',  'Deputy management',   'fa-user-check',     '#0369a1', 'deputy'],
+            ];
+          @endphp
+          <div class="pa-wrap" id="adminWrap">
+            <button type="button" class="pa-btn pa-btn-nav" onclick="toggleDrop()">
+              <div class="pa-icon"><i class="fas fa-crown"></i></div>
               <div>
-                <span class="pp-btn-title">Admin &amp; Staff Portal</span>
-                <span class="pp-btn-desc">Administrators, heads, accountants &amp; secretaries</span>
+                <span class="pa-strong">Admin &amp; Staff Portal</span>
+                <span class="pa-sub">Administrators, heads, accountants &amp; secretaries</span>
               </div>
-              <i class="fas fa-chevron-down pp-drop-chev"></i>
+              <i class="fas fa-chevron-down pa-chev"></i>
             </button>
-            <div class="pp-dropdown" id="ppAdminDrop">
-              @foreach($roles as [$label, $sub, $icon, $color, $role])
+            <div class="pa-drop" id="adminDrop">
+              @foreach($roles as [$label,$sub,$icon,$color,$role])
               @php
                 if ($role) {
-                  $url = $tenantSlug
-                    ? route('school.staff-portal', [$tenantSlug, $role])
-                    : '#';
-                  try {
-                    $url = route('staff-portal.login.role', $role)
-                         . ($tenantSlug ? '?tenant=' . $tenantSlug : '');
-                  } catch (\Throwable $e) { $url = $adminUrl; }
-                } else {
-                  $url = $adminUrl;
-                }
+                  try { $url = route('staff-portal.login.role',$role).($tenantSlug ? '?tenant='.$tenantSlug : ''); }
+                  catch (\Throwable $e) { $url = $adminUrl; }
+                } else { $url = $adminUrl; }
               @endphp
-              <a href="{{ $url }}" class="pp-role">
-                <div class="pp-role-dot" style="background:{{ $color }};">
+              <a href="{{ $url }}" class="pa-role">
+                <div class="pa-role-dot" style="background:{{ $color }}">
                   <i class="fas {{ $icon }}"></i>
                 </div>
                 <div>
-                  <span class="pp-role-name">{{ $label }}</span>
-                  <span class="pp-role-sub">{!! $sub !!}</span>
+                  <span class="pa-role-name">{{ $label }}</span>
+                  <span class="pa-role-sub">{{ $sub }}</span>
                 </div>
-                <i class="fas fa-arrow-right pp-role-arr"></i>
+                <i class="fas fa-arrow-right pa-role-arr"></i>
               </a>
               @endforeach
             </div>
           </div>
 
           {{-- Teacher --}}
-          <a href="{{ $teachUrl }}" class="pp-btn pp-btn-teacher">
-            <div class="pp-btn-icon"><i class="fas fa-chalkboard-user"></i></div>
+          <a href="{{ $tenantSlug ? route('school.lecturer.login',$tenantSlug) : route('teachers-portal.login') }}" class="pa-btn pa-btn-teach">
+            <div class="pa-icon"><i class="fas fa-chalkboard-user"></i></div>
             <div>
-              <span class="pp-btn-title">{{ $site->portal_teacher_title ?? 'Teacher Portal' }}</span>
-              <span class="pp-btn-desc">{{ $site->portal_teacher_desc ?? 'Attendance, scores and class work' }}</span>
+              <span class="pa-strong">{{ $site->portal_teacher_title ?? 'Teacher Portal' }}</span>
+              <span class="pa-sub">{{ $site->portal_teacher_desc ?? 'Attendance, scores and class work' }}</span>
             </div>
-            <i class="fas fa-arrow-right pp-btn-arr"></i>
+            <i class="fas fa-arrow-right pa-arr"></i>
           </a>
 
           {{-- Student --}}
-          <a href="{{ $stuUrl }}" class="pp-btn pp-btn-student">
-            <div class="pp-btn-icon"><i class="fas fa-user-graduate"></i></div>
+          <a href="{{ route('student-portal.login') }}" class="pa-btn pa-btn-stu">
+            <div class="pa-icon"><i class="fas fa-user-graduate"></i></div>
             <div>
-              <span class="pp-btn-title">{{ $site->portal_student_title ?? 'Student Portal' }}</span>
-              <span class="pp-btn-desc">{{ $site->portal_student_desc ?? 'Results, attendance and fees' }}</span>
+              <span class="pa-strong">{{ $site->portal_student_title ?? 'Student Portal' }}</span>
+              <span class="pa-sub">{{ $site->portal_student_desc ?? 'Results, attendance and fees' }}</span>
             </div>
-            <i class="fas fa-arrow-right pp-btn-arr"></i>
+            <i class="fas fa-arrow-right pa-arr"></i>
           </a>
 
         </div>
 
-        <div class="pp-divider"><span>Info</span></div>
+        <div class="pa-div"><span>Info</span></div>
 
-        <div class="pp-note">
+        <div class="pa-note">
           <i class="fas fa-info-circle"></i>
           <span>{{ $site->portal_help_text ?? 'Not sure which portal? Contact your school administrator for your login details.' }}</span>
         </div>
 
         @if(isset($site) && $site->contact_phone)
-        <div class="pp-note" style="background:rgba(233,164,34,.06);border:1px solid rgba(233,164,34,.18);">
-          <i class="fas fa-phone" style="color:#b8860e;"></i>
-          <span>Help line: <strong><a href="tel:{{ $site->contact_phone }}" style="color:#0a1f44;">{{ $site->contact_phone }}</a></strong></span>
+        <div class="pa-note" style="margin-top:7px;background:rgba(233,164,34,.07);border:1px solid rgba(233,164,34,.2);">
+          <i class="fas fa-phone"></i>
+          <span style="color:#374151;">Help line: <strong><a href="tel:{{ $site->contact_phone }}" style="color:var(--navy,#0a1f44)">{{ $site->contact_phone }}</a></strong></span>
         </div>
         @endif
       </div>
     </div>
 
   </div>
-</div>
+</section>
 @endsection
 
 @section('extra_js')
 <script>
-function ppToggleDrop() {
-  var wrap = document.getElementById('ppAdminWrap');
-  var drop = document.getElementById('ppAdminDrop');
-  var isOpen = wrap.classList.contains('open');
-  wrap.classList.toggle('open', !isOpen);
-  drop.style.display = isOpen ? 'none' : 'block';
+function toggleDrop() {
+    var wrap = document.getElementById('adminWrap');
+    var drop = document.getElementById('adminDrop');
+    var open = wrap.classList.contains('open');
+    wrap.classList.toggle('open', !open);
+    if (drop) drop.style.display = open ? 'none' : 'block';
 }
 document.addEventListener('click', function(e) {
-  var wrap = document.getElementById('ppAdminWrap');
-  if (wrap && !wrap.contains(e.target)) {
-    wrap.classList.remove('open');
-    var drop = document.getElementById('ppAdminDrop');
-    if (drop) drop.style.display = 'none';
-  }
+    var wrap = document.getElementById('adminWrap');
+    if (wrap && !wrap.contains(e.target)) {
+        wrap.classList.remove('open');
+        var drop = document.getElementById('adminDrop');
+        if (drop) drop.style.display = 'none';
+    }
 });
 </script>
 @endsection

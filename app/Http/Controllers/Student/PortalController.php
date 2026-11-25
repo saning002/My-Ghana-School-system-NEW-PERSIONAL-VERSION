@@ -56,6 +56,14 @@ class PortalController extends Controller
     }
 
     /** Authenticate student by registration number + full name + password */
+    /** Redirect back to the login form preserving the ?tenant= param */
+    private function backToLogin(Request $request, array $errors = [], array $input = [])
+    {
+        $tenantParam = $request->query('tenant') ?? session('tenant_slug');
+        $url = route('student-portal.login') . ($tenantParam ? '?tenant=' . $tenantParam : '');
+        return redirect($url)->withErrors($errors)->withInput($input);
+    }
+
     public function login(Request $request)
     {
         // Ensure tenant DB is active — handles the case where session was not
@@ -140,9 +148,9 @@ class PortalController extends Controller
         }
 
         if (!$student) {
-            return back()->withErrors([
+            return $this->backToLogin($request, [
                 'credentials' => 'Invalid registration number. Please check and try again.',
-            ])->withInput(['student_id' => $request->student_id, 'full_name' => $request->full_name]);
+            ], ['student_id' => $request->student_id, 'full_name' => $request->full_name]);
         }
 
 
@@ -151,9 +159,9 @@ class PortalController extends Controller
         
         if (!$student->user) {
             Log::error('Student found but no associated user', ['student_id' => $student->id]);
-            return back()->withErrors([
+            return $this->backToLogin($request, [
                 'credentials' => 'System error: Student profile incomplete. Please contact administrator.',
-            ])->withInput(['student_id' => $request->student_id]);
+            ], ['student_id' => $request->student_id]);
         }
 
         // Robust name matching:
@@ -183,9 +191,9 @@ class PortalController extends Controller
         }
 
         if (!$isMatch) {
-            return back()->withErrors([
+            return $this->backToLogin($request, [
                 'credentials' => 'The name entered does not match the registration number. Please check and try again.',
-            ])->withInput(['student_id' => $request->student_id, 'full_name' => $request->full_name]);
+            ], ['student_id' => $request->student_id, 'full_name' => $request->full_name]);
         }
 
         // Verify password against student record first, then fall back to linked user record
@@ -201,9 +209,9 @@ class PortalController extends Controller
         }
 
         if (!$validPassword) {
-            return back()->withErrors([
+            return $this->backToLogin($request, [
                 'credentials' => 'Invalid password. Please check and try again.',
-            ])->withInput(['student_id' => $request->student_id, 'full_name' => $request->full_name]);
+            ], ['student_id' => $request->student_id, 'full_name' => $request->full_name]);
         }
 
         // Rehash any legacy plain-text password values after successful login

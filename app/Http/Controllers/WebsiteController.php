@@ -221,6 +221,16 @@ class WebsiteController extends Controller
     {
         $site  = $this->site();
         $theme = $site->websiteTheme ?? \App\Models\Website\SiteSetting::defaultTheme();
-        return view('website.portal', compact('site', 'theme'));
+
+        // Resolve logo URL — handle both Cloudinary URLs and local storage paths
+        $rawLogo     = $site->logo_path ?? \App\Models\Setting::get('site_logo_url', '');
+        $siteLogoUrl = null;
+        if ($rawLogo) {
+            $siteLogoUrl = filter_var($rawLogo, FILTER_VALIDATE_URL)
+                ? $rawLogo
+                : \Illuminate\Support\Facades\Storage::disk('public')->url($rawLogo);
+        }
+
+        return view('website.portal', compact('site', 'theme', 'siteLogoUrl'));
     }
 }

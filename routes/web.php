@@ -1130,12 +1130,12 @@ require __DIR__.'/auth.php';
 // ═══════════════════════════════════════════════════════════════════════════
 // STUDENT PORTAL
 // ═══════════════════════════════════════════════════════════════════════════
-Route::get('/student-portal/login',  [PortalController::class, 'loginForm'])->name('student-portal.login');
-Route::post('/student-portal/login', [PortalController::class, 'login'])->name('student-portal.login.submit');
+Route::get('/student-portal/login',  [PortalController::class, 'loginForm'])->name('student-portal.login')->middleware('tenant');
+Route::post('/student-portal/login', [PortalController::class, 'login'])->name('student-portal.login.submit')->middleware('tenant');
 
 Route::prefix('portal')->name('portal.')->group(function () {
-    Route::get('/login',  [PortalController::class, 'loginForm'])->name('login');
-    Route::post('/login', [PortalController::class, 'login'])->name('login.submit');
+    Route::get('/login',  [PortalController::class, 'loginForm'])->name('login')->middleware('tenant');
+    Route::post('/login', [PortalController::class, 'login'])->name('login.submit')->middleware('tenant');
     Route::post('/logout',[PortalController::class, 'logout'])->name('logout');
 
     Route::middleware(['tenant', 'portal.auth'])->group(function () {

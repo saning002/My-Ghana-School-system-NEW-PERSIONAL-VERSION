@@ -27,7 +27,8 @@ class TenantMiddleware
         if (!$tenant) {
             $isSchoolRoute = $request->is('school/*')
                 || $request->is('website/*')
-                || $request->is('portal/*');
+                || $request->is('portal/*')
+                || $request->is('student-portal/*');
 
             if ($isSchoolRoute) {
                 return response()->view('tenant.not-found', [], 404);
