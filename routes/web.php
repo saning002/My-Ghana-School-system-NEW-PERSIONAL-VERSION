@@ -2617,13 +2617,40 @@ Route::get('/debug/cloudinary-test', function (\Illuminate\Http\Request $request
             $out['result']       = 'SUCCESS';
             $out['uploaded_url'] = $url;
         } else {
-            $out['result'] = 'FAIL — upload returned null (check Render logs for CloudinaryService error)';
+            // Try the upload directly here to get the real error
+            try {
+                $cloudinary = new \Cloudinary\Cloudinary([
+                    'cloud' => [
+                        'cloud_name' => $tenant->cloudinary_cloud_name,
+                        'api_key'    => $tenant->cloudinary_api_key,
+                        'api_secret' => $tenant->cloudinary_api_secret,
+                    ],
+                    'url' => ['secure' => true],
+                ]);
+                $tmpFile2 = tempnam(sys_get_temp_dir(), 'cld2_') . '.png';
+                file_put_contents($tmpFile2, base64_decode(
+                    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwADhQGAWjR9awAAAABJRU5ErkJggg=='
+                ));
+                $result = $cloudinary->uploadApi()->upload($tmpFile2, [
+                    'folder'        => 'test-uploads',
+                    'resource_type' => 'image',
+                ]);
+                @unlink($tmpFile2);
+                $out['result']          = 'SUCCESS (direct)';
+                $out['uploaded_url']    = $result['secure_url'] ?? 'no url';
+                $out['result_keys']     = array_keys((array)$result);
+            } catch (\Throwable $e2) {
+                @unlink($tmpFile2 ?? '');
+                $out['result']          = 'FAIL — direct upload exception';
+                $out['direct_exception']= $e2->getMessage();
+                $out['direct_trace']    = substr($e2->getTraceAsString(), 0, 1000);
+            }
         }
     } catch (\Throwable $e) {
         @unlink($tmpFile);
         $out['result']    = 'EXCEPTION';
         $out['exception'] = $e->getMessage();
-        $out['trace']     = substr($e->getTraceAsString(), 0, 800);
+        $out['trace']     = substr($e->getTraceAsString(), 0, 1000);
     }
 
     return response()->json($out, 200, [], JSON_PRETTY_PRINT);
