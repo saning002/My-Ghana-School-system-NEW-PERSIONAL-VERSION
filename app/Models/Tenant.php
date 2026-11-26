@@ -211,28 +211,25 @@ class Tenant extends Model
         $isNeon = str_contains($this->db_host, 'neon.tech');
 
         // For Neon: use the POOLER endpoint (keeps connections warm, eliminates cold start).
-        // The "-pooler" pgBouncer endpoint uses transaction-mode pooling which does NOT
-        // support prepared statements — disable them by setting options='-c statement_timeout=30000'
-        // and using PDO::ATTR_EMULATE_PREPARES via the pdo_options key.
+        // The pooler host already contains '-pooler' if set that way in the owner panel.
+        // Standardise: strip then re-add so the host always uses the pooler.
         $host = $this->db_host;
-        // Ensure we're using the pooler (add -pooler if missing, remove if already present then re-add)
         if ($isNeon) {
-            // Strip any existing -pooler then re-add to standardise
             $host = str_replace('-pooler', '', $host);
-            // Convert  ep-xxx.region.aws.neon.tech  →  ep-xxx-pooler.region.aws.neon.tech
+            // ep-xxx.region.aws.neon.tech  →  ep-xxx-pooler.region.aws.neon.tech
             $host = preg_replace('/^(ep-[^.]+)\./', '$1-pooler.', $host);
         }
 
         $config = [
-            'driver'      => 'pgsql',
-            'host'        => $host,
-            'port'        => $this->db_port ?: '5432',
-            'database'    => $this->db_name,
-            'username'    => $this->db_username,
-            'password'    => $this->db_password,
-            'charset'     => 'utf8',
-            'prefix'      => '',
-            'schema'      => 'public',
+            'driver'   => 'pgsql',
+            'host'     => $host,
+            'port'     => $this->db_port ?: '5432',
+            'database' => $this->db_name,
+            'username' => $this->db_username,
+            'password' => $this->db_password,
+            'charset'  => 'utf8',
+            'prefix'   => '',
+            'schema'   => 'public',
         ];
 
         if ($isNeon || str_contains($this->db_host, 'render.com') || str_contains($this->db_host, 'supabase.co')) {
@@ -240,13 +237,12 @@ class Tenant extends Model
         }
 
         // Neon pooler (pgBouncer transaction mode) doesn't support prepared statements.
-        // Setting PDO::ATTR_EMULATE_PREPARES=true makes PDO emulate them client-side,
-        // which works fine with pgBouncer and eliminates the "cached plan must not change" error.
+        // options=-c+options=--no-prepare disables them at the server level cleanly,
+        // which is safer than PDO::ATTR_EMULATE_PREPARES (which breaks JSON casts).
         if ($isNeon) {
-            $config['options'] = '--client_encoding=UTF8';
-            $config['pdo_options'] = [
-                \PDO::ATTR_EMULATE_PREPARES => true,
-            ];
+            $config['options'] = '-c statement_timeout=30000';
+            // Tell pgBouncer we're aware we're connecting via pgBouncer pooler
+            $config['application_name'] = 'laravel_pooler';
         }
 
         return $config;
