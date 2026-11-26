@@ -2236,6 +2236,26 @@ Route::get('/setup/fix-recorded-by', function () {
 });
 
 // ── Clear all caches (view, config, route, opcache) ───────────────────────
+// ── Delete a specific payment record (admin cleanup) ─────────────────────
+// Hit: /setup/delete-payment?tenant=saning1-academy&payment_id=6
+Route::get('/setup/delete-payment', function (\Illuminate\Http\Request $request) {
+    $slug      = $request->query('tenant', 'saning1-academy');
+    $paymentId = (int) $request->query('payment_id', 0);
+    if (!$paymentId) return response()->json(['error' => 'Pass ?payment_id=N']);
+
+    $host = str_replace('-pooler', '', \App\Models\Tenant::on('pgsql')->where('slug', $slug)->value('db_host') ?? '');
+    $tenant = \App\Models\Tenant::on('pgsql')->where('slug', $slug)->first();
+    if (!$tenant) return response()->json(['error' => 'Tenant not found']);
+
+    \Illuminate\Support\Facades\Config::set('database.connections.del_tmp', array_merge($tenant->dbConfig(), ['host' => str_replace('-pooler', '', $tenant->db_host)]));
+    \Illuminate\Support\Facades\DB::purge('del_tmp');
+
+    $deleted = \Illuminate\Support\Facades\DB::connection('del_tmp')->table('payments')->where('id', $paymentId)->delete();
+    \Illuminate\Support\Facades\DB::purge('del_tmp');
+
+    return response()->json(['deleted' => $deleted, 'payment_id' => $paymentId]);
+});
+
 // ── Fix double-encoded JSON in site_settings for all tenants ─────────────
 // Hit: /setup/fix-site-settings-json?tenant=saning1-academy
 Route::get('/setup/fix-site-settings-json', function (\Illuminate\Http\Request $request) {
