@@ -645,6 +645,15 @@ $modeLabel = $modeLabels[$portalMode] ?? 'Student Portal';
             $balance = $fees['balance'] ?? 0;
         @endphp
 
+        {{-- Debug: remove after confirming pay button shows --}}
+        @if(request()->has('fee_debug'))
+        <div style="background:#1e293b;color:#94a3b8;padding:10px;border-radius:8px;font-size:11px;margin-bottom:12px;">
+            balance={{ $balance }} | onlinePay={{ $onlinePayEnabled ? 'YES' : 'NO' }} | sessionId={{ $currentSessionId ?? 'NULL' }}
+            | ps_secret={{ \App\Models\Setting::get('school_paystack_secret_key','') !== '' ? 'SET' : 'EMPTY' }}
+            | ps_public={{ \App\Models\Setting::get('school_paystack_public_key','') !== '' ? 'SET' : 'EMPTY' }}
+        </div>
+        @endif
+
         <div class="analytics-grid" style="grid-template-columns:repeat(2,1fr); gap:12px; margin-bottom:16px;">
           <div class="analytics-box">
             <div class="label">Program Tuition</div>
