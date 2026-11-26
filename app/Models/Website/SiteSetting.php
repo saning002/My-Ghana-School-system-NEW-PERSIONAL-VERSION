@@ -10,11 +10,10 @@ use Illuminate\Support\Facades\Storage;
  * SiteSetting — the website CMS singleton row for a tenant.
  *
  * JSON columns (theme_colors, website_theme, etc.) are stored as JSON strings
- * by DB::table()->update() calls throughout the app. We intentionally do NOT
- * list them in $casts because Eloquent's castAttribute / syncOriginal machinery
- * crashes with array_diff_key() when it encounters a string value where it
- * expects an array. All JSON decoding is done manually in getAttribute() and
- * the named accessors.
+ * by DB::table()->update() calls throughout the app. We intentionally keep
+ * $casts empty and override syncOriginal() so that $original always holds
+ * raw strings — this prevents array_diff_key() TypeError inside Eloquent's
+ * getArrayableItems() / getDirty() when string vs array types are compared.
  */
 class SiteSetting extends Model
 {
@@ -22,7 +21,6 @@ class SiteSetting extends Model
 
     protected $table = 'site_settings';
 
-    // ── JSON columns we decode manually ──────────────────────────────────────
     private const JSON_COLS = [
         'stats', 'theme_colors', 'website_theme', 'hero_minis',
         'why_features', 'about_timeline', 'core_values', 'admissions_steps',
@@ -78,19 +76,20 @@ class SiteSetting extends Model
         'nav_blog_text','nav_events_text','nav_gallery_text','nav_staff_text','nav_contact_text',
     ];
 
-    // No $casts — JSON columns decoded manually to avoid array_diff_key crash
+    // No $casts — JSON decoded manually to avoid Eloquent array_diff_key crash
     protected $casts = [];
 
-    // ═══════════════════════════════════════════════════════════════════════
-    // JSON SAFETY — override syncOriginal so the raw DB strings stored in
-    // $original are normalised to strings (never arrays) before Eloquent's
-    // internal array_diff_key() comparison. This prevents the TypeError.
-    // ═══════════════════════════════════════════════════════════════════════
+    // ─────────────────────────────────────────────────────────────────────────
+    // syncOriginal override
+    // Eloquent's getArrayableItems() calls array_diff_key($values, array_flip($this->getHidden()))
+    // which crashes when $values contains array entries (from cast JSON cols) but
+    // $this->original contains raw strings for those same keys.
+    // By storing $this->attributes directly (raw strings from DB, no casting),
+    // both sides of any comparison are always the same type.
+    // ─────────────────────────────────────────────────────────────────────────
     public function syncOriginal()
     {
-        // Store raw attribute values (strings) as-is — never decode JSON here.
-        // This ensures $original always contains the same type as the raw DB value.
-        $this->original = $this->getRawOriginal();
+        $this->original = $this->attributes;
         return $this;
     }
 
@@ -100,7 +99,7 @@ class SiteSetting extends Model
         if (is_array($raw)) return $raw;
         if (!is_string($raw) || $raw === '') return [];
         $v = json_decode($raw, true);
-        if (is_string($v)) $v = json_decode($v, true); // double-encoded
+        if (is_string($v)) $v = json_decode($v, true);
         return is_array($v) ? $v : [];
     }
 
@@ -134,11 +133,9 @@ class SiteSetting extends Model
     // ── Singleton ─────────────────────────────────────────────────────────────
     public static function instance(): self
     {
-        // Use first() — avoids firstOrCreate which calls fill()+getDirty()
         $row = static::first();
         if ($row) return $row;
 
-        // Insert defaults via raw query (no Eloquent casting involved)
         try {
             \Illuminate\Support\Facades\DB::connection('tenant')
                 ->table('site_settings')
@@ -149,28 +146,27 @@ class SiteSetting extends Model
                     'created_at'   => now(),
                     'updated_at'   => now(),
                 ]);
-        } catch (\Throwable $e) { /* race or missing table — ignore */ }
+        } catch (\Throwable $e) {}
 
         return static::first() ?? new static();
     }
 
-    // ── getAttribute: JSON columns decoded, missing columns get fallbacks ─────
+    // ── getAttribute: JSON cols decoded, missing cols get fallbacks ───────────
     public function getAttribute($key)
     {
         if (in_array($key, self::JSON_COLS, true)) {
             return self::decodeJson($this->attributes[$key] ?? null);
         }
-
         if (array_key_exists($key, $this->attributes)) {
             return parent::getAttribute($key);
         }
-
-        return $this->fallback($key) ?? parent::getAttribute($key);
+        $fallback = $this->fallback($key);
+        return $fallback !== null ? $fallback : parent::getAttribute($key);
     }
 
     private function fallback(string $key): mixed
     {
-        $f = [
+        static $f = [
             'nav_brand_sub'              => 'Education & Excellence',
             'nav_enroll_text'            => 'Enroll Now',
             'hero_panel_title'           => 'World-Class Education',
@@ -276,7 +272,6 @@ class SiteSetting extends Model
         if (!empty($saved)) {
             return array_merge(self::defaultWebsiteTheme(), $saved);
         }
-        // Legacy fallback: pull website-applicable keys from theme_colors
         $legacy = self::decodeJson($this->attributes['theme_colors'] ?? null);
         if (!empty($legacy)) {
             $subset = array_intersect_key($legacy, array_flip(['primary','secondary','accent','text','bg','navBg']));
