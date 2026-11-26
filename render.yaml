@@ -77,3 +77,15 @@ databases:
     plan: free
     databaseName: kmc_college
     user: kmc_user
+
+  # ── Keep-alive cron — pings /ping every 10 min to prevent Render + Neon cold starts ──
+  # Render free tier spins down after 15 min idle; Neon suspends after 5 min idle.
+  # This cron keeps both warm so students never wait 3-5s on first load.
+  - type: cron
+    name: keep-alive-ping
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    schedule: "*/10 * * * *"
+    buildCommand: "echo 'cron'"
+    startCommand: "curl -s https://kmc-college-v136.onrender.com/ping > /dev/null 2>&1"

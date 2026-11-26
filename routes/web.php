@@ -1607,8 +1607,46 @@ Route::get('/debug/test-save-settings', function (\Illuminate\Http\Request $requ
     return response()->json($results, 200, [], JSON_PRETTY_PRINT);
 })->middleware('web');
 
-// ── Go-Live Health Check ──────────────────────────────────────────────────
-Route::get('/health-check', [\App\Http\Controllers\HealthCheckController::class, 'check'])->middleware('web');
+// ── Keep-alive / warm-up ping ─────────────────────────────────────────────
+// Called every 10 min by Render cron to prevent cold starts.
+// Also warms ALL tenant Neon DBs with a cheap SELECT 1.
+Route::get('/ping', function () {
+    $start = microtime(true);
+    $results = ['app' => 'ok', 'ts' => now()->toIso8601String()];
+
+    // Warm the central DB
+    try {
+        \Illuminate\Support\Facades\DB::connection('pgsql')->select('SELECT 1');
+        $results['central_db'] = 'ok';
+    } catch (\Throwable $e) {
+        $results['central_db'] = 'error: ' . $e->getMessage();
+    }
+
+    // Warm each tenant Neon DB (cheap SELECT 1 — just opens the connection)
+    try {
+        $tenants = \App\Models\Tenant::on('pgsql')
+            ->whereNotNull('db_host')
+            ->where('status', 'active')
+            ->get(['id','slug','db_host','db_port','db_name','db_username','db_password']);
+
+        foreach ($tenants as $tenant) {
+            try {
+                \Illuminate\Support\Facades\Config::set('database.connections.warm_' . $tenant->id, $tenant->dbConfig());
+                \Illuminate\Support\Facades\DB::connection('warm_' . $tenant->id)->select('SELECT 1');
+                \Illuminate\Support\Facades\DB::purge('warm_' . $tenant->id);
+                $results['tenant_' . $tenant->slug] = 'warm';
+            } catch (\Throwable $e) {
+                $results['tenant_' . $tenant->slug] = 'cold';
+                \Illuminate\Support\Facades\DB::purge('warm_' . $tenant->id);
+            }
+        }
+    } catch (\Throwable $e) {
+        $results['tenants'] = 'error: ' . $e->getMessage();
+    }
+
+    $results['ms'] = round((microtime(true) - $start) * 1000);
+    return response()->json($results);
+});
 
 // ── Run new notification templates + attendance alert migrations on ALL tenant DBs ──
 // Hit: /setup/migrate-notification-templates
