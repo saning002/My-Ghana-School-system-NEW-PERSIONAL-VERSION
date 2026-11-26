@@ -237,7 +237,6 @@ class Tenant extends Model
 
         return $config;
     }
-    }
 
     public function getStatusBadgeAttribute(): string
     {
