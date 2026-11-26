@@ -133,8 +133,13 @@ class SiteSetting extends Model
     // ── Singleton ─────────────────────────────────────────────────────────────
     public static function instance(): self
     {
-        $row = static::first();
-        if ($row) return $row;
+        try {
+            $row = static::first();
+            if ($row) return $row;
+        } catch (\Throwable $e) {
+            // DB not reachable or hydration error — return empty model with defaults
+            return new static();
+        }
 
         try {
             \Illuminate\Support\Facades\DB::connection('tenant')
@@ -148,7 +153,11 @@ class SiteSetting extends Model
                 ]);
         } catch (\Throwable $e) {}
 
-        return static::first() ?? new static();
+        try {
+            return static::first() ?? new static();
+        } catch (\Throwable $e) {
+            return new static();
+        }
     }
 
     // ── getAttribute: JSON cols decoded, missing cols get fallbacks ───────────

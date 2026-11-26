@@ -2198,6 +2198,68 @@ Route::get('/setup/fix-recorded-by', function () {
 });
 
 // ── Clear all caches (view, config, route, opcache) ───────────────────────
+// ── Fix double-encoded JSON in site_settings for all tenants ─────────────
+// Hit: /setup/fix-site-settings-json?tenant=saning1-academy
+Route::get('/setup/fix-site-settings-json', function (\Illuminate\Http\Request $request) {
+    $slug   = $request->query('tenant', 'saning1-academy');
+    $tenant = \App\Models\Tenant::on('pgsql')->where('slug', $slug)->orWhere('subdomain', $slug)->first();
+    if (!$tenant) return response()->json(['error' => 'Tenant not found: ' . $slug]);
+
+    \Illuminate\Support\Facades\DB::purge('tenant');
+    \Illuminate\Support\Facades\Config::set('database.connections.tenant', $tenant->dbConfig());
+    \Illuminate\Support\Facades\DB::setDefaultConnection('tenant');
+
+    $jsonCols = ['theme_colors','website_theme','stats','hero_minis','why_features',
+        'about_timeline','core_values','admissions_steps','admissions_requirements',
+        'contact_subjects','footer_programs'];
+
+    $fixed = [];
+    try {
+        $row = \Illuminate\Support\Facades\DB::table('site_settings')->first();
+        if (!$row) {
+            \Illuminate\Support\Facades\DB::setDefaultConnection('pgsql');
+            return response()->json(['error' => 'No site_settings row found']);
+        }
+
+        $updates = [];
+        foreach ($jsonCols as $col) {
+            $val = $row->$col ?? null;
+            if (!is_string($val) || empty($val)) continue;
+
+            // Detect double-encoding: json_decode gives a string (not array)
+            $decoded = json_decode($val, true);
+            if (is_string($decoded)) {
+                // Double-encoded — fix it by decoding once more
+                $fixed_val = json_decode($decoded, true);
+                if (is_array($fixed_val)) {
+                    $updates[$col] = json_encode($fixed_val);
+                    $fixed[] = $col . ': double-encoded → fixed';
+                }
+            } else {
+                $fixed[] = $col . ': OK (single-encoded)';
+            }
+        }
+
+        if (!empty($updates)) {
+            $updates['updated_at'] = now();
+            \Illuminate\Support\Facades\DB::table('site_settings')
+                ->where('id', $row->id)
+                ->update($updates);
+        }
+    } catch (\Throwable $e) {
+        \Illuminate\Support\Facades\DB::setDefaultConnection('pgsql');
+        return response()->json(['error' => $e->getMessage()]);
+    }
+
+    \Illuminate\Support\Facades\DB::setDefaultConnection('pgsql');
+    return response()->json([
+        'status' => 'done',
+        'tenant' => $tenant->name,
+        'results' => $fixed,
+        'next' => 'Now visit /setup/clear-cache to clear all caches',
+    ], 200, [], JSON_PRETTY_PRINT);
+});
+
 Route::get('/setup/clear-cache', function () {
     $results = [];
 
