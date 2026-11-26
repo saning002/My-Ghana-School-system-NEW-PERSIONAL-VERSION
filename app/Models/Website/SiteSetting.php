@@ -6,15 +6,6 @@ use App\Models\Concerns\TenantAwareConnection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
-/**
- * SiteSetting — the website CMS singleton row for a tenant.
- *
- * JSON columns (theme_colors, website_theme, etc.) are stored as JSON strings
- * by DB::table()->update() calls throughout the app. We intentionally keep
- * $casts empty and override syncOriginal() so that $original always holds
- * raw strings — this prevents array_diff_key() TypeError inside Eloquent's
- * getArrayableItems() / getDirty() when string vs array types are compared.
- */
 class SiteSetting extends Model
 {
     use TenantAwareConnection;
@@ -79,14 +70,11 @@ class SiteSetting extends Model
     // No $casts — JSON decoded manually to avoid Eloquent array_diff_key crash
     protected $casts = [];
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // syncOriginal override
-    // Eloquent's getArrayableItems() calls array_diff_key($values, array_flip($this->getHidden()))
-    // which crashes when $values contains array entries (from cast JSON cols) but
-    // $this->original contains raw strings for those same keys.
-    // By storing $this->attributes directly (raw strings from DB, no casting),
-    // both sides of any comparison are always the same type.
-    // ─────────────────────────────────────────────────────────────────────────
+    /**
+     * Override syncOriginal so $original always holds raw strings from DB.
+     * This prevents array_diff_key() TypeError when Eloquent compares
+     * $attributes (may have array from manual decode) vs $original (raw string).
+     */
     public function syncOriginal()
     {
         $this->original = $this->attributes;
@@ -130,32 +118,19 @@ class SiteSetting extends Model
         ];
     }
 
-    // ── Singleton ─────────────────────────────────────────────────────────────
+    // ── Singleton — original firstOrCreate approach restored ─────────────────
     public static function instance(): self
     {
         try {
-            $row = static::first();
-            if ($row) return $row;
+            return static::firstOrCreate([], [
+                'site_name'    => 'Kingdom Ministerial University College',
+                'tagline'      => 'Raising Kingdom Leaders for the Nations',
+                'hero_title'   => 'Raising Kingdom Leaders for a',
+                'hero_subtitle'=> 'A premier ministerial institution dedicated to equipping men and women with the knowledge, character, and skills for effective Kingdom ministry.',
+                'theme_colors' => json_encode(self::defaultTheme()),
+            ]);
         } catch (\Throwable $e) {
-            // DB not reachable or hydration error — return empty model with defaults
-            return new static();
-        }
-
-        try {
-            \Illuminate\Support\Facades\DB::connection('tenant')
-                ->table('site_settings')
-                ->insertOrIgnore([
-                    'site_name'    => 'School',
-                    'tagline'      => '',
-                    'theme_colors' => json_encode(self::defaultTheme()),
-                    'created_at'   => now(),
-                    'updated_at'   => now(),
-                ]);
-        } catch (\Throwable $e) {}
-
-        try {
-            return static::first() ?? new static();
-        } catch (\Throwable $e) {
+            // If firstOrCreate fails (e.g. during boot), return empty model
             return new static();
         }
     }

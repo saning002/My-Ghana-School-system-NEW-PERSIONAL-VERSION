@@ -210,14 +210,13 @@ class Tenant extends Model
     {
         $isNeon = str_contains($this->db_host, 'neon.tech');
 
-        // For Neon: use the POOLER endpoint (keeps connections warm, eliminates cold start).
-        // The pooler host already contains '-pooler' if set that way in the owner panel.
-        // Standardise: strip then re-add so the host always uses the pooler.
+        // For Neon: use the DIRECT endpoint (not the pooler).
+        // The pooler (-pooler suffix) requires different auth handling
+        // that causes password authentication failures.
+        // Strip -pooler if present to always use the direct endpoint.
         $host = $this->db_host;
         if ($isNeon) {
             $host = str_replace('-pooler', '', $host);
-            // ep-xxx.region.aws.neon.tech  →  ep-xxx-pooler.region.aws.neon.tech
-            $host = preg_replace('/^(ep-[^.]+)\./', '$1-pooler.', $host);
         }
 
         $config = [
@@ -236,16 +235,8 @@ class Tenant extends Model
             $config['sslmode'] = 'require';
         }
 
-        // Neon pooler (pgBouncer transaction mode) doesn't support prepared statements.
-        // options=-c+options=--no-prepare disables them at the server level cleanly,
-        // which is safer than PDO::ATTR_EMULATE_PREPARES (which breaks JSON casts).
-        if ($isNeon) {
-            $config['options'] = '-c statement_timeout=30000';
-            // Tell pgBouncer we're aware we're connecting via pgBouncer pooler
-            $config['application_name'] = 'laravel_pooler';
-        }
-
         return $config;
+    }
     }
 
     public function getStatusBadgeAttribute(): string
