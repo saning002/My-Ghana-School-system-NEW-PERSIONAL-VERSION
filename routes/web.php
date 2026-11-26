@@ -2202,61 +2202,89 @@ Route::get('/setup/fix-recorded-by', function () {
 // Hit: /setup/fix-site-settings-json?tenant=saning1-academy
 Route::get('/setup/fix-site-settings-json', function (\Illuminate\Http\Request $request) {
     $slug   = $request->query('tenant', 'saning1-academy');
-    $tenant = \App\Models\Tenant::on('pgsql')->where('slug', $slug)->orWhere('subdomain', $slug)->first();
+
+    // Use pgsql to find tenant — NEVER touch Eloquent SiteSetting here
+    $tenant = \Illuminate\Support\Facades\DB::connection('pgsql')
+        ->table('tenants')
+        ->where('slug', $slug)
+        ->orWhere('subdomain', $slug)
+        ->first();
     if (!$tenant) return response()->json(['error' => 'Tenant not found: ' . $slug]);
 
-    \Illuminate\Support\Facades\DB::purge('tenant');
-    \Illuminate\Support\Facades\Config::set('database.connections.tenant', $tenant->dbConfig());
-    \Illuminate\Support\Facades\DB::setDefaultConnection('tenant');
+    // Connect directly — bypass all Eloquent models entirely
+    $cfg = [
+        'driver'   => 'pgsql',
+        'host'     => $tenant->db_host,
+        'port'     => $tenant->db_port ?? 5432,
+        'database' => $tenant->db_name,
+        'username' => $tenant->db_username,
+        'password' => $tenant->db_password,
+        'charset'  => 'utf8',
+        'schema'   => 'public',
+        'sslmode'  => 'require',
+    ];
+    \Illuminate\Support\Facades\Config::set('database.connections.fix_tmp', $cfg);
+    \Illuminate\Support\Facades\DB::purge('fix_tmp');
 
     $jsonCols = ['theme_colors','website_theme','stats','hero_minis','why_features',
         'about_timeline','core_values','admissions_steps','admissions_requirements',
         'contact_subjects','footer_programs'];
 
-    $fixed = [];
+    $results = [];
     try {
-        $row = \Illuminate\Support\Facades\DB::table('site_settings')->first();
+        $row = \Illuminate\Support\Facades\DB::connection('fix_tmp')
+            ->table('site_settings')->first();
+
         if (!$row) {
-            \Illuminate\Support\Facades\DB::setDefaultConnection('pgsql');
-            return response()->json(['error' => 'No site_settings row found']);
+            return response()->json(['error' => 'No site_settings row']);
         }
 
         $updates = [];
         foreach ($jsonCols as $col) {
             $val = $row->$col ?? null;
-            if (!is_string($val) || empty($val)) continue;
-
-            // Detect double-encoding: json_decode gives a string (not array)
+            if (!is_string($val) || empty($val)) {
+                $results[] = "$col: NULL/empty — skipped";
+                continue;
+            }
             $decoded = json_decode($val, true);
             if (is_string($decoded)) {
-                // Double-encoded — fix it by decoding once more
-                $fixed_val = json_decode($decoded, true);
-                if (is_array($fixed_val)) {
-                    $updates[$col] = json_encode($fixed_val);
-                    $fixed[] = $col . ': double-encoded → fixed';
+                // Double-encoded — decode the inner string
+                $inner = json_decode($decoded, true);
+                if (is_array($inner)) {
+                    $updates[$col] = json_encode($inner);
+                    $results[] = "$col: FIXED (was double-encoded)";
+                } else {
+                    $results[] = "$col: could not fix — inner decode not array";
                 }
+            } elseif (is_array($decoded)) {
+                $results[] = "$col: OK";
             } else {
-                $fixed[] = $col . ': OK (single-encoded)';
+                $results[] = "$col: unexpected type — " . gettype($decoded);
             }
         }
 
         if (!empty($updates)) {
             $updates['updated_at'] = now();
-            \Illuminate\Support\Facades\DB::table('site_settings')
+            \Illuminate\Support\Facades\DB::connection('fix_tmp')
+                ->table('site_settings')
                 ->where('id', $row->id)
                 ->update($updates);
+            $results[] = '✅ Updated ' . count($updates) . ' column(s)';
+        } else {
+            $results[] = '✅ No fixes needed — all JSON columns are single-encoded';
         }
+
     } catch (\Throwable $e) {
-        \Illuminate\Support\Facades\DB::setDefaultConnection('pgsql');
-        return response()->json(['error' => $e->getMessage()]);
+        return response()->json(['error' => $e->getMessage(), 'trace' => substr($e->getTraceAsString(), 0, 500)]);
+    } finally {
+        \Illuminate\Support\Facades\DB::purge('fix_tmp');
     }
 
-    \Illuminate\Support\Facades\DB::setDefaultConnection('pgsql');
     return response()->json([
-        'status' => 'done',
-        'tenant' => $tenant->name,
-        'results' => $fixed,
-        'next' => 'Now visit /setup/clear-cache to clear all caches',
+        'status'  => 'done',
+        'tenant'  => $tenant->name,
+        'results' => $results,
+        'next'    => 'Visit /setup/clear-cache then try the website again',
     ], 200, [], JSON_PRETTY_PRINT);
 });
 
