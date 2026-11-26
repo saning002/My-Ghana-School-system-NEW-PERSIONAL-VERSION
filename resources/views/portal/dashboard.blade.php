@@ -641,7 +641,7 @@ $modeLabel = $modeLabels[$portalMode] ?? 'Student Portal';
         @php
             $onlinePayEnabled = \App\Models\Setting::get('school_paystack_secret_key', '') !== ''
                              && \App\Models\Setting::get('school_paystack_public_key', '') !== '';
-            $currentSessionId = \App\Models\AcademicSession::where('id', '>', 0)->latest()->first()?->id;
+            $currentSessionId = $selectedSessionId ?? \App\Models\AcademicSession::where('id', '>', 0)->latest()->first()?->id;
             $balance = $fees['balance'] ?? 0;
         @endphp
 

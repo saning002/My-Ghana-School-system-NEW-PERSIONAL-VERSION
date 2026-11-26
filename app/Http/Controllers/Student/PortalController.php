@@ -281,27 +281,13 @@ class PortalController extends Controller
             $student->load(['attendances' => fn($q) => $q->with('course:id,name,code')]);
         }
 
-        // ── Fees ───────────────────────────────────────────────────────────
+        // ── Fees — always use FeeCalculationService (reliable across all setups) ──
+        // TermFeeService requires a term_fee_bill to exist for the session;
+        // FeeCalculationService correctly picks branch-specific program fees.
         try {
-            if ($selectedSessionId) {
-                $termFeeService = app(\App\Services\TermFeeService::class);
-                $termSummary    = $termFeeService->getStudentTermSummary($student, $selectedSessionId);
-                $fees = [
-                    'program_total' => (float)($termSummary['program_fee'] ?? 0),
-                    'exam_total'    => (float)($termSummary['exam_fee']    ?? 0),
-                    'total'         => (float)($termSummary['total_billed'] ?? 0),
-                    'total_billed'  => (float)($termSummary['total_billed'] ?? 0),
-                    'paid'          => (float)($termSummary['total_paid']   ?? 0),
-                    'total_paid'    => (float)($termSummary['total_paid']   ?? 0),
-                    'balance'      => (float)($termSummary['balance']      ?? 0),
-                    'is_owing'     => ($termSummary['balance'] ?? 0) > 0,
-                    'is_paid'      => ($termSummary['balance'] ?? 0) <= 0,
-                ];
-            } else {
-                $fees = $this->feeService->calculate($student);
-            }
-        } catch (\Throwable $e) {
             $fees = $this->feeService->calculate($student);
+        } catch (\Throwable $e) {
+            $fees = ['program_total'=>0,'exam_total'=>0,'total'=>0,'paid'=>0,'balance'=>0,'is_owing'=>false,'is_paid'=>true];
         }
 
         // ── Report card preview — only generate if scores exist ────────────
