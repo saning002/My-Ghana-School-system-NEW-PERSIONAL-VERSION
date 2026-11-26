@@ -364,7 +364,12 @@ class PortalController extends Controller
             ? (int) $request->attempt
             : ($attempts->max() ?? 1);
 
-        $data = $this->reportCardService->generate($student, $program, $currentAttempt);
+        // ── Cache the report card data 10 min — generate() does DENSE ranking
+        // across ALL students in the program which is expensive ─────────────
+        $data = \Illuminate\Support\Facades\Cache::remember(
+            "rc_{$student->id}_{$program->id}_{$currentAttempt}", 600,
+            fn() => $this->reportCardService->generate($student, $program, $currentAttempt)
+        );
         $data['attempts']       = $attempts;
         $data['currentAttempt'] = $currentAttempt;
         $data['portalMode']     = \App\Models\Setting::get('portal_mode', 'university');
@@ -386,7 +391,11 @@ class PortalController extends Controller
             }
 
             $attempt = $request->filled('attempt') ? (int) $request->attempt : 1;
-            $data    = $this->reportCardService->generate($student, $program, $attempt);
+            // Cache report card data 10 min — same cache key as the view so both benefit
+            $data = \Illuminate\Support\Facades\Cache::remember(
+                "rc_{$student->id}_{$program->id}_{$attempt}", 600,
+                fn() => $this->reportCardService->generate($student, $program, $attempt)
+            );
         } catch (\Throwable $e) {
             Log::error('Portal report card data generation failed', ['exception' => $e->getMessage()]);
             return response('Unable to generate report card. Please try again later.', 500);
@@ -402,7 +411,11 @@ class PortalController extends Controller
             'report_logo_b64_' . session('tenant_slug', 'default'), 600,
             fn() => \App\Services\ReportCardPdfAssets::logoBase64()
         );
-        $data['photoBase64'] = \App\Services\ReportCardPdfAssets::studentPhotoBase64($student);
+        // Cache student photo base64 for 10 min — avoids Cloudinary HTTP fetch on every PDF
+        $data['photoBase64'] = \Illuminate\Support\Facades\Cache::remember(
+            'student_photo_b64_' . $student->id, 600,
+            fn() => \App\Services\ReportCardPdfAssets::studentPhotoBase64($student)
+        );
 
         // ── School info (same as admin PDF) ─────────────────────────────────
         $data['schoolName']     = \App\Models\Setting::get('school_name',    config('app.name'));

@@ -210,13 +210,17 @@ class Tenant extends Model
     {
         $isNeon = str_contains($this->db_host, 'neon.tech');
 
-        // For Neon: convert pooler URL to direct URL to avoid
-        // "cached plan must not change result type" error from pgBouncer pooler.
-        // Pooler URL:  ep-xxx-pooler.region.aws.neon.tech
-        // Direct URL:  ep-xxx.region.aws.neon.tech (remove "-pooler")
+        // For Neon: use the POOLER endpoint (keeps connections warm, eliminates cold start).
+        // The "-pooler" pgBouncer endpoint uses transaction-mode pooling which does NOT
+        // support prepared statements — disable them by setting options='-c statement_timeout=30000'
+        // and using PDO::ATTR_EMULATE_PREPARES via the pdo_options key.
         $host = $this->db_host;
+        // Ensure we're using the pooler (add -pooler if missing, remove if already present then re-add)
         if ($isNeon) {
+            // Strip any existing -pooler then re-add to standardise
             $host = str_replace('-pooler', '', $host);
+            // Convert  ep-xxx.region.aws.neon.tech  →  ep-xxx-pooler.region.aws.neon.tech
+            $host = preg_replace('/^(ep-[^.]+)\./', '$1-pooler.', $host);
         }
 
         $config = [
@@ -233,6 +237,16 @@ class Tenant extends Model
 
         if ($isNeon || str_contains($this->db_host, 'render.com') || str_contains($this->db_host, 'supabase.co')) {
             $config['sslmode'] = 'require';
+        }
+
+        // Neon pooler (pgBouncer transaction mode) doesn't support prepared statements.
+        // Setting PDO::ATTR_EMULATE_PREPARES=true makes PDO emulate them client-side,
+        // which works fine with pgBouncer and eliminates the "cached plan must not change" error.
+        if ($isNeon) {
+            $config['options'] = '--client_encoding=UTF8';
+            $config['pdo_options'] = [
+                \PDO::ATTR_EMULATE_PREPARES => true,
+            ];
         }
 
         return $config;
