@@ -71,6 +71,30 @@ class AdminSettingsController extends Controller
         return back()->with('success', 'ID card settings saved.');
     }
 
+    /**
+     * Save Paystack API keys (Online Payments tab) — standalone endpoint
+     * so the general-tab school_name requirement never blocks this save.
+     */
+    public function updatePayments(Request $request)
+    {
+        $request->validate([
+            'school_paystack_public_key' => 'nullable|string|max:100',
+            'school_paystack_secret_key'  => 'nullable|string|max:100',
+        ]);
+
+        // Save keys if provided — empty secret means "clear"
+        if ($request->has('school_paystack_public_key')) {
+            Setting::set('school_paystack_public_key', trim($request->input('school_paystack_public_key', '')));
+        }
+        if ($request->has('school_paystack_secret_key')) {
+            Setting::set('school_paystack_secret_key', trim($request->input('school_paystack_secret_key', '')));
+        }
+
+        $this->bustSettingsCache();
+
+        return back()->with('success', 'Paystack settings saved. Online payments are now configured for your school.');
+    }
+
     public function updatePortal(Request $request)
     {
         $request->validate([

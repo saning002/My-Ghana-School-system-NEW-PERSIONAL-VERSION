@@ -1684,7 +1684,7 @@ function insertAtCursor(fieldId, tag) {
                     <p class="text-xs text-green-700">Payments go directly to your school's Paystack account — not the platform.</p>
                 </div>
             </div>
-            <form method="POST" action="{{ route('admin.settings.update') }}" class="p-6 space-y-4">
+            <form method="POST" action="{{ route('admin.settings.update-payments') }}" class="p-6 space-y-4">
                 @csrf
                 <div class="p-3 rounded-xl bg-blue-50 border border-blue-100 text-xs text-blue-700">
                     <i class="fas fa-info-circle mr-1"></i>

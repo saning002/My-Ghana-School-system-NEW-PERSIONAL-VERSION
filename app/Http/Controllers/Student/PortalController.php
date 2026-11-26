@@ -227,67 +227,29 @@ class PortalController extends Controller
     {
         $student = $this->getPortalStudent();
 
-        // ── Get active academic session and period ─────────────────────────────
-        $activePeriod  = \App\Models\AcademicPeriod::where('is_active', true)->first();
-        $activeSession = $activePeriod?->session ?? null;
-        $activeSessionId = $activeSession?->id ?? null;
+        // ── Cache key per student so each student gets their own cache ─────
+        $cacheKey = 'portal_dashboard_' . $student->id;
 
-        // Allow student to select a different session via query param
-        $selectedSessionId = request()->query('session_id', $activeSessionId);
-        $selectedSession = null;
-        if ($selectedSessionId) {
-            $selectedSession = \App\Models\AcademicSession::find($selectedSessionId);
-        }
-        $selectedSession = $selectedSession ?? $activeSession;
-        $selectedSessionId = $selectedSession?->id ?? null;
-
-        // All sessions for the session switcher dropdown
-        $allSessions = \App\Models\AcademicSession::orderByDesc('id')->get();
-
+        // ── Load only what's needed for the dashboard in one go ────────────
         $student->load([
             'user', 'program', 'churchBranch',
             'payments',
-            'enrollments.course',
-            'examScores.course',
         ]);
 
-        // Load attendance filtered by the selected session's periods (if available)
-        if ($selectedSessionId) {
-            $periodIds = \App\Models\AcademicPeriod::where('academic_session_id', $selectedSessionId)
-                ->pluck('id')->toArray();
-            if (!empty($periodIds)) {
-                $student->load(['attendances' => function ($q) use ($periodIds) {
-                    $q->whereIn('academic_period_id', $periodIds)->with('course');
-                }]);
-            } else {
-                $student->load(['attendances.course']);
-            }
-        } else {
-            $student->load(['attendances.course']);
-        }
+        // ── Active session (cached 5 min) ──────────────────────────────────
+        $activePeriod    = \Illuminate\Support\Facades\Cache::remember('active_period', 120, fn() => \App\Models\AcademicPeriod::where('is_active', true)->first());
+        $activeSession   = $activePeriod?->session ?? null;
+        $activeSessionId = $activeSession?->id ?? null;
 
-        // Fee summary — use TermFeeService for session-specific fees
-        if ($selectedSessionId) {
-            try {
-                $termFeeService = app(\App\Services\TermFeeService::class);
-                $termSummary = $termFeeService->getStudentTermSummary($student, $selectedSessionId);
-                $fees = [
-                    'total'         => (float) ($termSummary['total_billed'] ?? 0),
-                    'total_billed'  => (float) ($termSummary['total_billed'] ?? 0),
-                    'paid'          => (float) ($termSummary['total_paid'] ?? 0),
-                    'total_paid'    => (float) ($termSummary['total_paid'] ?? 0),
-                    'balance'       => (float) ($termSummary['balance'] ?? 0),
-                    'is_owing'      => ($termSummary['balance'] ?? 0) > 0,
-                    'is_paid'       => ($termSummary['balance'] ?? 0) <= 0,
-                ];
-            } catch (\Throwable $e) {
-                $fees = $this->feeService->calculate($student);
-            }
-        } else {
-            $fees = $this->feeService->calculate($student);
-        }
+        $selectedSessionId = request()->query('session_id', $activeSessionId);
+        $selectedSession   = $selectedSessionId ? \App\Models\AcademicSession::find($selectedSessionId) : $activeSession;
+        $selectedSession   = $selectedSession ?? $activeSession;
+        $selectedSessionId = $selectedSession?->id ?? null;
 
-        // Programs this student has exam scores in for the selected session
+        // All sessions (cached 5 min — rarely changes)
+        $allSessions = \Illuminate\Support\Facades\Cache::remember('all_sessions', 300, fn() => \App\Models\AcademicSession::orderByDesc('id')->get());
+
+        // ── Exam scores — only load IDs+program_id+attempt (not all columns) ─
         $examScoreQuery = ExamScore::where('student_id', $student->id);
         if ($selectedSessionId) {
             $examScoreQuery->where('academic_session_id', $selectedSessionId);
@@ -297,8 +259,42 @@ class PortalController extends Controller
             ->merge(collect([$student->program_id]))->filter()->unique();
         $programs = Program::whereIn('id', $programIds)->orderBy('sequence')->get();
 
-        // Most recent report card — for the selected session
-        $latestScore = (clone $examScoreQuery)->latest('id')->first();
+        // ── Attendance (only load for selected session, limit columns) ──────
+        if ($selectedSessionId) {
+            $periodIds = \App\Models\AcademicPeriod::where('academic_session_id', $selectedSessionId)
+                ->pluck('id')->toArray();
+            if (!empty($periodIds)) {
+                $student->load(['attendances' => fn($q) => $q->whereIn('academic_period_id', $periodIds)->with('course:id,name,code')]);
+            } else {
+                $student->load(['attendances' => fn($q) => $q->with('course:id,name,code')]);
+            }
+        } else {
+            $student->load(['attendances' => fn($q) => $q->with('course:id,name,code')]);
+        }
+
+        // ── Fees ───────────────────────────────────────────────────────────
+        try {
+            if ($selectedSessionId) {
+                $termFeeService = app(\App\Services\TermFeeService::class);
+                $termSummary    = $termFeeService->getStudentTermSummary($student, $selectedSessionId);
+                $fees = [
+                    'total'        => (float)($termSummary['total_billed'] ?? 0),
+                    'total_billed' => (float)($termSummary['total_billed'] ?? 0),
+                    'paid'         => (float)($termSummary['total_paid']   ?? 0),
+                    'total_paid'   => (float)($termSummary['total_paid']   ?? 0),
+                    'balance'      => (float)($termSummary['balance']      ?? 0),
+                    'is_owing'     => ($termSummary['balance'] ?? 0) > 0,
+                    'is_paid'      => ($termSummary['balance'] ?? 0) <= 0,
+                ];
+            } else {
+                $fees = $this->feeService->calculate($student);
+            }
+        } catch (\Throwable $e) {
+            $fees = $this->feeService->calculate($student);
+        }
+
+        // ── Report card preview — only generate if scores exist ────────────
+        $latestScore       = (clone $examScoreQuery)->latest('id')->first();
         $mostRecentProgram = $latestScore
             ? $programs->firstWhere('id', $latestScore->program_id)
             : $programs->sortByDesc('sequence')->first();
@@ -311,15 +307,16 @@ class PortalController extends Controller
             if ($selectedSessionId) {
                 $attemptQuery->where('academic_session_id', $selectedSessionId);
             }
-            $previewAttempt = $attemptQuery->max('attempt') ?? 1;
-            $reportCardPreview = $this->reportCardService->generate(
-                $student, $mostRecentProgram, $previewAttempt
-            );
+            $previewAttempt    = $attemptQuery->max('attempt') ?? 1;
+            $reportCardPreview = $this->reportCardService->generate($student, $mostRecentProgram, $previewAttempt);
         }
 
-        $cgpa = $this->reportCardService->calculateCgpa($student);
+        // ── CGPA (cached per student, 5 min) ───────────────────────────────
+        $cgpa = \Illuminate\Support\Facades\Cache::remember('cgpa_' . $student->id, 300,
+            fn() => $this->reportCardService->calculateCgpa($student)
+        );
 
-        // Attendance summary
+        // ── Attendance summary ─────────────────────────────────────────────
         $attendanceSummary = $student->attendances
             ->groupBy(fn($a) => $a->course->code ?? 'Unknown')
             ->map(fn($records) => [
@@ -333,12 +330,13 @@ class PortalController extends Controller
                     : 0,
             ]);
 
-        // Notifications for this student
+        // ── Notifications (only unread count + latest 10) ──────────────────
         $notifications = StudentNotification::forStudent($student->id)
-            ->latest()->get();
+            ->latest()->limit(20)->get();
         $unreadCount = $notifications->where('is_read', false)->count();
 
-        $portalMode  = \App\Models\Setting::get('portal_mode', 'university');
+        // ── Portal settings (cached) ───────────────────────────────────────
+        $portalMode  = \App\Models\Setting::get('portal_mode',  'university');
         $portalTheme = \App\Models\Setting::get('portal_theme', 'gold');
 
         return view('portal.dashboard', compact(
@@ -386,11 +384,12 @@ class PortalController extends Controller
             $student->load(['user', 'program', 'churchBranch']);
 
             if ($student->results_blocked) {
-                return redirect()->route('portal.dashboard')->with('error', 'Your academic results are currently locked. Please contact the administration office.');
+                return redirect()->route('portal.dashboard')
+                    ->with('error', 'Your academic results are currently locked. Please contact the administration office.');
             }
 
             $attempt = $request->filled('attempt') ? (int) $request->attempt : 1;
-            $data = $this->reportCardService->generate($student, $program, $attempt);
+            $data    = $this->reportCardService->generate($student, $program, $attempt);
         } catch (\Throwable $e) {
             Log::error('Portal report card data generation failed', ['exception' => $e->getMessage()]);
             return response('Unable to generate report card. Please try again later.', 500);
@@ -401,27 +400,43 @@ class PortalController extends Controller
                 ->with('error', 'No scores are available yet. PDF cannot be generated.');
         }
 
-        $data['logoBase64']  = ReportCardPdfAssets::logoBase64();
-        $data['photoBase64'] = ReportCardPdfAssets::studentPhotoBase64($student);
+        // ── Use same assets as admin PDF — cache logo for 10 min to avoid re-fetching ─
+        $data['logoBase64']  = \Illuminate\Support\Facades\Cache::remember(
+            'report_logo_b64_' . session('tenant_slug', 'default'), 600,
+            fn() => \App\Services\ReportCardPdfAssets::logoBase64()
+        );
+        $data['photoBase64'] = \App\Services\ReportCardPdfAssets::studentPhotoBase64($student);
+
+        // ── School info (same as admin PDF) ─────────────────────────────────
+        $data['schoolName']     = \App\Models\Setting::get('school_name',    config('app.name'));
+        $data['schoolSubtitle'] = \App\Models\Setting::get('school_subtitle', '');
+        $data['schoolAddress']  = \App\Models\Setting::get('school_address',  '');
+        $data['schoolPhone']    = \App\Models\Setting::get('school_phone',    '');
+        $data['schoolEmail']    = \App\Models\Setting::get('school_email',    '');
+        $data['siteLogoUrl']    = \App\Models\Setting::get('site_logo_url',   '');
+
+        // ── Template — use same logic as admin ExamController::pdf() ────────
+        $templateSetting = \App\Models\Setting::get('report_card_template', 'standard');
+        $gradingPreset   = \App\Models\Setting::get('grading_preset', 'ghana_standard');
+        $templateMap = [
+            'basic' => 'pdf.report_card_basic',
+            'jhs'   => 'pdf.report_card_jhs',
+        ];
+        // Auto-pick jhs template for JHS grading preset if no explicit override
+        if (!isset($templateMap[$templateSetting]) && $gradingPreset === 'jhs') {
+            $templateView = 'pdf.report_card_jhs';
+        } else {
+            $templateView = $templateMap[$templateSetting] ?? 'pdf.report_card';
+        }
 
         try {
             @ini_set('memory_limit', '256M');
             @set_time_limit(120);
 
-            // Choose template based on school setting
-            $templateSetting = \App\Models\Setting::get('report_card_template', 'standard');
-            $templateMap = [
-                'basic' => 'pdf.report_card_basic',
-                'jhs'   => 'pdf.report_card_jhs',
-            ];
-            $templateView = $templateMap[$templateSetting] ?? 'pdf.report_card';
-
             $html = view($templateView, $data)->render();
 
             $fontDir = sys_get_temp_dir() . '/dompdf_fonts';
-            if (! is_dir($fontDir)) {
-                @mkdir($fontDir, 0755, true);
-            }
+            if (!is_dir($fontDir)) @mkdir($fontDir, 0755, true);
 
             $options = new \Dompdf\Options();
             $options->setIsHtml5ParserEnabled(true);

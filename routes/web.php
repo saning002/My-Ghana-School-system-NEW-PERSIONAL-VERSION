@@ -448,6 +448,7 @@ Route::middleware(['tenant', 'role:admin'])->prefix('admin')->name('admin.')->gr
     Route::post('/settings/academic-expectations', [\App\Http\Controllers\Admin\AdminSettingsController::class, 'updateAcademicExpectations'])->name('settings.update-academic-expectations');
     Route::post('/settings/portal',            [\App\Http\Controllers\Admin\AdminSettingsController::class, 'updatePortal'])->name('settings.update-portal');
     Route::post('/settings/id-card',           [\App\Http\Controllers\Admin\AdminSettingsController::class, 'updateIdCard'])->name('settings.update-id-card');
+    Route::post('/settings/payments',          [\App\Http\Controllers\Admin\AdminSettingsController::class, 'updatePayments'])->name('settings.update-payments');
     Route::post('/sms/broadcast',              [NotificationController::class, 'broadcastSms'])->name('sms.broadcast');
 
     // Theme
