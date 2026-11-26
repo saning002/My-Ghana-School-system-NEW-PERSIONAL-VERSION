@@ -2571,6 +2571,93 @@ Route::get('/debug/site-settings', function (\Illuminate\Http\Request $request) 
     return response()->json($result, 200, [], JSON_PRETTY_PRINT);
 })->middleware('web');
 
+// ── Fee debug — check fee data for a student ─────────────────────────────
+// Hit: /debug/fees?tenant=saning1-academy&student_id=6
+Route::get('/debug/fees', function (\Illuminate\Http\Request $request) {
+    $slug      = $request->query('tenant', 'saning1-academy');
+    $studentId = $request->query('student_id');
+    $tenant    = \App\Models\Tenant::on('pgsql')->where('slug', $slug)->orWhere('subdomain', $slug)->first();
+    if (!$tenant) return response()->json(['error' => 'Tenant not found: ' . $slug]);
+
+    \Illuminate\Support\Facades\DB::purge('tenant');
+    \Illuminate\Support\Facades\Config::set('database.connections.tenant', $tenant->dbConfig());
+    \Illuminate\Support\Facades\DB::setDefaultConnection('tenant');
+
+    try {
+        // Paystack keys
+        $psPublic  = \Illuminate\Support\Facades\DB::table('settings')->where('key','school_paystack_public_key')->value('value');
+        $psSecret  = \Illuminate\Support\Facades\DB::table('settings')->where('key','school_paystack_secret_key')->value('value');
+
+        // Active session
+        $activePeriod  = \Illuminate\Support\Facades\DB::table('academic_periods')->where('is_active',true)->first();
+        $activeSession = $activePeriod ? \Illuminate\Support\Facades\DB::table('academic_sessions')->find($activePeriod->academic_session_id) : null;
+
+        // Student
+        $student = $studentId
+            ? \App\Models\Student::with(['user','program','customFee'])->find($studentId)
+            : \App\Models\Student::with(['user','program','customFee'])->first();
+
+        if (!$student) return response()->json(['error' => 'No student found']);
+
+        // Program fees for student's program
+        $programFees = \Illuminate\Support\Facades\DB::table('program_fees')
+            ->where('program_id', $student->program_id)->get();
+
+        // Term fee bill for active session
+        $termBill = $activeSession
+            ? \Illuminate\Support\Facades\DB::table('term_fee_bills')
+                ->where('student_id', $student->id)
+                ->where('academic_session_id', $activeSession->id)
+                ->first()
+            : null;
+
+        // Payments
+        $payments = \Illuminate\Support\Facades\DB::table('payments')
+            ->where('student_id', $student->id)
+            ->get(['id','amount_paid','payment_date','academic_session_id']);
+
+        // Run the actual fee service
+        $feeService = app(\App\Services\FeeCalculationService::class);
+        $feeResult  = $feeService->calculate($student);
+
+        $termResult = null;
+        if ($activeSession) {
+            try {
+                $termFeeService = app(\App\Services\TermFeeService::class);
+                $termResult = $termFeeService->getStudentTermSummary($student, $activeSession->id);
+                // Remove student object from result to keep JSON clean
+                unset($termResult['student']);
+            } catch (\Throwable $e) {
+                $termResult = ['error' => $e->getMessage()];
+            }
+        }
+
+        return response()->json([
+            'tenant'                => $tenant->name,
+            'student_id'            => $student->id,
+            'student_name'          => $student->user?->full_name,
+            'program_id'            => $student->program_id,
+            'program_name'          => $student->program?->name,
+            'paystack_public_key'   => $psPublic ? substr($psPublic,0,8).'...' : 'NOT SET',
+            'paystack_secret_key'   => $psSecret ? 'SET ('.strlen($psSecret).' chars)' : 'NOT SET',
+            'active_session'        => $activeSession ? $activeSession->year : 'NONE',
+            'active_session_id'     => $activeSession?->id,
+            'program_fees_in_db'    => $programFees,
+            'custom_fee'            => $student->customFee,
+            'term_bill_this_session'=> $termBill,
+            'payments_count'        => $payments->count(),
+            'payments_total_paid'   => $payments->sum('amount_paid'),
+            'fee_service_result'    => $feeResult,
+            'term_fee_service_result' => $termResult,
+        ], 200, [], JSON_PRETTY_PRINT);
+
+    } catch (\Throwable $e) {
+        return response()->json(['error' => $e->getMessage(), 'trace' => substr($e->getTraceAsString(), 0, 500)]);
+    } finally {
+        \Illuminate\Support\Facades\DB::setDefaultConnection('pgsql');
+    }
+});
+
 // ── Cloudinary LIVE upload test for a tenant ─────────────────────────────
 // Creates a tiny test image and tries to upload it to Cloudinary
 // Hit: /debug/cloudinary-test?tenant=saning1-academy
