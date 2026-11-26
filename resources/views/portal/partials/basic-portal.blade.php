@@ -525,6 +525,7 @@
     <p class="page-subtitle">Your fee statement</p>
   </div>
 
+  {{-- Summary cards --}}
   <div class="bp-card">
     <div class="bp-card-title">
       <i class="fas fa-file-invoice-dollar" style="color:#f59e0b;"></i>
@@ -540,20 +541,98 @@
     </div>
     <div class="bp-fee-row">
       <span class="bp-fee-lbl">Outstanding Balance</span>
-      <span class="bp-fee-val" style="color:{{ $balance > 0 ? '#dc2626' : '#16a34a' }};">
+      <span class="bp-fee-val" style="color:{{ $balance > 0 ? '#dc2626' : '#16a34a' }};font-weight:800;">
         GH₵ {{ number_format($balance, 2) }}
       </span>
     </div>
-    @if($balance > 0)
-    <div style="margin-top:14px;padding:12px;background:#fef3c7;border-radius:10px;font-size:12px;color:#92400e;text-align:center;">
-      <i class="fas fa-info-circle"></i> Please visit the admin office to settle your outstanding balance.
-    </div>
-    @else
-    <div style="margin-top:14px;padding:12px;background:#dcfce7;border-radius:10px;font-size:12px;color:#166534;text-align:center;">
-      <i class="fas fa-check-circle"></i> Your fees are fully settled. Well done!
-    </div>
-    @endif
   </div>
+
+  @php
+    $fpOnlinePay = \App\Models\Setting::get('school_paystack_secret_key', '') !== ''
+               && \App\Models\Setting::get('school_paystack_public_key', '') !== '';
+    $fpSessionId = \App\Models\AcademicSession::where('id', '>', 0)->latest()->first()?->id;
+  @endphp
+
+  {{-- Pay Now / Status --}}
+  @if($balance <= 0)
+  <div class="bp-card" style="background:#f0fdf4;border-color:#bbf7d0;text-align:center;">
+    <i class="fas fa-check-circle" style="font-size:28px;color:#16a34a;display:block;margin-bottom:8px;"></i>
+    <div style="font-size:13px;font-weight:800;color:#166534;">All Fees Cleared</div>
+    <div style="font-size:11px;color:#15803d;margin-top:4px;">Your account is fully paid up. Well done!</div>
+  </div>
+  @elseif($balance > 0 && $fpOnlinePay && $fpSessionId)
+  <div class="bp-card" style="background:linear-gradient(135deg,#1e3a5f,#0f2544);border:none;">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+      <div style="width:40px;height:40px;background:rgba(251,191,36,.15);border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <i class="fas fa-credit-card" style="color:#fbbf24;font-size:1rem;"></i>
+      </div>
+      <div>
+        <div style="font-size:13px;font-weight:800;color:#fff;">Pay Your Fees Online</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.5);">Card · Mobile Money · Bank Transfer</div>
+      </div>
+    </div>
+    <form method="POST" action="{{ route('portal.fees.initiate') }}" id="fpFeePayForm">
+      @csrf
+      <input type="hidden" name="session_id" value="{{ $fpSessionId }}">
+      <div style="margin-bottom:12px;">
+        <label style="font-size:11px;font-weight:700;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px;">Amount to Pay (GH₵)</label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
+          <button type="button" onclick="document.getElementById('fpPayAmt').value='{{ number_format($balance, 2, '.', '') }}'"
+            style="background:rgba(251,191,36,.15);border:1px solid rgba(251,191,36,.3);color:#fbbf24;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;">
+            Full: GH₵{{ number_format($balance, 2) }}
+          </button>
+          <button type="button" onclick="document.getElementById('fpPayAmt').value='{{ number_format($balance/2, 2, '.', '') }}'"
+            style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.7);padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;">
+            Half: GH₵{{ number_format($balance/2, 2) }}
+          </button>
+        </div>
+        <input type="number" name="amount" id="fpPayAmt"
+          value="{{ number_format($balance, 2, '.', '') }}"
+          min="1" max="{{ number_format($balance, 2, '.', '') }}" step="0.01" required
+          style="width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#fff;border-radius:10px;padding:10px 14px;font-size:14px;font-weight:700;box-sizing:border-box;">
+      </div>
+      <button type="submit"
+        style="width:100%;background:linear-gradient(135deg,#fbbf24,#d97706);color:#1e3a5f;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+        <i class="fas fa-lock"></i> Pay Securely via Paystack
+      </button>
+      <p style="text-align:center;font-size:10px;color:rgba(255,255,255,.35);margin-top:8px;">
+        <i class="fas fa-shield-alt"></i> Secured by Paystack · Funds go directly to the school
+      </p>
+    </form>
+  </div>
+  @else
+  <div class="bp-card" style="background:#fffbeb;border-color:#fde68a;">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div style="width:40px;height:40px;background:#fbbf24;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <i class="fas fa-exclamation-triangle" style="color:#fff;"></i>
+      </div>
+      <div>
+        <div style="font-size:13px;font-weight:800;color:#92400e;">Balance: GH₵{{ number_format($balance, 2) }}</div>
+        <div style="font-size:11px;color:#b45309;margin-top:2px;">Online payment not configured. Please pay at the school's accounts office.</div>
+      </div>
+    </div>
+  </div>
+  @endif
+
+  {{-- Payment History --}}
+  @if($student->payments->isNotEmpty())
+  <div class="bp-card">
+    <div class="bp-card-title">
+      <i class="fas fa-history" style="color:#6366f1;"></i>
+      Payment History
+    </div>
+    @foreach($student->payments->sortByDesc('payment_date') as $pmt)
+    <div class="bp-fee-row">
+      <span class="bp-fee-lbl" style="font-size:11px;">
+        {{ optional($pmt->payment_date)->format('d M Y') ?? '—' }}
+        &nbsp;·&nbsp;{{ ucfirst(str_replace('_',' ',$pmt->payment_method ?? 'cash')) }}
+        @if($pmt->receipt_number) &nbsp;·&nbsp;Rcpt: {{ $pmt->receipt_number }} @endif
+      </span>
+      <span class="bp-fee-val" style="color:#16a34a;font-weight:800;">GH₵ {{ number_format($pmt->amount_paid, 2) }}</span>
+    </div>
+    @endforeach
+  </div>
+  @endif
 </div>
 
 <!-- HELP PAGE -->
