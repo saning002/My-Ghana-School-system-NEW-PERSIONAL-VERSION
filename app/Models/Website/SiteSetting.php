@@ -149,16 +149,52 @@ class SiteSetting extends Model
         ];
     }
 
+    /**
+     * Override getDirty to prevent array_diff_key crash when JSON columns
+     * have mismatched types between $attributes (array) and $original (string).
+     */
+    public function getDirty(): array
+    {
+        $dirty = [];
+        foreach ($this->getAttributes() as $key => $value) {
+            $original = $this->getOriginal($key);
+            // Normalise both sides to strings for comparison to avoid type mismatch
+            $valStr  = is_array($value)  ? json_encode($value)  : $value;
+            $origStr = is_array($original) ? json_encode($original) : $original;
+            if ($valStr !== $origStr) {
+                $dirty[$key] = $value;
+            }
+        }
+        return $dirty;
+    }
+
     /** Get the singleton row, creating defaults if missing. */
     public static function instance(): self
     {
-        return static::firstOrCreate([], [
-            'site_name'    => 'Kingdom Ministerial University College',
-            'tagline'      => 'Raising Kingdom Leaders for the Nations',
-            'hero_title'   => 'Raising Kingdom Leaders for a',
-            'hero_subtitle'=> 'A premier ministerial institution dedicated to equipping men and women with the knowledge, character, and skills for effective Kingdom ministry.',
-            'theme_colors' => json_encode(self::defaultTheme()),
-        ]);
+        // Cannot use firstOrCreate — it calls fill() then getDirty() which does
+        // array_diff_key($attributes, $original) and crashes when theme_colors
+        // is a JSON string in $original but an array in $attributes after fill().
+        // Safe alternative: just first() + raw insert if missing.
+        $row = static::first();
+
+        if ($row) {
+            return $row;
+        }
+
+        // No row — insert via raw query to bypass cast conflicts, then return
+        try {
+            \Illuminate\Support\Facades\DB::connection('tenant')->table('site_settings')->insertOrIgnore([
+                'site_name'    => 'Kingdom Ministerial University College',
+                'tagline'      => 'Raising Kingdom Leaders for the Nations',
+                'hero_title'   => 'Raising Kingdom Leaders for a',
+                'hero_subtitle'=> 'A premier ministerial institution dedicated to equipping men and women with the knowledge, character, and skills for effective Kingdom ministry.',
+                'theme_colors' => json_encode(self::defaultTheme()),
+                'created_at'   => now(),
+                'updated_at'   => now(),
+            ]);
+        } catch (\Throwable $e) { /* duplicate key race condition — ignore */ }
+
+        return static::firstOrNew([]);
     }
 
     /**
