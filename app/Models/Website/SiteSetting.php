@@ -96,6 +96,30 @@ class SiteSetting extends Model
         'footer_programs'          => 'array',
     ];
 
+    /**
+     * Override castAttribute so that JSON columns stored as double-encoded
+     * strings (e.g. from DB::table()->update() with json_encode()) are
+     * decoded correctly instead of returning a string that breaks array_diff_key.
+     */
+    protected function castAttribute($key, $value)
+    {
+        if (in_array($key, ['theme_colors','website_theme','stats','hero_minis',
+            'why_features','about_timeline','core_values','admissions_steps',
+            'admissions_requirements','contact_subjects','footer_programs'])) {
+            if (is_string($value) && !empty($value)) {
+                $decoded = json_decode($value, true);
+                // Handle double-encoded: first decode gives a string, second gives array
+                if (is_string($decoded)) {
+                    $decoded = json_decode($decoded, true);
+                }
+                return is_array($decoded) ? $decoded : [];
+            }
+            if (is_array($value)) return $value;
+            return [];
+        }
+        return parent::castAttribute($key, $value);
+    }
+
     /** Default theme — navy/gold used across both the school system and website. */
     public static function defaultTheme(): array
     {
