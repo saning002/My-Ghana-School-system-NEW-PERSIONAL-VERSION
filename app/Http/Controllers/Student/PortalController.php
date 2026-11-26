@@ -40,10 +40,19 @@ class PortalController extends Controller
             return redirect()->route('portal.dashboard');
         }
 
-        // Load school branding — use cache to avoid DB hit on every page load
-        $tenantSlug  = session('tenant_slug', 'default');
-        $cacheKey    = 'portal_branding_' . $tenantSlug;
-        $branding    = \Illuminate\Support\Facades\Cache::remember($cacheKey, 300, function () {
+        // ── Pre-warm the Neon DB so login submit is instant ─────────────────
+        // Neon serverless takes 1-3s on cold start. Running a cheap query HERE
+        // (on the GET page load) means the connection is already warm by the
+        // time the student fills in and submits the form.
+        try {
+            if (DB::getDefaultConnection() === 'tenant') {
+                DB::select('SELECT 1');
+            }
+        } catch (\Throwable $e) { /* non-critical */ }
+
+        // ── School branding — cached 5 min ──────────────────────────────────
+        $tenantSlug = session('tenant_slug', 'default');
+        $branding   = \Illuminate\Support\Facades\Cache::remember('portal_branding_' . $tenantSlug, 300, function () {
             $rawLogo = Setting::get('site_logo_url', '');
             return [
                 'schoolName'     => Setting::get('school_name', config('app.name', 'School')),
@@ -278,10 +287,12 @@ class PortalController extends Controller
                 $termFeeService = app(\App\Services\TermFeeService::class);
                 $termSummary    = $termFeeService->getStudentTermSummary($student, $selectedSessionId);
                 $fees = [
-                    'total'        => (float)($termSummary['total_billed'] ?? 0),
-                    'total_billed' => (float)($termSummary['total_billed'] ?? 0),
-                    'paid'         => (float)($termSummary['total_paid']   ?? 0),
-                    'total_paid'   => (float)($termSummary['total_paid']   ?? 0),
+                    'program_total' => (float)($termSummary['program_fee'] ?? 0),
+                    'exam_total'    => (float)($termSummary['exam_fee']    ?? 0),
+                    'total'         => (float)($termSummary['total_billed'] ?? 0),
+                    'total_billed'  => (float)($termSummary['total_billed'] ?? 0),
+                    'paid'          => (float)($termSummary['total_paid']   ?? 0),
+                    'total_paid'    => (float)($termSummary['total_paid']   ?? 0),
                     'balance'      => (float)($termSummary['balance']      ?? 0),
                     'is_owing'     => ($termSummary['balance'] ?? 0) > 0,
                     'is_paid'      => ($termSummary['balance'] ?? 0) <= 0,
