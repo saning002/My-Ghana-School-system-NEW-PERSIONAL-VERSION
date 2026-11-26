@@ -2212,9 +2212,11 @@ Route::get('/setup/fix-site-settings-json', function (\Illuminate\Http\Request $
     if (!$tenant) return response()->json(['error' => 'Tenant not found: ' . $slug]);
 
     // Connect directly — bypass all Eloquent models entirely
+    // Use direct endpoint (strip pooler) for the fix route — pooler needs different auth
+    $host = str_replace('-pooler', '', $tenant->db_host);
     $cfg = [
         'driver'   => 'pgsql',
-        'host'     => $tenant->db_host,
+        'host'     => $host,
         'port'     => $tenant->db_port ?? 5432,
         'database' => $tenant->db_name,
         'username' => $tenant->db_username,
