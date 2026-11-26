@@ -17,10 +17,10 @@
   $presentAtt = $attRecords->where('status', 'present')->count();
   $attRate = $totalAtt > 0 ? round(($presentAtt / $totalAtt) * 100) : 0;
 
-  // Fees
-  $balance = $fees['balance'] ?? 0;
-  $totalPaid = $fees['total_paid'] ?? 0;
-  $totalBilled = $fees['total_billed'] ?? 0;
+  // Fees — handle both FeeCalculationService and TermFeeService key names
+  $balance     = $fees['balance']     ?? 0;
+  $totalPaid   = $fees['paid']        ?? $fees['total_paid']   ?? 0;
+  $totalBilled = $fees['total']       ?? $fees['total_billed'] ?? 0;
 
   // Mode-specific labels
   $modeColors = [
@@ -250,11 +250,11 @@
     </div>
     <div class="bp-fee-row">
       <span class="bp-fee-lbl">Total Billed</span>
-      <span class="bp-fee-val">GH₵ {{ number_format($totalBilled, 2) }}</span>
+      <span class="bp-fee-val">GH₵ {{ number_format($fees['total'] ?? $totalBilled, 2) }}</span>
     </div>
     <div class="bp-fee-row">
       <span class="bp-fee-lbl">Total Paid</span>
-      <span class="bp-fee-val" style="color:#16a34a;">GH₵ {{ number_format($totalPaid, 2) }}</span>
+      <span class="bp-fee-val" style="color:#16a34a;">GH₵ {{ number_format($fees['paid'] ?? $totalPaid, 2) }}</span>
     </div>
     <div class="bp-fee-row">
       <span class="bp-fee-lbl">Outstanding Balance</span>
@@ -263,6 +263,89 @@
       </span>
     </div>
   </div>
+
+  @php
+    $bpOnlinePay = \App\Models\Setting::get('school_paystack_secret_key', '') !== ''
+                && \App\Models\Setting::get('school_paystack_public_key', '') !== '';
+    $bpSessionId = \App\Models\AcademicSession::where('id', '>', 0)->latest()->first()?->id;
+  @endphp
+
+  {{-- Pay Now --}}
+  @if($balance <= 0)
+  <div class="bp-card" style="background:#f0fdf4;border-color:#bbf7d0;text-align:center;">
+    <i class="fas fa-check-circle" style="font-size:28px;color:#16a34a;display:block;margin-bottom:8px;"></i>
+    <div style="font-size:13px;font-weight:800;color:#166534;">All Fees Cleared</div>
+    <div style="font-size:11px;color:#15803d;margin-top:4px;">Your account is fully paid up.</div>
+  </div>
+  @elseif($balance > 0 && $bpOnlinePay && $bpSessionId)
+  <div class="bp-card" style="background:linear-gradient(135deg,#1e3a5f,#0f2544);border:none;">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+      <div style="width:38px;height:38px;background:rgba(251,191,36,.15);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <i class="fas fa-credit-card" style="color:#fbbf24;font-size:.95rem;"></i>
+      </div>
+      <div>
+        <div style="font-size:13px;font-weight:800;color:#fff;">Pay Online</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.5);">Card · Mobile Money · Bank Transfer</div>
+      </div>
+    </div>
+    <form method="POST" action="{{ route('portal.fees.initiate') }}" id="bpFeePayForm">
+      @csrf
+      <input type="hidden" name="session_id" value="{{ $bpSessionId }}">
+      <div style="margin-bottom:12px;">
+        <label style="font-size:11px;font-weight:700;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px;">Amount to Pay (GH₵)</label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
+          <button type="button" onclick="document.getElementById('bpPayAmt').value={{ number_format($balance, 2, '.', '') }}"
+            style="background:rgba(251,191,36,.15);border:1px solid rgba(251,191,36,.3);color:#fbbf24;padding:5px 12px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;">
+            Full: GH₵{{ number_format($balance, 2) }}
+          </button>
+          <button type="button" onclick="document.getElementById('bpPayAmt').value={{ number_format($balance/2, 2, '.', '') }}"
+            style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.7);padding:5px 12px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;">
+            Half: GH₵{{ number_format($balance/2, 2) }}
+          </button>
+        </div>
+        <input type="number" name="amount" id="bpPayAmt"
+          value="{{ number_format($balance, 2, '.', '') }}"
+          min="1" max="{{ number_format($balance, 2, '.', '') }}" step="0.01" required
+          style="width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#fff;border-radius:10px;padding:10px 14px;font-size:13px;font-weight:700;">
+      </div>
+      <button type="submit"
+        style="width:100%;background:linear-gradient(135deg,#fbbf24,#d97706);color:#1e3a5f;border:none;border-radius:12px;padding:12px;font-size:13px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+        <i class="fas fa-lock"></i> Pay Securely via Paystack
+      </button>
+      <p style="text-align:center;font-size:10px;color:rgba(255,255,255,.35);margin-top:8px;">
+        <i class="fas fa-shield-alt"></i> Secured by Paystack · Funds go directly to the school
+      </p>
+    </form>
+  </div>
+  @else
+  <div class="bp-card" style="background:#fffbeb;border-color:#fde68a;">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div style="width:38px;height:38px;background:#fbbf24;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <i class="fas fa-exclamation-triangle" style="color:#fff;font-size:.9rem;"></i>
+      </div>
+      <div>
+        <div style="font-size:13px;font-weight:800;color:#92400e;">Balance: GH₵{{ number_format($balance, 2) }}</div>
+        <div style="font-size:11px;color:#b45309;">Please pay at the school accounts office</div>
+      </div>
+    </div>
+  </div>
+  @endif
+
+  {{-- Payment History --}}
+  @if($student->payments->isNotEmpty())
+  <div class="bp-card">
+    <div class="bp-card-title">
+      <i class="fas fa-history" style="color:#6366f1;"></i>
+      Payment History
+    </div>
+    @foreach($student->payments->sortByDesc('payment_date') as $pmt)
+    <div class="bp-fee-row">
+      <span class="bp-fee-lbl">{{ optional($pmt->payment_date)->format('d M Y') ?? '—' }} · {{ ucfirst($pmt->payment_method ?? 'cash') }}</span>
+      <span class="bp-fee-val" style="color:#16a34a;font-weight:700;">GH₵ {{ number_format($pmt->amount_paid, 2) }}</span>
+    </div>
+    @endforeach
+  </div>
+  @endif
 </div>
 
 <!-- RESULTS PAGE -->
