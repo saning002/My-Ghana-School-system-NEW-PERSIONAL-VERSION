@@ -82,13 +82,13 @@ class SiteSetting extends Model
     }
 
     // ── Safe JSON decoder ────────────────────────────────────────────────────
-    public static function decodeJson(mixed $raw): array
+    public static function decodeJson(mixed $raw): ?array
     {
-        if (is_array($raw)) return $raw;
-        if (!is_string($raw) || $raw === '') return [];
+        if (is_array($raw) && !empty($raw)) return $raw;
+        if (!is_string($raw) || $raw === '' || $raw === 'null') return null;
         $v = json_decode($raw, true);
         if (is_string($v)) $v = json_decode($v, true);
-        return is_array($v) ? $v : [];
+        return (is_array($v) && !empty($v)) ? $v : null;
     }
 
     // ── Defaults ─────────────────────────────────────────────────────────────
@@ -246,7 +246,7 @@ class SiteSetting extends Model
     {
         return array_merge(
             self::defaultTheme(),
-            self::decodeJson($this->attributes['theme_colors'] ?? null)
+            self::decodeJson($this->attributes['theme_colors'] ?? null) ?? []
         );
     }
 

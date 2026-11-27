@@ -31,8 +31,8 @@
 @section('content')
 <div class="page-hero">
   <div class="page-hero-inner">
-    <h1><em>Admissions</em> &amp; Enrollment</h1>
-    <p>Begin your child's journey with us. We welcome applications year-round.</p>
+    <h1>{!! $site->admissions_hero_title ?? 'Admissions' !!}</h1>
+    <p>{{ $site->admissions_hero_subtitle ?? 'Begin your journey with us' }}</p>
     <div class="breadcrumb">
       <a href="{{ wu('home') }}">Home</a>
       <i class="fas fa-chevron-right"></i><span>Admissions</span>
@@ -67,9 +67,9 @@
 
     <div class="info-cols reveal">
       <div>
-        <span class="eyebrow">Documents Needed</span>
+        <span class="eyebrow">{{ $site->admissions_req_title ?? 'Documents Needed' }}</span>
         <h2 style="font-size:1.5rem;color:var(--navy);margin:10px 0 6px;">Requirements</h2>
-        <p style="font-size:.92rem;color:var(--gray-500);margin-bottom:4px;">Please bring the following when applying:</p>
+        <p style="font-size:.92rem;color:var(--gray-500);margin-bottom:4px;">{{ $site->admissions_req_subtitle ?? 'Please prepare the following documents' }}</p>
         <div class="req-list">
           @php
           $reqs = $site->admissions_requirements ?? [

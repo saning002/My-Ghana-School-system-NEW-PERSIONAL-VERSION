@@ -58,8 +58,8 @@
 @section('content')
 <div class="page-hero">
   <div class="page-hero-inner">
-    <h1>About <em>Our School</em></h1>
-    <p>{{ $site->tagline ?? 'Nurturing Young Minds for Excellence' }}</p>
+    <h1>{!! $site->about_hero_title ?? 'About Our School' !!}</h1>
+    <p>{{ $site->about_hero_subtitle ?? 'Learn more about our history, mission and values' }}</p>
     <div class="breadcrumb">
       <a href="{{ wu('home') }}">Home</a>
       <i class="fas fa-chevron-right"></i><span>About Us</span>
@@ -73,6 +73,7 @@
     <div class="section-header reveal">
       <span class="eyebrow">{{ $site->about_eyebrow ?? 'Who We Are' }}</span>
       <h2>{{ $site->about_mv_title ?? 'Our Mission &amp; Vision' }}</h2>
+      <p>{{ $site->about_mv_subtitle ?? 'Our guiding principles' }}</p>
     </div>
     <div class="mv-grid reveal">
       <div class="mv-card">
@@ -126,8 +127,8 @@
   <div class="container">
     <div class="section-header reveal">
       <span class="eyebrow">What We Stand For</span>
-      <h2>Our Core Values</h2>
-      <p>The principles that guide everything we do, every single day.</p>
+      <h2>{{ $site->core_values_title ?? 'Our Core Values' }}</h2>
+      <p>{{ $site->core_values_subtitle ?? 'The principles that guide everything we do' }}</p>
     </div>
     <div class="values-grid">
       @php
